@@ -1,0 +1,18 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"allowJs": true,
+		"checkJs": true,
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"strict": true,
+		"alwaysStrict": true,
+		"moduleResolution": "node",
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"resolveJsonModule": true,
+		"forceConsistentCasingInFileNames": true
+	},
+	"include": ["./src/**/*", "typings/extensions.d.ts"]
+}
