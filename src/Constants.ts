@@ -1,6 +1,6 @@
-import { IntentsString } from "discord.js";
+import { Intents } from "discord.js";
 
-export const INTENTS: IntentsString[] = ["GUILDS"];
+export const INTENTS = [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES];
 
 // * REGEXP
 // export const CODEBLOCK_REGEX = /```(?:(?<lang>\S+)\n)?\s?(?<code>[^]+?)\s?```/;
@@ -11,7 +11,7 @@ export const INTENTS: IntentsString[] = ["GUILDS"];
 // export const ROLE_REGEX = /^<@&\d{17,19}>$/;
 // export const USER_REGEX = /^<@!?\d{17,19}>$/;
 
-// export const ID_REGEX = /^\d{17,19}$/;
+export const ID_REGEX = /^\d{17,19}$/;
 // *
 
 // * COLORS
