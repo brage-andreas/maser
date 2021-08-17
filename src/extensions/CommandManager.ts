@@ -1,4 +1,4 @@
-import type { CmdIntr, Command } from "../Typings";
+import type { CmdIntr, Command } from "../Typings.js";
 import { readdirSync } from "fs";
 
 const BASE_DIR = new URL("../commands", import.meta.url);
