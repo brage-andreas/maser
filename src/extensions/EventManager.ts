@@ -3,7 +3,7 @@ import type { Clint } from "./Clint.js";
 
 import { readdirSync } from "fs";
 
-const DIR = new URL("../events", import.meta.url);
+const BASE_DIR = new URL("../events", import.meta.url);
 
 export class EventManager {
 	private _events: Map<string, Event>;
@@ -15,13 +15,13 @@ export class EventManager {
 	}
 
 	public async init() {
-		const eventNames = this._readDir();
+		const eventNames = this._readDir(BASE_DIR);
 		this._events = await this._getEvents(eventNames);
 		this._setEvents();
 	}
 
-	private _readDir() {
-		return readdirSync(DIR);
+	private _readDir(dir: URL) {
+		return readdirSync(dir);
 	}
 
 	private async _getEvents(files: string[]) {
