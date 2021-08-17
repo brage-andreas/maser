@@ -30,7 +30,7 @@ export class CommandManager {
 
             const files = this._readDir(FOLDER_DIR)
             for (let fileName of files) {
-                const command = (await import(`../commands/${fileName}`)) as Command;
+                const command = (await import(`../commands/${folder}/${fileName}`)) as Command;
                 const name = fileName.split(".")[0];
                 hash.set(name, command);
             }
