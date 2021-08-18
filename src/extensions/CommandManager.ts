@@ -26,6 +26,14 @@ export class CommandManager {
 		this._commands.get(intr.commandName)?.execute(intr);
 	}
 
+	public async put(clientId: string, guildId?: string) {
+		this._put(clientId, guildId);
+	}
+
+	public async clear(clientId: string, guildId?: string) {
+		this._put(clientId, guildId, true);
+	}
+
 	private _readDir(dir: URL) {
 		return readdirSync(dir);
 	}
@@ -33,16 +41,11 @@ export class CommandManager {
 	private async _getCommands(folders: string[]) {
 		const hash: Map<string, Command> = new Map();
 		for (let folder of folders) {
-			const FOLDER_DIR = new URL(
-				`../commands/${folder}`,
-				import.meta.url
-			);
+			const FOLDER_DIR = new URL(`../commands/${folder}`, import.meta.url);
 
 			const files = this._readDir(FOLDER_DIR);
 			for (let fileName of files) {
-				const command = (await import(
-					`../commands/${folder}/${fileName}`
-				)) as Command;
+				const command = (await import(`../commands/${folder}/${fileName}`)) as Command;
 				const name = fileName.split(".")[0];
 				hash.set(name, command);
 			}
@@ -54,7 +57,7 @@ export class CommandManager {
 		return [...this._commands.values()].map((cmd) => cmd.data);
 	}
 
-	public async put(clientId: string, guildId?: string) {
+	private async _put(clientId: string, guildId?: string, clear = false) {
 		if (!process.env.TOKEN) {
 			return Util.Log("Token not defined in .env file");
 		}
@@ -78,11 +81,11 @@ export class CommandManager {
 				? Routes.applicationGuildCommands(clientId, guildId)
 				: Routes.applicationCommands(clientId);
 
-			const options = { body: data };
+			const options = { body: clear ? [] : data };
 
 			const res = await rest
 				.put(route, options)
-				.then(() => `Set commands in guild: ${guildId}`);
+				.then(() => `${clear ? "Cleared" : "Set"} commands in guild: ${guildId}`);
 
 			Util.Log(res);
 		} catch (e) {
