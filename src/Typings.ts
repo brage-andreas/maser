@@ -17,3 +17,7 @@ export interface CmdIntr extends CommandInteraction {
 	client: Clint;
 	guild: Guild;
 }
+
+export type ClientColors = {
+	[key: string]: `#${string}`;
+};
