@@ -1,9 +1,5 @@
-import type {
-	ApplicationCommandData,
-	CommandInteraction,
-	Guild,
-	GuildMember
-} from "discord.js";
+import type { ApplicationCommandData, CommandInteraction, Guild, GuildMember } from "discord.js";
+import type { Clint } from "./extensions/Clint";
 
 // >
 
@@ -18,7 +14,6 @@ export interface Event {
 
 export interface CmdIntr extends CommandInteraction {
 	member: GuildMember;
+	client: Clint;
 	guild: Guild;
-
-	// util
 }
