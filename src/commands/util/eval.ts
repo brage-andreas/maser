@@ -32,13 +32,12 @@ export async function execute(intr: CmdIntr) {
 	const output = intr.options.getBoolean("output") ?? true;
 	const hide = intr.options.getBoolean("hide") ?? false;
 
-	await intr.deferReply({ ephemeral: hide || !output });
+	if (intr.user.id !== intr.client.application?.owner?.id) return intr.reply({ content: "No", ephemeral: true });
 
+	await intr.deferReply({ ephemeral: hide || !output });
 	const { embeds, files } = await evaluate(intr, code);
 
-	if (!output) {
-		intr.editReply({ content: "Done" });
+	if (output) {
+		intr.editReply({ embeds, files });
 	}
-
-	intr.editReply({ embeds, files });
 }
