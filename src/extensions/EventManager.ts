@@ -7,10 +7,10 @@ const BASE_DIR = new URL("../events", import.meta.url);
 
 export class EventManager {
 	private _events: Map<string, Event>;
-	private _client: Clint;
+	public client: Clint;
 
 	constructor(client: Clint) {
-		this._client = client;
+		this.client = client;
 		this._events = new Map();
 	}
 
@@ -36,8 +36,8 @@ export class EventManager {
 
 	private _setEvents() {
 		this._events.forEach((event, name) => {
-			this._client.on(name, (...args: unknown[]) => {
-				event.execute(this._client, ...args);
+			this.client.on(name, (...args: unknown[]) => {
+				event.execute(this.client, ...args);
 			});
 		});
 	}
