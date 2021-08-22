@@ -2,7 +2,7 @@ import type { ApplicationCommandData } from "discord.js";
 import type { CmdIntr } from "../../Typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types";
-import Discord from "discord.js";
+import { evaluate } from "../../utils/Eval.js";
 
 export const data: ApplicationCommandData = {
 	name: "eval",
@@ -31,4 +31,14 @@ export async function execute(intr: CmdIntr) {
 	const code = intr.options.getString("code", true);
 	const output = intr.options.getBoolean("output") ?? true;
 	const hide = intr.options.getBoolean("hide") ?? false;
+
+	await intr.deferReply({ ephemeral: hide || !output });
+
+	const { embeds, files } = await evaluate(intr, code);
+
+	if (!output) {
+		intr.editReply({ content: "Done" });
+	}
+
+	intr.editReply({ embeds, files });
 }
