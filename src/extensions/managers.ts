@@ -2,10 +2,10 @@ import type { Event, CmdIntr, Command } from "../Typings.js";
 import type { GuildEmoji } from "discord.js";
 import type { Clint } from "./Clint.js";
 
-import { Routes } from "discord-api-types/v9";
-import { ID_REGEX } from "../Constants.js";
-import { REST } from "@discordjs/rest";
 import { readdirSync } from "fs";
+import { ID_REGEX } from "../Constants.js";
+import { Routes } from "discord-api-types/v9";
+import { REST } from "@discordjs/rest";
 import Util from "../utils/index.js";
 
 const BASE_EVENT_DIR = new URL("../events", import.meta.url);
