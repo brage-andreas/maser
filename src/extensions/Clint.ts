@@ -1,9 +1,7 @@
 import type { ClientColors } from "../Typings.js";
 
 import { COLORS, INTENTS } from "../Constants.js";
-import { CommandManager } from "./CommandManager.js";
-import { EmojiManager } from "./EmojiManager.js";
-import { EventManager } from "./EventManager.js";
+import { CommandManager, EmojiManager, EventManager } from "./managers.js";
 import { Client } from "discord.js";
 
 export class Clint extends Client {

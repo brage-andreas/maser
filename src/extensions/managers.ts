@@ -1,14 +1,82 @@
-import type { CmdIntr, Command } from "../Typings.js";
+import type { Event, CmdIntr, Command } from "../Typings.js";
+import type { GuildEmoji } from "discord.js";
 import type { Clint } from "./Clint.js";
 
-import { readdirSync } from "fs";
 import { Routes } from "discord-api-types/v9";
-import { REST } from "@discordjs/rest";
-
 import { ID_REGEX } from "../Constants.js";
+import { REST } from "@discordjs/rest";
+import { readdirSync } from "fs";
 import Util from "../utils/index.js";
 
-const BASE_DIR = new URL("../commands", import.meta.url);
+const BASE_EVENT_DIR = new URL("../events", import.meta.url);
+const BASE_CMD_DIR = new URL("../commands", import.meta.url);
+
+export class EventManager {
+	private _events: Map<string, Event>;
+	public client: Clint;
+
+	constructor(client: Clint) {
+		this.client = client;
+		this._events = new Map();
+	}
+
+	public async init() {
+		const eventNames = this._readDir(BASE_EVENT_DIR);
+		this._events = await this._getEvents(eventNames);
+		this._setEvents();
+	}
+
+	private _readDir(dir: URL) {
+		return readdirSync(dir);
+	}
+
+	private async _getEvents(files: string[]) {
+		const hash: Map<string, Event> = new Map();
+		for (let fileName of files) {
+			const event = (await import(`../events/${fileName}`)) as Event;
+			const name = fileName.split(".")[0];
+			hash.set(name, event);
+		}
+		return hash;
+	}
+
+	private _setEvents() {
+		this._events.forEach((event, name) => {
+			this.client.on(name, (...args: unknown[]) => {
+				event.execute(this.client, ...args);
+			});
+		});
+	}
+}
+
+export class EmojiManager {
+	public client: Clint;
+
+	constructor(client: Clint) {
+		this.client = client;
+	}
+
+	public findAll(...emojis: string[]) {
+		const emojiArray: GuildEmoji[] = [];
+
+		emojis.forEach((emojiName) => {
+			const emoji = this._get(emojiName);
+			if (emoji) emojiArray.push(emoji);
+		});
+
+		if (emojiArray.length === 0) return null;
+		else if (emojiArray.length === 1) return emojiArray[0];
+		else return emojiArray;
+	}
+
+	public find(emojiName: string) {
+		return this._get(emojiName);
+	}
+
+	private _get(emojiName: string) {
+		return this.client.emojis.cache.find((emoji) => emoji.name?.includes(emojiName.toLowerCase()) ?? false) ?? null;
+	}
+}
 
 export class CommandManager {
 	private _commands: Map<string, Command>;
@@ -18,7 +86,7 @@ export class CommandManager {
 	}
 
 	public async init() {
-		const folders = this._readDir(BASE_DIR);
+		const folders = this._readDir(BASE_CMD_DIR);
 		this._commands = await this._getCommands(folders);
 	}
 
