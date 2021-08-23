@@ -16,7 +16,6 @@ export class Clint extends Client {
 		super({
 			intents: INTENTS,
 			allowedMentions: { repliedUser: false }
-			// ws: { properties: { $browser: "Discord Android" } } // $browser: "Discord iOS"
 		});
 
 		this.commands = new CommandManager();
