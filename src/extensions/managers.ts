@@ -1,5 +1,4 @@
 import type { Event, CmdIntr, Command } from "../Typings.js";
-import type { GuildEmoji } from "discord.js";
 import type { Clint } from "./Clint.js";
 
 import { readdirSync } from "fs";
@@ -57,7 +56,7 @@ export class EmojiManager {
 	}
 
 	public findAll(...emojis: string[]) {
-		const emojiArray: GuildEmoji[] = [];
+		const emojiArray: string[] = [];
 
 		emojis.forEach((emojiName) => {
 			const emoji = this._get(emojiName);
@@ -74,7 +73,10 @@ export class EmojiManager {
 	}
 
 	private _get(emojiName: string) {
-		return this.client.emojis.cache.find((emoji) => emoji.name?.includes(emojiName.toLowerCase()) ?? false) ?? null;
+		const emojis = this.client.emojis.cache;
+		const emoji = emojis.find((emoji) => emoji.name?.startsWith(emojiName.toLowerCase()) ?? false);
+
+		return emoji?.toString() ?? null;
 	}
 }
 
