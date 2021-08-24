@@ -1,13 +1,11 @@
-import type { ClientColors } from "../Typings.js";
-
-import { COLORS, INTENTS } from "../Constants.js";
-import { CommandManager, EmojiManager, EventManager } from "./managers.js";
+import { ColorManager, CommandManager, EmojiManager, EventManager } from "./managers.js";
+import { INTENTS } from "../Constants.js";
 import { Client } from "discord.js";
 
 export class Clint extends Client {
 	commands: CommandManager;
 	events: EventManager;
-	colors: ClientColors;
+	colors: ColorManager;
 	moji: EmojiManager;
 
 	constructor() {
@@ -19,14 +17,6 @@ export class Clint extends Client {
 		this.commands = new CommandManager();
 		this.events = new EventManager(this);
 		this.moji = new EmojiManager(this);
-		this.colors = this._getColors();
-	}
-
-	private _getColors() {
-		const colorCache: ClientColors = {};
-		for (const [key, value] of Object.entries(COLORS)) {
-			colorCache[key.toLowerCase()] = `#${value}`;
-		}
-		return colorCache;
+		this.colors = new ColorManager();
 	}
 }

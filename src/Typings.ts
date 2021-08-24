@@ -18,6 +18,4 @@ export interface CmdIntr extends CommandInteraction {
 	guild: Guild;
 }
 
-export type ClientColors = {
-	[key: string]: `#${string}`;
-};
+export type ClientColors = Map<string, `#${string}`>;

@@ -2,7 +2,7 @@ import type { Event, CmdIntr, Command } from "../Typings.js";
 import type { Clint } from "./Clint.js";
 
 import { readdirSync } from "fs";
-import { ID_REGEX } from "../Constants.js";
+import { COLORS, ID_REGEX } from "../Constants.js";
 import { Routes } from "discord-api-types/v9";
 import { REST } from "@discordjs/rest";
 import Util from "../utils/index.js";
@@ -161,5 +161,44 @@ export class CommandManager {
 		} catch (e) {
 			Util.Log(e.stack ?? e.message ?? e.toString());
 		}
+	}
+}
+
+export class ColorManager {
+	static HEX_REGEX = /^#[a-f0-9]{6}$/gi;
+	public colors: Map<string, `#${string}`>;
+
+	constructor() {
+		this.colors = this._get();
+	}
+
+	public get(query: string) {
+		return this.colors.get(query);
+	}
+
+	public try(query: string) {
+		return this.colors.get(query) ?? "#000000";
+	}
+
+	public toArray() {
+		const colorArray: `#${string}`[] = [];
+		for (const [, color] of this.colors) {
+			colorArray.push(color);
+		}
+		return colorArray;
+	}
+
+	public isValid(color: string) {
+		color = color.trim().replace("#", "");
+		return ColorManager.HEX_REGEX.test(`#${color}`);
+	}
+
+	private _get() {
+		const colorMap: Map<string, `#${string}`> = new Map();
+		for (const [name, color] of Object.entries(COLORS)) {
+			if (!this.isValid(color)) throw new TypeError(`Supplied color is not valid hex color: ${color}`);
+			colorMap.set(name.toUpperCase(), `#${color}`);
+		}
+		return colorMap;
 	}
 }

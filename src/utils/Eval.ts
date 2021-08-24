@@ -73,7 +73,7 @@ export async function evaluate(that: Message | CmdIntr, code: string) {
 
 		const successEmbed = new MessageEmbed()
 			.setAuthor(`${author.tag} (${author.id})`, author.displayAvatarURL())
-			.setColor(client.colors.green)
+			.setColor(client.colors.try("GREEN"))
 			.addField("Input", input)
 			.addField("Output", output)
 			.setFooter(`${timeTaken} • ${type} (${constructor})`)
@@ -88,7 +88,7 @@ export async function evaluate(that: Message | CmdIntr, code: string) {
 
 		const errorEmbed = new MessageEmbed()
 			.setAuthor(`${author.tag} (${author.id})`, author.displayAvatarURL())
-			.setColor(client.colors.red)
+			.setColor(client.colors.try("RED"))
 			.addField("Input", input)
 			.addField("Error", output)
 			.setFooter("Evaluation failed")
