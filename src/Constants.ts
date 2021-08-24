@@ -31,19 +31,19 @@ export const COLORS = { BLACK, BLURPLE, ORANGE, YELLOW, GREEN, INVIS, WHITE, RED
 
 // * PHRASES
 /*export const JOIN_PHRASES = [
-	"Nice to see you, ¤!",
-	"Much welcome, ¤!",
-	"Good morning, ¤!",
-	"What's up, ¤?",
-	"Hello, ¤!",
-	"Hiii, ¤!"
+	"Nice to see you, #!",
+	"Much welcome, #!",
+	"Good morning, #!",
+	"What's up, #?",
+	"Hello, #!",
+	"Hiii, #!"
 ];*/
 /*export const LEAVE_PHRASES = [
-	"Hope too see you soon, ¤!",
-	"Until next time, ¤!",
-	"See you later, ¤!",
-	"Farewell, ¤!",
-	"Bye bye, ¤!",
-	"Adiós, ¤!"
+	"Hope too see you soon, #!",
+	"Until next time, #!",
+	"See you later, #!",
+	"Farewell, #!",
+	"Bye bye, #!",
+	"Adiós, #!"
 ];*/
 // *
