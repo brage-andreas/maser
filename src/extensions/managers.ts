@@ -165,7 +165,7 @@ export class CommandManager {
 }
 
 export class ColorManager {
-	static HEX_REGEX = /^#[a-f0-9]{6}$/gi;
+	static HEX_REGEX = /^#[a-f0-9]{6}$/i;
 	public colors: Map<string, `#${string}`>;
 
 	constructor() {
