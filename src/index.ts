@@ -2,6 +2,7 @@ import { Clint } from "./extensions/Clint.js";
 import dotenv from "dotenv";
 
 dotenv.config();
+// console.clear() does not fully clear
 process.stdout.write("\x1Bc\n");
 
 const client = new Clint();
