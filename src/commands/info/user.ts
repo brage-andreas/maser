@@ -3,6 +3,7 @@ import type { CmdIntr } from "../../Typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types";
 import Util from "../../utils/index.js";
+import { USER_FLAGS } from "../../Constants.js";
 
 export const data: ApplicationCommandData = {
 	name: "user",
@@ -29,8 +30,7 @@ export async function execute(intr: CmdIntr) {
 	await intr.deferReply({ ephemeral: hide });
 
 	const getDate = (timestamp: number | null) => {
-		if (!timestamp) return null;
-		else return `${Util.Date(timestamp, "R")}`;
+		return timestamp ? `${Util.Date(timestamp)}` : null;
 	};
 
 	const getRoles = (member: GuildMember) => {
@@ -44,8 +44,14 @@ export async function execute(intr: CmdIntr) {
 		return fourRoles + excessStr;
 	};
 
+	const parseFlags = (flagArray: string[]) => {
+		const flags = flagArray.join(", ");
+		return flags.charAt(0).toUpperCase() + flags.slice(1);
+	};
+
 	const avatar = user.displayAvatarURL({ size: 2048, dynamic: true });
-	const flags = (await user.fetchFlags()).toArray();
+	const rawFlags = (await user.fetchFlags()).toArray();
+	const flags = rawFlags.map((flag) => USER_FLAGS[flag] ?? flag);
 	const created = getDate(user.createdTimestamp);
 	const tag = user.tag;
 	const bot = user.bot;
@@ -74,7 +80,7 @@ export async function execute(intr: CmdIntr) {
 		.addField("Color", member.displayHexColor, true)
 		.addField("\u200b", "\u200b", true);
 
-	if (flags.length) userEmbed.addField("Badges", flags.join(", "));
+	if (flags.length) userEmbed.addField("Badges", parseFlags(flags));
 	if (created) userEmbed.addField("Created", created, true);
 	if (joined) userEmbed.addField("Joined", joined, true);
 	if (owner) userEmbed.setDescription("👑 Server owner");
