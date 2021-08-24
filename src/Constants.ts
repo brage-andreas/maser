@@ -47,3 +47,21 @@ export const COLORS = { BLACK, BLURPLE, ORANGE, YELLOW, GREEN, INVIS, WHITE, RED
 	"Adiós, #!"
 ];*/
 // *
+
+// * FLAGS
+export const USER_FLAGS = {
+	EARLY_VERIFIED_BOT_DEVELOPER: "early developer",
+	DISCORD_CERTIFIED_MODERATOR: "certified mod",
+	PARTNERED_SERVER_OWNER: "partnered",
+	BUGHUNTER_LEVEL_1: "bughunter",
+	BUGHUNTER_LEVEL_2: "bughunter²",
+	DISCORD_EMPLOYEE: "discord employee",
+	HYPESQUAD_EVENTS: "hypesquad events",
+	HOUSE_BRILLIANCE: "brilliance",
+	EARLY_SUPPORTER: "early supporter",
+	HOUSE_BRAVERY: "bravery",
+	HOUSE_BALANCE: "balance",
+	VERIFIED_BOT: "verified bot",
+	TEAM_USER: "team user"
+};
+// *
