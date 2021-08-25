@@ -1,7 +1,7 @@
 import type { CmdIntr } from "../Typings";
-import type { Guild } from "discord.js";
 
 import Util from ".";
+import { Clint } from "../extensions/Clint";
 
 interface Cache {
 	channelId?: string;
@@ -70,7 +70,11 @@ export class CommandLogger extends BaseLogger {
 }
 
 export class EventLogger extends BaseLogger {
-	constructor(guild: Guild) {
+	constructor(client: Clint) {
 		super();
+	}
+
+    public log(...messages: string[]) {
+		//
 	}
 }
