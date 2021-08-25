@@ -13,7 +13,7 @@
 		"url": "git+https://github.com/hellobafu/maser.git"
 	},
 	"author": "Dr Drango",
-	"license": "ISC",
+	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/hellobafu/maser/issues"
 	},
