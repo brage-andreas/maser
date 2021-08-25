@@ -10,13 +10,13 @@ export class Clint extends Client {
 
 	constructor() {
 		super({
-			intents: INTENTS,
-			allowedMentions: { repliedUser: false }
+			allowedMentions: { repliedUser: false },
+			intents: INTENTS
 		});
 
 		this.commands = new CommandManager();
 		this.events = new EventManager(this);
-		this.moji = new EmojiManager(this);
 		this.colors = new ColorManager();
+		this.moji = new EmojiManager(this);
 	}
 }
