@@ -2,7 +2,7 @@ import type { Event } from "../Typings.js";
 import type { Clint } from "./Clint";
 
 import { readdirSync } from "fs";
-import { EventLogger } from "../utils/Logger.js";
+import { EventLogger } from "../utils/EventLogger.js";
 
 const EVENT_DIR = new URL("../events", import.meta.url);
 
