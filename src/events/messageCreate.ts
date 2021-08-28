@@ -1,6 +1,6 @@
-import { Message } from "discord.js";
+import type { Message } from "discord.js";
+import type { Clint } from "../extensions/Clint.js";
 import { CODEBLOCK_REGEX, CODE_REGEX, ID_REGEX, USER_REGEX } from "../Constants.js";
-import { Clint } from "../extensions/Clint.js";
 import { evaluate } from "../utils/Eval.js";
 
 export async function execute(client: Clint, msg: Message) {
