@@ -1,7 +1,12 @@
 export default class Util {
-	static Parse(string: string | null | undefined) {
+	static Parse(string: string | null | undefined, width = 2) {
 		if (!string) return null;
-		return "  " + string.replace(/[\r\n]/g, "\n  ");
+
+		width = Math.ceil(width);
+		if (width < 0 || width > 16) return null;
+
+		const space = " ".repeat(width);
+		return space + string.replace(/[\r\n]/g, "\n" + space);
 	}
 
 	static Log(string: string | null | undefined) {
