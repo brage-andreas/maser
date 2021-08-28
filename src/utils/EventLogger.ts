@@ -14,7 +14,7 @@ export class EventLogger extends BaseLogger {
 		this.print(this._type, ...messages);
 	}
 
-	public setGuild(guild: Guild) {
+	public setGuild(guild: Guild | null) {
 		this.cache.setGuild(guild);
 		return this;
 	}
