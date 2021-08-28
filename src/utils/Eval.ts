@@ -2,9 +2,9 @@ import type { CmdIntr } from "../Typings.js";
 import type { Clint } from "../extensions/Clint.js";
 
 import Discord, { Message, MessageEmbed, MessageAttachment } from "discord.js";
-import ms from "ms";
 import { performance } from "perf_hooks";
 import { TOKEN_REGEX } from "../Constants.js";
+import ms from "ms";
 
 interface OutEval {
 	embeds: MessageEmbed[];

@@ -1,4 +1,4 @@
-import { Clint } from "../extensions/Clint.js";
+import type { Clint } from "../extensions/Clint.js";
 import Util from "../utils/index.js";
 
 export async function execute(client: Clint) {
