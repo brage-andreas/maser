@@ -1,4 +1,7 @@
-import { ColorManager, CommandManager, EmojiManager, EventManager } from "./managers.js";
+import { CommandManager } from "./CommandManager.js";
+import { EventManager } from "./EventManager.js";
+import { ColorManager } from "./ColorManager.js";
+import { EmojiManager } from "./EmojiManager.js";
 import { INTENTS } from "../Constants.js";
 import { Client } from "discord.js";
 
