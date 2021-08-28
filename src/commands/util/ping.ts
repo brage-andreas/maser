@@ -8,4 +8,5 @@ export const data: ApplicationCommandData = {
 
 export async function execute(intr: CmdIntr) {
 	intr.reply("piong");
+	intr.logger.log("Pinged");
 }
