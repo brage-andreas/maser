@@ -40,4 +40,6 @@ export async function execute(intr: CmdIntr) {
 	if (output) {
 		intr.editReply({ embeds, files });
 	}
+
+	intr.logger.log(`Code: ${code}`);
 }
