@@ -1,11 +1,11 @@
-import type { Guild, GuildChannel, User } from "discord.js";
+import type { Guild, GuildChannel, PartialDMChannel, TextBasedChannels, User } from "discord.js";
 import Util from "./index.js";
 
 interface Cache {
-	channel?: string;
-	userId?: string;
-	guild?: string;
-	user?: string;
+	channel: string | null;
+	userId: string | null;
+	guild: string | null;
+	user: string | null;
 }
 
 class CacheManager {
@@ -26,17 +26,19 @@ class CacheManager {
 		return false;
 	}
 
-	public setChannel(channel: GuildChannel) {
-		this._cache.channel = channel.name;
+	public setChannel(channel: TextBasedChannels | null) {
+		if (!channel || channel.type !== "DM") {
+			this._cache.channel = channel?.name ?? null;
+		}
 	}
 
-	public setGuild(guild: Guild) {
-		this._cache.guild = guild.name;
+	public setGuild(guild: Guild | null) {
+		this._cache.guild = guild?.name ?? null;
 	}
 
-	public setUser(user: User) {
-		this._cache.userId = user.id;
-		this._cache.user = user.tag;
+	public setUser(user: User | null) {
+		this._cache.userId = user?.id ?? null;
+		this._cache.user = user?.tag ?? null;
 	}
 
 	public clear() {
@@ -45,13 +47,11 @@ class CacheManager {
 
 	private _emptyCache() {
 		return {
-			channelId: undefined,
-			channel: undefined,
-			guildId: undefined,
-			userId: undefined,
-			guild: undefined,
-			user: undefined
-		};
+			channel: null,
+			userId: null,
+			guild: null,
+			user: null
+		} as Cache;
 	}
 }
 
