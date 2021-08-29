@@ -8,7 +8,7 @@ interface Cache {
 	user: string | null;
 }
 
-class CacheManager {
+class TraceValueManager {
 	private _cache: Cache = this._emptyCache();
 
 	public get() {
@@ -56,10 +56,10 @@ class CacheManager {
 }
 
 export class BaseLogger {
-	protected cache: CacheManager;
+	protected traceValues: TraceValueManager;
 
 	constructor() {
-		this.cache = new CacheManager();
+		this.traceValues = new TraceValueManager();
 	}
 
 	protected print(type: string, ...messages: string[]) {
@@ -71,30 +71,43 @@ export class BaseLogger {
 		process.stdout.write("\n");
 
 		this.parse(...messages)?.forEach((message) => void console.log(message));
+		process.stdout.write("\n");
 	}
 
 	protected parse(...messages: string[]) {
 		if (!messages.length) return null;
-		return messages.map((message) => Util.Parse(message, 4) as string);
+
+		return messages.map((message) => {
+			const lines = message.split(/[\r\n]/);
+			const parseLine = (line: string) => {
+				const isIndented = line.startsWith("$>");
+				const indent = isIndented ? 8 : 4;
+				line = isIndented ? line.slice(2) : line;
+
+				return Util.Parse(line, indent) as string;
+			};
+
+			return lines.map(parseLine).join("\n");
+		});
 	}
 
-	private _addBase(type: string /* | "INFO" */) {
+	private _addBase(type: string) {
 		return `  [${type}] ${Util.Now()}`;
 	}
 
 	private _addTrace() {
-		const cache = this.cache.get();
+		const cache = this.traceValues.get();
 		let trace = [];
 
-		if (this.cache.has("USER")) {
+		if (this.traceValues.has("USER")) {
 			trace.push(cache.user ? `${cache.user} (u: ${cache.userId})` : `u: ${cache.userId}`);
 		}
 
-		if (this.cache.has("CHANNEL")) {
+		if (this.traceValues.has("CHANNEL")) {
 			trace.push(`in #${cache.channel}`);
 		}
 
-		if (this.cache.has("GUILD")) {
+		if (this.traceValues.has("GUILD")) {
 			trace.push(`in ${cache.guild}`);
 		}
 

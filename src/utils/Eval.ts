@@ -9,6 +9,7 @@ import ms from "ms";
 interface OutEval {
 	embeds: MessageEmbed[];
 	files?: MessageAttachment[];
+	output: string;
 }
 
 const wrap = (str: string) => `\`\`\`js\n${str}\n\`\`\``;
@@ -87,7 +88,7 @@ export async function evaluate(that: Message | CmdIntr, code: string) {
 			.setFooter(`${timeTaken} • ${type} (${constructor})`)
 			.setTimestamp();
 
-		return { files, embeds: [successEmbed] } as OutEval;
+		return { files, embeds: [successEmbed], output: cleanOutput } as OutEval;
 	} catch (error) {
 		const errorStr = error.stack ?? error.toString();
 
@@ -102,6 +103,6 @@ export async function evaluate(that: Message | CmdIntr, code: string) {
 			.setFooter("Evaluation failed")
 			.setTimestamp();
 
-		return { files, embeds: [errorEmbed] } as OutEval;
+		return { files, embeds: [errorEmbed], output: errorStr } as OutEval;
 	}
 }

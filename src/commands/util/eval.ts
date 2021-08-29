@@ -3,6 +3,7 @@ import type { CmdIntr } from "../../Typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import { evaluate } from "../../utils/Eval.js";
+import Util from "../../utils/index.js";
 
 export const data: ApplicationCommandData = {
 	name: "eval",
@@ -24,15 +25,15 @@ export const data: ApplicationCommandData = {
 
 export async function execute(intr: CmdIntr) {
 	const code = intr.options.getString("code", true);
-	const output = intr.options.getBoolean("output") ?? true;
+	const reply = intr.options.getBoolean("output") ?? true;
 
 	if (intr.user.id !== intr.client.application?.owner?.id) return intr.reply({ content: "No", ephemeral: true });
 
-	const { embeds, files } = await evaluate(intr, code);
+	const { embeds, files, output } = await evaluate(intr, code);
 
-	if (output) {
+	if (reply) {
 		intr.editReply({ embeds, files });
 	}
 
-	intr.logger.log(`Code: ${code}`);
+	intr.logger.log(`Code:\n${Util.Indent(code)}\n\nOutput:\n${Util.Indent(output)}`);
 }
