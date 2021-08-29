@@ -1,5 +1,6 @@
 import type { CmdIntr, Command } from "../Typings.js";
 
+import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import { readdirSync } from "fs";
 import { ID_REGEX } from "../Constants.js";
 import { Routes } from "discord-api-types/v9";
@@ -20,15 +21,26 @@ export class CommandManager {
 		this._commands = await this._getCommands(folders);
 	}
 
-	public async execute(intr: CmdIntr) {
+	public execute(intr: CmdIntr) {
 		this._commands.get(intr.commandName)?.execute(intr);
 	}
 
-	public async put(clientId: string, guildId?: string) {
+	public defaultHide(intr: CmdIntr | string) {
+		if (typeof intr !== "string") {
+			const commandOption = intr.options.getBoolean("hide");
+			// standard is hard-typed in _getData()
+			const standard = this._commands.get(intr.commandName)?.defaultHide ?? true;
+			return commandOption ?? standard;
+		} else {
+			return this._commands.get(intr)?.defaultHide ?? true;
+		}
+	}
+
+	public put(clientId: string, guildId?: string) {
 		this._put(clientId, guildId);
 	}
 
-	public async clear(clientId: string, guildId?: string) {
+	public clear(clientId: string, guildId?: string) {
 		this._put(clientId, guildId, true);
 	}
 
@@ -52,7 +64,23 @@ export class CommandManager {
 	}
 
 	private _getData() {
-		return [...this._commands.values()].map((cmd) => cmd.data);
+		return [...this._commands.values()].map((cmd) => {
+			if (cmd.data.type && cmd.data.type !== "CHAT_INPUT") return cmd.data;
+
+			cmd.data.options ??= [];
+			if (!cmd.data.options.some((option) => option.name === "hide")) {
+				const hide = this.defaultHide(cmd.data.name);
+				const hideOption = {
+					name: "hide",
+					description: `Hide the output. Default is ${hide}`,
+					type: ApplicationCommandOptionType.Boolean as number
+				};
+
+				cmd.data.options.push(hideOption);
+			}
+
+			return cmd.data;
+		});
 	}
 
 	private async _put(clientId: string, guildId?: string, clear = false) {

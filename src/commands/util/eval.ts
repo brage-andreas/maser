@@ -1,7 +1,7 @@
 import type { ApplicationCommandData } from "discord.js";
 import type { CmdIntr } from "../../Typings.js";
 
-import { ApplicationCommandOptionType } from "discord-api-types";
+import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import { evaluate } from "../../utils/Eval.js";
 
 export const data: ApplicationCommandData = {
@@ -15,13 +15,8 @@ export const data: ApplicationCommandData = {
 			required: true
 		},
 		{
-			name: "output",
-			description: "To show the output or not",
-			type: ApplicationCommandOptionType.Boolean as number
-		},
-		{
-			name: "hide",
-			description: "To hide the output or not",
+			name: "reply",
+			description: "Reply to the command. Default is true",
 			type: ApplicationCommandOptionType.Boolean as number
 		}
 	]
@@ -30,11 +25,9 @@ export const data: ApplicationCommandData = {
 export async function execute(intr: CmdIntr) {
 	const code = intr.options.getString("code", true);
 	const output = intr.options.getBoolean("output") ?? true;
-	const hide = intr.options.getBoolean("hide") ?? false;
 
 	if (intr.user.id !== intr.client.application?.owner?.id) return intr.reply({ content: "No", ephemeral: true });
 
-	await intr.deferReply({ ephemeral: hide || !output });
 	const { embeds, files } = await evaluate(intr, code);
 
 	if (output) {

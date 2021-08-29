@@ -1,7 +1,7 @@
 import type { ApplicationCommandData, GuildMember } from "discord.js";
 import type { CmdIntr } from "../../Typings.js";
 
-import { ApplicationCommandOptionType } from "discord-api-types";
+import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import { MessageEmbed } from "discord.js";
 import { USER_FLAGS } from "../../Constants.js";
 import Util from "../../utils/index.js";
@@ -14,11 +14,6 @@ export const data: ApplicationCommandData = {
 			name: "user",
 			description: "The user to target",
 			type: ApplicationCommandOptionType.User as number
-		},
-		{
-			name: "hide",
-			description: "To hide the output or not",
-			type: ApplicationCommandOptionType.Boolean as number
 		}
 	]
 };
@@ -26,9 +21,6 @@ export const data: ApplicationCommandData = {
 export async function execute(intr: CmdIntr) {
 	const user = intr.options.getUser("user") ?? intr.user;
 	const member = (intr.options.getMember("user") ?? intr.member) as GuildMember;
-	const hide = intr.options.getBoolean("hide") ?? false;
-
-	await intr.deferReply({ ephemeral: hide });
 
 	const getDate = (timestamp: number | null) => {
 		return timestamp ? `${Util.Date(timestamp)}` : null;
@@ -50,6 +42,11 @@ export async function execute(intr: CmdIntr) {
 		return flags.charAt(0).toUpperCase() + flags.slice(1);
 	};
 
+	const getColor = (hex: `#${string}`) => {
+		const empty = hex === "#000000" || hex === "#ffffff";
+		return empty ? intr.client.colors.try("INVIS") : hex;
+	};
+
 	const avatar = user.displayAvatarURL({ size: 2048, dynamic: true });
 	const rawFlags = (await user.fetchFlags()).toArray();
 	const flags = rawFlags.map((flag) => USER_FLAGS[flag] ?? flag);
@@ -58,7 +55,7 @@ export async function execute(intr: CmdIntr) {
 	const bot = user.bot;
 	const id = user.id;
 
-	const color = !["#000000", "#ffffff"].includes(member.displayHexColor) ? member.displayHexColor : "RANDOM";
+	const color = getColor(member.displayHexColor);
 	const joined = getDate(member.joinedTimestamp);
 	const owner = member.id === member.guild.ownerId;
 	const premium = !!member.premiumSince;
@@ -87,4 +84,6 @@ export async function execute(intr: CmdIntr) {
 	if (owner) userEmbed.setDescription("👑 Server owner");
 
 	intr.editReply({ embeds: [userEmbed] });
+
+	intr.logger.log(`Sent info of ${user.tag} (${user.id})`);
 }

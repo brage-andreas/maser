@@ -5,6 +5,9 @@ import { CommandLogger } from "../utils/CommandLogger.js";
 export async function execute(client: Clint, intr: CmdIntr) {
 	if (!intr.isCommand()) return;
 
+	const hide = client.commands.defaultHide(intr);
+	await intr.deferReply({ ephemeral: hide });
+
 	intr.logger = new CommandLogger(intr);
 	client.commands.execute(intr);
 }

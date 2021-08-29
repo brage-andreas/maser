@@ -4,6 +4,7 @@ import { CommandLogger } from "./utils/CommandLogger.js";
 
 export interface Command {
 	data: ApplicationCommandData;
+	defaultHide: boolean;
 	execute(interaction: any): Promise<void> | void;
 }
 
