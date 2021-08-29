@@ -1,4 +1,4 @@
-import type { Guild, GuildChannel, PartialDMChannel, TextBasedChannels, User } from "discord.js";
+import type { Guild, TextBasedChannels, User } from "discord.js";
 import Util from "./index.js";
 
 interface Cache {
