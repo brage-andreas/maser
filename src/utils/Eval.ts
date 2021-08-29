@@ -50,9 +50,17 @@ const stringify = (raw: any) => {
 export async function evaluate(that: Message | CmdIntr, code: string) {
 	const author = that instanceof Message ? that.author : that.user;
 
-	// D and client for use in eval
+	// * FOR EVAL USE
 	const client = that.client as Clint;
-	const D = Discord; // to scope the variable
+	const D = Discord; // Can't use it without this for some reason
+
+	const testId = async (id: string) => {
+		return await that.client.users
+			.fetch(id)
+			.then((user) => `${user.tag} ${user.id}`)
+			.catch(() => false);
+	};
+	// *
 
 	try {
 		if (!code) throw new Error("'code' must be non-empty string");
