@@ -9,6 +9,13 @@ export default class Util {
 		return space + string.replace(/[\r\n]/g, "\n" + space);
 	}
 
+	static Indent(string: string[] | string | null | undefined) {
+		if (!string) return null;
+
+		const arr = typeof string === "string" ? string.split("\n") : string;
+		return arr.map((line) => "$>" + line).join("\n");
+	}
+
 	static Log(string: string | null | undefined) {
 		if (!string) return;
 		console.log(Util.Parse(string));
