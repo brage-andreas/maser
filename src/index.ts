@@ -11,3 +11,9 @@ await client.commands.init();
 await client.events.init();
 
 client.login(process.env.TOKEN);
+
+/*
+  TODO:
+  • Colours in logger
+  • Permission manager
+*/
