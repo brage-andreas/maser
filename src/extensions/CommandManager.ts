@@ -114,8 +114,9 @@ export class CommandManager {
 				.then(() => `${clear ? "Cleared" : "Set"} commands in guild: ${guildId}`);
 
 			Util.Log(res);
-		} catch (e) {
-			Util.Log(e.stack ?? e.message ?? e.toString());
+		} catch (err) {
+			const error = err as Error; // stupid
+			Util.Log(error.stack ?? error.message ?? error.toString());
 		}
 	}
 }

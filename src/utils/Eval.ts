@@ -91,8 +91,9 @@ export async function evaluate(that: Message | CmdIntr, code: string) {
 			.setTimestamp();
 
 		return { files, embeds: [successEmbed], output: cleanOutput } as OutEval;
-	} catch (error) {
-		const errorStr = error.stack ?? error.toString();
+	} catch (err) {
+		const error = err as Error; // stupid
+		const errorStr = error.stack ?? error.message ?? error.toString();
 
 		const { output, files } = parseOutput(errorStr);
 		const input = parseInput(code);
