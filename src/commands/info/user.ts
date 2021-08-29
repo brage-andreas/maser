@@ -70,13 +70,11 @@ export async function execute(intr: CmdIntr) {
 		.setTitle(name)
 		.addField("Tag", tag, true)
 		.addField("Id", id, true)
-		.addField("Display name", name)
+		.addField("Roles", roles)
 		.addField("Bot", bot ? "Yes" : "No", true)
 		.addField("Boosting", premium ? "Yes" : "No", true)
-		.addField("Roles", roles)
-		.addField("Avatar", `[Link](${avatar})`, true)
-		.addField("Color", member.displayHexColor, true)
-		.addField("\u200b", "\u200b", true);
+		.addField("Avatar", `[Link](${avatar})`)
+		.addField("Color", member.displayHexColor);
 
 	if (flags.length) userEmbed.addField("Badges", parseFlags(flags));
 	if (created) userEmbed.addField("Created", created, true);
