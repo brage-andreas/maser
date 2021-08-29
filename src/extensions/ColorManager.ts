@@ -9,7 +9,7 @@ export class ColorManager {
 	}
 
 	public get(query: string) {
-		return this.colors.get(query);
+		return this.colors.get(query.toUpperCase());
 	}
 
 	public try(query: string) {
