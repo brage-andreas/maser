@@ -7,7 +7,7 @@ export class EventLogger extends BaseLogger {
 	constructor(guild?: Guild) {
 		super();
 
-		if (guild) this.cache.setGuild(guild);
+		if (guild) this.traceValues.setGuild(guild);
 	}
 
 	public log(...messages: string[]) {
@@ -15,7 +15,7 @@ export class EventLogger extends BaseLogger {
 	}
 
 	public setGuild(guild: Guild | null) {
-		this.cache.setGuild(guild);
+		this.traceValues.setGuild(guild);
 		return this;
 	}
 }

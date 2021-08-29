@@ -8,10 +8,10 @@ export class CommandLogger extends BaseLogger {
 	constructor(intr: CmdIntr) {
 		super();
 
-		this.cache.setUser(intr.user);
-		this.cache.setGuild(intr.guild);
+		this.traceValues.setUser(intr.user);
+		this.traceValues.setGuild(intr.guild);
 		if (intr.channel && intr.channel.type !== "DM") {
-			this.cache.setChannel(intr.channel);
+			this.traceValues.setChannel(intr.channel);
 		}
 	}
 
@@ -20,16 +20,16 @@ export class CommandLogger extends BaseLogger {
 	}
 
 	public setUser(user: User | null) {
-		this.cache.setUser(user);
+		this.traceValues.setUser(user);
 	}
 
 	public setGuild(guild: Guild | null) {
-		this.cache.setGuild(guild);
+		this.traceValues.setGuild(guild);
 	}
 
 	public setChannel(channel: TextBasedChannels | null) {
 		if (!channel || channel.type !== "DM") {
-			this.cache.setChannel(channel);
+			this.traceValues.setChannel(channel);
 		}
 	}
 }
