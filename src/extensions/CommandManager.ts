@@ -28,8 +28,8 @@ export class CommandManager {
 	public defaultHide(intr: CmdIntr | string) {
 		if (typeof intr !== "string") {
 			const commandOption = intr.options.getBoolean("hide");
-			// standard is hard-typed in _getData()
 			const standard = this._commands.get(intr.commandName)?.defaultHide ?? true;
+
 			return commandOption ?? standard;
 		} else {
 			return this._commands.get(intr)?.defaultHide ?? true;
