@@ -14,8 +14,9 @@ export interface Event {
 
 export interface CmdIntr extends CommandInteraction {
 	logger: CommandLogger;
-	member: GuildMember;
 	client: Clint;
+
+	member: GuildMember;
 	guild: Guild;
 }
 
