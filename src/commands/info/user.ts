@@ -27,7 +27,10 @@ export async function execute(intr: CmdIntr) {
 	};
 
 	const getRoles = (member: GuildMember) => {
-		const sortedRoles = member.roles.cache.sort((a, b) => b.position - a.position);
+		const roles = member.roles.cache;
+		if (roles.size === 1) return null;
+
+		const sortedRoles = roles.sort((a, b) => b.position - a.position);
 		const parsedRoles = sortedRoles.map((role) => role.toString()).slice(0, -1);
 
 		const fourRoles = parsedRoles.slice(0, 4).join(", ");
@@ -70,7 +73,7 @@ export async function execute(intr: CmdIntr) {
 		.setTitle(name)
 		.addField("Tag", tag, true)
 		.addField("Id", id, true)
-		.addField("Roles", roles)
+		.addField("Roles", roles ?? "No roles")
 		.addField("Bot", bot ? "Yes" : "No", true)
 		.addField("Boosting", premium ? "Yes" : "No", true)
 		.addField("Avatar", `[Link](${avatar})`)
