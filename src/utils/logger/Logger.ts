@@ -45,7 +45,8 @@ export class BaseLogger {
 		const timeStr = gray(Util.Now());
 		const nameStr = colorFn(`[${name}]`);
 
-		process.stdout.write(Util.Parse(`${nameStr} ${timeStr}`) as string);
+		const message = Util.Parse(`${nameStr} ${timeStr}`) as string;
+		process.stdout.write(message);
 	}
 
 	private _addTrace() {
