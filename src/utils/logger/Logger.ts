@@ -11,11 +11,9 @@ export class BaseLogger {
 	}
 
 	protected print(type: LoggerTypes, name: string, ...messages: string[]) {
-		const base = this._addBase(type, name);
-		const trace = this._addTrace();
+		this._addBase(type, name);
+		this._addTrace();
 
-		process.stdout.write(base);
-		if (trace) process.stdout.write(gray(" > ") + trace);
 		process.stdout.write("\n");
 
 		const msgs = this.parse(...messages);
@@ -47,25 +45,28 @@ export class BaseLogger {
 		const timeStr = gray(Util.Now());
 		const nameStr = colorFn(`[${name}]`);
 
-		return Util.Parse(`${nameStr} ${timeStr}`) as string;
+		process.stdout.write(Util.Parse(`${nameStr} ${timeStr}`) as string);
 	}
 
 	private _addTrace() {
 		const cache = this.traceValues.get();
-		let trace = [];
+
+		if (this.traceValues.any()) process.stdout.write(gray(" > "));
 
 		if (this.traceValues.has("USER")) {
-			trace.push(cache.user ? `${cache.user} ${gray(`(u: ${cache.userId})`)}` : `u: ${cache.userId}`);
+			if (cache.user) {
+				process.stdout.write(`${cache.user} ${gray(`(u: ${cache.userId})`)}`);
+			} else {
+				process.stdout.write(`u: ${cache.userId}`);
+			}
 		}
 
 		if (this.traceValues.has("CHANNEL")) {
-			trace.push(`${gray("in")} #${cache.channel}`);
+			process.stdout.write(`${gray("in")} #${cache.channel}`);
 		}
 
 		if (this.traceValues.has("GUILD")) {
-			trace.push(`${gray("in")} ${cache.guild}`);
+			process.stdout.write(`${gray("in")} ${cache.guild}`);
 		}
-
-		return trace.join(" ");
 	}
 }
