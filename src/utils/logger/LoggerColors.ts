@@ -1,6 +1,6 @@
 import { LoggerTypes } from "../../Typings";
 
-const colors: { [key: string]: string } = {
+const colors: Record<string, string> = {
 	yellow: "\x1b[93m",
 	black: "\x1b[30m",
 	green: "\x1b[92m",
