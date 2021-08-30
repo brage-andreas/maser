@@ -1,5 +1,5 @@
 import { TraceValueManager } from "./TraceValueManager.js";
-import { getColor, gray } from "./LoggerColors.js";
+import { getColor, gray, yellow } from "./LoggerColors.js";
 import Util from "../index.js";
 import { LoggerTypes } from "../../Typings.js";
 
@@ -49,24 +49,29 @@ export class BaseLogger {
 	}
 
 	private _addTrace() {
-		const cache = this.traceValues.get();
+		if (!this.traceValues.any()) return;
 
-		if (this.traceValues.any()) process.stdout.write(gray(" > "));
+		const cache = this.traceValues.get();
+		const messages: string[] = [];
+
+		process.stdout.write(gray(" > "));
 
 		if (this.traceValues.has("USER")) {
 			if (cache.user) {
-				process.stdout.write(`${cache.user} ${gray(`(u: ${cache.userId})`)}`);
+				messages.push(`${yellow(cache.user)} ${gray(`(u: ${cache.userId})`)}`);
 			} else {
-				process.stdout.write(`u: ${cache.userId}`);
+				messages.push(`u: ${yellow(cache.userId!)}`);
 			}
 		}
 
 		if (this.traceValues.has("CHANNEL")) {
-			process.stdout.write(`${gray("in")} #${cache.channel}`);
+			messages.push(`${gray("in")} #${cache.channel}`);
 		}
 
 		if (this.traceValues.has("GUILD")) {
-			process.stdout.write(`${gray("in")} ${cache.guild}`);
+			messages.push(`${gray("in")} ${cache.guild}`);
 		}
+
+		process.stdout.write(messages.join(" "));
 	}
 }
