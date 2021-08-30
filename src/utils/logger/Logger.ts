@@ -43,7 +43,7 @@ export class BaseLogger {
 	private _printBase(type: LoggerTypes, name: string) {
 		const colorFn = getColor(type);
 		const timeStr = gray(Util.Now());
-		const nameStr = colorFn(`[${name}]`);
+		const nameStr = colorFn(`[${name.toUpperCase()}]`);
 
 		const message = Util.Parse(`${nameStr} ${timeStr}`) as string;
 		process.stdout.write(message);
