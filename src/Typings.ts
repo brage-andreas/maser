@@ -1,6 +1,6 @@
 import type { ApplicationCommandData, CommandInteraction, Guild, GuildMember } from "discord.js";
 import type { Clint } from "./extensions/Clint";
-import { CommandLogger } from "./utils/CommandLogger.js";
+import type { CommandLogger } from "./utils/logger/CommandLogger.js";
 
 export interface Command {
 	data: ApplicationCommandData;
@@ -21,3 +21,5 @@ export interface CmdIntr extends CommandInteraction {
 }
 
 export type ClientColors = Map<string, `#${string}`>;
+
+export type LoggerTypes = "COMMAND" | "ERROR" | "EVENT" | "INFO";
