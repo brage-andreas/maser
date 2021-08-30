@@ -19,6 +19,7 @@ export async function execute(client: Clint, msg: Message) {
 
 	if (!(isId || isMention) && cleanId === client.user.id) return;
 
+	// TODO: real system for build/clear
 	if (command === "build") {
 		if (!argument || !["client", "guild"].includes(argument.toLowerCase()))
 			return msg.reply(`Unknown type: ${argument ?? "No type provided"}\nMust be one of "client", "guild"`);
@@ -28,6 +29,7 @@ export async function execute(client: Clint, msg: Message) {
 		return;
 	}
 
+	// TODO: real system for build/clear
 	if (command === "clear") {
 		if (!argument || !["client", "guild"].includes(argument.toLowerCase()))
 			return msg.reply(`Unknown type: ${argument ?? "No type provided"}\nMust be one of "client", "guild"`);
