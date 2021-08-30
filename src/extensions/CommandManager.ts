@@ -6,6 +6,7 @@ import { ID_REGEX } from "../Constants.js";
 import { Routes } from "discord-api-types/v9";
 import { REST } from "@discordjs/rest";
 import Util from "../utils/index.js";
+import { InfoLogger } from "../utils/logger/InfoLogger.js";
 
 const COMMAND_DIR = new URL("../commands", import.meta.url);
 
@@ -113,10 +114,13 @@ export class CommandManager {
 				.put(route, options)
 				.then(() => `${clear ? "Cleared" : "Set"} commands in guild: ${guildId}`);
 
-			Util.Log(res);
+			new InfoLogger().log(res);
 		} catch (err) {
 			const error = err as Error; // stupid
 			Util.Log(error.stack ?? error.message ?? error.toString());
+
+			// TODO: error logger
+			//const logger = new ErrorLogger();
 		}
 	}
 }
