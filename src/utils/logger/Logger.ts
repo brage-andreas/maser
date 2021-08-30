@@ -1,7 +1,7 @@
-import { TraceValueManager } from "./TraceValueManager.js";
 import { getColor, gray, yellow } from "./LoggerColors.js";
-import Util from "../index.js";
+import { TraceValueManager } from "./TraceValueManager.js";
 import { LoggerTypes } from "../../Typings.js";
+import Util from "../index.js";
 
 export class BaseLogger {
 	protected traceValues: TraceValueManager;
@@ -18,7 +18,7 @@ export class BaseLogger {
 
 		const msgs = this.parse(...messages);
 		if (msgs && msgs.length) {
-			msgs.forEach((message) => void console.log(message));
+			msgs.forEach((message) => console.log(message));
 			process.stdout.write("\n");
 		}
 	}
