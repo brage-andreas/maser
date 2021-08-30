@@ -2,16 +2,21 @@ import type { ApplicationCommandData, CommandInteraction, Guild, GuildMember } f
 import type { Clint } from "./extensions/Clint";
 import type { CommandLogger } from "./utils/logger/CommandLogger.js";
 
+export type ClientColors = Map<string, `#${string}`>;
+
+export type LoggerTypes = "COMMAND" | "ERROR" | "EVENT" | "INFO";
+
 export interface Command {
 	data: ApplicationCommandData;
 	defaultHide: boolean;
-	execute(interaction: any): Promise<void> | void;
+	execute(interaction: CmdIntr): Promise<void> | void;
 }
 
 export interface Event {
-	execute(client: any, ...args: unknown[]): Promise<void> | void;
+	execute(client: Clint, ...args: unknown[]): Promise<void> | void;
 }
 
+// TODO: module augment instead of monkey patch
 export interface CmdIntr extends CommandInteraction {
 	logger: CommandLogger;
 	client: Clint;
@@ -19,7 +24,3 @@ export interface CmdIntr extends CommandInteraction {
 	member: GuildMember;
 	guild: Guild;
 }
-
-export type ClientColors = Map<string, `#${string}`>;
-
-export type LoggerTypes = "COMMAND" | "ERROR" | "EVENT" | "INFO";
