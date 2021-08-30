@@ -1,3 +1,4 @@
+import type { ClientOptions } from "discord.js";
 import { CommandManager } from "./CommandManager.js";
 import { EventManager } from "./EventManager.js";
 import { ColorManager } from "./ColorManager.js";
@@ -6,6 +7,7 @@ import { InfoLogger } from "../utils/logger/InfoLogger.js";
 import { INTENTS } from "../Constants.js";
 import { Client } from "discord.js";
 
+// TODO: module augment instead of monkey patch
 export class Clint extends Client {
 	commands: CommandManager;
 	logger: InfoLogger;
@@ -13,11 +15,13 @@ export class Clint extends Client {
 	colors: ColorManager;
 	moji: EmojiManager;
 
-	constructor() {
-		super({
+	constructor(options?: ClientOptions) {
+		const defaultOptions: ClientOptions = {
 			allowedMentions: { repliedUser: false },
 			intents: INTENTS
-		});
+		};
+
+		super(options ?? defaultOptions);
 
 		this.commands = new CommandManager();
 		this.logger = new InfoLogger();
