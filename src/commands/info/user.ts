@@ -46,7 +46,7 @@ export async function execute(intr: CmdIntr) {
 	};
 
 	const getColor = (hex: `#${string}`) => {
-		const empty = hex === "#000000" || hex === "#ffffff";
+		const empty = hex === "#000000" || hex.toLowerCase() === "#ffffff";
 		return empty ? intr.client.colors.try("INVIS") : hex;
 	};
 
