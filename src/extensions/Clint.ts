@@ -2,11 +2,13 @@ import { CommandManager } from "./CommandManager.js";
 import { EventManager } from "./EventManager.js";
 import { ColorManager } from "./ColorManager.js";
 import { EmojiManager } from "./EmojiManager.js";
+import { InfoLogger } from "../utils/logger/InfoLogger.js";
 import { INTENTS } from "../Constants.js";
 import { Client } from "discord.js";
 
 export class Clint extends Client {
 	commands: CommandManager;
+	logger: InfoLogger;
 	events: EventManager;
 	colors: ColorManager;
 	moji: EmojiManager;
@@ -18,6 +20,7 @@ export class Clint extends Client {
 		});
 
 		this.commands = new CommandManager();
+		this.logger = new InfoLogger();
 		this.events = new EventManager(this);
 		this.colors = new ColorManager();
 		this.moji = new EmojiManager(this);
