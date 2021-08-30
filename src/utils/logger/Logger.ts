@@ -19,8 +19,8 @@ export class BaseLogger {
 		process.stdout.write("\n");
 
 		const msgs = this.parse(...messages);
-		if (msgs?.length) {
-			msgs?.forEach((message) => void console.log(message));
+		if (msgs && msgs.length) {
+			msgs.forEach((message) => void console.log(message));
 			process.stdout.write("\n");
 		}
 	}
