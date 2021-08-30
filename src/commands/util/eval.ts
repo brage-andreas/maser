@@ -5,6 +5,7 @@ import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import { evaluate } from "../../utils/Eval.js";
 import Util from "../../utils/index.js";
 
+export const defaultHide = false;
 export const data: ApplicationCommandData = {
 	name: "eval",
 	description: "Runs code",
