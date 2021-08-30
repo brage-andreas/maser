@@ -27,7 +27,7 @@ export async function execute(intr: CmdIntr) {
 	const code = intr.options.getString("code", true);
 	const reply = intr.options.getBoolean("output") ?? true;
 
-	if (intr.user.id !== intr.client.application?.owner?.id) return intr.reply({ content: "No", ephemeral: true });
+	if (intr.user.id !== intr.client.application!.owner!.id) return intr.reply({ content: "No", ephemeral: true });
 
 	const { embeds, files, output } = await evaluate(intr, code);
 
@@ -35,5 +35,5 @@ export async function execute(intr: CmdIntr) {
 		intr.editReply({ embeds, files });
 	}
 
-	intr.logger.log(`Code:\n${Util.Indent(code)}\n\nOutput:\n${Util.Indent(output)}`);
+	intr.logger.log(`Code:\n${Util.Indent(code)}\nOutput:\n${Util.Indent(output)}`);
 }
