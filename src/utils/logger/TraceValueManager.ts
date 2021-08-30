@@ -25,6 +25,10 @@ export class TraceValueManager {
 		return false;
 	}
 
+	public any() {
+		return !!this._cache.channel || !!this._cache.guild || !!this._cache.userId;
+	}
+
 	public setChannel(channel: TextBasedChannels | null) {
 		if (!channel || channel.type !== "DM") {
 			this._cache.channel = channel?.name ?? null;
