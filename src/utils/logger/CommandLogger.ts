@@ -23,15 +23,18 @@ export class CommandLogger extends BaseLogger {
 
 	public setUser(user: User | null) {
 		this.traceValues.setUser(user);
+		return this;
 	}
 
 	public setGuild(guild: Guild | null) {
 		this.traceValues.setGuild(guild);
+		return this;
 	}
 
 	public setChannel(channel: TextBasedChannels | null) {
 		if (!channel || channel.type !== "DM") {
 			this.traceValues.setChannel(channel);
 		}
+		return this;
 	}
 }
