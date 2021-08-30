@@ -11,8 +11,8 @@ export class BaseLogger {
 	}
 
 	protected print(type: LoggerTypes, name: string, ...messages: string[]) {
-		this._addBase(type, name);
-		this._addTrace();
+		this._printBase(type, name);
+		this._printTrace();
 
 		process.stdout.write("\n");
 
@@ -40,7 +40,7 @@ export class BaseLogger {
 		});
 	}
 
-	private _addBase(type: LoggerTypes, name: string) {
+	private _printBase(type: LoggerTypes, name: string) {
 		const colorFn = getColor(type);
 		const timeStr = gray(Util.Now());
 		const nameStr = colorFn(`[${name}]`);
@@ -49,7 +49,7 @@ export class BaseLogger {
 		process.stdout.write(message);
 	}
 
-	private _addTrace() {
+	private _printTrace() {
 		if (!this.traceValues.any()) return;
 
 		const cache = this.traceValues.get();
