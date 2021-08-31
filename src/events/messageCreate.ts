@@ -24,7 +24,7 @@ export async function execute(client: Clint, msg: Message) {
 		if (!argument || !["client", "guild"].includes(argument.toLowerCase()))
 			return msg.reply(`Unknown type: ${argument ?? "No type provided"}\nMust be one of "client", "guild"`);
 
-		msg.delete();
+		msg.delete().catch(() => null);
 		client.commands.put(client.user.id, argument === "guild" ? msg.guild.id : undefined);
 		return;
 	}
@@ -34,7 +34,7 @@ export async function execute(client: Clint, msg: Message) {
 		if (!argument || !["client", "guild"].includes(argument.toLowerCase()))
 			return msg.reply(`Unknown type: ${argument ?? "No type provided"}\nMust be one of "client", "guild"`);
 
-		msg.delete();
+		msg.delete().catch(() => null);
 		client.commands.clear(client.user.id, argument === "guild" ? msg.guild.id : undefined);
 		return;
 	}
