@@ -6,7 +6,9 @@
 	"type": "module",
 	"scripts": {
 		"prestart": "tsc",
-		"start": "node ."
+		"start": "node .",
+        "build": "node dist/utils/COMMANDS/BUILD_COMMANDS.js",
+        "clear": "node dist/utils/COMMANDS/CLEAR_COMMANDS.js"
 	},
 	"repository": {
 		"type": "git",
