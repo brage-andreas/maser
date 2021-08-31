@@ -39,6 +39,7 @@ export async function execute(client: Clint, msg: Message) {
 		return;
 	}
 
+    // Temporary eval until multi-line slashies
 	if (command === "eval") {
 		const captured = (msg.content.match(CODEBLOCK_REGEX) ?? msg.content.match(CODE_REGEX))?.groups;
 		const code = captured?.code ?? split.join(" ");
