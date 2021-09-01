@@ -1,5 +1,5 @@
 import type { Guild } from "discord.js";
-import { BaseLogger } from "./Logger.js";
+import { BaseLogger } from "./BaseLogger.js";
 
 export class EventLogger extends BaseLogger {
 	event: string | null;

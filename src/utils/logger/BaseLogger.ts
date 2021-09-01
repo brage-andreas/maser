@@ -3,14 +3,25 @@ import { TraceValueManager } from "./TraceValueManager.js";
 import { LoggerTypes } from "../../Typings.js";
 import Util from "../index.js";
 
-export class BaseLogger {
+/**
+ * Base for other logger classes. Should not be instantiated itself.
+ */
+export abstract class BaseLogger {
 	protected traceValues: TraceValueManager;
 
+	/**
+	 * Creates a logger.
+	 */
 	constructor() {
 		this.traceValues = new TraceValueManager();
 	}
 
-	protected print(type: LoggerTypes, name: string, ...messages: string[]) {
+	/**
+	 * Prints base, trace, and any messages provided.
+	 * All messages are parsed.
+	 * Type defines what colour is printed in console.
+	 */
+	protected print(type: LoggerTypes, name: string, ...messages: string[]): void {
 		this._printBase(type, name);
 		this._printTrace();
 
@@ -23,7 +34,11 @@ export class BaseLogger {
 		}
 	}
 
-	protected parse(...messages: string[]) {
+	/**
+	 * Parses any messages provided.
+	 * Default indent is 4. Will indent with 8 if line starts with "$>".
+	 */
+	protected parse(...messages: string[]): string[] | null {
 		if (!messages.length) return null;
 
 		return messages.map((message) => {
@@ -40,7 +55,10 @@ export class BaseLogger {
 		});
 	}
 
-	private _printBase(type: LoggerTypes, name: string) {
+	/**
+	 * Prints the base of this log, along side the current time.
+	 */
+	private _printBase(type: LoggerTypes, name: string): void {
 		const colorFn = getColor(type);
 		const timeStr = gray(Util.Now());
 		const nameStr = colorFn(`[${name.toUpperCase()}]`);
@@ -49,7 +67,10 @@ export class BaseLogger {
 		process.stdout.write(message);
 	}
 
-	private _printTrace() {
+	/**
+	 * Prints the trace of this log.
+	 */
+	private _printTrace(): void {
 		if (!this.traceValues.any()) return;
 
 		const cache = this.traceValues.get();

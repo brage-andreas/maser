@@ -1,6 +1,6 @@
 import type { Guild, TextBasedChannels, User } from "discord.js";
 import type { CmdIntr } from "../../Typings.js";
-import { BaseLogger } from "./Logger.js";
+import { BaseLogger } from "./BaseLogger.js";
 
 export class CommandLogger extends BaseLogger {
 	public name: string;
@@ -12,6 +12,7 @@ export class CommandLogger extends BaseLogger {
 
 		this.traceValues.setUser(intr.user);
 		this.traceValues.setGuild(intr.guild);
+
 		if (intr.channel && intr.channel.type !== "DM") {
 			this.traceValues.setChannel(intr.channel);
 		}
@@ -35,6 +36,7 @@ export class CommandLogger extends BaseLogger {
 		if (!channel || channel.type !== "DM") {
 			this.traceValues.setChannel(channel);
 		}
+
 		return this;
 	}
 }

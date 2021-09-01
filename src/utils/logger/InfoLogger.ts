@@ -1,4 +1,4 @@
-import { BaseLogger } from "./Logger.js";
+import { BaseLogger } from "./BaseLogger.js";
 
 export class InfoLogger extends BaseLogger {
 	constructor() {
