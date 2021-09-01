@@ -25,7 +25,8 @@ export async function execute(client: Clint, msg: Message) {
 			return msg.reply(`Unknown type: ${argument ?? "No type provided"}\nMust be one of "client", "guild"`);
 
 		msg.delete().catch(() => null);
-		client.commands.put(client.user.id, argument === "guild" ? msg.guild.id : undefined);
+		const res = await client.commands.put(client.user.id, argument === "guild" ? msg.guild.id : undefined);
+		if (!res) msg.reply("Something went wrong with setting the commands.");
 		return;
 	}
 
@@ -35,11 +36,12 @@ export async function execute(client: Clint, msg: Message) {
 			return msg.reply(`Unknown type: ${argument ?? "No type provided"}\nMust be one of "client", "guild"`);
 
 		msg.delete().catch(() => null);
-		client.commands.clear(client.user.id, argument === "guild" ? msg.guild.id : undefined);
+		const res = await client.commands.clear(client.user.id, argument === "guild" ? msg.guild.id : undefined);
+		if (!res) msg.reply("Something went wrong with clearing the commands.");
 		return;
 	}
 
-    // Temporary eval until multi-line slashies
+	// Temporary eval until multi-line slashies
 	if (command === "eval") {
 		const captured = (msg.content.match(CODEBLOCK_REGEX) ?? msg.content.match(CODE_REGEX))?.groups;
 		const code = captured?.code ?? split.join(" ");
