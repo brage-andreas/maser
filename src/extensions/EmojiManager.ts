@@ -1,13 +1,24 @@
 import type { Clint } from "./Clint";
 
+/**
+ * Manages emojis for the client.
+ */
 export class EmojiManager {
 	public client: Clint;
 
+	/**
+	 * Creates an emoji manager.
+	 */
 	constructor(client: Clint) {
 		this.client = client;
 	}
 
-	public findAll(...emojis: string[]) {
+	/**
+	 * Searches for all emojis provided. If none is found, returns null.
+	 * If one is found, returns the parsed emoji.
+	 * Else it will return and array of the parsed emojis found.
+	 */
+	public findAll(...emojis: string[]): string[] | string | null {
 		const emojiArray: string[] = [];
 
 		emojis.forEach((emojiName) => {
@@ -20,10 +31,16 @@ export class EmojiManager {
 		else return emojiArray;
 	}
 
-	public find(emojiName: string) {
+	/**
+	 * Searches for an emoji, and returns it if found.
+	 */
+	public find(emojiName: string): string | null {
 		return this._get(emojiName);
 	}
 
+	/**
+	 * Gets an emoji from the client cache with a given name.
+	 */
 	private _get(emojiName: string) {
 		const emojis = this.client.emojis.cache;
 		const emoji = emojis.find((emoji) => emoji.name?.startsWith(emojiName.toLowerCase()) ?? false);
