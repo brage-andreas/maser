@@ -1,32 +1,48 @@
+import type { ApplicationCommandData } from "discord.js";
 import type { CmdIntr, Command } from "../Typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
+import { ErrorLogger } from "../utils/logger/ErrorLogger.js";
 import { readdirSync } from "fs";
+import { InfoLogger } from "../utils/logger/InfoLogger.js";
 import { ID_REGEX } from "../Constants.js";
 import { Routes } from "discord-api-types/v9";
 import { REST } from "@discordjs/rest";
-import Util from "../utils/index.js";
-import { InfoLogger } from "../utils/logger/InfoLogger.js";
 
 const COMMAND_DIR = new URL("../commands", import.meta.url);
 
+/**
+ * Manages commands for the client.
+ */
 export class CommandManager {
 	private _commands: Map<string, Command>;
 
+	/**
+	 * Creates a command manager.
+	 */
 	constructor() {
 		this._commands = new Map();
 	}
 
-	public async init() {
+	/**
+	 * Initialises the class by loading commands internally.
+	 */
+	public async init(): Promise<void> {
 		const folders = this._readDir(COMMAND_DIR);
 		this._commands = await this._getCommands(folders);
 	}
 
-	public execute(intr: CmdIntr) {
+	/**
+	 * Tries to execute a given command.
+	 */
+	public execute(intr: CmdIntr): void {
 		this._commands.get(intr.commandName)?.execute(intr);
 	}
 
-	public defaultHide(intr: CmdIntr | string) {
+	/**
+	 * Gets the default hide option of this command.
+	 */
+	public defaultHide(intr: CmdIntr | string): boolean {
 		if (typeof intr !== "string") {
 			const commandOption = intr.options.getBoolean("hide");
 			const standard = this._commands.get(intr.commandName)?.defaultHide ?? true;
@@ -37,19 +53,31 @@ export class CommandManager {
 		}
 	}
 
-	public put(clientId: string, guildId?: string) {
-		this._put(clientId, guildId);
+	/**
+	 * Sets global (client) or guild commands in Discord.
+	 */
+	public async put(clientId: string, guildId?: string): Promise<boolean> {
+		return await this._put(clientId, guildId);
 	}
 
-	public clear(clientId: string, guildId?: string) {
-		this._put(clientId, guildId, true);
+	/**
+	 * Clears global (client) or guild commands in Discord.
+	 */
+	public async clear(clientId: string, guildId?: string): Promise<boolean> {
+		return await this._put(clientId, guildId, true);
 	}
 
-	private _readDir(dir: URL) {
+	/**
+	 * Reads and returns a directory for files with a given URL.
+	 */
+	private _readDir(dir: URL): string[] {
 		return readdirSync(dir);
 	}
 
-	private async _getCommands(folders: string[]) {
+	/**
+	 * Returns a map of all commands in given folders mapped by their names.
+	 */
+	private async _getCommands(folders: string[]): Promise<Map<string, Command>> {
 		const hash: Map<string, Command> = new Map();
 		for (let folder of folders) {
 			const FOLDER_DIR = new URL(`../commands/${folder}`, import.meta.url);
@@ -64,7 +92,11 @@ export class CommandManager {
 		return hash;
 	}
 
-	private _getData() {
+	/**
+	 * Returns an array of all the cached commands' data.
+	 * Ensures a "hide" option in all chat-input commands.
+	 */
+	private _getData(): ApplicationCommandData[] {
 		return [...this._commands.values()].map((cmd) => {
 			if (cmd.data.type && cmd.data.type !== "CHAT_INPUT") return cmd.data;
 
@@ -84,21 +116,28 @@ export class CommandManager {
 		});
 	}
 
-	private async _put(clientId: string, guildId?: string, clear = false) {
+	/**
+	 * Sets cached commands in Discord.
+	 * Returns true if it succeeded, and false if it failed.
+	 */
+	private async _put(clientId: string, guildId?: string, clear: boolean = false): Promise<boolean> {
+		const errorLogger = new ErrorLogger();
+		const infoLogger = new InfoLogger();
+
 		if (!process.env.TOKEN) {
-			return Util.Log("Token not defined in .env file");
+			errorLogger.log("Token not defined in .env file");
+			return false;
 		}
 
 		if (!ID_REGEX.test(clientId)) {
-			return Util.Log(`Client id is faulty: ${clientId}`);
+			errorLogger.log(`Client id is faulty: ${clientId}`);
+			return false;
 		}
 
 		if (guildId && !ID_REGEX.test(guildId)) {
-			return Util.Log(`Guild id is faulty: ${clientId}`);
+			errorLogger.log(`Guild id is faulty: ${clientId}`);
+			return false;
 		}
-
-		clientId = clientId as `${bigint}`;
-		guildId = guildId as `${bigint}` | undefined;
 
 		const data = this._getData();
 		const rest = new REST({ version: "9" }).setToken(process.env.TOKEN);
@@ -112,15 +151,25 @@ export class CommandManager {
 
 			const res = await rest
 				.put(route, options)
-				.then(() => `${clear ? "Cleared" : "Set"} commands in guild: ${guildId}`);
+				.then(() => `${clear ? "Cleared" : "Set"} commands in guild: ${guildId}`)
+				.catch((err) => {
+					const error = err as Error; // stupid
+					errorLogger.log(error.stack ?? error.message);
 
-			new InfoLogger().log(res);
+					return null;
+				});
+
+			if (res) {
+				infoLogger.log(res);
+				return true;
+			} else {
+				return false;
+			}
 		} catch (err) {
 			const error = err as Error; // stupid
-			Util.Log(error.stack ?? error.message ?? error.toString());
+			errorLogger.log(error.stack ?? error.message);
 
-			// TODO: error logger
-			//const logger = new ErrorLogger();
+			return false;
 		}
 	}
 }
