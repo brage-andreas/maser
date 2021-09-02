@@ -20,6 +20,11 @@ export const data: ApplicationCommandData = {
 			name: "reply",
 			description: "Reply to the command. Default is true",
 			type: ApplicationCommandOptionType.Boolean as number
+		},
+		{
+			name: "async",
+			description: "Whether to asyncronously execute the code. Default is true",
+			type: ApplicationCommandOptionType.Boolean as number
 		}
 	]
 };
@@ -27,10 +32,11 @@ export const data: ApplicationCommandData = {
 export async function execute(intr: CmdIntr) {
 	const code = intr.options.getString("code", true);
 	const reply = intr.options.getBoolean("output") ?? true;
+	const async = intr.options.getBoolean("async") ?? true;
 
 	if (intr.user.id !== intr.client.application!.owner!.id) return intr.reply({ content: "No", ephemeral: true });
 
-	const { embeds, files, output } = await evaluate(intr, code);
+	const { embeds, files, output } = await evaluate(intr, code, async);
 
 	if (reply) {
 		intr.editReply({ embeds, files });
