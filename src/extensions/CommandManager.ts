@@ -1,4 +1,4 @@
-import type { ApplicationCommandData } from "discord.js";
+import type { ApplicationCommandData, ApplicationCommandOptionData } from "discord.js";
 import type { CmdIntr, Command } from "../Typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
@@ -10,6 +10,9 @@ import { Routes } from "discord-api-types/v9";
 import { REST } from "@discordjs/rest";
 
 const COMMAND_DIR = new URL("../commands", import.meta.url);
+
+const SUBGROUP_TYPE = ApplicationCommandOptionType.SubcommandGroup as number;
+const SUB_TYPE = ApplicationCommandOptionType.Subcommand as number;
 
 /**
  * Manages commands for the client.
@@ -93,6 +96,24 @@ export class CommandManager {
 	}
 
 	/**
+	 * Adds a "hide" option to the given option array, if none present.
+	 */
+	private _addHideOption(options: ApplicationCommandOptionData[], name: string) {
+		if (!options.some((option) => option.name === "hide")) {
+			const hide = this.defaultHide(name);
+			const hideOption = {
+				name: "hide",
+				description: `Hide the output. Default is ${hide}`,
+				type: ApplicationCommandOptionType.Boolean as number
+			};
+
+			options.push(hideOption);
+		}
+
+		return options;
+	}
+
+	/**
 	 * Returns an array of all the cached commands' data.
 	 * Ensures a "hide" option in all chat-input commands.
 	 */
@@ -101,15 +122,29 @@ export class CommandManager {
 			if (cmd.data.type && cmd.data.type !== "CHAT_INPUT") return cmd.data;
 
 			cmd.data.options ??= [];
-			if (!cmd.data.options.some((option) => option.name === "hide")) {
-				const hide = this.defaultHide(cmd.data.name);
-				const hideOption = {
-					name: "hide",
-					description: `Hide the output. Default is ${hide}`,
-					type: ApplicationCommandOptionType.Boolean as number
-				};
 
-				cmd.data.options.push(hideOption);
+			// FUCK THIS SHIT
+			// FUCK THIS SHIT
+			// FUCK THIS SHIT
+			// FUCK THIS SHIT
+			// FUCK THIS SHIT
+			// HAVE FUN REFACTORING
+
+			if (cmd.data.options?.[0]?.type === SUBGROUP_TYPE) {
+				cmd.data.options?.forEach((subcommandGroup) => {
+					// @ts-expect-error
+					subcommandGroup.options?.forEach((subcommand: ApplicationCommandData) => {
+						// @ts-expect-error
+						subcommand.options = this._addHideOption(subcommand.options, cmd.data.name);
+					});
+				});
+			} else if (cmd.data.options?.[0]?.type === SUB_TYPE) {
+				cmd.data.options?.forEach((subcommand) => {
+					// @ts-expect-error
+					subcommand.options = this._addHideOption(subcommand.options, cmd.data.name);
+				});
+			} else {
+				cmd.data.options = this._addHideOption(cmd.data.options, cmd.data.name);
 			}
 
 			return cmd.data;
