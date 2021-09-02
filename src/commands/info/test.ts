@@ -4,8 +4,8 @@ import { ApplicationCommandOptionType } from "discord-api-types/v9";
 
 export const data: ApplicationCommandData = {
 	name: "test",
-	description: "A test"
-	/*options: [
+	description: "A test",
+	options: [
 		{
 			name: "sub-group",
 			description: "A subcommand group",
@@ -25,7 +25,7 @@ export const data: ApplicationCommandData = {
 				}
 			]
 		}
-	]*/
+	]
 };
 
 export async function execute(intr: CmdIntr) {
