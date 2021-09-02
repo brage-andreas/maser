@@ -50,7 +50,7 @@ const stringify = (raw: any) => {
 	}
 };
 
-export async function evaluate(that: Message | CmdIntr, code: string) {
+export async function evaluate(that: Message | CmdIntr, code: string, async = true) {
 	const author = that instanceof Message ? that.author : that.user;
 
 	// * FOR EVAL USE
@@ -61,15 +61,17 @@ export async function evaluate(that: Message | CmdIntr, code: string) {
 		return await that.client.users
 			.fetch(id)
 			.then((user) => `${user.tag} ${user.id}`)
-			.catch(() => false);
+			.catch(() => null);
 	};
 	// *
 
 	try {
 		if (!code) throw new Error("'code' must be non-empty string");
 
+		const method = `(${async ? "async" : ""} () => {\n${code}\n})()`;
+
 		const start = performance.now();
-		const rawOutput = await eval(`(async () => {\n${code}\n})()`);
+		const rawOutput = await eval(method);
 		const end = performance.now();
 
 		const type = typeof rawOutput;
