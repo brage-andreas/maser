@@ -7,8 +7,8 @@
 	"scripts": {
 		"prestart": "tsc",
 		"start": "node .",
-        "build": "node dist/utils/COMMANDS/BUILD_COMMANDS.js",
-        "clear": "node dist/utils/COMMANDS/CLEAR_COMMANDS.js"
+		"build": "node dist/utils/COMMANDS/BUILD_COMMANDS.js",
+		"clear": "node dist/utils/COMMANDS/CLEAR_COMMANDS.js"
 	},
 	"repository": {
 		"type": "git",
@@ -29,6 +29,7 @@
 	"devDependencies": {
 		"@types/ms": "^0.7.31",
 		"discord-api-types": "^0.22.0",
+		"prettier": "^2.3.2",
 		"typescript": "^4.4.2"
 	}
 }
