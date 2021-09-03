@@ -130,7 +130,7 @@ export class CommandManager {
 			// FUCK THIS SHIT
 			// HAVE FUN REFACTORING
 
-			if (cmd.data.options?.[0]?.type === SUBGROUP_TYPE) {
+			if (cmd.data.options[0]?.type === SUBGROUP_TYPE) {
 				cmd.data.options?.forEach((subcommandGroup) => {
 					// @ts-expect-error
 					subcommandGroup.options?.forEach((subcommand: ApplicationCommandData) => {
@@ -138,7 +138,7 @@ export class CommandManager {
 						subcommand.options = this._addHideOption(subcommand.options, cmd.data.name);
 					});
 				});
-			} else if (cmd.data.options?.[0]?.type === SUB_TYPE) {
+			} else if (cmd.data.options[0]?.type === SUB_TYPE) {
 				cmd.data.options?.forEach((subcommand) => {
 					// @ts-expect-error
 					subcommand.options = this._addHideOption(subcommand.options, cmd.data.name);
