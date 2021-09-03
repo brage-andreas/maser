@@ -1,4 +1,9 @@
-import type { ApplicationCommandData, ApplicationCommandOptionData } from "discord.js";
+import type {
+	ApplicationCommandData,
+	ApplicationCommandOptionData,
+	ApplicationCommandSubCommandData,
+	ApplicationCommandSubGroupData
+} from "discord.js";
 import type { CmdIntr, Command } from "../Typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
@@ -123,25 +128,23 @@ export class CommandManager {
 
 			cmd.data.options ??= [];
 
-			// FUCK THIS SHIT
-			// FUCK THIS SHIT
-			// FUCK THIS SHIT
-			// FUCK THIS SHIT
-			// FUCK THIS SHIT
-			// HAVE FUN REFACTORING
+			const isSubcommandGroup = cmd.data.options[0]?.type === SUBGROUP_TYPE;
+			const isSubcommand = cmd.data.options[0]?.type === SUB_TYPE;
 
-			if (cmd.data.options[0]?.type === SUBGROUP_TYPE) {
-				cmd.data.options?.forEach((subcommandGroup) => {
-					// @ts-expect-error
-					subcommandGroup.options?.forEach((subcommand: ApplicationCommandData) => {
+			// TODO: find out how to properly type this
+			if (isSubcommandGroup) {
+				const commandData = cmd.data as unknown as ApplicationCommandSubGroupData;
+				commandData.options?.forEach((subcommandGroup) => {
+					subcommandGroup.options?.forEach((subcommand) => {
 						// @ts-expect-error
-						subcommand.options = this._addHideOption(subcommand.options, cmd.data.name);
+						subcommand.options = this._addHideOption(subcommand.options ?? [], cmd.data.name);
 					});
 				});
-			} else if (cmd.data.options[0]?.type === SUB_TYPE) {
-				cmd.data.options?.forEach((subcommand) => {
+			} else if (isSubcommand) {
+				const commandData = cmd.data as unknown as ApplicationCommandSubCommandData;
+				commandData.options?.forEach((subcommand) => {
 					// @ts-expect-error
-					subcommand.options = this._addHideOption(subcommand.options, cmd.data.name);
+					subcommand.options = this._addHideOption(subcommand.options ?? [], cmd.data.name);
 				});
 			} else {
 				cmd.data.options = this._addHideOption(cmd.data.options, cmd.data.name);
