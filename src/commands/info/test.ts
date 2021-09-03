@@ -24,6 +24,49 @@ export const data: ApplicationCommandData = {
 					]
 				}
 			]
+		},
+        {
+			name: "another-sub-group",
+			description: "Another subcommand group",
+			type: ApplicationCommandOptionType.SubcommandGroup as number,
+			options: [
+				{
+					name: "another-sub",
+					description: "Another subcommand",
+					type: ApplicationCommandOptionType.Subcommand as number,
+					options: [
+						{
+							name: "another-option",
+							description: "Another option",
+							type: ApplicationCommandOptionType.String as number
+						}
+					]
+				},
+                {
+					name: "another-another-sub",
+					description: "Another another subcommand",
+					type: ApplicationCommandOptionType.Subcommand as number,
+					options: [
+						{
+							name: "another-another-option",
+							description: "Another another option",
+							type: ApplicationCommandOptionType.String as number
+						}
+					]
+				},
+                {
+					name: "another-another-another-sub",
+					description: "Another another another subcommand",
+					type: ApplicationCommandOptionType.Subcommand as number,
+					options: [
+						{
+							name: "another-another-another-option",
+							description: "Another another another option",
+							type: ApplicationCommandOptionType.String as number
+						}
+					]
+				}
+			]
 		}
 	]
 };
