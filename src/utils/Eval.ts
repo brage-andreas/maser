@@ -42,7 +42,7 @@ const parseInput = (input: string) => {
 	}
 };
 
-const stringify = (raw: any) => {
+const stringify = (raw: any): string => {
 	if (!raw || typeof raw === "function") {
 		return !raw ? `${raw}` : raw.toString();
 	} else {
