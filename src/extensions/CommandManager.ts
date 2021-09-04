@@ -50,7 +50,7 @@ export class CommandManager {
 	/**
 	 * Gets the default hide option of this command.
 	 */
-	public defaultHide(intr: CmdIntr | string): boolean {
+	public getDefaultHide(intr: CmdIntr | string): boolean {
 		if (typeof intr !== "string") {
 			const commandOption = intr.options.getBoolean("hide");
 			const standard = this._commands.get(intr.commandName)?.defaultHide ?? true;
@@ -105,7 +105,7 @@ export class CommandManager {
 	 */
 	private _addHideOption(options: ApplicationCommandOptionData[], name: string) {
 		if (!options.some((option) => option.name === "hide")) {
-			const hide = this.defaultHide(name);
+			const hide = this.getDefaultHide(name);
 			const hideOption = {
 				name: "hide",
 				description: `Hide the output. Default is ${hide}`,
