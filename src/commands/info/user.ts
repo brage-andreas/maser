@@ -31,11 +31,11 @@ export async function execute(intr: CmdIntr) {
 		if (roles.size === 1) return null;
 
 		const sortedRoles = roles.sort((a, b) => b.position - a.position);
-		const parsedRoles = sortedRoles.map((role) => role.toString()).slice(0, -1);
+		const parsedRoles = sortedRoles.map((role) => role.toString()).slice(0, -1); // revomes @everyone
 
 		const fourRoles = parsedRoles.slice(0, 4).join(", ");
 		const excess = parsedRoles.length - 4;
-		const excessStr = excess > 0 ? `, ${excess} more...` : "";
+		const excessStr = excess > 0 ? `, ands ${excess} more` : "";
 
 		return fourRoles + excessStr;
 	};
