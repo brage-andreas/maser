@@ -25,7 +25,7 @@ export const data: ApplicationCommandData = {
 				}
 			]
 		},
-        {
+		{
 			name: "another-sub-group",
 			description: "Another subcommand group",
 			type: ApplicationCommandOptionType.SubcommandGroup as number,
@@ -42,7 +42,7 @@ export const data: ApplicationCommandData = {
 						}
 					]
 				},
-                {
+				{
 					name: "another-another-sub",
 					description: "Another another subcommand",
 					type: ApplicationCommandOptionType.Subcommand as number,
@@ -54,7 +54,7 @@ export const data: ApplicationCommandData = {
 						}
 					]
 				},
-                {
+				{
 					name: "another-another-another-sub",
 					description: "Another another another subcommand",
 					type: ApplicationCommandOptionType.Subcommand as number,
