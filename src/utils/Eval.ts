@@ -20,9 +20,7 @@ const parseOutput = (output: string | undefined | null) => {
 
 	if (!output) return { output: wrap(`${output}`), files };
 	const tooLong = output.length + WRAP_LEN > 1024;
-	const evaluated = tooLong
-		? "Output was too long. Sent as an attachment\n(Note: `hide` must be set to false)"
-		: wrap(output);
+	const evaluated = tooLong ? "Output was too long. Use the buttons below to see it." : wrap(output);
 
 	if (tooLong) {
 		const outputBuffer = Buffer.from(output);
