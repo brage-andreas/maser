@@ -3,8 +3,10 @@ import type { Message } from "discord.js";
 
 import { CODEBLOCK_REGEX, CODE_REGEX, ID_REGEX, USER_REGEX } from "../Constants.js";
 import { MessageAttachment, MessageButton } from "discord.js";
-import { evaluate } from "../utils/Eval.js";
+import { CommandLogger } from "../utils/logger/CommandLogger.js";
 import ButtonManager from "../extensions/ButtonManager.js";
+import { evaluate } from "../utils/Eval.js";
+import Util from "../utils/index.js";
 
 export async function execute(client: Clint, msg: Message) {
 	if (msg.author.id !== client.application?.owner?.id || !client.user) return;
@@ -30,6 +32,7 @@ export async function execute(client: Clint, msg: Message) {
 		msg.delete().catch(() => null);
 		const res = await client.commands.put(client.user.id, argument === "guild" ? msg.guild.id : undefined);
 		if (!res) msg.reply("Something went wrong with setting the commands.");
+
 		return;
 	}
 
@@ -41,11 +44,18 @@ export async function execute(client: Clint, msg: Message) {
 		msg.delete().catch(() => null);
 		const res = await client.commands.clear(client.user.id, argument === "guild" ? msg.guild.id : undefined);
 		if (!res) msg.reply("Something went wrong with clearing the commands.");
+
 		return;
 	}
 
 	// Temporary eval until multi-line slashies
 	if (command === "eval") {
+		const logger = new CommandLogger() //
+			.setChannel(msg.channel)
+			.setUser(msg.author)
+			.setGuild(msg.guild)
+			.setName("MSG-EVAL");
+
 		const captured = (msg.content.match(CODEBLOCK_REGEX) ?? msg.content.match(CODE_REGEX))?.groups;
 		const code = captured?.code ?? split.join(" ");
 
@@ -93,6 +103,7 @@ export async function execute(client: Clint, msg: Message) {
 		collector.on("dispose", (intr) => {
 			intr.reply({ content: "You cannot use this button", ephemeral: true });
 		});
-		return;
+
+		logger.log(`Code:\n${Util.Indent(code)}\nOutput:\n${Util.Indent(output)}`);
 	}
 }
