@@ -1,7 +1,10 @@
-import type { Message } from "discord.js";
 import type { Clint } from "../extensions/Clint.js";
+import type { Message } from "discord.js";
+
 import { CODEBLOCK_REGEX, CODE_REGEX, ID_REGEX, USER_REGEX } from "../Constants.js";
+import { MessageAttachment, MessageButton } from "discord.js";
 import { evaluate } from "../utils/Eval.js";
+import ButtonManager from "../extensions/ButtonManager.js";
 
 export async function execute(client: Clint, msg: Message) {
 	if (msg.author.id !== client.application?.owner?.id || !client.user) return;
@@ -46,9 +49,50 @@ export async function execute(client: Clint, msg: Message) {
 		const captured = (msg.content.match(CODEBLOCK_REGEX) ?? msg.content.match(CODE_REGEX))?.groups;
 		const code = captured?.code ?? split.join(" ");
 
-		const { embeds, files } = await evaluate(msg, code);
+		const { embeds, files, output } = await evaluate(msg, code);
 
-		msg.reply({ embeds, files });
+		const buttonManager = new ButtonManager();
+
+		const outputButton = new MessageButton() //
+			.setCustomId("output")
+			.setLabel("Send output")
+			.setStyle("PRIMARY");
+
+		const codeButton = new MessageButton() //
+			.setCustomId("code")
+			.setLabel("Send code")
+			.setStyle("PRIMARY");
+
+		buttonManager.setRows(outputButton, codeButton);
+		const reply = await msg.reply({ embeds, files, components: buttonManager.rows });
+
+		const collector = buttonManager.setMessage(reply).setUser(msg.author).createCollector();
+
+		collector.on("collect", (interaction) => {
+			if (interaction.customId === "output") {
+				const attachment = new MessageAttachment(Buffer.from(output), "output.txt");
+
+				interaction.followUp({ files: [attachment] }).catch(() => {
+					interaction.followUp({ content: "I couldn't send the output", ephemeral: true });
+				});
+
+				buttonManager.disable(interaction, "output");
+			}
+
+			if (interaction.customId === "code") {
+				const attachment = new MessageAttachment(Buffer.from(code), "code.txt");
+
+				interaction.followUp({ files: [attachment] }).catch(() => {
+					interaction.followUp({ content: "I couldn't send the code", ephemeral: true });
+				});
+
+				buttonManager.disable(interaction, "code");
+			}
+		});
+
+		collector.on("dispose", (intr) => {
+			intr.reply({ content: "You cannot use this button", ephemeral: true });
+		});
 		return;
 	}
 }
