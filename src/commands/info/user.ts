@@ -35,7 +35,7 @@ export async function execute(intr: CmdIntr) {
 
 		const fourRoles = parsedRoles.slice(0, 4).join(", ");
 		const excess = parsedRoles.length - 4;
-		const excessStr = excess > 0 ? `, ands ${excess} more` : "";
+		const excessStr = excess > 0 ? `, and ${excess} more` : "";
 
 		return fourRoles + excessStr;
 	};
