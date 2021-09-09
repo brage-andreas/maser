@@ -6,15 +6,12 @@ import ms from "ms";
 type Filter = CollectorFilter<[MessageComponentInteraction]>;
 type ButtonCollector = InteractionCollector<MessageComponentInteraction>;
 
-// TODO: yes/no buttons
-// TODO: refactor
-
 /**
  * Manages buttons for the client.
  */
 export default class ButtonManager {
-	public rows: MessageActionRow[];
 	public message: Message | null;
+	public rows: MessageActionRow[];
 	public user: User | null;
 
 	/**
@@ -38,13 +35,14 @@ export default class ButtonManager {
 		const amountOfRows = Math.ceil(components.length / 5);
 		const length = amountOfRows <= 5 ? amountOfRows : 5;
 
-		this.rows = Array(length).fill(new MessageActionRow());
+		this.rows = Array(length)
+			.fill(new MessageActionRow())
+			.map((row, i) => {
+				const start = i * 5;
+				const end = i * 5 + 5;
 
-		this.rows = this.rows.map((row, i) => {
-			const start = i * 5;
-			const end = i * 5 + 5;
-			return row.addComponents(...components.slice(start, end));
-		});
+				return row.addComponents(...components.slice(start, end));
+			});
 
 		return this;
 	}
@@ -122,12 +120,10 @@ export default class ButtonManager {
 	 * Parses buttons by nesting them appropriately.
 	 */
 	private _parseButtons(buttons: MessageButton[] | MessageButton[][]): MessageButton[][] {
-		if (buttons.some((comp) => Array.isArray(comp))) {
-			buttons = buttons.map((comp) => (Array.isArray(comp) ? comp : [comp]));
-			return buttons;
+		if (buttons.some((buttonOrRow) => Array.isArray(buttonOrRow))) {
+			return buttons.map((comp) => (Array.isArray(comp) ? comp : [comp]));
 		} else {
-			buttons = buttons as MessageButton[];
-			return [buttons];
+			return [buttons as MessageButton[]];
 		}
 	}
 
@@ -194,14 +190,6 @@ export class ConfirmationButtons extends ButtonManager {
 	}
 
 	public async start(options?: { noReply?: boolean; query?: string; onYes?: string; onNo?: string }) {
-		const updateOrEditReply = async (content: string, components: MessageActionRow[]) => {
-			return (
-				this.interaction! instanceof MessageComponentInteraction
-					? this.interaction!.update({ content, components, fetchReply: true })
-					: this.interaction!.editReply({ content, components })
-			) as Promise<Message>;
-		};
-
 		return new Promise<void>(async (resolve, reject) => {
 			if (!this.interaction) throw new Error("Interaction must be set to the ConfirmationButtons");
 
@@ -214,17 +202,17 @@ export class ConfirmationButtons extends ButtonManager {
 			const content = options?.query ?? this.query ?? "Are you sure?";
 			const components = this.rows;
 
-			const msg = await updateOrEditReply(content, components);
+			const msg = await this._updateOrEditReply(content, components);
 			this.setMessage(msg);
 
 			const collector = this.createCollector({ time: "30s" });
 
 			collector.on("collect", (intr) => {
 				if (intr.customId === "yes") {
-					updateOrEditReply(onYes, []);
+					this._updateOrEditReply(onYes, []);
 					resolve();
 				} else {
-					updateOrEditReply(onNo, []);
+					this._updateOrEditReply(onNo, []);
 					reject();
 				}
 
@@ -232,9 +220,22 @@ export class ConfirmationButtons extends ButtonManager {
 			});
 
 			collector.on("end", (_, reason) => {
-				if (reason !== "collect") updateOrEditReply("Cancelled by timeout", []);
+				if (reason !== "collect") this._updateOrEditReply("Cancelled by timeout", []);
 				reject();
 			});
 		});
+	}
+
+	private async _updateOrEditReply(content: string, components: MessageActionRow[]) {
+		if (!this.interaction) throw new Error("Interaction must be set to the ConfirmationButtons");
+
+		const medium = this.interaction;
+		const isButtonIntr = medium instanceof MessageComponentInteraction;
+
+		const msg = isButtonIntr
+			? medium.update({ content, components, fetchReply: true })
+			: medium.editReply({ content, components });
+
+		return msg as Promise<Message>;
 	}
 }
