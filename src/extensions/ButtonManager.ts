@@ -1,5 +1,6 @@
-import type { CollectorFilter, InteractionCollector, Message, MessageComponentInteraction, User } from "discord.js";
-import { MessageActionRow, MessageButton } from "discord.js";
+import type { CollectorFilter, InteractionCollector, Message, User } from "discord.js";
+import type { CmdIntr } from "../Typings";
+import { MessageActionRow, MessageButton, MessageComponentInteraction } from "discord.js";
 import ms from "ms";
 
 type Filter = CollectorFilter<[MessageComponentInteraction]>;
@@ -145,5 +146,95 @@ export default class ButtonManager {
 		});
 
 		intr.update({ components: [...this.rows] });
+	}
+}
+
+export class ConfirmationButtons extends ButtonManager {
+	public interaction: CmdIntr | MessageComponentInteraction | null;
+	public yesMessage: string | null;
+	public noMessage: string | null;
+	public query: string | null;
+	public time: string | null;
+
+	constructor(options?: { query?: string; author?: User; time?: string }) {
+		super(options);
+
+		this.interaction = null;
+		this.yesMessage = null;
+		this.noMessage = null;
+		this.query = null;
+
+		this.time = options?.time ?? "30s";
+
+		const yesButton = new MessageButton().setLabel("Yes").setStyle("SUCCESS").setCustomId("yes");
+		const noButton = new MessageButton().setLabel("No").setStyle("DANGER").setCustomId("no");
+
+		const row = new MessageActionRow().addComponents(yesButton, noButton);
+		this.rows = [row];
+	}
+
+	public setInteraction(interaction: CmdIntr | MessageComponentInteraction | null) {
+		this.interaction = interaction;
+		return this;
+	}
+
+	public setQuery(query: string | null) {
+		this.query = query;
+		return this;
+	}
+
+	public setYesMessage(message: string | null) {
+		this.yesMessage = message;
+		return this;
+	}
+
+	public setNoMessage(message: string | null) {
+		this.noMessage = message;
+		return this;
+	}
+
+	public async start(options?: { noReply?: boolean; query?: string; onYes?: string; onNo?: string }) {
+		const updateOrEditReply = async (content: string, components: MessageActionRow[]) => {
+			return (
+				this.interaction! instanceof MessageComponentInteraction
+					? this.interaction!.update({ content, components, fetchReply: true })
+					: this.interaction!.editReply({ content, components })
+			) as Promise<Message>;
+		};
+
+		return new Promise<void>(async (resolve, reject) => {
+			if (!this.interaction) throw new Error("Interaction must be set to the ConfirmationButtons");
+
+			const medium = this.interaction;
+			if (!this.user) this.user = medium.user;
+
+			const onYes = options?.onYes ?? this.yesMessage ?? "Done!";
+			const onNo = options?.onNo ?? this.noMessage ?? "Cancelled";
+
+			const content = options?.query ?? this.query ?? "Are you sure?";
+			const components = this.rows;
+
+			const msg = await updateOrEditReply(content, components);
+			this.setMessage(msg);
+
+			const collector = this.createCollector({ time: "30s" });
+
+			collector.on("collect", (intr) => {
+				if (intr.customId === "yes") {
+					updateOrEditReply(onYes, []);
+					resolve();
+				} else {
+					updateOrEditReply(onNo, []);
+					reject();
+				}
+
+				collector.stop("collect");
+			});
+
+			collector.on("end", (_, reason) => {
+				if (reason !== "collect") updateOrEditReply("Cancelled by timeout", []);
+				reject();
+			});
+		});
 	}
 }
