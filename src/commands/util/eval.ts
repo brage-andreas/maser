@@ -6,7 +6,6 @@ import { evaluate } from "../../utils/Eval.js";
 import Util from "../../utils/index.js";
 import ButtonManager from "../../extensions/ButtonManager.js";
 
-// export const defaultHide = false;
 export const data: ApplicationCommandData = {
 	name: "eval",
 	description: "Runs code",
