@@ -2,6 +2,7 @@ import type { ApplicationCommandData } from "discord.js";
 import type { CmdIntr } from "../../Typings";
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
 
+export const defaultHide = false;
 export const data: ApplicationCommandData = {
 	name: "test",
 	description: "A test",
