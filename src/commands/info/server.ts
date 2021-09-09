@@ -1,5 +1,5 @@
 import type { ApplicationCommandData, Guild } from "discord.js";
-import type { CmdIntr } from "../../Typings.js";
+import type { CmdIntr } from "../../typings.js";
 
 import { MessageEmbed } from "discord.js";
 import Util from "../../utils/index.js";

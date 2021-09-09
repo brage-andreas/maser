@@ -1,5 +1,5 @@
 import type { Guild, TextBasedChannels, User } from "discord.js";
-import type { CmdIntr } from "../../Typings.js";
+import type { CmdIntr } from "../../typings.js";
 import { getLogChannel } from "../../database/logChannel.js";
 import { MessageEmbed } from "discord.js";
 import { BaseLogger } from "./BaseLogger.js";

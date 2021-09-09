@@ -1,9 +1,9 @@
 import type { ApplicationCommandData, GuildMember } from "discord.js";
-import type { CmdIntr } from "../../Typings.js";
+import type { CmdIntr } from "../../typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import { MessageEmbed } from "discord.js";
-import { USER_FLAGS } from "../../Constants.js";
+import { USER_FLAGS } from "../../constants.js";
 import Util from "../../utils/index.js";
 
 export const data: ApplicationCommandData = {

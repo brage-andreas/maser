@@ -1,6 +1,6 @@
 import { getColor, gray, yellow } from "./LoggerColors.js";
 import { TraceValueManager } from "./TraceValueManager.js";
-import { LoggerTypes } from "../../Typings.js";
+import { LoggerTypes } from "../../typings.js";
 import Util from "../index.js";
 
 /**
@@ -36,20 +36,14 @@ export abstract class BaseLogger {
 
 	/**
 	 * Parses any messages provided.
-	 * Default indent is 4. Will indent with 8 if line starts with "$>".
+	 * Indents every line by 4.
 	 */
 	protected parse(...messages: string[]): string[] | null {
 		if (!messages.length) return null;
 
 		return messages.map((message) => {
 			const lines = message.split(/[\r\n]/);
-			const parseLine = (line: string) => {
-				const isIndented = line.startsWith("$>");
-				const indent = isIndented ? 8 : 4;
-				line = isIndented ? line.slice(2) : line;
-
-				return Util.Parse(line, indent) as string;
-			};
+			const parseLine = (line: string) => Util.Parse(line, 4) as string;
 
 			return lines.map(parseLine).join("\n");
 		});

@@ -1,9 +1,9 @@
-import type { CmdIntr } from "../Typings.js";
+import type { CmdIntr } from "../typings.js";
 import type { Clint } from "../extensions/Clint.js";
 
 import Discord, { Message, MessageEmbed, MessageAttachment } from "discord.js";
 import { performance } from "perf_hooks";
-import { TOKEN_REGEX } from "../Constants.js";
+import { TOKEN_REGEX } from "../constants.js";
 import ms from "ms";
 
 interface OutEval {

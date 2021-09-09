@@ -4,13 +4,13 @@ import type {
 	ApplicationCommandSubCommandData,
 	ApplicationCommandSubGroupData
 } from "discord.js";
-import type { CmdIntr, Command } from "../Typings.js";
+import type { CmdIntr, Command } from "../typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import { ErrorLogger } from "../utils/logger/ErrorLogger.js";
 import { readdirSync } from "fs";
 import { InfoLogger } from "../utils/logger/InfoLogger.js";
-import { ID_REGEX } from "../Constants.js";
+import { ID_REGEX } from "../constants.js";
 import { Routes } from "discord-api-types/v9";
 import { REST } from "@discordjs/rest";
 

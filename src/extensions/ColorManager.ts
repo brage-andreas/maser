@@ -1,4 +1,4 @@
-import { COLORS } from "../Constants.js";
+import { COLORS } from "../constants.js";
 
 /**
  * Manages colours for the client.

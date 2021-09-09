@@ -1,4 +1,4 @@
-import { LoggerTypes } from "../../Typings";
+import { LoggerTypes } from "../../typings.js";
 
 const colors: Record<string, string> = {
 	yellow: "\x1b[93m",

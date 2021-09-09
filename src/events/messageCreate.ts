@@ -1,7 +1,7 @@
 import type { Clint } from "../extensions/Clint.js";
 import type { Message } from "discord.js";
 
-import { CODEBLOCK_REGEX, CODE_REGEX, ID_REGEX, USER_REGEX } from "../Constants.js";
+import { CODEBLOCK_REGEX, CODE_REGEX, ID_REGEX, USER_REGEX } from "../constants.js";
 import { MessageAttachment, MessageButton } from "discord.js";
 import { CommandLogger } from "../utils/logger/CommandLogger.js";
 import ButtonManager from "../extensions/ButtonManager.js";
@@ -104,6 +104,6 @@ export async function execute(client: Clint, msg: Message) {
 			intr.reply({ content: "You cannot use this button", ephemeral: true });
 		});
 
-		logger.log(`Code:\n${Util.Indent(code)}\nOutput:\n${Util.Indent(output)}`);
+		logger.log(`Code:\n${Util.Indent(code, 4)}\nOutput:\n${Util.Indent(output, 4)}`);
 	}
 }

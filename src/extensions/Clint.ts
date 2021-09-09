@@ -4,10 +4,11 @@ import { EventManager } from "./EventManager.js";
 import { ColorManager } from "./ColorManager.js";
 import { EmojiManager } from "./EmojiManager.js";
 import { InfoLogger } from "../utils/logger/InfoLogger.js";
-import { INTENTS } from "../Constants.js";
+import { INTENTS } from "../constants.js";
 import { Client } from "discord.js";
 
 // TODO: module augment instead of monkey patch
+
 export class Clint extends Client {
 	commands: CommandManager;
 	logger: InfoLogger;

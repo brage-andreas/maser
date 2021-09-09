@@ -1,4 +1,4 @@
-import type { CmdIntr } from "../Typings.js";
+import type { CmdIntr } from "../typings.js";
 import type { Clint } from "../extensions/Clint.js";
 import { CommandLogger } from "../utils/logger/CommandLogger.js";
 

@@ -1,5 +1,5 @@
 import type { ApplicationCommandData } from "discord.js";
-import type { CmdIntr } from "../../Typings.js";
+import type { CmdIntr } from "../../typings.js";
 
 export const data: ApplicationCommandData = {
 	name: "ping",

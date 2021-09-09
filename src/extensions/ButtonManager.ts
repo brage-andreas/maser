@@ -1,5 +1,5 @@
 import type { CollectorFilter, InteractionCollector, Message, User } from "discord.js";
-import type { CmdIntr } from "../Typings";
+import type { CmdIntr } from "../typings.js";
 import { MessageActionRow, MessageButton, MessageComponentInteraction } from "discord.js";
 import ms from "ms";
 
