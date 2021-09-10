@@ -1,6 +1,6 @@
 import type { ApplicationCommandData, CommandInteraction, Guild, GuildMember } from "discord.js";
-import type { Clint } from "./extensions/Clint";
 import type { CommandLogger } from "./utils/logger/CommandLogger.js";
+import type { Clint } from "./extensions/Clint";
 
 // TODO: module augment
 
@@ -24,4 +24,10 @@ export interface CmdIntr extends CommandInteraction {
 
 	member: GuildMember;
 	guild: Guild;
+}
+
+export interface ConfigResult {
+	id: string;
+	bot_log_channel_id: string | null;
+	member_log_channel_id: string | null;
 }
