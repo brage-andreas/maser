@@ -11,3 +11,6 @@ await client.commands.init();
 await client.events.init();
 
 client.login(process.env.TOKEN);
+
+// TODO: add enable/disable commands command
+// TODO: add leave/join logs
