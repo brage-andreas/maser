@@ -1,6 +1,7 @@
 import type { Guild, TextBasedChannels, User } from "discord.js";
 import type { CmdIntr } from "../../typings.js";
-import { getLogChannel } from "../../database/logChannel.js";
+
+import { ConfigManager } from "../../database/ConfigManager.js";
 import { MessageEmbed } from "discord.js";
 import { BaseLogger } from "./BaseLogger.js";
 
@@ -70,16 +71,18 @@ export class CommandLogger extends BaseLogger {
 	// prototype
 	private channelLog(...messages: string[]) {
 		if (!this.interaction) return;
-		getLogChannel(this.interaction.guild).then((channel) => {
-			if (!channel || !channel.isText()) return;
+
+		new ConfigManager(this.interaction.client).botLogChannel.get(this.interaction.guild).then((channel) => {
+			if (!channel) return;
 
 			const author = this.interaction!.user;
 			const command = this.interaction!.commandName;
 			const embeds = [
 				new MessageEmbed()
 					.setAuthor(`${author.tag} (${author.id})`)
+					.setColor(this.interaction!.client.colors.try("INVIS"))
 					// will error on large messages
-					.addField(`Used command ${command}`, messages.join("\n"))
+					.setDescription(`Used command ${command}\n\`\`\`\n${messages.join("\n")}\n\`\`\``)
 			];
 
 			channel.send({ embeds }).catch(() => null);
