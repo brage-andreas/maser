@@ -1,7 +1,7 @@
 import type { ApplicationCommandData, TextChannel } from "discord.js";
 import type { CmdIntr } from "../../typings.js";
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
-import { ConfigManager } from "../../database/configs.js";
+import { ConfigManager } from "../../database/ConfigManager.js";
 
 export const data: ApplicationCommandData = {
 	name: "config",
