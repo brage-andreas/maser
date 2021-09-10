@@ -17,11 +17,11 @@ export default class Util {
 	 * Indents all lines or elements of any given string or array with a given width of spaces.
 	 * Splits strings on new-lines.
 	 */
-	public static Indent(string: string[] | string | null | undefined, width = 2): string | null {
+	public static Indent(string: string[] | string | null | undefined, width = 2, sep = " "): string | null {
 		if (!string) return null;
 
 		const arr = typeof string === "string" ? string.split("\n") : string;
-		return arr.map((line) => " ".repeat(width) + line).join("\n");
+		return arr.map((line) => sep.repeat(width) + line).join("\n");
 	}
 
 	/**
