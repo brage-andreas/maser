@@ -31,3 +31,5 @@ export interface ConfigResult {
 	bot_log_channel_id: string | null;
 	member_log_channel_id: string | null;
 }
+
+export type ConfigColumns = "id" | "bot_log_channel_id" | "member_log_channel_id";
