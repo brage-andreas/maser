@@ -1,12 +1,30 @@
 import type { Guild, TextChannel } from "discord.js";
-import { ConfigResult } from "../typings.js";
+import { ConfigColumns, ConfigResult } from "../typings.js";
 import Postgres from "./src/connection.js";
 
 // TODO: refactor
-// don't do it like this btw
-// just about works now, will probably change it entirely
 
 export class ConfigManager extends Postgres {
+	public botLogChannel = {
+		get: async (guildResolvable: Guild | string): Promise<TextChannel | null> => {
+			return this.getChannel(guildResolvable, "bot_log_channel_id");
+		},
+
+		set: (newChannel: TextChannel | string, guildResolvable: Guild | string): Promise<boolean> => {
+			return this.setChannel(newChannel, guildResolvable, "bot_log_channel_id");
+		}
+	};
+
+	public memberLogChannel = {
+		get: async (guildResolvable: Guild | string): Promise<TextChannel | null> => {
+			return this.getChannel(guildResolvable, "member_log_channel_id");
+		},
+
+		set: (newChannel: TextChannel | string, guildResolvable: Guild | string): Promise<boolean> => {
+			return this.setChannel(newChannel, guildResolvable, "member_log_channel_id");
+		}
+	};
+
 	private async one(query: string): Promise<ConfigResult | null> {
 		return this.psql.one(query).catch(() => null);
 	}
@@ -18,71 +36,39 @@ export class ConfigManager extends Postgres {
 			.catch(() => false);
 	}
 
-	public botLogChannel = {
-		get: async (guildResolvable: Guild | string) => {
-			const guildId = typeof guildResolvable === "string" ? guildResolvable : guildResolvable.id;
+	private async getChannel(guildResolvable: Guild | string, key: ConfigColumns): Promise<TextChannel | null> {
+		const guildId = typeof guildResolvable === "string" ? guildResolvable : guildResolvable.id;
 
-			const query = `
-                SELECT bot_log_channel_id
-                FROM configs.guild_${guildId}
+		const query = `
+                SELECT ${key}
+                FROM configs.configs
                 WHERE id = ${guildId}
             `;
 
-			const botLogChannelId = await this.one(query).then((result) => result?.bot_log_channel_id ?? null);
-			if (!botLogChannelId) return null;
+		const channelId = await this.one(query).then((result) => result?.[key] ?? null);
+		if (!channelId) return null;
 
-			const guild = this.client.guilds.cache.get(guildId);
-			const channel = guild?.channels.cache.get(botLogChannelId);
-			if (!channel || channel.type !== "GUILD_TEXT") return null;
+		const guild = this.client.guilds.cache.get(guildId);
+		const channel = guild?.channels.cache.get(channelId);
+		if (!channel || channel.type !== "GUILD_TEXT") return null;
 
-			return channel as TextChannel;
-		},
+		return channel as TextChannel;
+	}
 
-		set: (newChannel: TextChannel | string, guildResolvable: Guild | string) => {
-			const channelId = typeof newChannel === "string" ? newChannel : newChannel.id;
-			const guildId = typeof guildResolvable === "string" ? guildResolvable : guildResolvable.id;
+	private async setChannel(
+		newChannel: TextChannel | string,
+		guildResolvable: Guild | string,
+		key: ConfigColumns
+	): Promise<boolean> {
+		const channelId = typeof newChannel === "string" ? newChannel : newChannel.id;
+		const guildId = typeof guildResolvable === "string" ? guildResolvable : guildResolvable.id;
 
-			const query = `
-                UPDATE configs.guild_${guildId}
-                SET bot_log_channel_id=${channelId}
+		const query = `
+                UPDATE configs.configs
+                SET ${key}=${channelId}
                 WHERE id = ${guildId};
             `;
 
-			return this.none(query);
-		}
-	};
-
-	public memberLogChannel = {
-		get: async (guildResolvable: Guild | string) => {
-			const guildId = typeof guildResolvable === "string" ? guildResolvable : guildResolvable.id;
-
-			const query = `
-                SELECT member_log_channel_id
-                FROM configs.guild_${guildId}
-                WHERE id = ${guildId}
-            `;
-
-			const memberLogChannelId = await this.one(query).then((result) => result?.member_log_channel_id ?? null);
-			if (!memberLogChannelId) return null;
-
-			const guild = this.client.guilds.cache.get(guildId);
-			const channel = guild?.channels.cache.get(memberLogChannelId);
-			if (!channel || channel.type !== "GUILD_TEXT") return null;
-
-			return channel as TextChannel;
-		},
-
-		set: (newChannel: TextChannel | string, guildResolvable: Guild | string) => {
-			const channelId = typeof newChannel === "string" ? newChannel : newChannel.id;
-			const guildId = typeof guildResolvable === "string" ? guildResolvable : guildResolvable.id;
-
-			const query = `
-                UPDATE configs.guild_${guildId}
-                SET member_log_channel_id=${channelId}
-                WHERE id = ${guildId};
-            `;
-
-			return this.none(query);
-		}
-	};
+		return this.none(query);
+	}
 }
