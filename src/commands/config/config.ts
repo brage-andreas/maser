@@ -9,22 +9,22 @@ export const data: ApplicationCommandData = {
 	options: [
 		{
 			name: "bot-log-channel",
-			description: "..",
+			description: "Options for this server's bot log channel",
 			type: ApplicationCommandOptionType.SubcommandGroup as number,
 			options: [
 				{
 					name: "view",
-					description: "views",
+					description: "Sends the option's value",
 					type: ApplicationCommandOptionType.Subcommand as number
 				},
 				{
 					name: "set",
-					description: "sets. Omit = remove",
+					description: "Sets a new value for the option",
 					type: ApplicationCommandOptionType.Subcommand as number,
 					options: [
 						{
 							name: "new-channel",
-							description: "The new channel to set to",
+							description: "The new channel to set to. Omitting this option will remove its value",
 							type: ApplicationCommandOptionType.Channel as number
 						}
 					]
@@ -33,22 +33,22 @@ export const data: ApplicationCommandData = {
 		},
 		{
 			name: "member-log-channel",
-			description: "..",
+			description: "Options for this server's member log channel",
 			type: ApplicationCommandOptionType.SubcommandGroup as number,
 			options: [
 				{
 					name: "view",
-					description: "views",
+					description: "Sends the option's value",
 					type: ApplicationCommandOptionType.Subcommand as number
 				},
 				{
 					name: "set",
-					description: "sets. Omit = remove",
+					description: "Sets a new value for the option",
 					type: ApplicationCommandOptionType.Subcommand as number,
 					options: [
 						{
 							name: "new-channel",
-							description: "The new channel to set to",
+							description: "The new channel to set to. Omitting this option will remove its value",
 							type: ApplicationCommandOptionType.Channel as number
 						}
 					]
@@ -62,10 +62,10 @@ export async function execute(intr: CmdIntr) {
 	const option = intr.options.getSubcommandGroup();
 	const method = intr.options.getSubcommand();
 
-	const config = new ConfigManager(intr.client);
+	const config = new ConfigManager(intr.client).setGuild(intr.guild);
 
 	// TODO: refactor
-	// horrible design, don't do it like this
+	// temporary
 	const base =
 		option === "member-log-channel"
 			? config.memberLogChannel
@@ -73,19 +73,28 @@ export async function execute(intr: CmdIntr) {
 			? config.botLogChannel
 			: null;
 
-	if (method === "view") {
-		const channel = await base?.get(intr.guild);
-		intr.editReply(channel?.toString() ?? "Not set");
-	} else if (method === "set") {
-		const channel = intr.options.getChannel("new-channel");
+	switch (method) {
+		case "view": {
+			const channel = await base?.get();
+			intr.editReply(channel?.toString() ?? "Not set");
 
-		if (channel && channel.type !== "GUILD_TEXT") {
-			intr.editReply("The channel needs to be a text-channel.");
-		} else {
-			const res = await base?.set((channel as TextChannel | null) ?? "null", intr.guild);
+			intr.logger.log(`Used method VIEW on option ${option.toUpperCase()}:\n  ${channel?.id ?? "Not set"}`);
+			break;
+		}
+
+		case "set": {
+			const channel = intr.options.getChannel("new-channel");
+
+			if (channel && channel.type !== "GUILD_TEXT") {
+				intr.editReply("The channel needs to be a text-channel.");
+				break;
+			}
+
+			const res = await base?.set((channel as TextChannel | null) ?? "null");
 			intr.editReply(`${res}`);
+
+			intr.logger.log(`Used method SET on option ${option.toUpperCase()}:\n  ${channel?.id ?? "null"}`);
+			break;
 		}
 	}
-
-	intr.logger.log("Configged");
 }
