@@ -41,7 +41,7 @@ export class ConfigManager extends Postgres {
 
 		const query = `
                 SELECT ${key}
-                FROM configs.configs
+                FROM configs.logs
                 WHERE id = ${guildId}
             `;
 
@@ -64,7 +64,7 @@ export class ConfigManager extends Postgres {
 		const guildId = typeof guildResolvable === "string" ? guildResolvable : guildResolvable.id;
 
 		const query = `
-                UPDATE configs.configs
+                UPDATE configs.logs
                 SET ${key}=${channelId}
                 WHERE id = ${guildId};
             `;
