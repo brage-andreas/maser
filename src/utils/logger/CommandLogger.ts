@@ -72,7 +72,9 @@ export class CommandLogger extends BaseLogger {
 	private channelLog(...messages: string[]) {
 		if (!this.interaction) return;
 
-		new ConfigManager(this.interaction.client).botLogChannel.get(this.interaction.guild).then((channel) => {
+		const config = new ConfigManager(this.interaction.client).setGuild(this.interaction.guildId);
+
+		config.botLogChannel.get().then((channel) => {
 			if (!channel) return;
 
 			const author = this.interaction!.user;
