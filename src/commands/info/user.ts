@@ -19,14 +19,17 @@ export const data: ApplicationCommandData = {
 };
 
 export async function execute(intr: CmdIntr) {
-	const user = intr.options.getUser("user") ?? intr.user;
-	const member = (intr.options.getMember("user") ?? intr.member) as GuildMember;
+	const userOptionIsProvided = !!intr.options.getUser("user");
+	const user = userOptionIsProvided ? intr.options.getUser("user", true) : intr.user;
+	const member = userOptionIsProvided ? (intr.options.getMember("user") as GuildMember | null) : intr.member;
 
 	const getDate = (timestamp: number | null) => {
 		return timestamp ? `${Util.Date(timestamp)}` : null;
 	};
 
-	const getRoles = (member: GuildMember) => {
+	const getRoles = (member: GuildMember | null) => {
+		if (!member) return null;
+
 		const roles = member.roles.cache;
 		if (roles.size === 1) return null;
 
@@ -45,9 +48,11 @@ export async function execute(intr: CmdIntr) {
 		return flags.charAt(0).toUpperCase() + flags.slice(1);
 	};
 
-	const getColor = (hex: `#${string}`) => {
+	const getColor = (hex: `#${string}` | undefined) => {
+		const invis = intr.client.colors.try("INVIS");
+		if (!hex) return invis;
 		const empty = hex === "#000000" || hex.toLowerCase() === "#ffffff";
-		return empty ? intr.client.colors.try("INVIS") : hex;
+		return empty ? invis : hex;
 	};
 
 	const avatar = user.displayAvatarURL({ size: 2048, dynamic: true });
@@ -58,11 +63,11 @@ export async function execute(intr: CmdIntr) {
 	const bot = user.bot;
 	const id = user.id;
 
-	const color = getColor(member.displayHexColor);
-	const joined = getDate(member.joinedTimestamp);
-	const owner = member.id === member.guild.ownerId;
-	const premium = !!member.premiumSince;
-	const name = member.displayName;
+	const color = getColor(member?.displayHexColor);
+	const joined = member ? getDate(member.joinedTimestamp) : null;
+	const owner = !!member && member.id === member?.guild.ownerId;
+	const premium = !!member?.premiumSince;
+	const name = member?.displayName ?? user.tag;
 	const roles = getRoles(member);
 
 	const userEmbed = new MessageEmbed()
@@ -72,12 +77,11 @@ export async function execute(intr: CmdIntr) {
 		.setThumbnail(avatar)
 		.setTitle(name)
 		.addField("Tag", tag, true)
-		.addField("Id", id, true)
-		.addField("Roles", roles ?? "No roles")
-		.addField("Bot", bot ? "Yes" : "No", true)
-		.addField("Boosting", premium ? "Yes" : "No", true)
-		.addField("Avatar", `[Link](${avatar})`)
-		.addField("Color", member.displayHexColor);
+		.addField("Id", id, true);
+
+	if (member) userEmbed.addField("Roles", roles ?? "No roles").addField("Bot", bot ? "Yes" : "No", true);
+	if (member) userEmbed.addField("Boosting", premium ? "Yes" : "No", true);
+	if (member) userEmbed.addField("Avatar", `[Link](${avatar})`).addField("Color", member.displayHexColor);
 
 	if (flags.length) userEmbed.addField("Badges", parseFlags(flags));
 	if (created) userEmbed.addField("Created", created, true);
