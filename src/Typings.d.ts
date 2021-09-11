@@ -5,8 +5,8 @@ import type { Clint } from "./extensions/Clint";
 // TODO: module augment
 
 export type ClientColors = Map<string, `#${string}`>;
-
 export type LoggerTypes = "COMMAND" | "ERROR" | "EVENT" | "INFO";
+export type ConfigColumns = "id" | "bot_log_channel_id" | "member_log_channel_id";
 
 export interface Command {
 	data: ApplicationCommandData;
@@ -27,9 +27,11 @@ export interface CmdIntr extends CommandInteraction {
 }
 
 export interface ConfigResult {
-	id: string;
-	bot_log_channel_id: string | null;
-	member_log_channel_id: string | null;
+	id?: string;
+	bot_log_channel_id?: string | null;
+	member_log_channel_id?: string | null;
 }
 
-export type ConfigColumns = "id" | "bot_log_channel_id" | "member_log_channel_id";
+export interface ExistsResult {
+	exists: boolean;
+}
