@@ -33,8 +33,8 @@ const parseOutput = (output: string | undefined | null) => {
 const parseInput = (input: string) => {
 	if (!input) return "```\nNo input\n```";
 
-	if (input.length + WRAP_LEN > 1024) {
-		return wrap(input.slice(0, 1021 - WRAP_LEN) + "...");
+	if (input.length + WRAP_LEN > 4096) {
+		return wrap(input.slice(0, 4093 - WRAP_LEN) + "...");
 	} else {
 		return wrap(input);
 	}
@@ -82,15 +82,19 @@ export async function evaluate(that: Message | CmdIntr, code: string, async = tr
 		const { output, files } = parseOutput(cleanOutput);
 		const input = parseInput(code);
 
-		const successEmbed = new MessageEmbed()
+		const successInputEmbed = new MessageEmbed()
 			.setAuthor(`${author.tag} (${author.id})`, author.displayAvatarURL())
 			.setColor(client.colors.try("GREEN"))
-			.addField("Input", input)
-			.addField("Output", output)
+			.setDescription("**Input**\n" + input)
+			.setTimestamp();
+		const successOutputEmbed = new MessageEmbed()
+			.setAuthor(`${author.tag} (${author.id})`, author.displayAvatarURL())
+			.setColor(client.colors.try("GREEN"))
+			.setDescription("**Output**\n" + output)
 			.setFooter(`${timeTaken} • ${type} (${constructor})`)
 			.setTimestamp();
 
-		return { files, embeds: [successEmbed], output: cleanOutput } as OutEval;
+		return { files, embeds: [successInputEmbed, successOutputEmbed], output: cleanOutput } as OutEval;
 	} catch (err) {
 		const error = err as Error; // stupid
 		const errorStr = error.stack ?? error.message ?? error.toString();
@@ -98,14 +102,18 @@ export async function evaluate(that: Message | CmdIntr, code: string, async = tr
 		const { output, files } = parseOutput(errorStr);
 		const input = parseInput(code);
 
-		const errorEmbed = new MessageEmbed()
+		const errorInputEmbed = new MessageEmbed()
 			.setAuthor(`${author.tag} (${author.id})`, author.displayAvatarURL())
 			.setColor(client.colors.try("RED"))
-			.addField("Input", input)
-			.addField("Error", output)
+			.setDescription("**Input**\n" + input)
+			.setTimestamp();
+		const errorOutputEmbed = new MessageEmbed()
+			.setAuthor(`${author.tag} (${author.id})`, author.displayAvatarURL())
+			.setColor(client.colors.try("RED"))
+			.setDescription("**Error**\n" + output)
 			.setFooter("Evaluation failed")
 			.setTimestamp();
 
-		return { files, embeds: [errorEmbed], output: errorStr } as OutEval;
+		return { files, embeds: [errorInputEmbed, errorOutputEmbed], output: errorStr } as OutEval;
 	}
 }
