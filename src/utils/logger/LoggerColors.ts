@@ -1,4 +1,4 @@
-import { LoggerTypes } from "../../typings.js";
+import { LoggerTypes } from "../../constants.js";
 
 const colors: Record<string, string> = {
 	yellow: "\x1b[93m",
@@ -27,9 +27,9 @@ export const gray = (text: string) => wrap(text, "gray");
 export const red = (text: string) => wrap(text, "red");
 
 export const getColor = (type: LoggerTypes) => {
-	if (type === "COMMAND") return green;
-	if (type === "ERROR") return red;
-	if (type === "EVENT") return blue;
-	if (type === "INFO") return yellow;
+	if (type === LoggerTypes.COMMAND) return green;
+	if (type === LoggerTypes.ERROR) return red;
+	if (type === LoggerTypes.EVENT) return blue;
+	if (type === LoggerTypes.INFO) return yellow;
 	return black;
 };

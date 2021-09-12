@@ -5,7 +5,6 @@ import type { Clint } from "./extensions/Clint";
 // TODO: module augment
 
 export type ClientColors = Map<string, `#${string}`>;
-export type LoggerTypes = "COMMAND" | "ERROR" | "EVENT" | "INFO";
 export type ConfigColumns = "id" | "bot_log_channel_id" | "member_log_channel_id";
 
 export interface Command {

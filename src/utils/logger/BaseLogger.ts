@@ -1,6 +1,6 @@
 import { getColor, gray, yellow } from "./LoggerColors.js";
 import { TraceValueManager } from "./TraceValueManager.js";
-import { LoggerTypes } from "../../typings.js";
+import { LoggerTypes } from "../../constants.js";
 import Util from "../index.js";
 
 /**

@@ -1,4 +1,5 @@
 import type { Guild } from "discord.js";
+import { LoggerTypes } from "../../constants.js";
 import { BaseLogger } from "./BaseLogger.js";
 
 export class EventLogger extends BaseLogger {
@@ -13,7 +14,7 @@ export class EventLogger extends BaseLogger {
 	}
 
 	public log(...messages: string[]) {
-		this.print("EVENT", this.event ?? "EVENT", ...messages);
+		this.print(LoggerTypes.EVENT, this.event ?? "EVENT", ...messages);
 	}
 
 	public setEvent(event: string | null) {

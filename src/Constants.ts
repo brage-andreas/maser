@@ -46,3 +46,10 @@ export const USER_FLAGS = {
 	TEAM_USER: "team user"
 };
 // *
+
+export enum LoggerTypes {
+	COMMAND,
+	ERROR,
+	EVENT,
+	INFO
+}

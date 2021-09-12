@@ -3,6 +3,7 @@ import type { CmdIntr } from "../../typings.js";
 
 import { ConfigManager } from "../../database/ConfigManager.js";
 import { MessageEmbed } from "discord.js";
+import { LoggerTypes } from "../../constants.js";
 import { BaseLogger } from "./BaseLogger.js";
 
 export class CommandLogger extends BaseLogger {
@@ -25,7 +26,7 @@ export class CommandLogger extends BaseLogger {
 
 	public log(...messages: string[]) {
 		if (!this.name) throw new Error("Name of command must be set to log command");
-		this.print("COMMAND", this.name, ...messages);
+		this.print(LoggerTypes.COMMAND, this.name, ...messages);
 		this.channelLog(...messages);
 	}
 

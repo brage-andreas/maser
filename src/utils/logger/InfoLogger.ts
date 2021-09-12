@@ -1,3 +1,4 @@
+import { LoggerTypes } from "../../constants.js";
 import { BaseLogger } from "./BaseLogger.js";
 
 export class InfoLogger extends BaseLogger {
@@ -6,6 +7,6 @@ export class InfoLogger extends BaseLogger {
 	}
 
 	public log(...messages: string[]) {
-		this.print("INFO", "INFO", ...messages);
+		this.print(LoggerTypes.INFO, "INFO", ...messages);
 	}
 }
