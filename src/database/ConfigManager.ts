@@ -17,7 +17,7 @@ export class ConfigManager extends Postgres {
 			return this.getChannel("bot_log_channel_id");
 		},
 
-		set: (newChannel: TextChannel | string): Promise<boolean> => {
+		set: async (newChannel: TextChannel | string): Promise<boolean> => {
 			this.setTable("logs");
 			return this.setChannel(newChannel, "bot_log_channel_id");
 		}
@@ -29,7 +29,7 @@ export class ConfigManager extends Postgres {
 			return this.getChannel("member_log_channel_id");
 		},
 
-		set: (newChannel: TextChannel | string): Promise<boolean> => {
+		set: async (newChannel: TextChannel | string): Promise<boolean> => {
 			this.setTable("logs");
 			return this.setChannel(newChannel, "member_log_channel_id");
 		}
@@ -37,12 +37,13 @@ export class ConfigManager extends Postgres {
 
 	private async getChannel(key: ConfigColumns): Promise<TextChannel | null> {
 		if (!this.guildId) throw new Error("Guild id must be set to the ConfigManager");
+		await this.still();
 
 		const query = `
-                SELECT ${key}
-                FROM configs.logs
-                WHERE id = ${this.guildId}
-            `;
+        SELECT ${key}
+        FROM configs.logs
+        WHERE id = ${this.guildId}
+        `;
 
 		const channelId = await this.one<ConfigResult>(query).then((result) => result?.[key] ?? null);
 		if (!channelId) return null;
@@ -57,7 +58,9 @@ export class ConfigManager extends Postgres {
 	private async setChannel(newChannel: TextChannel | string, key: ConfigColumns): Promise<boolean> {
 		const channelId = typeof newChannel === "string" ? newChannel : newChannel.id;
 
-		this.setGuild(this.guildId).setSchema("configs");
-		return this.updateRow("logs", [key], [channelId]);
+		this.setGuild(this.guildId).setSchema("configs").setTable("logs");
+		await this.still();
+
+		return this.updateRow([key], [channelId]);
 	}
 }

@@ -37,45 +37,48 @@ export default abstract class Postgres extends PostgresConnection {
 		return this;
 	}
 
-	protected async upsertRow(table: string) {
-		if (!this.guildId) throw new Error("Guild id must be set to the Creator");
-		if (!this.schema) throw new Error("Schema must be set to the Creator");
+	protected async upsertRow() {
+		const exists = await this.existsRow();
 
-		const exists = await this.existsRow(table);
 		if (!exists) {
-			await this.createRow(table);
+			await this.createRow();
 		}
 	}
 
-	protected async existsRow(table: string) {
-		if (!this.guildId) throw new Error("Guild id must be set to the Creator");
-		if (!this.schema) throw new Error("Schema must be set to the Creator");
+	protected async still(): Promise<boolean> {
+		if (!(await this.existsRow())) {
+			return this.createRow();
+		}
+
+		return true;
+	}
+
+	protected async existsRow(): Promise<boolean> {
+		this.checkProps();
 
 		const query = `
             SELECT EXISTS
-                (SELECT 1 FROM ${this.schema}."${table}" WHERE id=${this.guildId})
+                (SELECT 1 FROM ${this.schema!}."${this.table!}" WHERE id=${this.guildId!})
         `;
 
 		const res = await this.one<ExistsResult>(query);
-		return res ? res.exists : res;
+		return res ? res.exists : false;
 	}
 
-	protected createRow(table: string) {
-		if (!this.guildId) throw new Error("Guild id must be set to the Creator");
-		if (!this.schema) throw new Error("Schema must be set to the Creator");
+	protected createRow() {
+		this.checkProps();
 
 		const query = `
-            INSERT INTO ${this.schema}."${table}" (id)
-            VALUES (${this.guildId})
+            INSERT INTO ${this.schema!}."${this.table!}" (id)
+            VALUES (${this.guildId!})
             ON CONFLICT DO NOTHING;
         `;
 
 		return this.none(query);
 	}
 
-	protected updateRow(table: string, columns: string[], newValues: string[]): Promise<boolean> {
-		if (!this.guildId) throw new Error("Guild id must be set to the Creator");
-		if (!this.schema) throw new Error("Schema must be set to the Creator");
+	protected updateRow(columns: string[], newValues: string[]): Promise<boolean> {
+		this.checkProps();
 
 		const data: string[] = [];
 		for (let i = 0; i < columns.length; i++) {
@@ -85,9 +88,9 @@ export default abstract class Postgres extends PostgresConnection {
 		}
 
 		const query = `
-            UPDATE ${this.schema}."${table}"
+            UPDATE ${this.schema}."${this.table!}"
             SET ${data.join(", ")}
-            WHERE id=${this.guildId}
+            WHERE id=${this.guildId!}
         `;
 
 		return this.none(query);
@@ -105,5 +108,11 @@ export default abstract class Postgres extends PostgresConnection {
 
 		if (schema !== undefined) this.schema = schema;
 		if (guildResolvable !== undefined) this.guildId = this.resolveGuild(guildResolvable);
+	}
+
+	private checkProps(guild = true, schema = true, table = true) {
+		if (guild && !this.guildId) throw new Error("Guild id must be set to the Creator");
+		if (schema && !this.schema) throw new Error("Schema must be set to the Creator");
+		if (table && !this.table) throw new Error("Table must be set to the Creator");
 	}
 }
