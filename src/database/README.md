@@ -6,9 +6,13 @@ maser
     │   ├── id
     │   ├── bot_log_channel_id
     │   └── member_log_channel_id
-    └── commands
+    ├── commands
+    │   ├── id
+    │   └── disabled
+    └── roles
         ├── id
-        └── disabled
+        ├── mod
+        └── admin
 ```
 
 ## Databases
@@ -27,18 +31,26 @@ maser
 maser
 └── configs
     ├── logs
-    └── commands
+    ├── commands
+    └── roles
 ```
 
 **logs**
-| Column                  | Type     | Key         |
-| ----------------------- | -------- | ----------- |
-| `id`                    | `bigint` | `guildId`   |
-| `bot_log_channel_id`    | `bigint` | `channelId` |
-| `member_log_channel_id` | `bigint` | `channelId` |
+| Column                  | Type     | Key        |
+| ----------------------- | -------- | ---------- |
+| `id`                    | `bigint` | guild id   |
+| `bot_log_channel_id`    | `bigint` | channel id |
+| `member_log_channel_id` | `bigint` | channel id |
 
 **commands** (experimental)
-| Column    | Type     | Key         |
-| --------- | -------- | ----------- |
-| `id`      | `bigint` | `guildId`   |
-| `enabled` | none     | none        |
+| Column    | Type     | Key      |
+| --------- | -------- | -------- |
+| `id`      | `bigint` | guild id |
+| `enabled` | none     | none     |
+
+**roles** (TODO)
+| Column    | Type     | Key           |
+| --------- | -------- | ------------- |
+| `id`      | `bigint` | guild id      |
+| `mod`     | `bigint` | mod role id   |
+| `admin`   | `bigint` | admin role id |
