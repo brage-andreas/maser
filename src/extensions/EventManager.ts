@@ -18,8 +18,8 @@ export class EventManager {
 	 * Creates an event manager.
 	 */
 	constructor(client: Clint) {
-		this._events = new Map();
-		this.logger = new EventLogger();
+		this._events = new Map<string, Event>();
+		this.logger = new EventLogger(client);
 		this.client = client;
 	}
 

@@ -1,6 +1,6 @@
 import { Intents } from "discord.js";
 
-export const INTENTS = [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES];
+export const INTENTS = [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES];
 
 // * REGEXP
 export const GUILDEMOJI_REGEX = /<?(a)?:?(\w{2,32}):(\d{17,19})>?/;
