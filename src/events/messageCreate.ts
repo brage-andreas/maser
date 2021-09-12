@@ -9,7 +9,7 @@ import { evaluate } from "../utils/Eval.js";
 import Util from "../utils/index.js";
 
 export async function execute(client: Clint, msg: Message) {
-	if (msg.author.id !== client.application?.owner?.id || !client.user) return;
+	if (msg.author.id !== client.application.owner?.id) return;
 	if (msg.channel.type === "DM" || !msg.guild) return;
 
 	const split = msg.content.split(/\s+/g);

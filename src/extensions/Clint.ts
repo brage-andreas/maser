@@ -9,11 +9,11 @@ import { Client } from "discord.js";
 
 // TODO: module augment instead of monkey patch
 
-export class Clint extends Client {
+export class Clint extends Client<true> {
 	commands: CommandManager;
-	logger: InfoLogger;
-	events: EventManager;
 	colors: ColorManager;
+	events: EventManager;
+	logger: InfoLogger;
 	moji: EmojiManager;
 
 	constructor(options?: ClientOptions) {

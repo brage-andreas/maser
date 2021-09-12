@@ -35,7 +35,7 @@ export async function execute(intr: CmdIntr) {
 	const reply = intr.options.getBoolean("reply") ?? true;
 	const async = intr.options.getBoolean("async") ?? true;
 
-	if (intr.user.id !== intr.client.application?.owner?.id) return intr.editReply({ content: "No" });
+	if (intr.user.id !== intr.client.application.owner?.id) return intr.editReply({ content: "No" });
 
 	const { embeds, files, output } = await evaluate(intr, code, async);
 

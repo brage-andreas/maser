@@ -10,5 +10,5 @@ export async function execute(client: Clint) {
 		`In ${guilds} guilds, ${channels} channels, and ${users} users`
 	);
 
-	if (!client.application?.name) await client.application?.fetch();
+	if (!client.application.owner) await client.application?.fetch();
 }
