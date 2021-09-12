@@ -62,6 +62,8 @@ export async function execute(intr: CmdIntr) {
 	const option = intr.options.getSubcommandGroup();
 	const method = intr.options.getSubcommand();
 
+	if (intr.user.id !== intr.client.application.owner?.id) return intr.editReply({ content: "No" });
+
 	const config = new ConfigManager(intr.client).setGuild(intr.guild);
 
 	// TODO: refactor
