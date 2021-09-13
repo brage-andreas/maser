@@ -3,7 +3,7 @@ import { COLORS } from "../constants.js";
 /**
  * Manages colours for the client.
  */
-export class ColorManager {
+export default class ColorManager {
 	static HEX_REGEX = /^#[a-f0-9]{6}$/i;
 	public colors: Map<string, `#${string}`>;
 

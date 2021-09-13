@@ -1,4 +1,4 @@
-import { Clint } from "../../extensions/Clint.js";
+import type { Clint } from "../../extensions/";
 import postgres from "pg-promise";
 
 const connectionString = "postgres://postgres:admin@localhost:5432/maser";

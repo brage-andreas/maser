@@ -1,5 +1,5 @@
 import type { CmdIntr } from "../typings.js";
-import type { Clint } from "../extensions/Clint.js";
+import type { Clint } from "../extensions/";
 
 import Discord, { Message, MessageEmbed, MessageAttachment } from "discord.js";
 import { performance } from "perf_hooks";

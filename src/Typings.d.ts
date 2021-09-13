@@ -1,6 +1,6 @@
 import type { ApplicationCommandData, CommandInteraction, Guild, GuildMember } from "discord.js";
 import type { CommandLogger } from "./utils/logger/CommandLogger.js";
-import type { Clint } from "./extensions/Clint";
+import type { Clint } from "./extensions/";
 
 // TODO: module augment
 

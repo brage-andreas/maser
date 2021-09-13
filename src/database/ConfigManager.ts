@@ -1,7 +1,7 @@
 import type { TextChannel } from "discord.js";
-import { Clint } from "../extensions/Clint.js";
 import { ConfigColumns, ConfigResult } from "../typings.js";
 import Postgres, { CreatorOptions } from "./src/postgres.js";
+import { Clint } from "../extensions/";
 
 // TODO: refactor
 

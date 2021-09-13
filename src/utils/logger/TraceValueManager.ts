@@ -7,7 +7,7 @@ interface Cache {
 	user: string | null;
 }
 
-export class TraceValueManager {
+export default class TraceValueManager {
 	private _cache: Cache = this._emptyCache();
 
 	public get() {

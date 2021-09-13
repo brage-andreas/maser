@@ -4,9 +4,9 @@ import type { CmdIntr } from "../../typings.js";
 import { ConfigManager } from "../../database/ConfigManager.js";
 import { MessageEmbed } from "discord.js";
 import { LoggerTypes } from "../../constants.js";
-import { BaseLogger } from "./BaseLogger.js";
+import BaseLogger from "./BaseLogger.js";
 
-export class CommandLogger extends BaseLogger {
+export default class CommandLogger extends BaseLogger {
 	public interaction: CmdIntr | null;
 	public name: string | null;
 
@@ -76,17 +76,26 @@ export class CommandLogger extends BaseLogger {
 		const config = new ConfigManager(this.interaction.client).setGuild(this.interaction.guildId);
 
 		config.botLogChannel.get().then((channel) => {
+			if (!this.interaction) return;
 			if (!channel) return;
 
-			const author = this.interaction!.user;
-			const command = this.interaction!.commandName;
-			const embeds = [
-				new MessageEmbed()
-					.setAuthor(`${author.tag} (${author.id})`)
-					.setColor(this.interaction!.client.colors.try("INVIS"))
-					// will error on large messages
-					.setDescription(`Used command ${command}\n\`\`\`\n${messages.join("\n")}\n\`\`\``)
-			];
+			const author = this.interaction.user;
+			const command = this.interaction.commandName;
+
+			const firstMsg = `Used command ${command}\n`;
+			const length = messages.length;
+
+			const embeds = messages.map((msg, i) => {
+				const embed = new MessageEmbed().setTimestamp();
+
+				if (i === 0) embed.setAuthor(i === 0 ? `${author.tag} (${author.id})` : "");
+				if (length > 1) embed.setFooter(`${i + 1}/${length}`);
+
+				embed.setColor(this.interaction!.client.colors.try("INVIS"));
+				embed.setDescription(`${i === 0 ? firstMsg : ""}\`\`\`\n${msg}\n\`\`\``);
+
+				return embed;
+			});
 
 			channel.send({ embeds }).catch(() => null);
 		});

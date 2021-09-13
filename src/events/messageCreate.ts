@@ -1,10 +1,10 @@
-import type { Clint } from "../extensions/Clint.js";
 import type { Message } from "discord.js";
+import type { Clint } from "../extensions/";
 
 import { CODEBLOCK_REGEX, CODE_REGEX, ID_REGEX, USER_REGEX } from "../constants.js";
 import { MessageAttachment, MessageButton } from "discord.js";
-import { CommandLogger } from "../utils/logger/CommandLogger.js";
-import ButtonManager from "../extensions/ButtonManager.js";
+import { CommandLogger } from "../utils/logger/";
+import { ButtonManager } from "../extensions/";
 import { evaluate } from "../utils/Eval.js";
 import Util from "../utils/index.js";
 

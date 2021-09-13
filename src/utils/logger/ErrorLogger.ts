@@ -1,7 +1,7 @@
 import { LoggerTypes } from "../../constants.js";
-import { BaseLogger } from "./BaseLogger.js";
+import BaseLogger from "./BaseLogger.js";
 
-export class ErrorLogger extends BaseLogger {
+export default class ErrorLogger extends BaseLogger {
 	constructor() {
 		super();
 	}

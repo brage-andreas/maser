@@ -1,4 +1,4 @@
-import { Clint } from "./extensions/Clint.js";
+import { Clint } from "./extensions/";
 import dotenv from "dotenv";
 
 dotenv.config();

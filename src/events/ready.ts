@@ -1,4 +1,4 @@
-import type { Clint } from "../extensions/Clint.js";
+import type { Clint } from "../extensions/";
 
 export async function execute(client: Clint) {
 	const guilds = client.guilds.cache.size;

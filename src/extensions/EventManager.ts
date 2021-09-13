@@ -1,15 +1,15 @@
 import type { Event } from "../typings.js";
-import type { Clint } from "./Clint";
+import type { Clint } from "./";
 
+import { EventLogger } from "../utils/logger/";
 import { readdirSync } from "fs";
-import { EventLogger } from "../utils/logger/EventLogger.js";
 
 const EVENT_DIR = new URL("../events", import.meta.url);
 
 /**
  * Manages events for the client.
  */
-export class EventManager {
+export default class EventManager {
 	private _events: Map<string, Event>;
 	public logger: EventLogger;
 	public client: Clint;

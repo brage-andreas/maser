@@ -1,12 +1,12 @@
-import type { Clint } from "../../extensions/Clint.js";
+import type { Clint } from "../../extensions/";
 import { Guild, GuildMember, MessageEmbed } from "discord.js";
 
 import { ConfigManager } from "../../database/ConfigManager.js";
 import { LoggerTypes } from "../../constants.js";
-import { BaseLogger } from "./BaseLogger.js";
-import Util from "../index.js";
+import BaseLogger from "./BaseLogger.js";
+import Util from "../";
 
-export class EventLogger extends BaseLogger {
+export default class EventLogger extends BaseLogger {
 	client: Clint;
 	event: string | null;
 	guild: Guild | null;

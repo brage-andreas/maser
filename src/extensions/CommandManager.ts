@@ -7,9 +7,8 @@ import type {
 import type { CmdIntr, Command } from "../typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
-import { ErrorLogger } from "../utils/logger/ErrorLogger.js";
+import { ErrorLogger, InfoLogger } from "../utils/logger";
 import { readdirSync } from "fs";
-import { InfoLogger } from "../utils/logger/InfoLogger.js";
 import { ID_REGEX } from "../constants.js";
 import { Routes } from "discord-api-types/v9";
 import { REST } from "@discordjs/rest";
@@ -22,7 +21,7 @@ const SUB_TYPE = ApplicationCommandOptionType.Subcommand as number;
 /**
  * Manages commands for the client.
  */
-export class CommandManager {
+export default class CommandManager {
 	private _commands: Map<string, Command>;
 
 	/**
@@ -108,7 +107,7 @@ export class CommandManager {
 			const hide = this.getDefaultHide(name);
 			const hideOption = {
 				name: "hide",
-				description: `Hide the output. Default is ${hide}`,
+				description: `Hide the response. Default is ${hide}`,
 				type: ApplicationCommandOptionType.Boolean as number
 			};
 

@@ -1,9 +1,9 @@
-import type { Clint } from "./Clint";
+import type { Clint } from "./";
 
 /**
  * Manages emojis for the client.
  */
-export class EmojiManager {
+export default class EmojiManager {
 	public client: Clint;
 
 	/**

@@ -3,9 +3,9 @@ import type { CmdIntr } from "../../typings.js";
 
 import { MessageAttachment, MessageButton } from "discord.js";
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
-import ButtonManager from "../../extensions/ButtonManager.js";
+import { ButtonManager } from "../../extensions/";
 import { evaluate } from "../../utils/Eval.js";
-import Util from "../../utils/index.js";
+import Util from "../../utils/";
 
 export const data: ApplicationCommandData = {
 	name: "eval",
@@ -87,5 +87,5 @@ export async function execute(intr: CmdIntr) {
 		});
 	}
 
-	intr.logger.log(`Code:\n${Util.Indent(code, 4)}\nOutput:\n${Util.Indent(output, 4)}`);
+	intr.logger.log(`Code:\n${Util.Indent(code, 4)}`, `Output:\n${Util.Indent(output, 4)}`);
 }

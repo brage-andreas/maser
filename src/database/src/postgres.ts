@@ -1,5 +1,5 @@
+import type { Clint } from "../../extensions/";
 import type { Guild } from "discord.js";
-import type { Clint } from "../../extensions/Clint.js";
 import { ExistsResult } from "../../typings.js";
 import PostgresConnection from "./connection.js";
 
