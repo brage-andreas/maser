@@ -8,7 +8,7 @@ export const data: ApplicationCommandData = {
 	description: "Manages this server's config",
 	options: [
 		{
-			name: "bot-log-channel",
+			name: "bot-log",
 			description: "Options for this server's bot log channel",
 			type: ApplicationCommandOptionType.SubcommandGroup as number,
 			options: [
@@ -23,7 +23,7 @@ export const data: ApplicationCommandData = {
 					type: ApplicationCommandOptionType.Subcommand as number,
 					options: [
 						{
-							name: "new-channel",
+							name: "channel",
 							description: "The new channel to set to. Omitting this option will remove its value",
 							type: ApplicationCommandOptionType.Channel as number
 						}
@@ -32,7 +32,7 @@ export const data: ApplicationCommandData = {
 			]
 		},
 		{
-			name: "member-log-channel",
+			name: "member-log",
 			description: "Options for this server's member log channel",
 			type: ApplicationCommandOptionType.SubcommandGroup as number,
 			options: [
@@ -47,7 +47,7 @@ export const data: ApplicationCommandData = {
 					type: ApplicationCommandOptionType.Subcommand as number,
 					options: [
 						{
-							name: "new-channel",
+							name: "channel",
 							description: "The new channel to set to. Omitting this option will remove its value",
 							type: ApplicationCommandOptionType.Channel as number
 						}
