@@ -44,18 +44,18 @@ export async function execute(intr: CmdIntr) {
 
 		const outputButton = new MessageButton() //
 			.setCustomId("output")
-			.setLabel("Send output")
+			.setLabel("Send full output")
 			.setStyle("PRIMARY");
 
 		const codeButton = new MessageButton() //
 			.setCustomId("code")
-			.setLabel("Send code")
+			.setLabel("Send full code")
 			.setStyle("PRIMARY");
 
-		const msg = (await intr.editReply({ embeds, files, components: buttonManager.rows })) as Message;
+		buttonManager.setRows(outputButton, codeButton).setUser(intr.user);
 
-		buttonManager.setRows(outputButton, codeButton).setMessage(msg).setUser(intr.user);
-		const collector = buttonManager.createCollector();
+		const msg = (await intr.editReply({ embeds, files, components: buttonManager.rows })) as Message;
+		const collector = buttonManager.setMessage(msg).createCollector();
 
 		collector.on("collect", (interaction) => {
 			if (interaction.customId === "output") {
@@ -82,7 +82,7 @@ export async function execute(intr: CmdIntr) {
 		});
 
 		collector.on("dispose", (intr) => {
-			// this doesn't actually seem to work :shrug:
+			// this doesn't seem to actually work :shrug:
 			intr.reply({ content: "You cannot use this button", ephemeral: true });
 		});
 	}

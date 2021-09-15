@@ -65,12 +65,12 @@ export async function execute(client: Clint, msg: Message) {
 
 		const outputButton = new MessageButton() //
 			.setCustomId("output")
-			.setLabel("Send output")
+			.setLabel("Send full output")
 			.setStyle("PRIMARY");
 
 		const codeButton = new MessageButton() //
 			.setCustomId("code")
-			.setLabel("Send code")
+			.setLabel("Send full code")
 			.setStyle("PRIMARY");
 
 		buttonManager.setRows(outputButton, codeButton);

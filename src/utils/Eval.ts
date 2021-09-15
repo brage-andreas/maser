@@ -12,15 +12,17 @@ interface OutEval {
 	output: string;
 }
 
-const wrap = (str: string) => `\`\`\`js\n${str}\n\`\`\``;
 const WRAP_LEN = 10;
+const MAX_EMBED_LEN = 4096;
+
+const wrap = (str: string) => `\`\`\`js\n${str}\n\`\`\``;
 
 const parseOutput = (output: string | undefined | null) => {
 	const files: MessageAttachment[] = [];
 
 	if (!output) return { output: wrap(`${output}`), files };
-	const tooLong = output.length + WRAP_LEN > 1024;
-	const evaluated = tooLong ? "Output was too long. Use the buttons below to see it." : wrap(output);
+	const tooLong = output.length + WRAP_LEN > MAX_EMBED_LEN;
+	const evaluated = tooLong ? wrap(output.slice(0, MAX_EMBED_LEN - 3 - WRAP_LEN) + "...") : wrap(output);
 
 	if (tooLong) {
 		const outputBuffer = Buffer.from(output);
@@ -33,8 +35,8 @@ const parseOutput = (output: string | undefined | null) => {
 const parseInput = (input: string) => {
 	if (!input) return "```\nNo input\n```";
 
-	if (input.length + WRAP_LEN > 4096) {
-		return wrap(input.slice(0, 4093 - WRAP_LEN) + "...");
+	if (input.length + WRAP_LEN > MAX_EMBED_LEN) {
+		return wrap(input.slice(0, MAX_EMBED_LEN - 3 - WRAP_LEN) + "...");
 	} else {
 		return wrap(input);
 	}
