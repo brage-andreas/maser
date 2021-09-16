@@ -4,7 +4,7 @@ import type { CmdIntr } from "../../typings.js";
 import { MessageAttachment, MessageButton } from "discord.js";
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import { ButtonManager } from "../../extensions/";
-import { evaluate } from "../../utils/Eval.js";
+import evaluate from "../../utils/eval.js";
 import Util from "../../utils/";
 
 export const data: ApplicationCommandData = {
@@ -21,11 +21,6 @@ export const data: ApplicationCommandData = {
 			name: "reply",
 			description: "Reply to the command. Default is true",
 			type: ApplicationCommandOptionType.Boolean as number
-		},
-		{
-			name: "async",
-			description: "Asyncronously execute the code. Default is true",
-			type: ApplicationCommandOptionType.Boolean as number
 		}
 	]
 };
@@ -33,24 +28,25 @@ export const data: ApplicationCommandData = {
 export async function execute(intr: CmdIntr) {
 	const code = intr.options.getString("code", true);
 	const reply = intr.options.getBoolean("reply") ?? true;
-	const async = intr.options.getBoolean("async") ?? true;
 
 	if (intr.user.id !== intr.client.application.owner?.id) return intr.editReply({ content: "No" });
 
-	const { embeds, files, output } = await evaluate(intr, code, async);
+	const { embeds, files, output } = await evaluate(code, intr);
 
 	if (reply) {
 		const buttonManager = new ButtonManager();
 
 		const outputButton = new MessageButton() //
+			.setLabel("Full output")
 			.setCustomId("output")
-			.setLabel("Send full output")
-			.setStyle("PRIMARY");
+			.setStyle("PRIMARY")
+			.setEmoji("📤");
 
 		const codeButton = new MessageButton() //
+			.setLabel("Full code")
 			.setCustomId("code")
-			.setLabel("Send full code")
-			.setStyle("PRIMARY");
+			.setStyle("PRIMARY")
+			.setEmoji("📥");
 
 		buttonManager.setRows(outputButton, codeButton).setUser(intr.user);
 

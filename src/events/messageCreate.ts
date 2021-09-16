@@ -5,7 +5,7 @@ import { CODEBLOCK_REGEX, CODE_REGEX, ID_REGEX, USER_REGEX } from "../constants.
 import { MessageAttachment, MessageButton } from "discord.js";
 import { CommandLogger } from "../utils/logger/";
 import { ButtonManager } from "../extensions/";
-import { evaluate } from "../utils/Eval.js";
+import evaluate from "../utils/eval.js";
 import Util from "../utils/index.js";
 
 export async function execute(client: Clint, msg: Message) {
@@ -59,19 +59,21 @@ export async function execute(client: Clint, msg: Message) {
 		const captured = (msg.content.match(CODEBLOCK_REGEX) ?? msg.content.match(CODE_REGEX))?.groups;
 		const code = captured?.code ?? split.join(" ");
 
-		const { embeds, files, output } = await evaluate(msg, code);
+		const { embeds, files, output } = await evaluate(code, msg);
 
 		const buttonManager = new ButtonManager();
 
 		const outputButton = new MessageButton() //
+			.setLabel("Full output")
 			.setCustomId("output")
-			.setLabel("Send full output")
-			.setStyle("PRIMARY");
+			.setStyle("PRIMARY")
+			.setEmoji("📤");
 
 		const codeButton = new MessageButton() //
+			.setLabel("Full code")
 			.setCustomId("code")
-			.setLabel("Send full code")
-			.setStyle("PRIMARY");
+			.setStyle("PRIMARY")
+			.setEmoji("📥");
 
 		buttonManager.setRows(outputButton, codeButton);
 		const reply = await msg.reply({ embeds, files, components: buttonManager.rows });
