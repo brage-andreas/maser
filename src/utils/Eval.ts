@@ -1,121 +1,133 @@
 import type { CmdIntr } from "../typings.js";
-import type { Clint } from "../extensions/";
 
-import Discord, { Message, MessageEmbed, MessageAttachment } from "discord.js";
-import { performance } from "perf_hooks";
+import Discord, { Message, MessageAttachment, MessageEmbed } from "discord.js";
 import { TOKEN_REGEX } from "../constants.js";
+import { performance } from "perf_hooks";
+import { Clint } from "../extensions";
 import ms from "ms";
 
-interface OutEval {
-	embeds: MessageEmbed[];
+// HOW DOES THIS ERROR WHEN I DON'T RESOLVE PROMISES THAT REJECT
+// I DON'T GET IT :(
+
+interface RawEvalOutput {
+	result: any;
+	time: number;
+}
+
+interface EvalOutput {
 	files?: MessageAttachment[];
+	embeds: MessageEmbed[];
 	output: string;
 }
 
-const WRAP_LEN = 10;
-const MAX_EMBED_LEN = 4096;
-
 const wrap = (str: string) => `\`\`\`js\n${str}\n\`\`\``;
 
-const parseOutput = (output: string | undefined | null) => {
-	const files: MessageAttachment[] = [];
+const MAX_EMBED_LEN = 4096;
+const WRAP_LEN = 10;
+const SAFE_EMBED_LEN = MAX_EMBED_LEN - WRAP_LEN - 3;
 
-	if (!output) return { output: wrap(`${output}`), files };
-	const tooLong = output.length + WRAP_LEN > MAX_EMBED_LEN;
-	const evaluated = tooLong ? wrap(output.slice(0, MAX_EMBED_LEN - 3 - WRAP_LEN) + "...") : wrap(output);
-
-	if (tooLong) {
-		const outputBuffer = Buffer.from(output);
-		files.push(new MessageAttachment(outputBuffer, "output.txt"));
-	}
-
-	return { output: evaluated, files };
-};
-
-const parseInput = (input: string) => {
-	if (!input) return "```\nNo input\n```";
-
-	if (input.length + WRAP_LEN > MAX_EMBED_LEN) {
-		return wrap(input.slice(0, MAX_EMBED_LEN - 3 - WRAP_LEN) + "...");
-	} else {
-		return wrap(input);
-	}
-};
-
-const stringify = (raw: any): string => {
-	if (!raw || typeof raw === "function") {
-		return !raw ? `${raw}` : raw.toString();
-	} else {
-		return JSON.stringify(raw, null, 2);
-	}
-};
-
-export async function evaluate(that: Message | CmdIntr, code: string, async = true) {
-	const author = that instanceof Message ? that.author : that.user;
-
-	// * FOR EVAL USE
-	const client = that.client as Clint;
-	const D = Discord; // Can't use it without this for some reason
-
-	const testId = async (id: string) => {
-		return await that.client.users
-			.fetch(id)
-			.then((user) => `${user.tag} ${user.id}`)
-			.catch(() => null);
-	};
-	// *
-
-	try {
-		if (!code) throw new Error("'code' must be non-empty string");
-
-		const method = `(${async ? "async" : ""} () => {\n${code}\n})()`;
+const _eval = (code: string, that: CmdIntr | Message): Promise<RawEvalOutput> => {
+	return new Promise(async (resolve, reject) => {
+		const D = Discord;
+		const client = that.client as Clint;
 
 		const start = performance.now();
-		const rawOutput = await eval(method);
-		const end = performance.now();
+		await eval(`(async () => {\n${code}\n})()`)
+			.then((result: any) => resolve({ result, time: performance.now() - start }))
+			.catch((err: Error) => reject(err));
+	});
+};
 
-		const type = typeof rawOutput;
-		const constructor = rawOutput ? (rawOutput.constructor.name as string) : "Nullish";
-		const timeTaken = ms(Number((end - start).toFixed(3)), { long: true }).replace(".", ",");
+const stringify = (output: any): string => {
+	if (!output) return `${output}`;
+	if (typeof output === "function") return output.toString();
 
-		const outputStr = stringify(rawOutput);
-		const cleanOutput = outputStr.replaceAll(new RegExp(TOKEN_REGEX, "g"), "[REDACTED]");
+	return JSON.stringify(output, null, 2) ?? "Something went wrong with the output";
+};
 
-		const { output, files } = parseOutput(cleanOutput);
-		const input = parseInput(code);
+const parse = (output: string, fileName: string) => {
+	const files: MessageAttachment[] = [];
 
-		const successInputEmbed = new MessageEmbed()
-			.setAuthor(`${author.tag} (${author.id})`, author.displayAvatarURL())
-			.setColor(client.colors.try("GREEN"))
-			.setDescription("**Input**\n" + input)
-			.setTimestamp();
-		const successOutputEmbed = new MessageEmbed()
-			.setAuthor(`${author.tag} (${author.id})`, author.displayAvatarURL())
-			.setColor(client.colors.try("GREEN"))
-			.setDescription("**Output**\n" + output)
-			.setFooter(`${timeTaken} • ${type} (${constructor})`)
-			.setTimestamp();
+	const actualLength = output.length + WRAP_LEN;
 
-		return { files, embeds: [successInputEmbed, successOutputEmbed], output: cleanOutput } as OutEval;
-	} catch (err) {
-		const error = err as Error; // stupid
-		const errorStr = error.stack ?? error.message ?? error.toString();
+	const tooLong = actualLength > MAX_EMBED_LEN;
+	const evaluated = tooLong ? wrap(output.slice(0, SAFE_EMBED_LEN) + "...") : wrap(output);
 
-		const { output, files } = parseOutput(errorStr);
-		const input = parseInput(code);
-
-		const errorInputEmbed = new MessageEmbed()
-			.setAuthor(`${author.tag} (${author.id})`, author.displayAvatarURL())
-			.setColor(client.colors.try("RED"))
-			.setDescription("**Input**\n" + input)
-			.setTimestamp();
-		const errorOutputEmbed = new MessageEmbed()
-			.setAuthor(`${author.tag} (${author.id})`, author.displayAvatarURL())
-			.setColor(client.colors.try("RED"))
-			.setDescription("**Error**\n" + output)
-			.setFooter("Evaluation failed")
-			.setTimestamp();
-
-		return { files, embeds: [errorInputEmbed, errorOutputEmbed], output: errorStr } as OutEval;
+	if (tooLong) {
+		const file = new MessageAttachment(Buffer.from(output), fileName);
+		files.push(file);
 	}
+
+	return { parsed: evaluated, files };
+};
+
+export default async function evaluate(code: string, that: CmdIntr | Message) {
+	const author = that instanceof Message ? that.author : that.user;
+	const authorName = `${author.tag} (${author.id})`;
+	const authorAvatar = author.displayAvatarURL();
+	const client = that.client as Clint;
+
+	return await _eval(code, that)
+		.then((raw: RawEvalOutput) => {
+			const { result, time } = raw;
+
+			const type = typeof result;
+			const constructor = result ? (result.constructor.name as string) : "Nullish";
+			const timeTaken = ms(Number(time.toFixed(3)), { long: true }).replace(".", ",");
+
+			const stringedOutput = stringify(result).replaceAll(new RegExp(TOKEN_REGEX, "g"), "[REDACTED]");
+
+			const { parsed: parsedOutput, files: outputFiles } = parse(stringedOutput, "output.txt");
+			const { parsed: parsedInput, files: inputFiles } = parse(code, "code.txt");
+			const files = outputFiles.concat(inputFiles);
+
+			const successInputEmbed = new MessageEmbed()
+				.setAuthor(authorName, authorAvatar)
+				.setColor(client.colors.try("GREEN"))
+				.setDescription("**Input**\n" + parsedInput)
+				.setTimestamp();
+
+			const successOutputEmbed = new MessageEmbed()
+				.setAuthor(authorName, authorAvatar)
+				.setColor(client.colors.try("GREEN"))
+				.setDescription("**Output**\n" + parsedOutput)
+				.setFooter(`${timeTaken} • ${type} (${constructor})`)
+				.setTimestamp();
+
+			const output: EvalOutput = {
+				embeds: [successInputEmbed, successOutputEmbed],
+				output: stringedOutput,
+				files
+			};
+
+			return output;
+		})
+		.catch((error: Error) => {
+			const msg = error.stack ?? error.toString();
+
+			const { parsed: parsedError, files: errorFiles } = parse(msg, "error.txt");
+			const { parsed: parsedInput, files: inputFiles } = parse(code, "code.txt");
+			const files = errorFiles.concat(inputFiles);
+
+			const errorInputEmbed = new MessageEmbed()
+				.setAuthor(authorName, authorAvatar)
+				.setColor(client.colors.try("RED"))
+				.setDescription("**Input**\n" + parsedInput)
+				.setTimestamp();
+
+			const errorOutputEmbed = new MessageEmbed()
+				.setAuthor(authorName, authorAvatar)
+				.setColor(client.colors.try("RED"))
+				.setDescription("**Error**\n" + parsedError)
+				.setFooter("Evaluation failed")
+				.setTimestamp();
+
+			const output: EvalOutput = {
+				embeds: [errorInputEmbed, errorOutputEmbed],
+				output: msg,
+				files
+			};
+
+			return output;
+		});
 }
