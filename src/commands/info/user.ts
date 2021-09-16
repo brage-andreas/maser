@@ -75,15 +75,18 @@ export async function execute(intr: CmdIntr) {
 		.setTimestamp()
 		.setColor(color)
 		.setThumbnail(avatar)
-		.setTitle(name)
-		.addField("Tag", tag, true)
-		.addField("Id", id, true);
+		.setTitle(name);
 
-	if (member) userEmbed.addField("Roles", roles ?? "No roles").addField("Bot", bot ? "Yes" : "No", true);
-	if (member) userEmbed.addField("Boosting", premium ? "Yes" : "No", true);
-	if (member) userEmbed.addField("Avatar", `[Link](${avatar})`).addField("Color", member.displayHexColor);
+	if (member) userEmbed.addField("Tag", tag);
+	userEmbed.addField("Id", id);
 
-	if (flags.length) userEmbed.addField("Badges", parseFlags(flags));
+	if (member) {
+		userEmbed.addField("Roles", roles ?? "No roles").addField("Bot", bot ? "Yes" : "No", true);
+		userEmbed.addField("Boosting", premium ? "Yes" : "No", true);
+		userEmbed.addField("Avatar", `[Link](${avatar})`).addField("Color", member.displayHexColor);
+	}
+
+	userEmbed.addField("Badges", flags.length ? parseFlags(flags) : "No badges");
 	if (created) userEmbed.addField("Created", created, true);
 	if (joined) userEmbed.addField("Joined", joined, true);
 	if (owner) userEmbed.setDescription("👑 Server owner");
