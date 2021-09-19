@@ -1,4 +1,4 @@
-import { LoggerTypes } from "../../constants.js";
+import { LOGGER_TYPES } from "../../constants.js";
 import BaseLogger from "./BaseLogger.js";
 
 export default class ErrorLogger extends BaseLogger {
@@ -7,6 +7,6 @@ export default class ErrorLogger extends BaseLogger {
 	}
 
 	public log(...messages: string[]) {
-		this.print(LoggerTypes.ERROR, "ERROR", ...messages);
+		this.print(LOGGER_TYPES.ERROR, "ERROR", ...messages);
 	}
 }
