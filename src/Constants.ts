@@ -47,9 +47,15 @@ export const USER_FLAGS = {
 };
 // *
 
-export enum LoggerTypes {
+export enum LOGGER_TYPES {
 	COMMAND,
 	ERROR,
 	EVENT,
 	INFO
+}
+
+export enum CONFIG_OPTIONS {
+	BOT_LOG,
+	MEMBER_LOG,
+	ROLES
 }
