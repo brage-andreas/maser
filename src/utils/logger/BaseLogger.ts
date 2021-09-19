@@ -1,6 +1,6 @@
 import { getColor, gray, yellow } from "./LoggerColors.js";
 import TraceValueManager from "./TraceValueManager.js";
-import { LoggerTypes } from "../../constants.js";
+import { LOGGER_TYPES } from "../../constants.js";
 import Util from "../";
 
 /**
@@ -21,7 +21,7 @@ export default abstract class BaseLogger {
 	 * All messages are parsed.
 	 * Type defines what colour is printed in console.
 	 */
-	protected print(type: LoggerTypes, name: string, ...messages: string[]): void {
+	protected print(type: LOGGER_TYPES, name: string, ...messages: string[]): void {
 		this._printBase(type, name);
 		this._printTrace();
 
@@ -52,7 +52,7 @@ export default abstract class BaseLogger {
 	/**
 	 * Prints the base of this log, along side the current time.
 	 */
-	private _printBase(type: LoggerTypes, name: string): void {
+	private _printBase(type: LOGGER_TYPES, name: string): void {
 		const colorFn = getColor(type);
 		const timeStr = gray(Util.Now());
 		const nameStr = colorFn(`[${name.toUpperCase()}]`);
