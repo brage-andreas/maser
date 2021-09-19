@@ -20,7 +20,7 @@ interface EvalOutput {
 	output: string;
 }
 
-const wrap = (str: string) => `\`\`\`js\n${str}\n\`\`\``;
+const wrap = (str: string, style: string | null) => `\`\`\`${style ?? ""}\n${str}\n\`\`\``;
 
 const MAX_EMBED_LEN = 4096;
 const WRAP_LEN = 10;
@@ -45,13 +45,13 @@ const stringify = (output: any): string => {
 	return JSON.stringify(output, null, 2) ?? "Something went wrong with the output";
 };
 
-const parse = (output: string, fileName: string) => {
+const parse = (output: string, fileName: string, embedStyle: string | null) => {
 	const files: MessageAttachment[] = [];
 
 	const actualLength = output.length + WRAP_LEN;
 
 	const tooLong = actualLength > MAX_EMBED_LEN;
-	const evaluated = tooLong ? wrap(output.slice(0, SAFE_EMBED_LEN) + "...") : wrap(output);
+	const evaluated = tooLong ? wrap(output.slice(0, SAFE_EMBED_LEN) + "...", embedStyle) : wrap(output, embedStyle);
 
 	if (tooLong) {
 		const file = new MessageAttachment(Buffer.from(output), fileName);
@@ -77,8 +77,8 @@ export default async function evaluate(code: string, that: CmdIntr | Message) {
 
 			const stringedOutput = stringify(result).replaceAll(new RegExp(TOKEN_REGEX, "g"), "[REDACTED]");
 
-			const { parsed: parsedOutput, files: outputFiles } = parse(stringedOutput, "output.txt");
-			const { parsed: parsedInput, files: inputFiles } = parse(code, "code.txt");
+			const { parsed: parsedInput, files: inputFiles } = parse(code, "code.txt", "js");
+			const { parsed: parsedOutput, files: outputFiles } = parse(stringedOutput, "output.txt", "js");
 			const files = outputFiles.concat(inputFiles);
 
 			const successInputEmbed = new MessageEmbed()
@@ -105,8 +105,8 @@ export default async function evaluate(code: string, that: CmdIntr | Message) {
 		.catch((error: Error) => {
 			const msg = error.stack ?? error.toString();
 
-			const { parsed: parsedError, files: errorFiles } = parse(msg, "error.txt");
-			const { parsed: parsedInput, files: inputFiles } = parse(code, "code.txt");
+			const { parsed: parsedInput, files: inputFiles } = parse(code, "code.txt", "js");
+			const { parsed: parsedError, files: errorFiles } = parse(msg, "error.txt", null);
 			const files = errorFiles.concat(inputFiles);
 
 			const errorInputEmbed = new MessageEmbed()
