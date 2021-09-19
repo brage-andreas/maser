@@ -1,9 +1,9 @@
-import type { Guild, TextBasedChannels, User } from "discord.js";
+import { Guild, TextBasedChannels, TextChannel, User } from "discord.js";
 import type { CmdIntr } from "../../typings.js";
 
-import { ConfigManager } from "../../database/ConfigManager.js";
 import { MessageEmbed } from "discord.js";
-import { LoggerTypes } from "../../constants.js";
+import { LOGGER_TYPES } from "../../constants.js";
+import ConfigManager from "../../database/config/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";
 
 export default class CommandLogger extends BaseLogger {
@@ -26,7 +26,7 @@ export default class CommandLogger extends BaseLogger {
 
 	public log(...messages: string[]) {
 		if (!this.name) throw new Error("Name of command must be set to log command");
-		this.print(LoggerTypes.COMMAND, this.name, ...messages);
+		this.print(LOGGER_TYPES.COMMAND, this.name, ...messages);
 		this.channelLog(...messages);
 	}
 
@@ -72,10 +72,11 @@ export default class CommandLogger extends BaseLogger {
 	// prototype
 	private channelLog(...messages: string[]) {
 		if (!this.interaction) return;
+		const { client, guild } = this.interaction;
 
-		const config = new ConfigManager(this.interaction.client).setGuild(this.interaction.guildId);
+		const botLogManager = new ConfigManager(client, guild.id);
 
-		config.botLogChannel.get().then((channel) => {
+		botLogManager.botLog.get<TextChannel>().then((channel) => {
 			if (!this.interaction) return;
 			if (!channel) return;
 
