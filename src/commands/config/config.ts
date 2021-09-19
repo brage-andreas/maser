@@ -1,7 +1,10 @@
-import type { ApplicationCommandData, TextChannel } from "discord.js";
+import type { ApplicationCommandData } from "discord.js";
 import type { CmdIntr } from "../../typings.js";
+
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
-import { ConfigManager } from "../../database/ConfigManager.js";
+import ConfigManager from "../../database/config/ConfigManager.js";
+import configRoles from "./options/roles.js";
+import configLogs from "./options/logs.js";
 
 export const data: ApplicationCommandData = {
 	name: "config",
@@ -62,41 +65,21 @@ export async function execute(intr: CmdIntr) {
 	const option = intr.options.getSubcommandGroup();
 	const method = intr.options.getSubcommand();
 
+	// temporary
 	if (intr.user.id !== intr.client.application.owner?.id) return intr.editReply({ content: "No" });
 
-	const config = new ConfigManager(intr.client).setGuild(intr.guild);
+	const config = new ConfigManager(intr.client, intr.guild.id);
 
-	// TODO: refactor
-	// temporary
-	const base =
-		option === "member-log-channel"
-			? config.memberLogChannel
-			: option === "bot-log-channel"
-			? config.botLogChannel
-			: null;
+	const data = { intr, option, method, config };
 
-	switch (method) {
-		case "view": {
-			const channel = await base?.get();
-			intr.editReply(channel?.toString() ?? "Not set");
-
-			intr.logger.log(`Used method VIEW on option ${option.toUpperCase()}:\n  ${channel?.id ?? "Not set"}`);
+	switch (option) {
+		case "member-log":
+		case "bot-log":
+			await configLogs(data);
 			break;
-		}
 
-		case "set": {
-			const channel = intr.options.getChannel("new-channel");
-
-			if (channel && channel.type !== "GUILD_TEXT") {
-				intr.editReply("The channel needs to be a text-channel.");
-				break;
-			}
-
-			const res = await base?.set((channel as TextChannel | null) ?? "null");
-			intr.editReply(`${res}`);
-
-			intr.logger.log(`Used method SET on option ${option.toUpperCase()}:\n  ${channel?.id ?? "null"}`);
+		case "roles":
+			await configRoles(data);
 			break;
-		}
 	}
 }
