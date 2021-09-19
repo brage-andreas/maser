@@ -1,8 +1,9 @@
+import type { Guild, GuildMember, TextChannel } from "discord.js";
 import type { Clint } from "../../extensions/";
-import { Guild, GuildMember, MessageEmbed } from "discord.js";
 
-import { ConfigManager } from "../../database/ConfigManager.js";
-import { LoggerTypes } from "../../constants.js";
+import { MessageEmbed } from "discord.js";
+import { LOGGER_TYPES } from "../../constants.js";
+import ConfigManager from "../../database/config/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";
 import Util from "../";
 
@@ -22,7 +23,7 @@ export default class EventLogger extends BaseLogger {
 	}
 
 	public log(...messages: string[]) {
-		this.print(LoggerTypes.EVENT, this.event ?? "EVENT", ...messages);
+		this.print(LOGGER_TYPES.EVENT, this.event ?? "EVENT", ...messages);
 	}
 
 	public setEvent(event: string | null) {
@@ -37,9 +38,9 @@ export default class EventLogger extends BaseLogger {
 
 	// prototype
 	public memberLog(member: GuildMember, joined: boolean) {
-		const config = new ConfigManager(this.client).setGuild(member.guild);
+		const config = new ConfigManager(this.client, member.guild.id);
 
-		config.memberLogChannel.get().then((channel) => {
+		config.memberLog.get<TextChannel>().then((channel) => {
 			if (!channel) return;
 
 			const embeds = [
