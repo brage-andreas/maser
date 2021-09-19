@@ -57,8 +57,11 @@ export default abstract class Postgres extends PostgresConnection {
 		this.checkProps();
 
 		const query = `
-            SELECT EXISTS
-                (SELECT 1 FROM ${this.schema!}."${this.table!}" WHERE id=${this.guildId!})
+            SELECT EXISTS (
+                SELECT 1
+                FROM ${this.schema!}."${this.table!}"
+                WHERE id=${this.guildId!}
+            )
         `;
 
 		const res = await this.one<ExistsResult>(query);
