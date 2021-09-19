@@ -1,5 +1,6 @@
 import type { ApplicationCommandData, CommandInteraction, Guild, GuildMember } from "discord.js";
 import type { CommandLogger } from "./utils/logger/CommandLogger.js";
+import type ConfigManager from "./database/config/ConfigManager.js";
 import type { Clint } from "./extensions/";
 
 // TODO: module augment
@@ -33,4 +34,11 @@ export interface ConfigResult {
 
 export interface ExistsResult {
 	exists: boolean;
+}
+
+export interface ConfigCommandData {
+	config: ConfigManager;
+	method: string;
+	option: string;
+	intr: CmdIntr;
 }
