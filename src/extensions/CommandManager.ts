@@ -7,7 +7,7 @@ import type {
 import type { CmdIntr, Command } from "../typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
-import { ErrorLogger, InfoLogger } from "../utils/logger";
+import { ErrorLogger, InfoLogger } from "../utils/logger/";
 import { readdirSync } from "fs";
 import { ID_REGEX } from "../constants.js";
 import { Routes } from "discord-api-types/v9";
@@ -89,7 +89,7 @@ export default class CommandManager {
 		for (let folder of folders) {
 			const FOLDER_DIR = new URL(`../commands/${folder}`, import.meta.url);
 
-			const files = this._readDir(FOLDER_DIR);
+			const files = this._readDir(FOLDER_DIR).filter((f) => f.toLowerCase().endsWith(".js"));
 			for (let fileName of files) {
 				const command = (await import(`../commands/${folder}/${fileName}`)) as Command;
 				const name = fileName.split(".")[0];
