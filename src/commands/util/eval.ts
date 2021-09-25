@@ -31,7 +31,7 @@ export async function execute(intr: CmdIntr) {
 
 	if (intr.user.id !== intr.client.application.owner?.id) return intr.editReply({ content: "No" });
 
-	const { embeds, files, output } = await evaluate(code, intr);
+	const { embeds, output } = await evaluate(code, intr);
 
 	if (reply) {
 		const buttonManager = new ButtonManager();
@@ -50,7 +50,7 @@ export async function execute(intr: CmdIntr) {
 
 		buttonManager.setRows(outputButton, codeButton).setUser(intr.user);
 
-		const msg = (await intr.editReply({ embeds, files, components: buttonManager.rows })) as Message;
+		const msg = (await intr.editReply({ embeds, components: buttonManager.rows })) as Message;
 		const collector = buttonManager.setMessage(msg).createCollector();
 
 		collector.on("collect", (interaction) => {

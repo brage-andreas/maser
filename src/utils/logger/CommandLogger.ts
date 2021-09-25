@@ -5,6 +5,7 @@ import { MessageEmbed } from "discord.js";
 import { LOGGER_TYPES } from "../../constants.js";
 import ConfigManager from "../../database/config/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";
+import Util from "../";
 
 export default class CommandLogger extends BaseLogger {
 	public interaction: CmdIntr | null;
@@ -83,17 +84,20 @@ export default class CommandLogger extends BaseLogger {
 			const author = this.interaction.user;
 			const command = this.interaction.commandName;
 
-			const firstMsg = `Used command ${command}\n`;
+			const prefix = `Used command ${command}`;
 			const length = messages.length;
 
 			const embeds = messages.map((msg, i) => {
 				const embed = new MessageEmbed().setTimestamp();
+				const label = i === 0 ? prefix : "";
+
+				msg = Util.FitCodeblock(msg, { label, size: 4096 });
 
 				if (i === 0) embed.setAuthor(i === 0 ? `${author.tag} (${author.id})` : "");
 				if (length > 1) embed.setFooter(`${i + 1}/${length}`);
 
 				embed.setColor(this.interaction!.client.colors.try("INVIS"));
-				embed.setDescription(`${i === 0 ? firstMsg : ""}\`\`\`\n${msg}\n\`\`\``);
+				embed.setDescription(msg);
 
 				return embed;
 			});

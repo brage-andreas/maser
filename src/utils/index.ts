@@ -1,3 +1,5 @@
+const MAX_EMBED_LEN = 4096;
+
 export default class Util {
 	/**
 	 * Parsed any given string by indenting it with a given width of spaces.
@@ -60,5 +62,25 @@ export default class Util {
 		const seconds = Math.ceil(time / 1000);
 
 		return `<t:${seconds}:${style}>`;
+	}
+
+	/**
+	 * Makes sure any given pair of label and codeblock fits within given size.
+	 */
+	public static FitCodeblock(code: string, options?: { label?: string; lang?: string; size?: number }) {
+		let { label, lang, size } = options ?? {};
+
+		const CODEBLOCK_LEN = 8;
+
+		label = label ? label + "\n" : "";
+		size ??= 2000;
+		lang ??= "";
+
+		const totalLen = label.length + code.length + lang.length + CODEBLOCK_LEN;
+		const maxLen = size - label.length - lang.length - CODEBLOCK_LEN;
+
+		if (totalLen > MAX_EMBED_LEN) code = code.slice(0, maxLen);
+
+		return `${label}\`\`\`${lang}\n${code}\n\`\`\``;
 	}
 }

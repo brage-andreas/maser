@@ -1,9 +1,10 @@
 import type { CmdIntr } from "../typings.js";
 
-import Discord, { Message, MessageAttachment, MessageEmbed } from "discord.js";
+import Discord, { Message, MessageEmbed } from "discord.js";
 import { TOKEN_REGEX } from "../constants.js";
 import { performance } from "perf_hooks";
 import { Clint } from "../extensions";
+import Util from "./";
 import ms from "ms";
 
 // HOW DOES THIS ERROR WHEN I DON'T RESOLVE PROMISES THAT REJECT
@@ -15,18 +16,11 @@ interface RawEvalOutput {
 }
 
 interface EvalOutput {
-	files?: MessageAttachment[];
 	embeds: MessageEmbed[];
 	output: string;
 }
 
-const wrap = (str: string, style: string | null) => `\`\`\`${style ?? ""}\n${str}\n\`\`\``;
-
-const MAX_EMBED_LEN = 4096;
-const WRAP_LEN = 10;
-const SAFE_EMBED_LEN = MAX_EMBED_LEN - WRAP_LEN - 3;
-
-const _eval = (code: string, that: CmdIntr | Message): Promise<RawEvalOutput> => {
+const eval_ = (code: string, that: CmdIntr | Message): Promise<RawEvalOutput> => {
 	return new Promise(async (resolve, reject) => {
 		const D = Discord;
 		const client = that.client as Clint;
@@ -45,20 +39,8 @@ const stringify = (output: any): string => {
 	return JSON.stringify(output, null, 2) ?? "Something went wrong with the output";
 };
 
-const parse = (output: string, fileName: string, embedStyle: string | null) => {
-	const files: MessageAttachment[] = [];
-
-	const actualLength = output.length + WRAP_LEN;
-
-	const tooLong = actualLength > MAX_EMBED_LEN;
-	const evaluated = tooLong ? wrap(output.slice(0, SAFE_EMBED_LEN) + "...", embedStyle) : wrap(output, embedStyle);
-
-	if (tooLong) {
-		const file = new MessageAttachment(Buffer.from(output), fileName);
-		files.push(file);
-	}
-
-	return { parsed: evaluated, files };
+const parse = (output: string, label: string, embedStyle?: string) => {
+	return Util.FitCodeblock(output, { label, lang: embedStyle ?? "js", size: 4096 });
 };
 
 export default async function evaluate(code: string, that: CmdIntr | Message) {
@@ -67,7 +49,7 @@ export default async function evaluate(code: string, that: CmdIntr | Message) {
 	const authorAvatar = author.displayAvatarURL();
 	const client = that.client as Clint;
 
-	return await _eval(code, that)
+	return await eval_(code, that)
 		.then((raw: RawEvalOutput) => {
 			const { result, time } = raw;
 
@@ -77,27 +59,25 @@ export default async function evaluate(code: string, that: CmdIntr | Message) {
 
 			const stringedOutput = stringify(result).replaceAll(new RegExp(TOKEN_REGEX, "g"), "[REDACTED]");
 
-			const { parsed: parsedInput, files: inputFiles } = parse(code, "code.txt", "js");
-			const { parsed: parsedOutput, files: outputFiles } = parse(stringedOutput, "output.txt", "js");
-			const files = outputFiles.concat(inputFiles);
+			const parsedInput = parse(code, "**Input**");
+			const parsedOutput = parse(stringedOutput, "**Output**");
 
 			const successInputEmbed = new MessageEmbed()
 				.setAuthor(authorName, authorAvatar)
 				.setColor(client.colors.try("GREEN"))
-				.setDescription("**Input**\n" + parsedInput)
+				.setDescription(parsedInput)
 				.setTimestamp();
 
 			const successOutputEmbed = new MessageEmbed()
 				.setAuthor(authorName, authorAvatar)
 				.setColor(client.colors.try("GREEN"))
-				.setDescription("**Output**\n" + parsedOutput)
+				.setDescription(parsedOutput)
 				.setFooter(`${timeTaken} • ${type} (${constructor})`)
 				.setTimestamp();
 
 			const output: EvalOutput = {
 				embeds: [successInputEmbed, successOutputEmbed],
-				output: stringedOutput,
-				files
+				output: stringedOutput
 			};
 
 			return output;
@@ -105,27 +85,25 @@ export default async function evaluate(code: string, that: CmdIntr | Message) {
 		.catch((error: Error) => {
 			const msg = error.stack ?? error.toString();
 
-			const { parsed: parsedInput, files: inputFiles } = parse(code, "code.txt", "js");
-			const { parsed: parsedError, files: errorFiles } = parse(msg, "error.txt", null);
-			const files = errorFiles.concat(inputFiles);
+			const parsedInput = parse(code, "**Input**");
+			const parsedError = parse(msg, "**Error**");
 
 			const errorInputEmbed = new MessageEmbed()
 				.setAuthor(authorName, authorAvatar)
 				.setColor(client.colors.try("RED"))
-				.setDescription("**Input**\n" + parsedInput)
+				.setDescription(parsedInput)
 				.setTimestamp();
 
 			const errorOutputEmbed = new MessageEmbed()
 				.setAuthor(authorName, authorAvatar)
 				.setColor(client.colors.try("RED"))
-				.setDescription("**Error**\n" + parsedError)
+				.setDescription(parsedError)
 				.setFooter("Evaluation failed")
 				.setTimestamp();
 
 			const output: EvalOutput = {
 				embeds: [errorInputEmbed, errorOutputEmbed],
-				output: msg,
-				files
+				output: msg
 			};
 
 			return output;

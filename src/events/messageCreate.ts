@@ -6,7 +6,7 @@ import { MessageAttachment, MessageButton } from "discord.js";
 import { CommandLogger } from "../utils/logger/";
 import { ButtonManager } from "../extensions/";
 import evaluate from "../utils/eval.js";
-import Util from "../utils/index.js";
+import Util from "../utils/";
 
 export async function execute(client: Clint, msg: Message) {
 	if (msg.author.id !== client.application.owner?.id) return;
@@ -59,7 +59,7 @@ export async function execute(client: Clint, msg: Message) {
 		const captured = (msg.content.match(CODEBLOCK_REGEX) ?? msg.content.match(CODE_REGEX))?.groups;
 		const code = captured?.code ?? split.join(" ");
 
-		const { embeds, files, output } = await evaluate(code, msg);
+		const { embeds, output } = await evaluate(code, msg);
 
 		const buttonManager = new ButtonManager();
 
@@ -76,7 +76,7 @@ export async function execute(client: Clint, msg: Message) {
 			.setEmoji("📥");
 
 		buttonManager.setRows(outputButton, codeButton);
-		const reply = await msg.reply({ embeds, files, components: buttonManager.rows });
+		const reply = await msg.reply({ embeds, components: buttonManager.rows });
 
 		const collector = buttonManager.setMessage(reply).setUser(msg.author).createCollector();
 
