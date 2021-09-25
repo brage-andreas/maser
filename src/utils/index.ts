@@ -79,7 +79,7 @@ export default class Util {
 		const totalLen = label.length + code.length + lang.length + CODEBLOCK_LEN;
 		const maxLen = size - label.length - lang.length - CODEBLOCK_LEN;
 
-		if (totalLen > MAX_EMBED_LEN) code = code.slice(0, maxLen);
+		if (totalLen > MAX_EMBED_LEN) code = code.slice(0, maxLen - 3) + "...";
 
 		return `${label}\`\`\`${lang}\n${code}\n\`\`\``;
 	}
