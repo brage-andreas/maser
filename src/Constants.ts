@@ -59,3 +59,10 @@ export enum CONFIG_OPTIONS {
 	MEMBER_LOG,
 	ROLES
 }
+
+export const BOOST_LEVELS = {
+	TIER_3: "level 3",
+	TIER_2: "level 2",
+	TIER_1: "level 1",
+	NONE: "no level"
+};
