@@ -3,6 +3,7 @@ import type { CmdIntr } from "../../typings.js";
 
 import { MessageEmbed } from "discord.js";
 import Util from "../../utils/";
+import { BOOST_LEVELS } from "../../constants.js";
 
 export const data: ApplicationCommandData = {
 	name: "server",
@@ -59,7 +60,7 @@ export async function execute(intr: CmdIntr) {
 	const vanity = guild.vanityURLCode;
 	const roles = getRoles(guild);
 	const icon = guild.iconURL({ size: 2048, dynamic: true }) ?? "";
-	const tier = guild.premiumTier.replace("_", " ").toLowerCase();
+	const tier = BOOST_LEVELS[guild.premiumTier];
 	const name = guild.name;
 
 	const vanityStr = vanity ? `with vanity \`${vanity}\`` : "";
@@ -85,7 +86,7 @@ export async function execute(intr: CmdIntr) {
 		.addField("Created", created)
 		.addField("Channels", channelsStr)
 		.addField("Emojis", emojisAndStickerStr)
-		.addField("Boosting", boosters ? `Server is ${tier} with **${boosters}** boosts` : "No boosts");
+		.addField("Boosting", boosters ? `Server has ${tier} with **${boosters}** boosts` : "No boosts");
 
 	intr.editReply({ embeds: [guildEmbed] });
 
