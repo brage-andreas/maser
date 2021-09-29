@@ -1,4 +1,12 @@
-import type { ApplicationCommandData, CommandInteraction, Guild, GuildMember } from "discord.js";
+import type {
+	ApplicationCommandData,
+	CommandInteraction,
+	Guild,
+	GuildMember,
+	NewsChannel,
+	StoreChannel,
+	TextChannel
+} from "discord.js";
 import type { CommandLogger } from "./utils/logger/CommandLogger.js";
 import type ConfigManager from "./database/config/ConfigManager.js";
 import type { Clint } from "./extensions/";
@@ -42,3 +50,5 @@ export interface ConfigCommandData {
 	option: string;
 	intr: CmdIntr;
 }
+
+type AllowedConfigTextChannels = TextChannel | NewsChannel | StoreChannel;
