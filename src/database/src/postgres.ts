@@ -46,11 +46,13 @@ export default abstract class Postgres extends PostgresConnection {
 	}
 
 	protected async still(): Promise<boolean> {
-		if (!(await this.existsRow())) {
+		const exists = await this.existsRow();
+
+		if (exists) {
+			return true;
+		} else {
 			return this.createRow();
 		}
-
-		return true;
 	}
 
 	protected async existsRow(): Promise<boolean> {
@@ -87,6 +89,7 @@ export default abstract class Postgres extends PostgresConnection {
 		for (let i = 0; i < columns.length; i++) {
 			const key = columns[i];
 			const value = newValues[i];
+
 			data.push(`${key}=${value}`);
 		}
 
