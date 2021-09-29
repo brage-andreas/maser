@@ -1,6 +1,5 @@
-import type { ConfigCommandData } from "../../../typings.js";
+import type { AllowedConfigTextChannels, ConfigCommandData } from "../../../typings.js";
 import type ConfigLogsManager from "../../../database/config/ConfigLogsManager.js";
-import type { TextChannel } from "discord.js";
 
 export default async function configLogs(data: ConfigCommandData) {
 	const { config, intr, method, option } = data;
@@ -13,7 +12,7 @@ export default async function configLogs(data: ConfigCommandData) {
 
 	switch (method) {
 		case "view": {
-			const channel = await config.botLog.get<TextChannel>();
+			const channel = await base.get<AllowedConfigTextChannels>();
 			intr.editReply(channel?.toString() ?? "Not set");
 
 			intr.logger.log(`Used method VIEW on option ${option.toUpperCase()}:\n  ${channel?.id ?? "Not set"}`);
@@ -21,12 +20,7 @@ export default async function configLogs(data: ConfigCommandData) {
 		}
 
 		case "set": {
-			const channel = intr.options.getChannel("new-channel");
-
-			if (channel && channel.type !== "GUILD_TEXT") {
-				intr.editReply("The channel needs to be a text-channel.");
-				break;
-			}
+			const channel = intr.options.getChannel("channel");
 
 			const value = channel?.id ?? "null";
 

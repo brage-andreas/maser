@@ -1,6 +1,6 @@
-import type { Role, TextChannel } from "discord.js";
+import type { Role } from "discord.js";
 import type { Clint } from "../../extensions/";
-import { ConfigColumns, ConfigResult } from "../../typings.js";
+import { AllowedConfigTextChannels, ConfigColumns, ConfigResult } from "../../typings.js";
 import Postgres, { CreatorOptions } from "../src/postgres.js";
 
 export default class ConfigLogsManager extends Postgres {
@@ -17,10 +17,11 @@ export default class ConfigLogsManager extends Postgres {
 		return this;
 	}
 
-	public async get<T extends TextChannel | Role>(): Promise<T | null> {
+	public async get<T extends AllowedConfigTextChannels | Role>(): Promise<T | null> {
 		if (!this.key) throw new Error("Key must be set to the ConfigLogsManager");
-		const channel = await this.getChannel(this.key);
-		const role = await this.getRole(this.key);
+
+		const channel = await this.getChannel();
+		const role = await this.getRole();
 
 		if (channel) return channel as T;
 		if (role) return role as T;
@@ -28,7 +29,7 @@ export default class ConfigLogsManager extends Postgres {
 	}
 
 	public async set(value: string, key?: ConfigColumns): Promise<boolean> {
-		if (!key && !this.key) throw new Error("Key must be set to the ConfigLogsManager");
+		if (!key && !this.key) throw new Error("Key must be set or provided to the ConfigLogsManager");
 
 		await this.still();
 
@@ -49,19 +50,20 @@ export default class ConfigLogsManager extends Postgres {
 		return res;
 	}
 
-	private async getChannel(key: ConfigColumns): Promise<TextChannel | null> {
-		const channelId = await this.getAll().then((result) => result?.[key] ?? null);
+	private async getChannel(): Promise<AllowedConfigTextChannels | null> {
+		const channelId = await this.getAll().then((result) => {
+			return result?.[this.key!] ?? null;
+		});
 		if (!channelId) return null;
 
 		const guild = this.client.guilds.cache.get(this.guildId!);
-		const channel = guild?.channels.cache.get(channelId);
-		if (!channel || channel.type !== "GUILD_TEXT") return null;
+		const channel = guild?.channels.cache.get(channelId) as AllowedConfigTextChannels | undefined;
 
-		return channel as TextChannel;
+		return channel ?? null;
 	}
 
-	private async getRole(key: ConfigColumns): Promise<Role | null> {
-		const roleId = await this.getAll().then((result) => result?.[key] ?? null);
+	private async getRole(): Promise<Role | null> {
+		const roleId = await this.getAll().then((result) => result?.[this.key!] ?? null);
 		if (!roleId) return null;
 
 		const guild = this.client.guilds.cache.get(this.guildId!);
