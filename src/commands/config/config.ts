@@ -3,7 +3,6 @@ import type { CmdIntr } from "../../typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import ConfigManager from "../../database/config/ConfigManager.js";
-import configRoles from "./options/roles.js";
 import configLogs from "./options/logs.js";
 
 export const data: ApplicationCommandData = {
@@ -28,6 +27,7 @@ export const data: ApplicationCommandData = {
 						{
 							name: "channel",
 							description: "The new channel to set to. Omitting this option will remove its value",
+							channelTypes: ["GUILD_TEXT", "GUILD_NEWS", "GUILD_STORE"],
 							type: ApplicationCommandOptionType.Channel as number
 						}
 					]
@@ -52,6 +52,7 @@ export const data: ApplicationCommandData = {
 						{
 							name: "channel",
 							description: "The new channel to set to. Omitting this option will remove its value",
+							channelTypes: ["GUILD_TEXT", "GUILD_NEWS", "GUILD_STORE"],
 							type: ApplicationCommandOptionType.Channel as number
 						}
 					]
@@ -76,10 +77,6 @@ export async function execute(intr: CmdIntr) {
 		case "member-log":
 		case "bot-log":
 			await configLogs(data);
-			break;
-
-		case "roles":
-			await configRoles(data);
 			break;
 	}
 }
