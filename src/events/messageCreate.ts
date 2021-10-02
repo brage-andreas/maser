@@ -10,7 +10,7 @@ import Util from "../utils/";
 
 export async function execute(client: Clint, msg: Message) {
 	if (msg.author.id !== client.application.owner?.id) return;
-	if (msg.channel.type === "DM" || !msg.guild || msg.member) return;
+	if (msg.channel.type === "DM" || !msg.guild || !msg.member) return;
 
 	const split = msg.content.split(/\s+/g);
 	const [mention, command] = split.splice(0, 2);
