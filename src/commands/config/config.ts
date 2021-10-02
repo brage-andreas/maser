@@ -67,7 +67,8 @@ export async function execute(intr: CmdIntr) {
 	const method = intr.options.getSubcommand();
 
 	// temporary
-	if (intr.user.id !== intr.client.application.owner?.id) return intr.editReply({ content: "No" });
+	if (intr.user.id !== intr.client.application.owner?.id)
+		return intr.editReply({ content: "This command is not done yet" });
 
 	const config = new ConfigManager(intr.client, intr.guild.id);
 

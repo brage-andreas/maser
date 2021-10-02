@@ -5,10 +5,11 @@ export default async function configLogs(data: ConfigCommandData) {
 	const { config, intr, method, option } = data;
 
 	let base: ConfigLogsManager | null = null;
+
 	if (option === "bot-log") base = config.botLog;
 	else if (option === "member-log") base = config.memberLog;
 
-	if (!base) return;
+	if (!base) return intr.editReply("Something went wrong. How did you manage this?");
 
 	switch (method) {
 		case "view": {
