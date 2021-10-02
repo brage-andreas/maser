@@ -3,7 +3,7 @@ import type { CmdIntr } from "../../typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import ConfigManager from "../../database/config/ConfigManager.js";
-import configLogs from "./options/logs.js";
+import configLogs from "./options/configRoles.js";
 
 export const data: ApplicationCommandData = {
 	name: "config",
@@ -71,12 +71,10 @@ export async function execute(intr: CmdIntr) {
 
 	const config = new ConfigManager(intr.client, intr.guild.id);
 
-	const data = { intr, option, method, config };
-
 	switch (option) {
 		case "member-log":
 		case "bot-log":
-			await configLogs(data);
+			await configLogs({ intr, option, method, config });
 			break;
 	}
 }
