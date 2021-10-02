@@ -3,7 +3,7 @@ import type { CmdIntr } from "../../typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import ConfigManager from "../../database/config/ConfigManager.js";
-import configLogs from "./options/configRoles.js";
+import configLogs from "./options/configLogs.js";
 
 export const data: ApplicationCommandData = {
 	name: "config",
