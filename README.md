@@ -1,12 +1,10 @@
-Note: This is a personal project—please do not engage in the development with PR's and issues.
-
-<br /> <br />
-
 <p align="center">
     <a href="https://en.wikipedia.org/wiki/Maser">
         <img src="https://i.imgur.com/p0GGPVZ.png" />
     </a>
 </p>
+
+Note: This is a personal project—please do not engage in the development with PR's and issues.
 
 <br />
 
