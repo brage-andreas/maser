@@ -18,6 +18,7 @@ interface RawEvalOutput {
 interface EvalOutput {
 	embeds: MessageEmbed[];
 	output: string;
+	type: "output" | "error";
 }
 
 const eval_ = (code: string, that: CmdIntr | Message): Promise<RawEvalOutput> => {
@@ -77,7 +78,8 @@ export default async function evaluate(code: string, that: CmdIntr | Message) {
 
 			const output: EvalOutput = {
 				embeds: [successInputEmbed, successOutputEmbed],
-				output: stringedOutput
+				output: stringedOutput,
+				type: "output"
 			};
 
 			return output;
@@ -103,7 +105,8 @@ export default async function evaluate(code: string, that: CmdIntr | Message) {
 
 			const output: EvalOutput = {
 				embeds: [errorInputEmbed, errorOutputEmbed],
-				output: msg
+				output: msg,
+				type: "error"
 			};
 
 			return output;

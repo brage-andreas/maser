@@ -31,19 +31,19 @@ export async function execute(intr: CmdIntr) {
 
 	if (intr.user.id !== intr.client.application.owner?.id) return intr.editReply({ content: "No" });
 
-	const { embeds, output } = await evaluate(code, intr);
+	const { embeds, output, type } = await evaluate(code, intr);
 
 	if (reply) {
 		const buttonManager = new ButtonManager();
 
 		const outputButton = new MessageButton() //
-			.setLabel("Full output")
+			.setLabel(`Full ${type}`)
 			.setCustomId("output")
 			.setStyle("PRIMARY")
 			.setEmoji("📤");
 
 		const codeButton = new MessageButton() //
-			.setLabel("Full code")
+			.setLabel("Full input")
 			.setCustomId("code")
 			.setStyle("PRIMARY")
 			.setEmoji("📥");
