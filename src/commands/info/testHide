@@ -1,5 +1,7 @@
+// Used to test hide option
+
 import type { ApplicationCommandData } from "discord.js";
-import type { CmdIntr } from "../../Typings";
+import type { CmdIntr } from "../../typings.js";
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
 
 export const defaultHide = false;
@@ -8,17 +10,17 @@ export const data: ApplicationCommandData = {
 	description: "A test",
 	options: [
 		{
-			name: "sub-group",
+			name: "one-group",
 			description: "A subcommand group",
 			type: ApplicationCommandOptionType.SubcommandGroup as number,
 			options: [
 				{
-					name: "sub",
+					name: "one-sub",
 					description: "A subcommand",
 					type: ApplicationCommandOptionType.Subcommand as number,
 					options: [
 						{
-							name: "option",
+							name: "one-option",
 							description: "An option",
 							type: ApplicationCommandOptionType.String as number
 						}
@@ -27,42 +29,47 @@ export const data: ApplicationCommandData = {
 			]
 		},
 		{
-			name: "another-sub-group",
+			name: "two-group",
 			description: "Another subcommand group",
 			type: ApplicationCommandOptionType.SubcommandGroup as number,
 			options: [
 				{
-					name: "another-sub",
+					name: "two-sub",
 					description: "Another subcommand",
 					type: ApplicationCommandOptionType.Subcommand as number,
 					options: [
 						{
-							name: "another-option",
+							name: "two-option",
 							description: "Another option",
 							type: ApplicationCommandOptionType.String as number
 						}
 					]
 				},
 				{
-					name: "another-another-sub",
+					name: "three-sub",
 					description: "Another another subcommand",
 					type: ApplicationCommandOptionType.Subcommand as number,
 					options: [
 						{
-							name: "another-another-option",
+							name: "three-option",
 							description: "Another another option",
 							type: ApplicationCommandOptionType.String as number
 						}
 					]
 				},
 				{
-					name: "another-another-another-sub",
+					name: "four-sub",
 					description: "Another another another subcommand",
 					type: ApplicationCommandOptionType.Subcommand as number,
 					options: [
 						{
-							name: "another-another-another-option",
+							name: "four-option",
 							description: "Another another another option",
+							type: ApplicationCommandOptionType.String as number
+						},
+						{
+							name: "five-option",
+							description: "Another another another another option",
 							type: ApplicationCommandOptionType.String as number
 						}
 					]
@@ -73,7 +80,7 @@ export const data: ApplicationCommandData = {
 };
 
 export async function execute(intr: CmdIntr) {
-	intr.editReply("i need help");
+	intr.editReply("test");
 
-	intr.logger.log("i need help");
+	intr.logger.log("Used test");
 }
