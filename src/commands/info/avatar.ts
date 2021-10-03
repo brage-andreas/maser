@@ -3,6 +3,26 @@ import type { CmdIntr } from "../../typings.js";
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import { MessageEmbed } from "discord.js";
 
+/*
+Explaining the magic numbers:
+    Powers of two from 16 to 4096 is allowed.
+    Array with length of 9, making first index 0 and last index 8.
+    2 ** (index + 4) will then be valid ranges.
+
+    Every power of two between:
+    2 ** (0+4) = 16 and 2 ** (8+4) = 4096
+*/
+
+const getAllowedSizeFn = (useless: unknown, index: number) => {
+	index += 4;
+	return {
+		name: `${2 ** index}px`,
+		value: 2 ** index
+	};
+};
+
+const allowedSizeArray = Array.from({ length: 9 }, getAllowedSizeFn);
+
 export const data: ApplicationCommandData = {
 	name: "avatar",
 	description: "Sends a user's avatar",
@@ -16,10 +36,7 @@ export const data: ApplicationCommandData = {
 			name: "size",
 			description: "Size of the image. Default is 2048px",
 			type: ApplicationCommandOptionType.Integer as number,
-			choices: Array.apply(null, Array(9)).map((_, i) => ({
-				name: `${2 ** (i + 4)}px`,
-				value: 2 ** (i + 4)
-			}))
+			choices: allowedSizeArray
 		},
 		{
 			name: "guild-avatar",
