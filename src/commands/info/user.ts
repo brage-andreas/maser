@@ -23,10 +23,6 @@ export async function execute(intr: CmdIntr) {
 	const user = userOptionIsProvided ? intr.options.getUser("user", true) : intr.user;
 	const member = userOptionIsProvided ? (intr.options.getMember("user") as GuildMember | null) : intr.member;
 
-	const getDate = (timestamp: number | null) => {
-		return timestamp ? `${Util.Date(timestamp)}` : null;
-	};
-
 	const getRoles = (member: GuildMember | null) => {
 		if (!member) return null;
 
@@ -34,7 +30,7 @@ export async function execute(intr: CmdIntr) {
 		if (roles.size === 1) return null;
 
 		const sortedRoles = roles.sort((a, b) => b.position - a.position);
-		const parsedRoles = sortedRoles.map((role) => role.toString()).slice(0, -1); // revomes @everyone
+		const parsedRoles = sortedRoles.map((role) => role.toString()).slice(0, -1); // removes @everyone
 
 		const fourRoles = parsedRoles.slice(0, 4).join(", ");
 		const excess = parsedRoles.length - 4;
@@ -55,20 +51,20 @@ export async function execute(intr: CmdIntr) {
 		return empty ? invis : hex;
 	};
 
-	const avatar = user.displayAvatarURL({ size: 2048, dynamic: true });
 	const rawFlags = (await user.fetchFlags()).toArray();
+	const created = Util.Date(user.createdTimestamp);
+	const avatar = user.displayAvatarURL({ size: 2048, dynamic: true });
 	const flags = rawFlags.map((flag) => USER_FLAGS[flag] ?? flag);
-	const created = getDate(user.createdTimestamp);
-	const tag = user.tag;
 	const bot = user.bot;
+	const tag = user.tag;
 	const id = user.id;
 
-	const color = getColor(member?.displayHexColor);
-	const joined = member ? getDate(member.joinedTimestamp) : null;
-	const owner = !!member && member.id === member?.guild.ownerId;
 	const premium = !!member?.premiumSince;
-	const name = member?.displayName ?? user.tag;
+	const joined = member?.joinedTimestamp ? Util.Date(member.joinedTimestamp) : null;
+	const color = getColor(member?.displayHexColor);
+	const owner = !!member && member.id === member?.guild.ownerId;
 	const roles = getRoles(member);
+	const name = member?.displayName ?? user.tag;
 
 	const userEmbed = new MessageEmbed()
 		.setAuthor(`${intr.user.tag} (${intr.user.id})`, intr.user.displayAvatarURL())
@@ -81,9 +77,12 @@ export async function execute(intr: CmdIntr) {
 	userEmbed.addField("Id", id);
 
 	if (member) {
-		userEmbed.addField("Roles", roles ?? "No roles").addField("Bot", bot ? "Yes" : "No", true);
-		userEmbed.addField("Boosting", premium ? "Yes" : "No", true);
-		userEmbed.addField("Avatar", `[Link](${avatar})`).addField("Color", member.displayHexColor);
+		userEmbed
+			.addField("Roles", roles ?? "No roles")
+			.addField("Bot", bot ? "Yes" : "No", true)
+			.addField("Boosting", premium ? "Yes" : "No", true)
+			.addField("Avatar", `[Link](${avatar})`)
+			.addField("Color", member.displayHexColor);
 	}
 
 	userEmbed.addField("Badges", flags.length ? parseFlags(flags) : "No badges");
