@@ -172,7 +172,7 @@ export default class CommandManager {
 		}
 
 		if (guildId && !ID_REGEX.test(guildId)) {
-			errorLogger.log(`Guild id is faulty: ${clientId}`);
+			errorLogger.log(`Guild id is faulty: ${guildId}`);
 			return false;
 		}
 
