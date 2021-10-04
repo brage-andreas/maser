@@ -25,7 +25,7 @@ A Discord bot made with discord.js version 13.
     * File names are event names
     * No folder-sorted structure
 * Extensions
-    * A modified discord.js Client, "Clint", which has utility attached to it.
+    * A modified discord.js Client which has utility attached to it.
     * Multitude of managers, for buttons, commands, emojis, etc.
 * Utils
     * A rich eval command
