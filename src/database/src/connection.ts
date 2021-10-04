@@ -12,22 +12,18 @@ export default class PostgresConnection {
 		this.client = client;
 	}
 
-	// TODO: this generic could probably be better
-	// TODO: properly type everything this thing can return
 	public async one<T>(query: string): Promise<T | null> {
-		return this.connection.one(query);
+		return this.connection.one<T>(query);
 	}
 
 	public async none(query: string): Promise<boolean> {
-		try {
-			await this.connection.none(query);
-			return true;
-		} catch {
-			return false;
-		}
+		return await this.connection
+			.none(query)
+			.then(() => true)
+			.catch(() => false);
 	}
 
 	public async oneOrNone<T>(query: string): Promise<T | null> {
-		return this.connection.oneOrNone(query);
+		return this.connection.oneOrNone<T>(query);
 	}
 }
