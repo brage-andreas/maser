@@ -1,3 +1,4 @@
+import { Color, ColorMap } from "../typings.js";
 import { COLORS } from "../constants.js";
 
 /**
@@ -5,7 +6,7 @@ import { COLORS } from "../constants.js";
  */
 export default class ColorManager {
 	static HEX_REGEX = /^#[a-f0-9]{6}$/i;
-	public colors: Map<string, `#${string}`>;
+	public colors: ColorMap;
 
 	/**
 	 * Creates a colour manager.
@@ -17,22 +18,22 @@ export default class ColorManager {
 	/**
 	 * Gets a colour from the manager.
 	 */
-	public get(query: string): `#${string}` | null {
+	public get(query: string): Color | null {
 		return this.colors.get(query.toUpperCase()) ?? null;
 	}
 
 	/**
 	 * Tries to get a colour from the manager. Returns black if not found.
 	 */
-	public try(query: string): `#${string}` {
+	public try(query: string): Color {
 		return this.colors.get(query) ?? "#000000";
 	}
 
 	/**
 	 * Returns an array of all colours in the manager.
 	 */
-	public toArray(): `#${string}`[] {
-		const colorArray: `#${string}`[] = [];
+	public toArray(): Color[] {
+		const colorArray: Color[] = [];
 		for (const [, color] of this.colors) {
 			colorArray.push(color);
 		}
