@@ -1,5 +1,5 @@
 import type { ApplicationCommandData, Message } from "discord.js";
-import type { CmdIntr } from "../../typings.js";
+import type { CommandInteraction } from "../../typings.js";
 
 import { MessageAttachment, MessageButton } from "discord.js";
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
@@ -26,7 +26,7 @@ export const data: ApplicationCommandData = {
 	]
 };
 
-export async function execute(intr: CmdIntr) {
+export async function execute(intr: CommandInteraction) {
 	const code = intr.options.getString("code", true);
 	const reply = intr.options.getBoolean("reply") ?? true;
 

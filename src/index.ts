@@ -1,11 +1,12 @@
-import { Clint } from "./extensions/";
+import { Client } from "./extensions/";
 import dotenv from "dotenv";
-
 dotenv.config();
-// console.clear() does not fully clear
-process.stdout.write("\x1Bc\n");
 
-const client = new Clint();
+// clears console
+// console.clear() does not fully clear
+console.log("\x1Bc");
+
+const client = new Client();
 
 await client.commands.init();
 await client.events.init();

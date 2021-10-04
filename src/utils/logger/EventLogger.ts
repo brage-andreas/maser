@@ -1,5 +1,5 @@
 import type { Guild, GuildMember, TextChannel } from "discord.js";
-import type { Clint } from "../../extensions/";
+import type { Client } from "../../extensions/";
 
 import { MessageEmbed } from "discord.js";
 import { LOGGER_TYPES } from "../../constants.js";
@@ -8,11 +8,11 @@ import BaseLogger from "./BaseLogger.js";
 import Util from "../";
 
 export default class EventLogger extends BaseLogger {
-	client: Clint;
+	client: Client;
 	event: string | null;
 	guild: Guild | null;
 
-	constructor(client: Clint, guild?: Guild) {
+	constructor(client: Client, guild?: Guild) {
 		super();
 
 		this.client = client;

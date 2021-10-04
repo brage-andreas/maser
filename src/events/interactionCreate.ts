@@ -1,8 +1,8 @@
-import type { CmdIntr } from "../typings.js";
-import type { Clint } from "../extensions/";
+import type { CommandInteraction } from "../typings.js";
+import type { Client } from "../extensions/";
 import { CommandLogger } from "../utils/logger/";
 
-export async function execute(client: Clint, intr: CmdIntr) {
+export async function execute(client: Client, intr: CommandInteraction) {
 	if (!intr.isCommand() || !intr.guild || !intr.member) return;
 
 	intr.logger = new CommandLogger(intr);

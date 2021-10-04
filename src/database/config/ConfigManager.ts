@@ -1,12 +1,12 @@
 import type { CreatorOptions } from "../src/postgres.js";
-import type { Clint } from "../../extensions/";
+import type { Client } from "../../extensions/";
 import ConfigLogsManager from "./ConfigLogsManager.js";
 
 export default class ConfigManager {
 	memberLog: ConfigLogsManager;
 	botLog: ConfigLogsManager;
 
-	constructor(client: Clint, guildId: string, options?: CreatorOptions) {
+	constructor(client: Client, guildId: string, options?: CreatorOptions) {
 		this.memberLog = new ConfigLogsManager(client, options) //
 			.setKey("member_log_channel_id")
 			.setSchema("configs")

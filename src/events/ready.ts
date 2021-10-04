@@ -1,6 +1,6 @@
-import type { Clint } from "../extensions/";
+import type { Client } from "../extensions/";
 
-export async function execute(client: Clint) {
+export async function execute(client: Client) {
 	const guilds = client.guilds.cache.size;
 	const channels = client.channels.cache.size;
 	const users = client.guilds.cache.reduce((count, guild) => count + guild.memberCount, 0);

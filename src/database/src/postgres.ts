@@ -1,4 +1,4 @@
-import type { Clint } from "../../extensions/";
+import type { Client } from "../../extensions/";
 import type { Guild } from "discord.js";
 import { ExistsResult } from "../../typings.js";
 import PostgresConnection from "./connection.js";
@@ -14,7 +14,7 @@ export default abstract class Postgres extends PostgresConnection {
 	protected schema: string | null;
 	protected table: string | null;
 
-	constructor(client: Clint, options?: CreatorOptions) {
+	constructor(client: Client, options?: CreatorOptions) {
 		super(client);
 
 		this.guildId = this.resolveGuild(options?.guildResolvable);

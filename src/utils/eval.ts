@@ -1,9 +1,9 @@
-import type { CmdIntr } from "../typings.js";
+import type { CommandInteraction } from "../typings.js";
 
 import Discord, { Message, MessageEmbed } from "discord.js";
 import { TOKEN_REGEX } from "../constants.js";
 import { performance } from "perf_hooks";
-import { Clint } from "../extensions";
+import { Client } from "../extensions";
 import Util from "./";
 import ms from "ms";
 
@@ -21,10 +21,10 @@ interface EvalOutput {
 	type: "output" | "error";
 }
 
-const eval_ = (code: string, that: CmdIntr | Message): Promise<RawEvalOutput> => {
+const eval_ = (code: string, that: CommandInteraction | Message): Promise<RawEvalOutput> => {
 	return new Promise(async (resolve, reject) => {
 		const D = Discord;
-		const client = that.client as Clint;
+		const client = that.client as Client;
 
 		const start = performance.now();
 		await eval(`(async () => {\n${code}\n})()`)
@@ -44,11 +44,11 @@ const parse = (output: string, label: string, embedStyle?: string) => {
 	return Util.FitCodeblock(output, { label, lang: embedStyle ?? "js", size: 4096 });
 };
 
-export default async function evaluate(code: string, that: CmdIntr | Message) {
+export default async function evaluate(code: string, that: CommandInteraction | Message) {
 	const author = that instanceof Message ? that.author : that.user;
 	const authorName = `${author.tag} (${author.id})`;
 	const authorAvatar = author.displayAvatarURL();
-	const client = that.client as Clint;
+	const client = that.client as Client;
 
 	return await eval_(code, that)
 		.then((raw: RawEvalOutput) => {

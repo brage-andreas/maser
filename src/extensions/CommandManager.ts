@@ -4,7 +4,7 @@ import type {
 	ApplicationCommandSubCommandData,
 	ApplicationCommandSubGroupData
 } from "discord.js";
-import type { CmdIntr, Command } from "../typings.js";
+import type { CommandInteraction, Command } from "../typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import { ErrorLogger, InfoLogger } from "../utils/logger/";
@@ -23,7 +23,7 @@ const SUB_TYPE = ApplicationCommandOptionType.Subcommand as number;
  */
 export default class CommandManager {
 	private _commands: Map<string, Command>;
-	public command: CmdIntr | null;
+	public command: CommandInteraction | null;
 
 	/**
 	 * Creates a command manager.
@@ -44,7 +44,7 @@ export default class CommandManager {
 	/**
 	 * Set or remove your command.
 	 */
-	public setCommand(command: CmdIntr | null) {
+	public setCommand(command: CommandInteraction | null) {
 		this.command = command;
 		return this;
 	}
@@ -68,7 +68,7 @@ export default class CommandManager {
 	/**
 	 * Gets the default hide option of this command.
 	 */
-	public getDefaultHide(intr: CmdIntr | string): boolean {
+	public getDefaultHide(intr: CommandInteraction | string): boolean {
 		if (typeof intr !== "string") {
 			const commandOption = intr.options.getBoolean("hide");
 			const standard = this._commands.get(intr.commandName)?.defaultHide ?? true;

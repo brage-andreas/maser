@@ -1,5 +1,5 @@
 import type { ApplicationCommandData } from "discord.js";
-import type { CmdIntr } from "../../typings.js";
+import type { CommandInteraction } from "../../typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import ConfigManager from "../../database/config/ConfigManager.js";
@@ -63,7 +63,7 @@ export const data: ApplicationCommandData = {
 	]
 };
 
-export async function execute(intr: CmdIntr) {
+export async function execute(intr: CommandInteraction) {
 	const option = intr.options.getSubcommandGroup();
 	const method = intr.options.getSubcommand();
 

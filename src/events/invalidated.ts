@@ -1,6 +1,6 @@
-import type { Clint } from "../extensions/";
+import type { Client } from "../extensions/";
 
-export async function execute(client: Clint) {
+export async function execute(client: Client) {
 	client.events.logger //
 		.setEvent("invalidated")
 		.log("Session was invalidated");

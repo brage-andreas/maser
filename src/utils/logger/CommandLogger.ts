@@ -1,5 +1,5 @@
-import { Guild, TextBasedChannels, TextChannel, User } from "discord.js";
-import type { CmdIntr } from "../../typings.js";
+import type { Guild, TextBasedChannels, TextChannel, User } from "discord.js";
+import type { CommandInteraction } from "../../typings.js";
 
 import { MessageEmbed } from "discord.js";
 import { LOGGER_TYPES } from "../../constants.js";
@@ -8,10 +8,10 @@ import BaseLogger from "./BaseLogger.js";
 import Util from "../";
 
 export default class CommandLogger extends BaseLogger {
-	public interaction: CmdIntr | null;
+	public interaction: CommandInteraction | null;
 	public name: string | null;
 
-	constructor(intr?: CmdIntr) {
+	constructor(intr?: CommandInteraction) {
 		super();
 
 		this.interaction = intr ?? null;

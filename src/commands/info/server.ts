@@ -1,5 +1,5 @@
 import type { ApplicationCommandData, Guild } from "discord.js";
-import type { CmdIntr } from "../../typings.js";
+import type { CommandInteraction } from "../../typings.js";
 
 import { MessageEmbed } from "discord.js";
 import Util from "../../utils/";
@@ -10,7 +10,7 @@ export const data: ApplicationCommandData = {
 	description: "Sends information about this server"
 };
 
-export async function execute(intr: CmdIntr) {
+export async function execute(intr: CommandInteraction) {
 	const applyS = (string: string, size: number) => (size !== 1 ? string + "s" : string);
 	const { guild } = intr;
 

@@ -1,15 +1,15 @@
-import type { Clint } from "./";
+import type { Client } from "./";
 
 /**
  * Manages emojis for the client.
  */
 export default class EmojiManager {
-	public client: Clint;
+	public client: Client;
 
 	/**
 	 * Creates an emoji manager.
 	 */
-	constructor(client: Clint) {
+	constructor(client: Client) {
 		this.client = client;
 	}
 

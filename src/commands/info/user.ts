@@ -1,5 +1,5 @@
 import type { ApplicationCommandData, GuildMember } from "discord.js";
-import type { CmdIntr } from "../../typings.js";
+import type { CommandInteraction } from "../../typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import { MessageEmbed } from "discord.js";
@@ -18,7 +18,7 @@ export const data: ApplicationCommandData = {
 	]
 };
 
-export async function execute(intr: CmdIntr) {
+export async function execute(intr: CommandInteraction) {
 	const userOptionIsProvided = !!intr.options.getUser("user");
 	const user = userOptionIsProvided ? intr.options.getUser("user", true) : intr.user;
 	const member = userOptionIsProvided ? (intr.options.getMember("user") as GuildMember | null) : intr.member;

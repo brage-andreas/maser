@@ -1,14 +1,14 @@
-import type { Clint } from "../../extensions/";
+import type { Client } from "../../extensions/";
 import postgres from "pg-promise";
 
 const connectionString = "postgres://postgres:admin@localhost:5432/maser";
 const connection = postgres()(connectionString);
 
 export default class PostgresConnection {
-	public client: Clint;
+	public client: Client;
 	public connection = connection;
 
-	constructor(client: Clint) {
+	constructor(client: Client) {
 		this.client = client;
 	}
 

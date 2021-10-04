@@ -1,5 +1,5 @@
 import type { Message } from "discord.js";
-import type { Clint } from "../extensions/";
+import type { Client } from "../extensions/";
 
 import { CODEBLOCK_REGEX, CODE_REGEX, ID_REGEX, USER_REGEX } from "../constants.js";
 import { MessageAttachment, MessageButton } from "discord.js";
@@ -8,7 +8,7 @@ import { ButtonManager } from "../extensions/";
 import evaluate from "../utils/eval.js";
 import Util from "../utils/";
 
-export async function execute(client: Clint, msg: Message) {
+export async function execute(client: Client, msg: Message) {
 	if (msg.author.id !== client.application.owner?.id) return;
 	if (["DM", "GROUP_DM"].includes(msg.channel.type) || !msg.guild || !msg.member) return;
 

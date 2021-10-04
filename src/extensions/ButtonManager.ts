@@ -1,5 +1,5 @@
 import type { CollectorFilter, InteractionCollector, Message, User } from "discord.js";
-import type { CmdIntr } from "../typings.js";
+import type { CommandInteraction } from "../typings.js";
 import { MessageActionRow, MessageButton, MessageComponentInteraction } from "discord.js";
 import ms from "ms";
 
@@ -146,7 +146,7 @@ export default class ButtonManager {
 }
 
 export class ConfirmationButtons extends ButtonManager {
-	public interaction: CmdIntr | MessageComponentInteraction | null;
+	public interaction: CommandInteraction | MessageComponentInteraction | null;
 	public yesMessage: string | null;
 	public noMessage: string | null;
 	public query: string | null;
@@ -169,7 +169,7 @@ export class ConfirmationButtons extends ButtonManager {
 		this.rows = [row];
 	}
 
-	public setInteraction(interaction: CmdIntr | MessageComponentInteraction | null) {
+	public setInteraction(interaction: CommandInteraction | MessageComponentInteraction | null) {
 		this.interaction = interaction;
 		return this;
 	}
