@@ -11,15 +11,16 @@ import type { CommandLogger } from "./utils/logger/CommandLogger.js";
 import type ConfigManager from "./database/config/ConfigManager.js";
 import type { Clint } from "./extensions/";
 
-// TODO: module augment
-
-export type ClientColors = Map<string, `#${string}`>;
 export type ConfigColumns = "id" | "bot_log_channel_id" | "member_log_channel_id";
 
+export type Color = `#${string}`;
+export type ColorMap = Map<string, Color>;
+
 export interface Command {
-	data: ApplicationCommandData;
-	defaultHide: boolean;
 	execute(interaction: CmdIntr): Promise<void> | void;
+	defaultHide?: boolean;
+	priv?: boolean; // "private" isn't allowed
+	data: ApplicationCommandData;
 }
 
 export interface Event {
@@ -28,9 +29,8 @@ export interface Event {
 
 export interface CmdIntr extends CommandInteraction {
 	logger: CommandLogger;
-	client: Clint;
-
 	member: GuildMember;
+	client: Clint;
 	guild: Guild;
 }
 
