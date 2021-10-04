@@ -37,7 +37,7 @@ export default abstract class Postgres extends PostgresConnection {
 		return this;
 	}
 
-	protected async upsertRow() {
+	protected async upsertRow(): Promise<void> {
 		const exists = await this.existsRow();
 
 		if (!exists) {
@@ -70,7 +70,7 @@ export default abstract class Postgres extends PostgresConnection {
 		return res ? res.exists : false;
 	}
 
-	protected createRow() {
+	protected createRow(): Promise<boolean> {
 		this.checkProps();
 
 		const query = `
@@ -109,14 +109,20 @@ export default abstract class Postgres extends PostgresConnection {
 		else return guildResolvable.id;
 	}
 
-	protected resolveOptions(options: CreatorOptions | undefined) {
+	protected resolveOptions(options: CreatorOptions | undefined): void {
 		const { schema, guildResolvable } = options ?? {};
 
 		if (schema !== undefined) this.schema = schema;
 		if (guildResolvable !== undefined) this.guildId = this.resolveGuild(guildResolvable);
 	}
 
-	private checkProps(guild = true, schema = true, table = true) {
+	private checkProps(options?: { schema: boolean; guild: boolean; table: boolean }): void {
+		let { schema, guild, table } = options ?? {};
+
+		schema ??= true;
+		guild ??= true;
+		table ??= true;
+
 		if (guild && !this.guildId) throw new Error("Guild id must be set to the Creator");
 		if (schema && !this.schema) throw new Error("Schema must be set to the Creator");
 		if (table && !this.table) throw new Error("Table must be set to the Creator");
