@@ -5,6 +5,7 @@ import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import ConfigManager from "../../database/config/ConfigManager.js";
 import configLogs from "./options/configLogs.js";
 
+export const priv = true;
 export const data: ApplicationCommandData = {
 	name: "config",
 	description: "Manages this server's config",
@@ -65,10 +66,6 @@ export const data: ApplicationCommandData = {
 export async function execute(intr: CmdIntr) {
 	const option = intr.options.getSubcommandGroup();
 	const method = intr.options.getSubcommand();
-
-	// temporary
-	if (intr.user.id !== intr.client.application.owner?.id)
-		return intr.editReply({ content: "This command is not done yet" });
 
 	const config = new ConfigManager(intr.client, intr.guild.id);
 

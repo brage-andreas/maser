@@ -23,12 +23,14 @@ const SUB_TYPE = ApplicationCommandOptionType.Subcommand as number;
  */
 export default class CommandManager {
 	private _commands: Map<string, Command>;
+	public command: CmdIntr | null;
 
 	/**
 	 * Creates a command manager.
 	 */
 	constructor() {
 		this._commands = new Map();
+		this.command = null;
 	}
 
 	/**
@@ -40,10 +42,27 @@ export default class CommandManager {
 	}
 
 	/**
+	 * Set or remove your command.
+	 */
+	public setCommand(command: CmdIntr | null) {
+		this.command = command;
+		return this;
+	}
+
+	/**
 	 * Tries to execute a given command.
 	 */
-	public execute(intr: CmdIntr): void {
-		this._commands.get(intr.commandName)?.execute(intr);
+	public execute(): void {
+		this.checkCommand();
+		this._commands.get(this.command!.commandName)?.execute(this.command!);
+	}
+
+	/**
+	 * See if this command is private or not.
+	 */
+	public isPrivate(): boolean {
+		this.checkCommand();
+		return this._commands.get(this.command!.commandName)?.priv ?? false;
 	}
 
 	/**
@@ -86,16 +105,19 @@ export default class CommandManager {
 	 */
 	private async _getCommands(folders: string[]): Promise<Map<string, Command>> {
 		const hash: Map<string, Command> = new Map();
+
 		for (let folder of folders) {
 			const FOLDER_DIR = new URL(`../commands/${folder}`, import.meta.url);
-
 			const files = this._readDir(FOLDER_DIR).filter((f) => f.toLowerCase().endsWith(".js"));
+
 			for (let fileName of files) {
 				const command = (await import(`../commands/${folder}/${fileName}`)) as Command;
 				const name = fileName.split(".")[0];
+
 				hash.set(name, command);
 			}
 		}
+
 		return hash;
 	}
 
@@ -186,9 +208,12 @@ export default class CommandManager {
 
 			const options = { body: clear ? [] : data };
 
+			const clearMsg = clear ? "Cleared" : "Set";
+			const logMsg = guildId ? `${clearMsg} commands in guild: ${guildId}` : `${clearMsg} global commands`;
+
 			const res = await rest
 				.put(route, options)
-				.then(() => `${clear ? "Cleared" : "Set"} commands in guild: ${guildId}`)
+				.then(() => logMsg)
 				.catch((err) => {
 					const error = err as Error; // stupid
 					errorLogger.log(error.stack ?? error.message);
@@ -208,5 +233,12 @@ export default class CommandManager {
 
 			return false;
 		}
+	}
+
+	/**
+	 * Checks if command is present.
+	 */
+	private checkCommand(): void {
+		if (!this.command) throw new Error("Command must be set to the CommandManager");
 	}
 }

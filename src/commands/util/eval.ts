@@ -7,6 +7,7 @@ import { ButtonManager } from "../../extensions/";
 import evaluate from "../../utils/eval.js";
 import Util from "../../utils/";
 
+export const priv = true;
 export const data: ApplicationCommandData = {
 	name: "eval",
 	description: "Runs code",
@@ -28,8 +29,6 @@ export const data: ApplicationCommandData = {
 export async function execute(intr: CmdIntr) {
 	const code = intr.options.getString("code", true);
 	const reply = intr.options.getBoolean("reply") ?? true;
-
-	if (intr.user.id !== intr.client.application.owner?.id) return intr.editReply({ content: "No" });
 
 	const { embeds, output, type } = await evaluate(code, intr);
 
