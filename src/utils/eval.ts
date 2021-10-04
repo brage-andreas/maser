@@ -1,27 +1,16 @@
-import type { CommandInteraction } from "../typings.js";
+import type { CommandInteraction, EvalOutput, RawEvalOutput } from "../typings.js";
+import type { Client } from "../extensions/";
 
 import Discord, { Message, MessageEmbed } from "discord.js";
 import { TOKEN_REGEX } from "../constants.js";
 import { performance } from "perf_hooks";
-import { Client } from "../extensions";
 import Util from "./";
 import ms from "ms";
 
 // HOW DOES THIS ERROR WHEN I DON'T RESOLVE PROMISES THAT REJECT
 // I DON'T GET IT :(
 
-interface RawEvalOutput {
-	result: any;
-	time: number;
-}
-
-interface EvalOutput {
-	embeds: MessageEmbed[];
-	output: string;
-	type: "output" | "error";
-}
-
-const eval_ = (code: string, that: CommandInteraction | Message): Promise<RawEvalOutput> => {
+const rawEval = (code: string, that: CommandInteraction | Message): Promise<RawEvalOutput> => {
 	return new Promise(async (resolve, reject) => {
 		const D = Discord;
 		const client = that.client as Client;
@@ -50,7 +39,7 @@ export default async function evaluate(code: string, that: CommandInteraction | 
 	const authorAvatar = author.displayAvatarURL();
 	const client = that.client as Client;
 
-	return await eval_(code, that)
+	return await rawEval(code, that)
 		.then((raw: RawEvalOutput) => {
 			const { result, time } = raw;
 

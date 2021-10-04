@@ -4,7 +4,8 @@ import type Discord, {
 	GuildMember,
 	NewsChannel,
 	StoreChannel,
-	TextChannel
+	TextChannel,
+	MessageEmbed
 } from "discord.js";
 import type { CommandLogger } from "./utils/logger/CommandLogger.js";
 import type ConfigManager from "./database/config/ConfigManager.js";
@@ -51,3 +52,14 @@ export interface ConfigCommandData {
 }
 
 type AllowedConfigTextChannels = TextChannel | NewsChannel | StoreChannel;
+
+export interface RawEvalOutput {
+	result: any;
+	time: number;
+}
+
+export interface EvalOutput {
+	embeds: MessageEmbed[];
+	output: string;
+	type: "output" | "error";
+}
