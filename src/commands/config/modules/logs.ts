@@ -15,9 +15,10 @@ export default async function logs(data: ConfigCommandData) {
 	switch (method) {
 		case "view": {
 			const channel = await base.get<AllowedConfigTextChannels>();
+			const name = intr.member.displayName;
 
 			const viewOptionEmbed = new MessageEmbed()
-				.setAuthor((intr.member ?? intr.user).displayAvatarURL())
+				.setAuthor(intr.user.tag, intr.member.displayAvatarURL())
 				.setColor(intr.client.colors.try("INVIS"))
 				.addField(option, `Value: ${channel ? `${channel} (${channel.id})` : "Not set"}`);
 
@@ -36,7 +37,7 @@ export default async function logs(data: ConfigCommandData) {
 			const newValueStr = channel ? `${channel} (${channel.id})` : "Removed";
 
 			const viewOptionEmbed = new MessageEmbed()
-				.setAuthor((intr.member ?? intr.user).displayAvatarURL())
+				.setAuthor(intr.user.tag, intr.member.displayAvatarURL())
 				.setColor(intr.client.colors.try("INVIS"))
 				.addField(option, `New value: ${newValueStr}`);
 
