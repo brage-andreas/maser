@@ -3,7 +3,7 @@ import type { CommandInteraction } from "../../typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import ConfigManager from "../../database/config/ConfigManager.js";
-import configLogs from "./options/configLogs.js";
+import logs from "./modules/logs.js";
 
 export const priv = true;
 export const data: ApplicationCommandData = {
@@ -59,20 +59,31 @@ export const data: ApplicationCommandData = {
 					]
 				}
 			]
+		},
+		{
+			name: "view-config",
+			description: "Sends the full config",
+			type: ApplicationCommandOptionType.Subcommand as number
 		}
 	]
 };
 
 export async function execute(intr: CommandInteraction) {
-	const option = intr.options.getSubcommandGroup();
+	const option = intr.options.getSubcommandGroup(false);
 	const method = intr.options.getSubcommand();
+
+	// TODO
+	if (method === "view-config") {
+		intr.editReply("This feature is not done yet");
+		return;
+	}
 
 	const config = new ConfigManager(intr.client, intr.guild.id);
 
 	switch (option) {
 		case "member-log":
 		case "bot-log":
-			await configLogs({ intr, option, method, config });
+			await logs({ intr, option, method, config });
 			break;
 	}
 }
