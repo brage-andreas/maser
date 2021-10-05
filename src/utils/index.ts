@@ -1,4 +1,4 @@
-const MAX_EMBED_LEN = 4096;
+import { MAX_EMBED_DESCRIPTION_LEN } from "../constants.js";
 
 export default class Util {
 	/**
@@ -79,7 +79,7 @@ export default class Util {
 		const totalLen = label.length + code.length + lang.length + CODEBLOCK_LEN;
 		const maxLen = size - label.length - lang.length - CODEBLOCK_LEN;
 
-		if (totalLen > MAX_EMBED_LEN) code = code.slice(0, maxLen - 3) + "...";
+		if (totalLen > MAX_EMBED_DESCRIPTION_LEN) code = code.slice(0, maxLen - 3) + "...";
 
 		return `${label}\`\`\`${lang}\n${code}\n\`\`\``;
 	}
