@@ -28,7 +28,7 @@ export default class ConfigLogsManager extends Postgres {
 		return null;
 	}
 
-	public async set(value: string, key?: ConfigColumns): Promise<boolean> {
+	public async set(value: string, key?: ConfigColumns): Promise<void> {
 		if (!key && !this.key) throw new Error("Key must be set or provided to the ConfigLogsManager");
 
 		await this.still();

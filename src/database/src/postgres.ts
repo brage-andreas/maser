@@ -45,13 +45,11 @@ export default abstract class Postgres extends PostgresConnection {
 		}
 	}
 
-	protected async still(): Promise<boolean> {
+	protected async still(): Promise<void> {
 		const exists = await this.existsRow();
 
-		if (exists) {
-			return true;
-		} else {
-			return this.createRow();
+		if (!exists) {
+			await this.createRow();
 		}
 	}
 
@@ -70,7 +68,7 @@ export default abstract class Postgres extends PostgresConnection {
 		return res ? res.exists : false;
 	}
 
-	protected createRow(): Promise<boolean> {
+	protected createRow(): Promise<void> {
 		this.checkProps();
 
 		const query = `
@@ -82,7 +80,7 @@ export default abstract class Postgres extends PostgresConnection {
 		return this.none(query);
 	}
 
-	protected updateRow(columns: string[], newValues: string[]): Promise<boolean> {
+	protected updateRow(columns: string[], newValues: string[]): Promise<void> {
 		this.checkProps();
 
 		const data: string[] = [];
