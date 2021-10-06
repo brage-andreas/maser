@@ -1,14 +1,15 @@
 # PostgreSQL layout
 ```
-maser
-└── configs
-    ├── logs
-    │   ├── id
-    │   ├── bot_log_channel_id
-    │   └── member_log_channel_id
-    └── commands
-        ├── id
-        └── disabled
+postgres
+└── maser
+    └── configs
+        ├── logs
+        │   ├── id
+        │   ├── bot_log_channel_id
+        │   └── member_log_channel_id
+        └── commands
+            ├── id
+            └── disabled
 ```
 
 ## Databases
