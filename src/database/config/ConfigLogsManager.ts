@@ -1,12 +1,12 @@
-import type { Role } from "discord.js";
+import type { AllowedConfigTextChannels, ConfigColumns, ConfigResult, PostgresOptions } from "../../typings.js";
 import type { Client } from "../../extensions/";
-import { AllowedConfigTextChannels, ConfigColumns, ConfigResult } from "../../typings.js";
-import Postgres, { CreatorOptions } from "../src/postgres.js";
+import type { Role } from "discord.js";
+import Postgres from "../src/postgres.js";
 
 export default class ConfigLogsManager extends Postgres {
 	public key: ConfigColumns | null;
 
-	constructor(client: Client, options?: CreatorOptions) {
+	constructor(client: Client, options?: PostgresOptions) {
 		super(client, options);
 		this.setTable("logs");
 		this.key = null;

@@ -1,20 +1,14 @@
+import type { ExistsResult, PostgresOptions } from "../../typings.js";
 import type { Client } from "../../extensions/";
 import type { Guild } from "discord.js";
-import { ExistsResult } from "../../typings.js";
 import PostgresConnection from "./connection.js";
-
-export interface CreatorOptions {
-	guildResolvable?: Guild | string | null;
-	schema?: string | null;
-	table?: string | null;
-}
 
 export default abstract class Postgres extends PostgresConnection {
 	protected guildId: string | null;
 	protected schema: string | null;
 	protected table: string | null;
 
-	constructor(client: Client, options?: CreatorOptions) {
+	constructor(client: Client, options?: PostgresOptions) {
 		super(client);
 
 		this.guildId = this.resolveGuild(options?.guildResolvable);
@@ -35,14 +29,6 @@ export default abstract class Postgres extends PostgresConnection {
 	public setTable(table: string | undefined | null): this {
 		this.table = table ?? null;
 		return this;
-	}
-
-	protected async upsertRow(): Promise<void> {
-		const exists = await this.existsRow();
-
-		if (!exists) {
-			await this.createRow();
-		}
 	}
 
 	protected async still(): Promise<void> {
@@ -107,22 +93,20 @@ export default abstract class Postgres extends PostgresConnection {
 		else return guildResolvable.id;
 	}
 
-	protected resolveOptions(options: CreatorOptions | undefined): void {
-		const { schema, guildResolvable } = options ?? {};
+	protected resolveOptions(options: PostgresOptions | undefined): void {
+		const { guildResolvable, schema, table } = options ?? {};
 
-		if (schema !== undefined) this.schema = schema;
 		if (guildResolvable !== undefined) this.guildId = this.resolveGuild(guildResolvable);
+		if (schema !== undefined) this.schema = schema;
+		if (table !== undefined) this.table = table;
 	}
 
 	private checkProps(options?: { schema: boolean; guild: boolean; table: boolean }): void {
-		let { schema, guild, table } = options ?? {};
+		const defaultOptions = { schema: true, guild: true, table: true };
+		const { schema, guild, table } = options ?? defaultOptions;
 
-		schema ??= true;
-		guild ??= true;
-		table ??= true;
-
-		if (guild && !this.guildId) throw new Error("Guild id must be set to the Creator");
 		if (schema && !this.schema) throw new Error("Schema must be set to the Creator");
+		if (guild && !this.guildId) throw new Error("Guild id must be set to the Creator");
 		if (table && !this.table) throw new Error("Table must be set to the Creator");
 	}
 }

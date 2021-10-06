@@ -63,3 +63,9 @@ export interface EvalOutput {
 	output: string;
 	type: "output" | "error";
 }
+
+export interface PostgresOptions {
+	guildResolvable?: Guild | string | null;
+	schema?: string | null;
+	table?: string | null;
+}
