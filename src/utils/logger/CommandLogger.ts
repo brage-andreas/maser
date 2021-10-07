@@ -70,10 +70,31 @@ export default class CommandLogger extends BaseLogger {
 		return this;
 	}
 
-	// prototype
 	private channelLog(...messages: string[]) {
 		if (!this.interaction) return;
+
 		const { client, guild } = this.interaction;
+
+		// Code written by sleepy me
+		// Might need refactor :)
+
+		const log = client.commands.toLog();
+		const logCmd = client.commands.toLogCommand();
+		if (!logCmd && !log) return;
+
+		const createEmbed = (description: string, index: number, total: number) => {
+			const { user } = this.interaction!;
+
+			const embed = new MessageEmbed()
+				.setColor(this.interaction!.client.colors.try("INVIS"))
+				.setDescription(description)
+				.setTimestamp();
+
+			if (index === 0) embed.setAuthor(`${user.tag} (${user.id})`);
+			if (total > 1) embed.setFooter(`${index + 1}/${total}`);
+
+			return embed;
+		};
 
 		const botLogManager = new ConfigManager(client, guild.id);
 
@@ -81,26 +102,19 @@ export default class CommandLogger extends BaseLogger {
 			if (!this.interaction) return;
 			if (!channel) return;
 
-			const author = this.interaction.user;
-			const command = this.interaction.commandName;
+			const prefix = `\`${Util.commandToString(this.interaction)}\`\n`;
+			let embeds: MessageEmbed[] = [];
 
-			const prefix = `Used command ${command}`;
-			const length = messages.length;
+			if (log) {
+				embeds = messages.map((msg, i) => {
+					const label = i === 0 ? prefix : "";
+					msg = Util.fitCodeblock(msg, { label, size: 4096 });
 
-			const embeds = messages.map((msg, i) => {
-				const embed = new MessageEmbed().setTimestamp();
-				const label = i === 0 ? prefix : "";
-
-				msg = Util.FitCodeblock(msg, { label, size: 4096 });
-
-				if (i === 0) embed.setAuthor(i === 0 ? `${author.tag} (${author.id})` : "");
-				if (length > 1) embed.setFooter(`${i + 1}/${length}`);
-
-				embed.setColor(this.interaction!.client.colors.try("INVIS"));
-				embed.setDescription(msg);
-
-				return embed;
-			});
+					return createEmbed(msg, i, messages.length);
+				});
+			} else {
+				embeds.push(createEmbed(prefix, 0, 1));
+			}
 
 			channel.send({ embeds }).catch(() => null);
 		});

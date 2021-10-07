@@ -19,8 +19,10 @@ export type ColorMap = Map<string, Color>;
 export interface Command {
 	execute(interaction: CommandInteraction): Promise<void> | void;
 	defaultHide?: boolean;
+	logCommand?: boolean;
 	priv?: boolean; // "private" isn't allowed
 	data: ApplicationCommandData;
+	log?: boolean;
 }
 
 export interface Event {

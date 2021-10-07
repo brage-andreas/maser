@@ -8,6 +8,7 @@ import evaluate from "../../utils/eval.js";
 import Util from "../../utils/";
 
 export const priv = true;
+export const log = true;
 export const data: ApplicationCommandData = {
 	name: "eval",
 	description: "Runs code",
@@ -61,7 +62,7 @@ export async function execute(intr: CommandInteraction) {
 				});
 
 				buttonManager.disable(interaction, "output");
-				intr.logger.log(`Sent output as an attachment:\n${Util.Indent(output)}`);
+				intr.logger.log(`Sent output as an attachment:\n${Util.indent(output)}`);
 			}
 
 			if (interaction.customId === "code") {
@@ -72,7 +73,7 @@ export async function execute(intr: CommandInteraction) {
 				});
 
 				buttonManager.disable(interaction, "code");
-				intr.logger.log(`Sent code as an attachment:\n${Util.Indent(code)}`);
+				intr.logger.log(`Sent code as an attachment:\n${Util.indent(code)}`);
 			}
 		});
 
@@ -82,5 +83,5 @@ export async function execute(intr: CommandInteraction) {
 		});
 	}
 
-	intr.logger.log(`Code:\n${Util.Indent(code, 4)}`, `Output:\n${Util.Indent(output, 4)}`);
+	intr.logger.log(`Code:\n${Util.indent(code, 4)}`, `Output:\n${Util.indent(output, 4)}`);
 }

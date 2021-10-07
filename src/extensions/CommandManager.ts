@@ -66,6 +66,26 @@ export default class CommandManager {
 	}
 
 	/**
+	 * Whether to log this command or not.
+	 * Used internally by CommandLogger.
+	 * Default is false.
+	 */
+	public toLog(): boolean {
+		this.checkCommand();
+		return this._commands.get(this.command!.commandName)?.log ?? false;
+	}
+
+	/**
+	 * Whether to log only the slash command input of this command or not.
+	 * Used internally by CommandLogger.
+	 * Default is true.
+	 */
+	public toLogCommand(): boolean {
+		this.checkCommand();
+		return this._commands.get(this.command!.commandName)?.logCommand ?? true;
+	}
+
+	/**
 	 * Gets the default hide option of this command.
 	 */
 	public getDefaultHide(intr: CommandInteraction | string): boolean {
