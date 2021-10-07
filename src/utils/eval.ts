@@ -30,7 +30,7 @@ const stringify = (output: any): string => {
 };
 
 const parse = (output: string, label: string, embedStyle?: string) => {
-	return Util.FitCodeblock(output, { label, lang: embedStyle ?? "js", size: 4096 });
+	return Util.fitCodeblock(output, { label, lang: embedStyle ?? "js", size: 4096 });
 };
 
 export default async function evaluate(code: string, that: CommandInteraction | Message) {

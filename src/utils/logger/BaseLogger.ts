@@ -43,7 +43,7 @@ export default abstract class BaseLogger {
 
 		return messages.map((message) => {
 			const lines = message.split(/[\r\n]/);
-			const parseLine = (line: string) => Util.Parse(line, 4) as string;
+			const parseLine = (line: string) => Util.parse(line, 4) as string;
 
 			return lines.map(parseLine).join("\n");
 		});
@@ -54,10 +54,10 @@ export default abstract class BaseLogger {
 	 */
 	private _printBase(type: LOGGER_TYPES, name: string): void {
 		const colorFn = getColor(type);
-		const timeStr = gray(Util.Now());
+		const timeStr = gray(Util.now());
 		const nameStr = colorFn(`[${name.toUpperCase()}]`);
 
-		const message = Util.Parse(`${nameStr} ${timeStr}`) as string;
+		const message = Util.parse(`${nameStr} ${timeStr}`) as string;
 		process.stdout.write(message);
 	}
 

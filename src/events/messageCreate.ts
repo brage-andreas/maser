@@ -106,6 +106,6 @@ export async function execute(client: Client, msg: Message) {
 			intr.reply({ content: "You cannot use this button", ephemeral: true });
 		});
 
-		logger.log(`Code:\n${Util.Indent(code, 4)}\nOutput:\n${Util.Indent(output, 4)}`);
+		logger.log(`Code:\n${Util.indent(code, 4)}\nOutput:\n${Util.indent(output, 4)}`);
 	}
 }
