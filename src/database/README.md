@@ -39,7 +39,7 @@ maser
 | `member_log_channel_id` | `bigint` | channel id |
 
 **commands** (experimental, todo)
-| Column    | Type     | Key      |
-| --------- | -------- | -------- |
-| `id`      | `bigint` | guild id |
-| `enabled` | none     | none     |
+| Column     | Type     | Key      |
+| ---------- | -------- | -------- |
+| `id`       | `bigint` | guild id |
+| `disabled` | none     | none     |
