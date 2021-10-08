@@ -16,36 +16,35 @@ export async function execute(intr: CommandInteraction) {
 
 	const getRoles = (guild: Guild) => {
 		const roles = guild.roles.cache;
-		if (roles.size === 1) return null;
+		// should never be 0 (@everyone), but just in case
+		if (!roles.size || roles.size === 1) return null;
 
 		const sortedRoles = roles.sort((a, b) => b.position - a.position);
-		const parsedRoles = sortedRoles.map((role) => role.toString()).slice(0, -1); // removes @everyone
+		// slice to remove @everyone
+		const parsedRoles = sortedRoles.map((role) => role.toString()).slice(0, -1);
 
-		const fourRoles = parsedRoles.slice(0, 4).join(", ");
-		const excess = parsedRoles.length - 4;
-		const excessStr = excess > 0 ? `, and ${excess} more` : "";
+		const roleMentions = parsedRoles.slice(0, 3).join(", ");
+		const excess = parsedRoles.length - 3;
 
-		return fourRoles + excessStr;
+		return excess > 0 ? roleMentions + `, and ${excess} more` : roleMentions;
 	};
 
 	const getEmojisAndStickers = (guild: Guild) => {
-		const emojis = guild.emojis.cache;
-		const stickers = guild.stickers.cache;
-		const normalEmojis = emojis.filter((em) => em.animated === false).size;
-		const animatedEmojis = emojis.filter((em) => em.animated === true).size;
+		const total = guild.emojis.cache.size;
+		const sticker = guild.stickers.cache.size;
+		const standard = guild.emojis.cache.filter((em) => em.animated === false).size;
+		const animated = guild.emojis.cache.filter((em) => em.animated === true).size;
 
-		const emojiCount = emojis.size;
-		const stickerCount = stickers.size;
+		const totalStr = `${total ? `**${total}**` : "No"} ${applyS("emoji", total)}`;
+		const stickerStr = `${sticker || "no"} ${applyS("sticker", sticker)}`;
+		const standardStr = `${standard || "no"} ${applyS("emoji", standard)}`;
+		const animatedStr = `${animated || "no"} animated ${applyS("emoji", animated)}`;
 
-		let string = "";
-		if (!emojiCount) return `No emojis and ${stickerCount || "no"} ${applyS("sticker", stickerCount)}`;
+		const str = total
+			? `${totalStr} in total\n${standardStr}, ${animatedStr}, and ${stickerStr}`
+			: `${totalStr} and ${stickerStr}`;
 
-		string += `**${emojis.size}** ${applyS("emoji", emojis.size)}\n`;
-		string += `${normalEmojis} ${applyS("emoji", normalEmojis)}, `;
-		string += `${animatedEmojis} animated ${applyS("emoji", animatedEmojis)}, `;
-		string += `and ${stickerCount || "no"} ${applyS("sticker", stickerCount)}`;
-
-		return string;
+		return str;
 	};
 
 	const _channels = guild.channels.cache;
@@ -53,29 +52,28 @@ export async function execute(intr: CommandInteraction) {
 	const textChannels = _channels.filter((ch) => ch.isText() && !ch.isThread()).size;
 	const channels = _channels.size;
 
-	const partnered = guild.partnered;
+	const { partnered, verified, name } = guild;
 	const boosters = guild.premiumSubscriptionCount;
-	const verified = guild.verified;
-	const created = Util.Date(guild.createdAt);
+	const created = Util.date(guild.createdAt);
 	const vanity = guild.vanityURLCode;
 	const roles = getRoles(guild);
 	const icon = guild.iconURL({ size: 2048, dynamic: true }) ?? "";
 	const tier = BOOST_LEVELS[guild.premiumTier];
-	const name = guild.name;
 
 	const vanityStr = vanity ? `with vanity \`${vanity}\`` : "";
 
-	const textChs = `${textChannels} ${applyS("text-channel", textChannels)}`;
-	const voiceChs = `${voiceChannels} ${applyS("voice-channel", voiceChannels)}`;
-	const channelsStr = [`**${channels}** in total`, `${textChs} and ${voiceChs}`].join("\n");
+	const totalChs = `**${channels}** ${applyS("channel", channels)}`;
+	const textChs = `${textChannels} text ${applyS("channel", textChannels)}`;
+	const voiceChs = `${voiceChannels} voice ${applyS("channel", voiceChannels)}`;
+	const channelsStr = `${totalChs} in total\n${textChs} and ${voiceChs}`;
 
 	const emojisAndStickerStr = getEmojisAndStickers(guild);
 
 	const guildEmbed = new MessageEmbed()
 		.setAuthor(`${intr.user.tag} (${intr.user.id})`, intr.user.displayAvatarURL())
-		.setTimestamp()
 		.setColor(intr.client.colors.try("YELLOW"))
 		.setThumbnail(icon)
+		.setTimestamp()
 		.setTitle(name);
 
 	if (partnered && !verified) guildEmbed.setDescription(`A Discord partner ${vanityStr}`);
