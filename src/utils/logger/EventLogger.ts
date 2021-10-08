@@ -51,8 +51,8 @@ export default class EventLogger extends BaseLogger {
 					.setFooter(joined ? "User joined" : "User left")
 					.setDescription(
 						`User: ${member} (${member.id})\n` +
-							`Account made: ${Util.Date(member.user.createdAt)}\n` +
-							`Joined: ${Util.Date(member.joinedAt!)}`
+							`Account made: ${Util.date(member.user.createdAt)}\n` +
+							`Joined: ${Util.date(member.joinedAt!)}`
 					)
 			];
 

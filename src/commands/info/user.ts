@@ -52,7 +52,7 @@ export async function execute(intr: CommandInteraction) {
 	};
 
 	const rawFlags = (await user.fetchFlags()).toArray();
-	const created = Util.Date(user.createdTimestamp);
+	const created = Util.date(user.createdTimestamp);
 	const avatar = user.displayAvatarURL({ size: 2048, dynamic: true });
 	const flags = rawFlags.map((flag) => USER_FLAGS[flag] ?? flag);
 	const bot = user.bot;
@@ -60,7 +60,7 @@ export async function execute(intr: CommandInteraction) {
 	const id = user.id;
 
 	const premium = !!member?.premiumSince;
-	const joined = member?.joinedTimestamp ? Util.Date(member.joinedTimestamp) : null;
+	const joined = member?.joinedTimestamp ? Util.date(member.joinedTimestamp) : null;
 	const color = getColor(member?.displayHexColor);
 	const owner = !!member && member.id === member?.guild.ownerId;
 	const roles = getRoles(member);

@@ -58,7 +58,7 @@ export default class Util {
 	/**
 	 * Turns any given timestamp or date into a markdown timestamp.
 	 */
-	public static Date(time: number | Date, style = "R"): string {
+	public static date(time: number | Date, style = "R"): string {
 		if (time instanceof Date) time = time.getTime();
 		const seconds = Math.ceil(time / 1000);
 
@@ -90,13 +90,13 @@ export default class Util {
 		const group = command.options.getSubcommandGroup(false);
 		const sub = command.options.getSubcommand(false);
 		const options = command.options.data //
-			.filter(option => !!option.value)
-			.map(option => `${option.name}: ${option.value}`)
+			.filter((option) => !!option.value)
+			.map((option) => `${option.name}: ${option.value}`);
 
 		const array: string[] = [`/${name}`];
-		if (group) array.push(group)
-		if (sub) array.push(sub)
-		if (options.length) array.push(...options)
+		if (group) array.push(group);
+		if (sub) array.push(sub);
+		if (options.length) array.push(...options);
 
 		return array.join(" ");
 	}
