@@ -36,7 +36,7 @@ export default class ConfigLogsManager extends Postgres {
 		return this.updateRow([key ?? this.key!], [value]);
 	}
 
-	public async getAll(): Promise<ConfigResult | null> {
+	public async getAll(): Promise<ConfigResult> {
 		if (!this.guildId) throw new Error("Guild id must be set to the ConfigLogsManager");
 		await this.still();
 
@@ -46,8 +46,7 @@ export default class ConfigLogsManager extends Postgres {
             WHERE id = ${this.guildId}
         `;
 
-		const res = await this.one<ConfigResult>(query);
-		return res;
+		return this.one<ConfigResult>(query);
 	}
 
 	private async getChannel(): Promise<AllowedConfigTextChannels | null> {

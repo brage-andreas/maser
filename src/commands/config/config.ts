@@ -1,7 +1,9 @@
+import type { CommandInteraction, ConfigColumns } from "../../typings.js";
 import type { ApplicationCommandData } from "discord.js";
-import type { CommandInteraction } from "../../typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
+import { ConfigResultKeys } from "../../constants.js";
+import { MessageEmbed } from "discord.js";
 import ConfigManager from "../../database/config/ConfigManager.js";
 import logs from "./modules/logs.js";
 
@@ -72,13 +74,43 @@ export async function execute(intr: CommandInteraction) {
 	const option = intr.options.getSubcommandGroup(false);
 	const method = intr.options.getSubcommand();
 
+	const config = new ConfigManager(intr.client, intr.guild.id);
+
 	// TODO
 	if (method === "view-config") {
-		intr.editReply("This feature is not done yet");
-		return;
-	}
+		const res = await config.botLog.getAll(); // temporary
 
-	const config = new ConfigManager(intr.client, intr.guild.id);
+		const configEmbed = new MessageEmbed()
+			.setAuthor(`${intr.user.tag} (${intr.user.id})`, intr.member.displayAvatarURL())
+			.setColor(intr.client.colors.try("INVIS"))
+			.setTitle("Config")
+			.setTimestamp();
+
+		for (let [key, value] of Object.entries(res)) {
+			key = ConfigResultKeys[key as ConfigColumns];
+
+			const guild = intr.client.guilds.cache.get(value)?.name ?? null;
+			const channel = intr.guild.channels.cache.get(value)?.toString() ?? null;
+			// const user = intr.client.users.fetch(value).then((user) => `${user}`).catch(() => null);
+			// const member = intr.guild.members.fetch(value).then((member) => `${member}`).catch(() => null);
+			const role = intr.guild.roles.cache.get(value)?.toString() ?? null;
+
+			const notFound = !!value && !guild && !channel && !role;
+			const none = !value;
+
+			const valueStr = none
+				? "None"
+				: notFound
+				? `Couldn't find anything with id: ${value}`
+				: guild ?? channel ?? role ?? "Something went wrong";
+
+			configEmbed.addField(key, valueStr);
+		}
+
+		intr.editReply({ embeds: [configEmbed] });
+
+		intr.logger.log("Sent full config");
+	}
 
 	switch (option) {
 		case "member-log":

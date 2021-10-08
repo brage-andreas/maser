@@ -15,7 +15,8 @@ export default class PostgresConnection {
 	}
 
 	// Short-hands
-	public async one<T>(query: string): Promise<T | null> {
+	// Very loose generics
+	public async one<T>(query: string): Promise<T> {
 		return this.connection.one<T>(query);
 	}
 
