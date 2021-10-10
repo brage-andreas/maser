@@ -75,12 +75,8 @@ export default class CommandLogger extends BaseLogger {
 
 		const { client, guild } = this.interaction;
 
-		// Code written by sleepy me
-		// Might need refactor :)
-
-		const log = client.commands.toLog();
-		const logCmd = client.commands.toLogCommand();
-		if (!logCmd && !log) return;
+		const logLevel = client.commands.command.logLevel;
+		if (!logLevel) return;
 
 		const createEmbed = (description: string, index: number, total: number) => {
 			const { user } = this.interaction!;
@@ -99,13 +95,13 @@ export default class CommandLogger extends BaseLogger {
 		const botLogManager = new ConfigManager(client, guild.id);
 
 		botLogManager.botLog.get<TextChannel>().then((channel) => {
-			if (!this.interaction) return;
+			if (!this.interaction) return; // not really needed - mostly for TS
 			if (!channel) return;
 
 			const prefix = `\`${Util.commandToString(this.interaction)}\`\n`;
 			let embeds: MessageEmbed[] = [];
 
-			if (log) {
+			if (logLevel === 2) {
 				embeds = messages.map((msg, i) => {
 					const label = i === 0 ? prefix : "";
 					msg = Util.fitCodeblock(msg, { label, size: 4096 });

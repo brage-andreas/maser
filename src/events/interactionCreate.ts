@@ -8,9 +8,9 @@ export async function execute(client: Client, intr: CommandInteraction) {
 	intr.logger = new CommandLogger(intr);
 
 	const command = client.commands.setCommand(intr);
-	const ephemeral = command.getDefaultHide(intr);
+	const ephemeral = command.hidden;
 
-	if (command.isPrivate()) {
+	if (command.isPrivate) {
 		if (intr.user.id !== client.application.owner?.id) {
 			await intr.reply({ content: "This command is private", ephemeral });
 			return;
