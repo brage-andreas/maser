@@ -36,27 +36,27 @@ export default class EventLogger extends BaseLogger {
 		return this;
 	}
 
-	// prototype
-	public memberLog(member: GuildMember, joined: boolean) {
+	public async memberLog(member: GuildMember, joined: boolean) {
 		const config = new ConfigManager(this.client, member.guild.id);
 
-		config.memberLog.get<TextChannel>().then((channel) => {
-			if (!channel) return;
+		const channel = await config.memberLog.get<TextChannel>();
+		if (!channel) return;
 
-			const embeds = [
-				new MessageEmbed()
-					.setTimestamp()
-					.setAuthor(`${member.user.tag} (${member.id})`, member.user.displayAvatarURL())
-					.setColor(this.client.colors.try(joined ? "GREEN" : "RED"))
-					.setFooter(joined ? "User joined" : "User left")
-					.setDescription(
-						`User: ${member} (${member.id})\n` +
-							`Account made: ${Util.date(member.user.createdAt)}\n` +
-							`Joined: ${Util.date(member.joinedAt!)}`
-					)
-			];
+		const color = this.client.colors.try(joined ? "GREEN" : "RED");
+		const footer = joined ? "User joined" : "User left";
+		const descriptionArray = [
+			`User: ${member} (${member.id})\n`,
+			`Account made: ${Util.date(member.user.createdAt)}\n`,
+			`Joined: ${member.joinedAt ? Util.date(member.joinedAt) : "Date not found"}`
+		];
 
-			channel.send({ embeds }).catch(() => null);
-		});
+		const embed = new MessageEmbed()
+			.setTimestamp()
+			.setAuthor(`${member.user.tag} (${member.id})`, member.user.displayAvatarURL())
+			.setColor(color)
+			.setFooter(footer)
+			.setDescription(descriptionArray.join("\n"));
+
+		channel.send({ embeds: [embed] }).catch(() => {});
 	}
 }
