@@ -82,9 +82,13 @@ export async function execute(intr: CommandInteraction) {
 
 	guildEmbed
 		.addField("Created", created)
+		.addField("Members", `**${guild.memberCount}** ${applyS("member", guild.memberCount)}`)
 		.addField("Channels", channelsStr)
 		.addField("Emojis", emojisAndStickerStr)
-		.addField("Boosting", boosters ? `Server has ${tier} with **${boosters}** boosts` : "No boosts");
+		.addField(
+			"Boosting",
+			boosters ? `Server has ${tier} with **${boosters}** ${applyS("boost", boosters)}` : "No boosts"
+		);
 
 	intr.editReply({ embeds: [guildEmbed] });
 
