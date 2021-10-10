@@ -141,7 +141,7 @@ export default class ButtonManager {
 			return row;
 		});
 
-		intr.update({ components: [...this.rows] });
+		intr.update({ components: this.rows });
 	}
 }
 
