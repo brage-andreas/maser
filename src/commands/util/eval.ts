@@ -8,7 +8,7 @@ import evaluate from "../../utils/eval.js";
 import Util from "../../utils/";
 
 export const priv = true;
-export const log = true;
+export const logLevel = 2;
 export const data: ApplicationCommandData = {
 	name: "eval",
 	description: "Runs code",
