@@ -73,7 +73,7 @@ export default class Util {
 
 		const CODEBLOCK_LEN = 8;
 
-		label = label ? label + "\n" : "";
+		label = !!label ? label + "\n" : "";
 		size ??= 2000;
 		lang ??= "";
 
@@ -86,14 +86,15 @@ export default class Util {
 	}
 
 	public static commandToString(command: CommandInteraction): string {
-		const name = command.commandName;
 		const group = command.options.getSubcommandGroup(false);
 		const sub = command.options.getSubcommand(false);
-		const options = command.options.data //
-			.filter((option) => !!option.value)
-			.map((option) => `${option.name}: ${option.value}`);
 
-		const array: string[] = [`/${name}`];
+		const options = command.options["_hoistedOptions"]
+			.filter((option) => option.value !== undefined)
+			.map((option) => `${option.name}: "${option.value}"`);
+
+		const array = [`/${command.commandName}`];
+
 		if (group) array.push(group);
 		if (sub) array.push(sub);
 		if (options.length) array.push(...options);
