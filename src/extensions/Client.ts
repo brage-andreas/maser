@@ -1,12 +1,11 @@
-import { ClientOptions, Message, Options } from "discord.js";
-
-import { CommandManager, EventManager, ColorManager, EmojiManager } from ".";
+import type { ClientOptions } from "discord.js";
+import { CommandHandler, EventManager, ColorManager, EmojiManager } from "./";
 import { InfoLogger } from "../utils/logger";
 import { INTENTS } from "../constants.js";
 import Discord from "discord.js";
 
 export default class Client extends Discord.Client<true> {
-	commands: CommandManager;
+	commands: CommandHandler;
 	events: EventManager;
 	colors: ColorManager;
 	logger: InfoLogger;
@@ -14,7 +13,7 @@ export default class Client extends Discord.Client<true> {
 
 	constructor(options?: ClientOptions) {
 		const defaultCacheSettings = {
-			...Options.defaultMakeCacheSettings,
+			...Discord.Options.defaultMakeCacheSettings,
 			/*MessageManager: {
 				sweepInterval: 120, // 2 min
 				sweepFilter: () => (msg: Message) => {
@@ -28,7 +27,7 @@ export default class Client extends Discord.Client<true> {
 		};
 
 		const defaultOptions: ClientOptions = {
-			makeCache: Options.cacheWithLimits(defaultCacheSettings),
+			makeCache: Discord.Options.cacheWithLimits(defaultCacheSettings),
 			allowedMentions: { repliedUser: false },
 			failIfNotExists: false,
 			intents: INTENTS
@@ -36,7 +35,7 @@ export default class Client extends Discord.Client<true> {
 
 		super(options ?? defaultOptions);
 
-		this.commands = new CommandManager();
+		this.commands = new CommandHandler();
 		this.events = new EventManager(this);
 		this.colors = new ColorManager();
 		this.logger = new InfoLogger();
