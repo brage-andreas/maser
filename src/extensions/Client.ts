@@ -15,7 +15,7 @@ export default class Client extends Discord.Client<true> {
 	constructor(options?: ClientOptions) {
 		const defaultCacheSettings = {
 			...Options.defaultMakeCacheSettings,
-			MessageManager: {
+			/*MessageManager: {
 				sweepInterval: 120, // 2 min
 				sweepFilter: () => (msg: Message) => {
 					const age = msg.editedTimestamp ?? msg.createdTimestamp;
@@ -23,14 +23,15 @@ export default class Client extends Discord.Client<true> {
 					const now = Date.now();
 					return fromBot || now - age > 900_000; // 15 min
 				}
-			}
+			}*/
+			MessageManager: 0
 		};
 
 		const defaultOptions: ClientOptions = {
+			makeCache: Options.cacheWithLimits(defaultCacheSettings),
 			allowedMentions: { repliedUser: false },
 			failIfNotExists: false,
-			intents: INTENTS,
-			makeCache: Options.cacheWithLimits(defaultCacheSettings)
+			intents: INTENTS
 		};
 
 		super(options ?? defaultOptions);
