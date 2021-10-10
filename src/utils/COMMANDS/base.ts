@@ -1,4 +1,4 @@
-import { CommandManager } from "../../extensions/";
+import { CommandHandler } from "../../extensions/";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -7,7 +7,7 @@ const guildId = process.env.GUILD_ID;
 
 if (!clientId) throw new Error("Client id must be set in .env file");
 
-const manager = new CommandManager();
+const manager = new CommandHandler();
 await manager.init();
 
 export { manager, clientId, guildId };
