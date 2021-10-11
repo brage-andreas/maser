@@ -35,14 +35,12 @@ type SubOption = ApplicationCommandOptionData;
  */
 export default class CommandHandler {
 	private _commands: Map<string, Command>;
-	public command: CommandManager;
 
 	/**
 	 * Creates a command manager.
 	 */
 	constructor() {
 		this._commands = new Map();
-		this.command = new CommandManager();
 	}
 
 	/**
@@ -51,23 +49,6 @@ export default class CommandHandler {
 	public async init(): Promise<void> {
 		const folders = this._readDir(COMMAND_DIR);
 		this._commands = await this._getCommands(folders);
-	}
-
-	/**
-	 * Set or remove your command accessed in `<CommandHandler>.command`.
-	 */
-	public setCommand(command: CommandInteraction | null): CommandManager {
-		if (!command) {
-			this.command.setCommand(null, null);
-		} else {
-			const data = this._get(command.commandName);
-
-			// data should never be undefined here
-			if (!data) throw new Error(`No internal command found with name: ${command.commandName}`);
-			else this.command.setCommand(command, data);
-		}
-
-		return this.command;
 	}
 
 	/**
@@ -82,6 +63,11 @@ export default class CommandHandler {
 	 */
 	public async clear(clientId: string, guildId?: string): Promise<boolean> {
 		return await this._put(clientId, guildId, true);
+	}
+
+	public get(command: CommandInteraction | string): Command {
+		const name = typeof command === "string" ? command : command.commandName;
+		return this._get(name);
 	}
 
 	/**

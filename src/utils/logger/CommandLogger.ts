@@ -75,8 +75,8 @@ export default class CommandLogger extends BaseLogger {
 
 		const { client, guild } = this.interaction;
 
-		const logLevel = client.commands.command.logLevel;
-		if (!logLevel) return;
+		const logLevel = client.command.logLevel;
+		if (logLevel === 0) return;
 
 		const createEmbed = (description: string, index: number, total: number) => {
 			const { user } = this.interaction!;

@@ -3,9 +3,11 @@ import { CommandHandler, EventManager, ColorManager, EmojiManager } from "./";
 import { InfoLogger } from "../utils/logger";
 import { INTENTS } from "../constants.js";
 import Discord from "discord.js";
+import CommandManager from "./CommandManager";
 
 export default class Client extends Discord.Client<true> {
 	commands: CommandHandler;
+	command: CommandManager;
 	events: EventManager;
 	colors: ColorManager;
 	logger: InfoLogger;
@@ -36,6 +38,7 @@ export default class Client extends Discord.Client<true> {
 		super(options ?? defaultOptions);
 
 		this.commands = new CommandHandler();
+		this.command = new CommandManager();
 		this.events = new EventManager(this);
 		this.colors = new ColorManager();
 		this.logger = new InfoLogger();
