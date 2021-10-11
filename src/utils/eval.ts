@@ -1,4 +1,4 @@
-import type { CommandInteraction, EvalOutput, RawEvalOutput } from "../typings.js";
+import type { CommandInteraction, EvalOutput } from "../typings.js";
 import type { Client } from "../extensions/";
 
 import Discord, { Message, MessageEmbed } from "discord.js";
