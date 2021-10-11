@@ -7,21 +7,6 @@ import { performance } from "perf_hooks";
 import Util from "./";
 import ms from "ms";
 
-// HOW DOES THIS ERROR WHEN I DON'T RESOLVE PROMISES THAT REJECT
-// I DON'T GET IT :(
-
-const rawEval = (code: string, that: CommandInteraction | Message): Promise<RawEvalOutput> => {
-	return new Promise(async (resolve, reject) => {
-		const D = Discord;
-		const client = that.client as Client;
-
-		const start = performance.now();
-		await eval(`(async () => {\n${code}\n})()`)
-			.then((result: any) => resolve({ result, time: performance.now() - start }))
-			.catch((err: Error) => reject(err));
-	});
-};
-
 const stringify = (output: any): string => {
 	if (!output) return `${output}`;
 	if (typeof output === "function") return output.toString();
@@ -37,67 +22,72 @@ export default async function evaluate(code: string, that: CommandInteraction | 
 	const author = that instanceof Message ? that.author : that.user;
 	const authorName = `${author.tag} (${author.id})`;
 	const authorAvatar = author.displayAvatarURL();
+
 	const client = that.client as Client;
+	Discord; // "ReferenceError: Discord is not defined" if not here
 
-	return await rawEval(code, that)
-		.then((raw: RawEvalOutput) => {
-			const { result, time } = raw;
+	try {
+		const start = performance.now();
+		const result = await eval(`(async () => {\n${code}\n})()`);
+		const end = performance.now();
 
-			const type = typeof result;
-			const constructor = result ? (result.constructor.name as string) : "Nullish";
-			const timeTaken = ms(Number(time.toFixed(3)), { long: true }).replace(".", ",");
+		const type = typeof result;
+		const constructor = result ? (result.constructor.name as string) : "Nullish";
 
-			const stringedOutput = stringify(result).replaceAll(new RegExp(TOKEN_REGEX, "g"), "[REDACTED]");
+		const time = Number((end - start).toFixed(3));
+		const timeTaken = ms(time, { long: true }).replace(".", ",");
 
-			const parsedInput = parse(code, "**Input**");
-			const parsedOutput = parse(stringedOutput, "**Output**");
+		const stringedOutput = stringify(result).replaceAll(new RegExp(TOKEN_REGEX, "g"), "[REDACTED]");
 
-			const successInputEmbed = new MessageEmbed()
-				.setAuthor(authorName, authorAvatar)
-				.setColor(client.colors.try("GREEN"))
-				.setDescription(parsedInput)
-				.setTimestamp();
+		const parsedInput = parse(code, "**Input**");
+		const parsedOutput = parse(stringedOutput, "**Output**");
 
-			const successOutputEmbed = new MessageEmbed()
-				.setAuthor(authorName, authorAvatar)
-				.setColor(client.colors.try("GREEN"))
-				.setDescription(parsedOutput)
-				.setFooter(`${timeTaken} • ${type} (${constructor})`)
-				.setTimestamp();
+		const successInputEmbed = new MessageEmbed()
+			.setAuthor(authorName, authorAvatar)
+			.setColor(client.colors.try("GREEN"))
+			.setDescription(parsedInput)
+			.setTimestamp();
 
-			const output: EvalOutput = {
-				embeds: [successInputEmbed, successOutputEmbed],
-				output: stringedOutput,
-				type: "output"
-			};
+		const successOutputEmbed = new MessageEmbed()
+			.setAuthor(authorName, authorAvatar)
+			.setColor(client.colors.try("GREEN"))
+			.setDescription(parsedOutput)
+			.setFooter(`${timeTaken} • ${type} (${constructor})`)
+			.setTimestamp();
 
-			return output;
-		})
-		.catch((error: Error) => {
-			const msg = error.stack ?? error.toString();
+		const output: EvalOutput = {
+			embeds: [successInputEmbed, successOutputEmbed],
+			output: stringedOutput,
+			type: "output"
+		};
 
-			const parsedInput = parse(code, "**Input**");
-			const parsedError = parse(msg, "**Error**");
+		return output;
+	} catch (err) {
+		const error = err as Error;
+		const msg = error.stack ?? error.toString();
 
-			const errorInputEmbed = new MessageEmbed()
-				.setAuthor(authorName, authorAvatar)
-				.setColor(client.colors.try("RED"))
-				.setDescription(parsedInput)
-				.setTimestamp();
+		const parsedInput = parse(code, "**Input**");
+		const parsedError = parse(msg, "**Error**");
 
-			const errorOutputEmbed = new MessageEmbed()
-				.setAuthor(authorName, authorAvatar)
-				.setColor(client.colors.try("RED"))
-				.setDescription(parsedError)
-				.setFooter("Evaluation failed")
-				.setTimestamp();
+		const errorInputEmbed = new MessageEmbed()
+			.setAuthor(authorName, authorAvatar)
+			.setColor(client.colors.try("RED"))
+			.setDescription(parsedInput)
+			.setTimestamp();
 
-			const output: EvalOutput = {
-				embeds: [errorInputEmbed, errorOutputEmbed],
-				output: msg,
-				type: "error"
-			};
+		const errorOutputEmbed = new MessageEmbed()
+			.setAuthor(authorName, authorAvatar)
+			.setColor(client.colors.try("RED"))
+			.setDescription(parsedError)
+			.setFooter("Evaluation failed")
+			.setTimestamp();
 
-			return output;
-		});
+		const output: EvalOutput = {
+			embeds: [errorInputEmbed, errorOutputEmbed],
+			output: msg,
+			type: "error"
+		};
+
+		return output;
+	}
 }
