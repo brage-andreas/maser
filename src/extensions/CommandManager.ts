@@ -61,11 +61,8 @@ export default class CommandManager {
 	/**
 	 * Checks if command is present.
 	 */
-	private checkCommand(options?: { data: boolean; command: boolean }): void {
-		const checkCommand = options?.command ?? true;
-		const checkData = options?.data ?? true;
-
-		if (checkData && !this.command) throw new Error("commandData must be set to the CommandManager");
-		if (checkCommand && !this.interaction) throw new Error("command must be set to the CommandManager");
+	private checkCommand() {
+		if (!this.command) throw new Error("commandData must be set to the CommandManager");
+		if (!this.interaction) throw new Error("command must be set to the CommandManager");
 	}
 }
