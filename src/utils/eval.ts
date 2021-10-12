@@ -32,7 +32,7 @@ export default async function evaluate(code: string, that: CommandInteraction | 
 		const end = performance.now();
 
 		const type = typeof result;
-		const constructor = result ? (result.constructor.name as string) : "Nullish";
+		const constructor = result == null ? (result.constructor.name as string) : "Nullish";
 
 		const time = Number((end - start).toFixed(3));
 		const timeTaken = ms(time, { long: true }).replace(".", ",");
