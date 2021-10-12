@@ -6,6 +6,12 @@ import ms from "ms";
 type Filter = CollectorFilter<[MessageComponentInteraction]>;
 type ButtonCollector = InteractionCollector<MessageComponentInteraction>;
 
+// Not everything here is tested
+// prone to bugs
+// so don't copy/paste without testing yourself
+
+const MAX_ROW_LEN = 5;
+
 /**
  * Manages buttons for the client.
  */
@@ -32,14 +38,14 @@ export default class ButtonManager {
 		if (!buttons.length) return this;
 
 		const components = this.chunkButtons(buttons);
-		const amountOfRows = Math.ceil(components.length / 5);
-		const length = amountOfRows <= 5 ? amountOfRows : 5;
+		const amountOfRows = Math.ceil(components.length / MAX_ROW_LEN);
+		const length = amountOfRows <= MAX_ROW_LEN ? amountOfRows : MAX_ROW_LEN;
 
 		this.rows = Array(length)
 			.fill(new MessageActionRow())
 			.map((row, i) => {
-				const start = i * 5;
-				const end = i * 5 + 5;
+				const start = i * MAX_ROW_LEN;
+				const end = i * MAX_ROW_LEN + MAX_ROW_LEN;
 
 				return row.addComponents(...components.slice(start, end));
 			});
@@ -169,27 +175,27 @@ export class ConfirmationButtons extends ButtonManager {
 		this.rows = [row];
 	}
 
-	public setInteraction(interaction: CommandInteraction | MessageComponentInteraction | null) {
+	public setInteraction(interaction: CommandInteraction | MessageComponentInteraction | null): this {
 		this.interaction = interaction;
 		return this;
 	}
 
-	public setQuery(query: string | null) {
+	public setQuery(query: string | null): this {
 		this.query = query;
 		return this;
 	}
 
-	public setYesMessage(message: string | null) {
+	public setYesMessage(message: string | null): this {
 		this.yesMessage = message;
 		return this;
 	}
 
-	public setNoMessage(message: string | null) {
+	public setNoMessage(message: string | null): this {
 		this.noMessage = message;
 		return this;
 	}
 
-	public async start(options?: { noReply?: boolean; query?: string; onYes?: string; onNo?: string }) {
+	public async start(options?: { noReply?: boolean; query?: string; onYes?: string; onNo?: string }): Promise<void> {
 		return new Promise<void>(async (resolve, reject) => {
 			if (!this.interaction) throw new Error("Interaction must be set to the ConfirmationButtons");
 
@@ -226,7 +232,7 @@ export class ConfirmationButtons extends ButtonManager {
 		});
 	}
 
-	private async _updateOrEditReply(content: string, components: MessageActionRow[]) {
+	private async _updateOrEditReply(content: string, components: MessageActionRow[]): Promise<Message> {
 		if (!this.interaction) throw new Error("Interaction must be set to the ConfirmationButtons");
 
 		const medium = this.interaction;
