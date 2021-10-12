@@ -99,10 +99,14 @@ export default class CommandHandler {
 			const files = this._readDir(FOLDER_DIR).filter((f) => f.toLowerCase().endsWith(".js"));
 
 			for (let fileName of files) {
-				const command = (await import(`../commands/${folder}/${fileName}`)) as Command;
+				const command = await import(`../commands/${folder}/${fileName}`);
 				const name = fileName.split(".")[0];
 
-				hash.set(name, command);
+				if (!command.data || !command.execute) {
+					throw new Error(`File "/commands/${folder}/${fileName}" is missing command properties`);
+				}
+
+				hash.set(name, command as Command);
 			}
 		}
 
