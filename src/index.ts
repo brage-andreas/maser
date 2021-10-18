@@ -4,7 +4,7 @@ dotenv.config();
 
 // clears console
 // console.clear() does not fully clear
-console.log("\x1Bc");
+process.stdout.write("\x1Bc");
 
 const client = new Client();
 
