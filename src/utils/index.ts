@@ -6,7 +6,7 @@ export default class Util {
 	 * Parsed any given string by indenting it with a given width of spaces.
 	 * Returns null if the width is under 0 or more than 16.
 	 */
-	public static parse(string: string | null | undefined, width = 2): string | null {
+	public static parse(string: string | null | undefined, width = 0): string | null {
 		if (!string) return null;
 
 		width = Math.ceil(width);

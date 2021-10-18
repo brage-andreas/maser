@@ -36,14 +36,14 @@ export default abstract class BaseLogger {
 
 	/**
 	 * Parses any messages provided.
-	 * Indents every line by 4.
+	 * Indents every line by 2.
 	 */
 	protected parse(...messages: string[]): string[] | null {
 		if (!messages.length) return null;
 
 		return messages.map((message) => {
 			const lines = message.split(/[\r\n]/);
-			const parseLine = (line: string) => Util.parse(line, 4) as string;
+			const parseLine = (line: string) => Util.parse(line, 2) as string;
 
 			return lines.map(parseLine).join("\n");
 		});
