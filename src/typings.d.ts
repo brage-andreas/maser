@@ -11,7 +11,7 @@ import type { CommandLogger } from "./utils/logger/CommandLogger.js";
 import type ConfigManager from "./database/src/config/ConfigManager.js";
 import type { Client } from "./extensions/";
 
-export type ConfigColumns = "id" | "bot_log_channel_id" | "member_log_channel_id";
+export type ConfigColumns = "id" | "bot_log_channel_id" | "member_log_channel_id" | "muted_role_id";
 
 export type Color = `#${string}`;
 export type ColorMap = Map<string, Color>;
@@ -39,7 +39,10 @@ export interface ConfigResult {
 	id?: string;
 	bot_log_channel_id?: string | null;
 	member_log_channel_id?: string | null;
+	muted_role_id?: string | null;
 }
+
+export type ConfigTables = "logs" | "roles";
 
 export interface ExistsResult {
 	exists: boolean;
