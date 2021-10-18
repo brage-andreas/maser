@@ -84,7 +84,8 @@ export enum BOOST_LEVELS {
 export enum CONFIG_RESULT_KEYS {
 	id = "Guild",
 	bot_log_channel_id = "Bot log channel",
-	member_log_channel_id = "Member log channel"
+	member_log_channel_id = "Member log channel",
+	muted_role_id = "Muted role"
 }
 
 const CONFIG_CHANNEL_OPTIONS = [
