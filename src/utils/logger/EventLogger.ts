@@ -1,9 +1,9 @@
-import type { Guild, GuildMember, TextChannel } from "discord.js";
+import type { Guild, GuildMember } from "discord.js";
 import type { Client } from "../../extensions/";
 
 import { MessageEmbed } from "discord.js";
 import { LOGGER_TYPES } from "../../constants.js";
-import ConfigManager from "../../database/config/ConfigManager.js";
+import ConfigManager from "../../database/src/config/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";
 import Util from "../";
 
@@ -37,9 +37,9 @@ export default class EventLogger extends BaseLogger {
 	}
 
 	public async memberLog(member: GuildMember, joined: boolean) {
-		const config = new ConfigManager(this.client, member.guild.id);
+		const config = new ConfigManager(this.client, member.guild.id, "member_log_channel_id");
 
-		const channel = await config.memberLog.get<TextChannel>();
+		const channel = await config.getChannel();
 		if (!channel) return;
 
 		const color = this.client.colors.try(joined ? "GREEN" : "RED");
