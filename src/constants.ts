@@ -1,60 +1,77 @@
+import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import { Intents } from "discord.js";
 
 export const INTENTS = [
 	Intents.FLAGS.GUILDS, //
 	Intents.FLAGS.GUILD_MEMBERS,
-	Intents.FLAGS.GUILD_MESSAGES // temporary
+	Intents.FLAGS.GUILD_MESSAGES // temporary until multi-line slashie
 ];
 
 export const MAX_EMBED_DESCRIPTION_LEN = 4096;
 
-// export const GUILDEMOJI_REGEX = /<?(a)?:?(\w{2,32}):(\d{17,19})>?/;
-// export const INVITE_REGEX = /(?:https?:\/\/)?(?:www\.)?discord(?:\.gg|(?:app)?\.com\/invite)\/(\S+)/;
-export const CODEBLOCK_REGEX = /```(?:(?<lang>\S+)\n)?\s?(?<code>[^]+?)\s?```/;
-export const CHANNEL_REGEX = /^<#\d{17,19}>$/;
-export const TOKEN_REGEX = /[\w-]{24}\.[\w-]{6}\.[\w-]{27}/;
-export const CODE_REGEX = /`(?<code>.+?)`/;
-export const ROLE_REGEX = /^<@&\d{17,19}>$/;
-export const USER_REGEX = /^<@!?\d{17,19}>$/;
-export const ID_REGEX = /^\d{17,19}$/;
+// const GUILD_EMOJI_REGEX = /<?(a)?:?(\w{2,32}):(\d{17,19})>?/;
+// const INVITE_REGEX = /(?:https?:\/\/)?(?:www\.)?discord(?:\.gg|(?:app)?\.com\/invite)\/(\S+)/;
+const CODEBLOCK_REGEX = /```(?:(?<lang>\S+)\n)?\s?(?<code>[^]+?)\s?```/;
+const CHANNEL_REGEX = /^<#\d{17,19}>$/;
+const TOKEN_REGEX = /[\w-]{24}\.[\w-]{6}\.[\w-]{27}/;
+const CODE_REGEX = /`(?<code>.+?)`/;
+const ROLE_REGEX = /^<@&\d{17,19}>$/;
+const USER_REGEX = /^<@!?\d{17,19}>$/;
+const ID_REGEX = /^\d{17,19}$/;
+export const REGEX = {
+	/*
+    GUILD_EMOJI: GUILD_EMOJI_REGEX,
+    INVITE: INVITE_REGEX,
+    */
+	CODEBLOCK: CODEBLOCK_REGEX,
+	CHANNEL: CHANNEL_REGEX,
+	TOKEN: TOKEN_REGEX,
+	CODE: CODE_REGEX,
+	ROLE: ROLE_REGEX,
+	USER: USER_REGEX,
+	ID: ID_REGEX
+};
 
-export const BLURPLE = "5865F2";
-export const ORANGE = "FF8741";
-export const YELLOW = "FFC152";
-export const BLACK = "000000";
-export const GREEN = "5AD658";
-export const INVIS = "2F3136";
-export const WHITE = "FFFFFF";
-export const RED = "FF5733";
-export const COLORS = { BLACK, BLURPLE, ORANGE, YELLOW, GREEN, INVIS, WHITE, RED };
+const BLURPLE = "5865F2";
+const ORANGE = "FF8741";
+const YELLOW = "FFC152";
+const BLACK = "000000";
+const GREEN = "5AD658";
+const INVIS = "2F3136";
+const WHITE = "FFFFFF";
+const RED = "FF5733";
+export const COLORS = {
+	BLACK,
+	BLURPLE,
+	ORANGE,
+	YELLOW,
+	GREEN,
+	INVIS,
+	WHITE,
+	RED
+};
 
-export enum USER_FLAGS {
-	EARLY_VERIFIED_BOT_DEVELOPER = "early developer",
-	DISCORD_CERTIFIED_MODERATOR = "certified mod",
-	PARTNERED_SERVER_OWNER = "partnered",
-	BUGHUNTER_LEVEL_1 = "bughunter",
-	BUGHUNTER_LEVEL_2 = "bughunter²",
-	DISCORD_EMPLOYEE = "discord employee",
-	HYPESQUAD_EVENTS = "hypesquad events",
-	HOUSE_BRILLIANCE = "brilliance",
-	EARLY_SUPPORTER = "early supporter",
-	HOUSE_BRAVERY = "bravery",
-	HOUSE_BALANCE = "balance",
-	VERIFIED_BOT = "verified bot",
-	TEAM_USER = "team user"
-}
+export const USER_FLAGS = {
+	EARLY_VERIFIED_BOT_DEVELOPER: "early developer",
+	DISCORD_CERTIFIED_MODERATOR: "certified mod",
+	PARTNERED_SERVER_OWNER: "partnered",
+	BUGHUNTER_LEVEL_1: "bughunter",
+	BUGHUNTER_LEVEL_2: "bughunter²",
+	DISCORD_EMPLOYEE: "discord employee",
+	HYPESQUAD_EVENTS: "hypesquad events",
+	HOUSE_BRILLIANCE: "brilliance",
+	EARLY_SUPPORTER: "early supporter",
+	HOUSE_BRAVERY: "bravery",
+	HOUSE_BALANCE: "balance",
+	VERIFIED_BOT: "verified bot",
+	TEAM_USER: "team user"
+};
 
 export enum LOGGER_TYPES {
 	COMMAND,
 	ERROR,
 	EVENT,
 	INFO
-}
-
-export enum CONFIG_OPTIONS {
-	BOT_LOG,
-	MEMBER_LOG,
-	ROLES
 }
 
 export enum BOOST_LEVELS {
@@ -64,8 +81,64 @@ export enum BOOST_LEVELS {
 	NONE = "no boost level"
 }
 
-export enum ConfigResultKeys {
+export enum CONFIG_RESULT_KEYS {
 	id = "Guild",
 	bot_log_channel_id = "Bot log channel",
 	member_log_channel_id = "Member log channel"
 }
+
+const CONFIG_CHANNEL_OPTIONS = [
+	{
+		name: "view",
+		description: "Sends the option's value",
+		type: ApplicationCommandOptionType.Subcommand as number
+	},
+	{
+		name: "set",
+		description: "Sets a new value for the option",
+		type: ApplicationCommandOptionType.Subcommand as number,
+		options: [
+			{
+				name: "channel",
+				description: "The new channel to set to. Omitting this option will remove its value",
+				channelTypes: ["GUILD_TEXT", "GUILD_NEWS", "GUILD_STORE"],
+				type: ApplicationCommandOptionType.Channel as number
+			}
+		]
+	}
+];
+const CONFIG_ROLE_OPTIONS = [
+	{
+		name: "view",
+		description: "Sends the option's value",
+		type: ApplicationCommandOptionType.Subcommand as number
+	},
+	{
+		name: "set",
+		description: "Sets a new value for the option",
+		type: ApplicationCommandOptionType.Subcommand as number,
+		options: [
+			{
+				name: "role",
+				description: "The new role to set to. Omitting this option will remove its value",
+				type: ApplicationCommandOptionType.Role as number
+			}
+		]
+	}
+];
+export const CONFIG_OPTIONS = {
+	CHANNEL: CONFIG_CHANNEL_OPTIONS,
+	ROLE: CONFIG_ROLE_OPTIONS
+};
+
+export default {
+	INTENTS,
+	MAX_EMBED_DESCRIPTION_LEN,
+	REGEX,
+	COLORS,
+	USER_FLAGS,
+	LOGGER_TYPES,
+	BOOST_LEVELS,
+	CONFIG_RESULT_KEYS,
+	CONFIG_OPTIONS
+};

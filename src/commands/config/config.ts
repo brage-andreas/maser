@@ -2,9 +2,9 @@ import type { CommandInteraction, ConfigColumns } from "../../typings.js";
 import type { ApplicationCommandData } from "discord.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
-import { ConfigResultKeys } from "../../constants.js";
+import { CONFIG_OPTIONS, CONFIG_RESULT_KEYS } from "../../constants.js";
 import { MessageEmbed } from "discord.js";
-import ConfigManager from "../../database/config/ConfigManager.js";
+import ConfigManager from "../../database/src/config/ConfigManager.js";
 import logs from "./modules/logs.js";
 
 export const priv = true;
@@ -16,51 +16,19 @@ export const data: ApplicationCommandData = {
 			name: "bot-log",
 			description: "Options for this server's bot log channel",
 			type: ApplicationCommandOptionType.SubcommandGroup as number,
-			options: [
-				{
-					name: "view",
-					description: "Sends the option's value",
-					type: ApplicationCommandOptionType.Subcommand as number
-				},
-				{
-					name: "set",
-					description: "Sets a new value for the option",
-					type: ApplicationCommandOptionType.Subcommand as number,
-					options: [
-						{
-							name: "channel",
-							description: "The new channel to set to. Omitting this option will remove its value",
-							channelTypes: ["GUILD_TEXT", "GUILD_NEWS", "GUILD_STORE"],
-							type: ApplicationCommandOptionType.Channel as number
-						}
-					]
-				}
-			]
+			options: CONFIG_OPTIONS.CHANNEL
 		},
 		{
 			name: "member-log",
 			description: "Options for this server's member log channel",
 			type: ApplicationCommandOptionType.SubcommandGroup as number,
-			options: [
-				{
-					name: "view",
-					description: "Sends the option's value",
-					type: ApplicationCommandOptionType.Subcommand as number
-				},
-				{
-					name: "set",
-					description: "Sets a new value for the option",
-					type: ApplicationCommandOptionType.Subcommand as number,
-					options: [
-						{
-							name: "channel",
-							description: "The new channel to set to. Omitting this option will remove its value",
-							channelTypes: ["GUILD_TEXT", "GUILD_NEWS", "GUILD_STORE"],
-							type: ApplicationCommandOptionType.Channel as number
-						}
-					]
-				}
-			]
+			options: CONFIG_OPTIONS.CHANNEL
+		},
+		{
+			name: "muted-role",
+			description: "Options for this server's muted role",
+			type: ApplicationCommandOptionType.SubcommandGroup as number,
+			options: CONFIG_OPTIONS.ROLE
 		},
 		{
 			name: "view-config",
@@ -78,7 +46,7 @@ export async function execute(intr: CommandInteraction) {
 
 	// TODO
 	if (method === "view-config") {
-		const res = await config.botLog.getAll(); // temporary
+		const res = await config.getAll();
 
 		const configEmbed = new MessageEmbed()
 			.setAuthor(`${intr.user.tag} (${intr.user.id})`, intr.member.displayAvatarURL())
@@ -87,12 +55,10 @@ export async function execute(intr: CommandInteraction) {
 			.setTimestamp();
 
 		for (let [key, value] of Object.entries(res)) {
-			key = ConfigResultKeys[key as ConfigColumns];
+			key = CONFIG_RESULT_KEYS[key as ConfigColumns];
 
 			const guild = intr.client.guilds.cache.get(value)?.name ?? null;
 			const channel = intr.guild.channels.cache.get(value)?.toString() ?? null;
-			// const user = intr.client.users.fetch(value).then((user) => `${user}`).catch(() => null);
-			// const member = intr.guild.members.fetch(value).then((member) => `${member}`).catch(() => null);
 			const role = intr.guild.roles.cache.get(value)?.toString() ?? null;
 
 			const notFound = !!value && !guild && !channel && !role;
@@ -114,8 +80,10 @@ export async function execute(intr: CommandInteraction) {
 
 	switch (option) {
 		case "member-log":
+			await logs({ intr, option, method, config: config.setKey("member_log_channel_id") });
+			break;
 		case "bot-log":
-			await logs({ intr, option, method, config });
+			await logs({ intr, option, method, config: config.setKey("bot_log_channel_id") });
 			break;
 	}
 }

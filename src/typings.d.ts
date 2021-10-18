@@ -8,7 +8,7 @@ import type Discord, {
 	MessageEmbed
 } from "discord.js";
 import type { CommandLogger } from "./utils/logger/CommandLogger.js";
-import type ConfigManager from "./database/config/ConfigManager.js";
+import type ConfigManager from "./database/src/config/ConfigManager.js";
 import type { Client } from "./extensions/";
 
 export type ConfigColumns = "id" | "bot_log_channel_id" | "member_log_channel_id";
@@ -52,7 +52,7 @@ export interface ConfigCommandData {
 	intr: CommandInteraction;
 }
 
-type AllowedConfigTextChannels = TextChannel | NewsChannel | StoreChannel;
+type AllowedConfigTextChannels = TextChannel | NewsChannel;
 
 export interface RawEvalOutput {
 	result: any;

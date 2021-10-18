@@ -1,7 +1,7 @@
 import type { Message } from "discord.js";
 import type { Client } from "../extensions/";
 
-import { CODEBLOCK_REGEX, CODE_REGEX, ID_REGEX, USER_REGEX } from "../constants.js";
+import { REGEX } from "../constants.js";
 import { MessageAttachment, MessageButton } from "discord.js";
 import { CommandLogger } from "../utils/logger/";
 import { ButtonManager } from "../extensions/";
@@ -18,8 +18,8 @@ export async function execute(client: Client, msg: Message) {
 
 	const argument = split[0];
 
-	const isId = ID_REGEX.test(mention);
-	const isMention = USER_REGEX.test(mention);
+	const isId = REGEX.ID.test(mention);
+	const isMention = REGEX.USER.test(mention);
 	const cleanId = mention.replaceAll(/\D/g, "");
 
 	if (!(isId || isMention) && cleanId === client.user.id) return;
@@ -56,7 +56,7 @@ export async function execute(client: Client, msg: Message) {
 			.setGuild(msg.guild)
 			.setName("MSG-EVAL");
 
-		const captured = (msg.content.match(CODEBLOCK_REGEX) ?? msg.content.match(CODE_REGEX))?.groups;
+		const captured = (msg.content.match(REGEX.CODEBLOCK) ?? msg.content.match(REGEX.CODE))?.groups;
 		const code = captured?.code ?? split.join(" ");
 
 		const { embeds, output, type } = await evaluate(code, msg);

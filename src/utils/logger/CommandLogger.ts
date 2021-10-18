@@ -3,7 +3,7 @@ import type { CommandInteraction } from "../../typings.js";
 
 import { MessageEmbed } from "discord.js";
 import { LOGGER_TYPES } from "../../constants.js";
-import ConfigManager from "../../database/config/ConfigManager.js";
+import ConfigManager from "../../database/src/config/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";
 import Util from "../";
 
@@ -92,9 +92,9 @@ export default class CommandLogger extends BaseLogger {
 			return embed;
 		};
 
-		const botLogManager = new ConfigManager(client, guild.id);
+		const botLogManager = new ConfigManager(client, guild.id, "bot_log_channel_id");
 
-		botLogManager.botLog.get<TextChannel>().then((channel) => {
+		botLogManager.getChannel().then((channel) => {
 			if (!this.interaction) return; // not really needed - mostly for TS
 			if (!channel) return;
 
