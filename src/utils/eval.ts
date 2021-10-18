@@ -2,7 +2,7 @@ import type { CommandInteraction, EvalOutput } from "../typings.js";
 import type { Client } from "../extensions/";
 
 import Discord, { Message, MessageEmbed } from "discord.js";
-import { TOKEN_REGEX } from "../constants.js";
+import { REGEX } from "../constants.js";
 import { performance } from "perf_hooks";
 import Util from "./";
 import ms from "ms";
@@ -37,7 +37,7 @@ export default async function evaluate(code: string, that: CommandInteraction | 
 		const time = Number((end - start).toFixed(3));
 		const timeTaken = ms(time, { long: true }).replace(".", ",");
 
-		const stringedOutput = stringify(result).replaceAll(new RegExp(TOKEN_REGEX, "g"), "[REDACTED]");
+		const stringedOutput = stringify(result).replaceAll(new RegExp(REGEX.TOKEN, "g"), "[REDACTED]");
 
 		const parsedInput = parse(code, "**Input**");
 		const parsedOutput = parse(stringedOutput, "**Output**");

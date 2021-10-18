@@ -12,10 +12,9 @@ import type { CommandInteraction, Command } from "../typings.js";
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import { ErrorLogger, InfoLogger } from "../utils/logger";
 import { readdirSync } from "fs";
-import { ID_REGEX } from "../constants.js";
+import { REGEX } from "../constants.js";
 import { Routes } from "discord-api-types/v9";
 import { REST } from "@discordjs/rest";
-import CommandManager from "./CommandManager.js";
 
 const COMMAND_DIR = new URL("../commands", import.meta.url);
 
@@ -197,12 +196,12 @@ export default class CommandHandler {
 			return false;
 		}
 
-		if (!ID_REGEX.test(clientId)) {
+		if (!REGEX.ID.test(clientId)) {
 			errorLogger.log(`Client id is faulty: ${clientId}`);
 			return false;
 		}
 
-		if (guildId && !ID_REGEX.test(guildId)) {
+		if (guildId && !REGEX.ID.test(guildId)) {
 			errorLogger.log(`Guild id is faulty: ${guildId}`);
 			return false;
 		}
