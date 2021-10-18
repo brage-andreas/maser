@@ -2,6 +2,7 @@ import type { ExistsResult, PostgresOptions } from "../../typings.js";
 import type { Client } from "../../extensions/";
 import type { Guild } from "discord.js";
 import PostgresConnection from "./connection.js";
+import { REGEX } from "../../constants.js";
 
 export default abstract class Postgres extends PostgresConnection {
 	protected guildId: string | null;
@@ -12,6 +13,10 @@ export default abstract class Postgres extends PostgresConnection {
 		super(client);
 
 		this.guildId = this.resolveGuild(options?.guildResolvable);
+		if (this.guildId && !REGEX.ID.test(this.guildId)) {
+			throw new TypeError(`Guild resolvable must be a valid id: ${this.guildId}`);
+		}
+
 		this.schema = options?.schema ?? null;
 		this.table = options?.table ?? null;
 	}
@@ -105,8 +110,8 @@ export default abstract class Postgres extends PostgresConnection {
 		const defaultOptions = { schema: true, guild: true, table: true };
 		const { schema, guild, table } = options ?? defaultOptions;
 
-		if (schema && !this.schema) throw new Error("Schema must be set to the Creator");
-		if (guild && !this.guildId) throw new Error("Guild id must be set to the Creator");
-		if (table && !this.table) throw new Error("Table must be set to the Creator");
+		if (schema && !this.schema) throw new Error("Schema must be set");
+		if (guild && !this.guildId) throw new Error("Guild id must be set");
+		if (table && !this.table) throw new Error("Table must be set");
 	}
 }
