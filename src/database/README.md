@@ -7,9 +7,9 @@ postgres
         │   ├── id
         │   ├── bot_log_channel_id
         │   └── member_log_channel_id
-        └── commands
+        └── roles
             ├── id
-            └── disabled
+            └── muted_role_id
 ```
 
 ## Databases
@@ -28,7 +28,7 @@ maser
 maser
 └── configs
     ├── logs
-    └── commands
+    └── roles
 ```
 
 **logs**
@@ -38,8 +38,8 @@ maser
 | `bot_log_channel_id`    | `bigint` | channel id |
 | `member_log_channel_id` | `bigint` | channel id |
 
-**commands** (experimental, todo)
-| Column     | Type     | Key      |
-| ---------- | -------- | -------- |
-| `id`       | `bigint` | guild id |
-| `disabled` | none     | none     |
+**roles**
+| Column          | Type     | Key      |
+| --------------- | -------- | -------- |
+| `id`            | `bigint` | guild id |
+| `muted_role_id` | `bigint` | role id  |
