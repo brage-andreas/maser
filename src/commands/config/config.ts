@@ -80,10 +80,13 @@ export async function execute(intr: CommandInteraction) {
 
 	switch (option) {
 		case "member-log":
-			await logs({ intr, option, method, config: config.setKey("member_log_channel_id") });
+			await logs({ intr, option, method, config: config.setTable("logs").setKey("member_log_channel_id") });
 			break;
 		case "bot-log":
-			await logs({ intr, option, method, config: config.setKey("bot_log_channel_id") });
+			await logs({ intr, option, method, config: config.setTable("logs").setKey("bot_log_channel_id") });
+			break;
+		case "muted-role":
+			await logs({ intr, option, method, config: config.setTable("roles").setKey("muted_role_id") });
 			break;
 	}
 }

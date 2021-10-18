@@ -20,12 +20,12 @@ export default async function logs(data: ConfigCommandData) {
 		}
 
 		case "set": {
-			const channel = intr.options.getChannel("channel");
+			const res = intr.options.getChannel("channel") ?? intr.options.getRole("role");
 
-			const value = channel?.id ?? "null";
+			const value = res?.id ?? "null";
 			await config.set(value);
 
-			const newValueStr = channel ? `${channel} (${channel.id})` : "Removed";
+			const newValueStr = res ? `${res} (${res.id})` : "Removed";
 
 			const viewOptionEmbed = new MessageEmbed()
 				.setAuthor(intr.user.tag, intr.member.displayAvatarURL())
