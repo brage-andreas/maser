@@ -5,6 +5,8 @@ import { CommandLogger } from "../utils/logger/";
 export async function execute(client: Client, intr: CommandInteraction) {
 	if (!intr.isCommand() || !intr.guild || !intr.member) return;
 
+	const [locked] = intr.client.moji.findAndParse("locked");
+
 	intr.logger = new CommandLogger(intr);
 
 	const commandData = client.commands.get(intr);
@@ -12,7 +14,7 @@ export async function execute(client: Client, intr: CommandInteraction) {
 
 	if (command.isPrivate) {
 		if (intr.user.id !== client.application.owner?.id) {
-			await intr.reply({ content: "This command is private", ephemeral: true });
+			await intr.reply({ content: `${locked}This command is private`, ephemeral: true });
 			return;
 		}
 	}

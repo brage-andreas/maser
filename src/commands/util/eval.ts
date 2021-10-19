@@ -31,6 +31,8 @@ export async function execute(intr: CommandInteraction) {
 	const code = intr.options.getString("code", true);
 	const reply = intr.options.getBoolean("reply") ?? true;
 
+	const [errorEm, successEm, inputEm] = intr.client.moji.find("exclamation", "success", "input");
+
 	const { embeds, output, type } = await evaluate(code, intr);
 
 	if (reply) {
@@ -39,14 +41,14 @@ export async function execute(intr: CommandInteraction) {
 		const outputButton = new MessageButton() //
 			.setLabel(`Full ${type}`)
 			.setCustomId("output")
-			.setStyle("PRIMARY")
-			.setEmoji("📤");
+			.setStyle("SECONDARY")
+			.setEmoji((type === "error" ? errorEm : successEm) ?? "📤");
 
 		const codeButton = new MessageButton() //
 			.setLabel("Full input")
 			.setCustomId("code")
-			.setStyle("PRIMARY")
-			.setEmoji("📥");
+			.setStyle("SECONDARY")
+			.setEmoji(inputEm ?? "📥");
 
 		buttonManager.setRows(outputButton, codeButton).setUser(intr.user);
 
@@ -57,29 +59,20 @@ export async function execute(intr: CommandInteraction) {
 			if (interaction.customId === "output") {
 				const attachment = new MessageAttachment(Buffer.from(output), "output.txt");
 
-				interaction.followUp({ files: [attachment] }).catch(() => {
-					interaction.followUp({ content: "I couldn't send the output", ephemeral: true });
-				});
+				interaction.followUp({ files: [attachment] });
 
 				buttonManager.disable(interaction, "output");
 				intr.logger.log(`Sent output as an attachment:\n${Util.indent(output)}`);
 			}
-
-			if (interaction.customId === "code") {
+			//
+			else if (interaction.customId === "code") {
 				const attachment = new MessageAttachment(Buffer.from(code), "code.txt");
 
-				interaction.followUp({ files: [attachment] }).catch(() => {
-					interaction.followUp({ content: "I couldn't send the code", ephemeral: true });
-				});
+				interaction.followUp({ files: [attachment] });
 
 				buttonManager.disable(interaction, "code");
 				intr.logger.log(`Sent code as an attachment:\n${Util.indent(code)}`);
 			}
-		});
-
-		collector.on("dispose", (intr) => {
-			// this doesn't seem to actually work :shrug:
-			intr.reply({ content: "You cannot use this button", ephemeral: true });
 		});
 	}
 
