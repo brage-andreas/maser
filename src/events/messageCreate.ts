@@ -12,41 +12,17 @@ export async function execute(client: Client, msg: Message) {
 	if (msg.author.id !== client.application.owner?.id) return;
 	if (["DM", "GROUP_DM"].includes(msg.channel.type) || !msg.guild || !msg.member) return;
 
+	const [errorEm, successEm, inputEm] = client.moji.find("exclamation", "success", "input");
+
 	const split = msg.content.split(/\s+/g);
 	const [mention, command] = split.splice(0, 2);
 	if (!mention || !command) return;
-
-	const argument = split[0];
 
 	const isId = REGEX.ID.test(mention);
 	const isMention = REGEX.USER.test(mention);
 	const cleanId = mention.replaceAll(/\D/g, "");
 
 	if (!(isId || isMention) && cleanId === client.user.id) return;
-
-	// TODO: real system for build/clear
-	if (command === "build") {
-		if (!argument || !["client", "guild"].includes(argument.toLowerCase()))
-			return msg.reply(`Unknown type: ${argument ?? "No type provided"}\nMust be one of "client", "guild"`);
-
-		msg.delete().catch(() => null);
-		const res = await client.commands.put(client.user.id, argument === "guild" ? msg.guild.id : undefined);
-		if (!res) msg.reply("Something went wrong with setting the commands.");
-
-		return;
-	}
-
-	// TODO: real system for build/clear
-	if (command === "clear") {
-		if (!argument || !["client", "guild"].includes(argument.toLowerCase()))
-			return msg.reply(`Unknown type: ${argument ?? "No type provided"}\nMust be one of "client", "guild"`);
-
-		msg.delete().catch(() => null);
-		const res = await client.commands.clear(client.user.id, argument === "guild" ? msg.guild.id : undefined);
-		if (!res) msg.reply("Something went wrong with clearing the commands.");
-
-		return;
-	}
 
 	// Temporary eval until multi-line slashies
 	if (command === "eval") {
@@ -66,44 +42,35 @@ export async function execute(client: Client, msg: Message) {
 		const outputButton = new MessageButton() //
 			.setLabel(`Full ${type}`)
 			.setCustomId("output")
-			.setStyle("PRIMARY")
-			.setEmoji("📤");
+			.setStyle("SECONDARY")
+			.setEmoji((type === "error" ? errorEm : successEm) ?? "📤");
 
 		const codeButton = new MessageButton() //
 			.setLabel("Full input")
 			.setCustomId("code")
-			.setStyle("PRIMARY")
-			.setEmoji("📥");
+			.setStyle("SECONDARY")
+			.setEmoji(inputEm ?? "📥");
 
 		buttonManager.setRows(outputButton, codeButton);
-		const reply = await msg.reply({ embeds, components: buttonManager.rows });
+		const reply = await msg.reply({ embeds, components: buttonManager.rows }).catch(() => null);
+		if (!reply) return;
 
 		const collector = buttonManager.setMessage(reply).setUser(msg.author).createCollector();
 
 		collector.on("collect", (interaction) => {
 			if (interaction.customId === "output") {
 				const attachment = new MessageAttachment(Buffer.from(output), "output.txt");
-
-				interaction.followUp({ files: [attachment] }).catch(() => {
-					interaction.followUp({ content: "I couldn't send the output", ephemeral: true });
-				});
+				interaction.followUp({ files: [attachment] });
 
 				buttonManager.disable(interaction, "output");
 			}
-
-			if (interaction.customId === "code") {
+			//
+			else if (interaction.customId === "code") {
 				const attachment = new MessageAttachment(Buffer.from(code), "code.txt");
-
-				interaction.followUp({ files: [attachment] }).catch(() => {
-					interaction.followUp({ content: "I couldn't send the code", ephemeral: true });
-				});
+				interaction.followUp({ files: [attachment] });
 
 				buttonManager.disable(interaction, "code");
 			}
-		});
-
-		collector.on("dispose", (intr) => {
-			intr.reply({ content: "You cannot use this button", ephemeral: true });
 		});
 
 		logger.log(`Code:\n${Util.indent(code, 4)}\nOutput:\n${Util.indent(output, 4)}`);
