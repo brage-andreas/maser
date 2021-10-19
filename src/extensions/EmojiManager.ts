@@ -1,50 +1,62 @@
 import type { Client } from "./";
+import type { Guild, GuildEmoji } from "discord.js";
+import { REGEX } from "../constants";
 
 /**
  * Manages emojis for the client.
  */
 export default class EmojiManager {
+	public guildId: string | null;
 	public client: Client;
 
 	/**
-	 * Creates an emoji manager.
+	 * Creates an emoji manager. If no id is provided, it will default to `process.env.EMOJI_GUILD_ID` if present.
 	 */
-	constructor(client: Client) {
+	constructor(client: Client, guildId?: string, global?: boolean) {
+		if (guildId && !global && !REGEX.ID.test(guildId)) {
+			throw new TypeError(`Guild id must be a valid id: ${guildId}`);
+		}
+
+		const envGuildId = !global ? process.env.EMOJI_GUILD_ID ?? null : null;
+
+		this.guildId = guildId ?? envGuildId;
 		this.client = client;
 	}
 
 	/**
-	 * Searches for all emojis provided. If none is found, returns null.
-	 * If one is found, returns the parsed emoji.
-	 * Else it will return and array of the parsed emojis found.
+	 * Sets or removes the guildId for the manager.
 	 */
-	public findAll(...emojis: string[]): string[] | string | null {
-		const emojiArray: string[] = [];
+	public setGuildId(guildId: string | null): this {
+		if (guildId && !REGEX.ID.test(guildId)) {
+			throw new TypeError(`Guild id must be a valid id: ${guildId}`);
+		}
 
-		emojis.forEach((emojiName) => {
-			const emoji = this._get(emojiName);
-			if (emoji) emojiArray.push(emoji);
+		this.guildId = guildId;
+		return this;
+	}
+
+	/**
+	 * Searches for any emojis, and returns an array of them.
+	 */
+	public find(...emojiNames: string[]): (string | null)[] {
+		const guild = this.client.guilds.cache.get(this.guildId ?? "");
+		const base = guild?.emojis.cache ?? this.client.emojis.cache;
+
+		const emojiArray = emojiNames.map((emojiName) => {
+			const emoji = base.find((emoji) => emoji.name?.startsWith(emojiName.toLowerCase()) ?? false);
+			return emoji?.toString() ?? null;
 		});
 
-		if (emojiArray.length === 0) return null;
-		else if (emojiArray.length === 1) return emojiArray[0];
-		else return emojiArray;
+		return emojiArray;
 	}
 
 	/**
-	 * Searches for an emoji, and returns it if found.
+	 * Searches for any emojis, and parses and returns an array of them.
 	 */
-	public find(emojiName: string): string | null {
-		return this._get(emojiName);
-	}
+	public findAndParse(...emojiNames: string[]): string[] {
+		const emojis = this.find(...emojiNames);
 
-	/**
-	 * Gets an emoji from the client cache with a given name.
-	 */
-	private _get(emojiName: string) {
-		const emojis = this.client.emojis.cache;
-		const emoji = emojis.find((emoji) => emoji.name?.startsWith(emojiName.toLowerCase()) ?? false);
-
-		return emoji?.toString() ?? null;
+		const parsedEmojiArray = emojis.map((emoji) => (emoji ? emoji + " " : ""));
+		return parsedEmojiArray;
 	}
 }
