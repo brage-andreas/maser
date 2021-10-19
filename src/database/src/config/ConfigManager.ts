@@ -70,7 +70,7 @@ export default class ConfigManager extends Postgres {
 
 		const query = `
             SELECT *
-            FROM configs.logs
+            FROM configs."${this.table}"
             WHERE id = ${this.guildId}
         `;
 
