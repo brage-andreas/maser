@@ -54,17 +54,17 @@ export default class ButtonManager {
 	}
 
 	/**
-	 * Sets the message for the manager. Used by the collector.
+	 * Sets or removes the message. Used by the collector.
 	 */
-	public setMessage(message: Message): this {
+	public setMessage(message: Message | null): this {
 		this.message = message;
 		return this;
 	}
 
 	/**
-	 * Sets the user for the manager. Used by the collector.
+	 * Sets or removes the user. Used by the collector.
 	 */
-	public setUser(user: User): this {
+	public setUser(user: User | null): this {
 		this.user = user;
 		return this;
 	}
@@ -105,17 +105,15 @@ export default class ButtonManager {
 
 	/**
 	 * Chunks the buttons into arrays with a set size and total length
-	 * @param size - How many buttons per array. Default is 5
-	 * @param length - How many arrays in total. Default is 5
 	 */
-	public chunkButtons(buttons: MessageButton[] | MessageButton[][], size = 5, length = 5): MessageButton[][] {
+	public chunkButtons(buttons: MessageButton[] | MessageButton[][], amount = 5, rows = 5): MessageButton[][] {
 		const parsedButtonsArray = this._parseButtons(buttons);
-		const cutParsedButtonsArray = parsedButtonsArray.slice(0, length);
+		const cutParsedButtonsArray = parsedButtonsArray.slice(0, rows);
 
 		const chunk: MessageButton[][] = [];
 
 		cutParsedButtonsArray.forEach((buttonArray) => {
-			const buttons = buttonArray.slice(0, size);
+			const buttons = buttonArray.slice(0, amount);
 			chunk.push(buttons);
 		});
 
