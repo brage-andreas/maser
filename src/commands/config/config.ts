@@ -5,7 +5,7 @@ import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import { CONFIG_OPTIONS, CONFIG_RESULT_KEYS } from "../../constants.js";
 import { MessageEmbed } from "discord.js";
 import ConfigManager from "../../database/src/config/ConfigManager.js";
-import logs from "./modules/logs.js";
+import methods from "./modules/methods.js";
 
 export const priv = true;
 export const data: ApplicationCommandData = {
@@ -42,10 +42,11 @@ export async function execute(intr: CommandInteraction) {
 	const option = intr.options.getSubcommandGroup(false);
 	const method = intr.options.getSubcommand();
 
-	const config = new ConfigManager(intr.client, intr.guild.id);
+	let config = new ConfigManager(intr.client, intr.guild.id);
 
 	// TODO
 	if (method === "view-config") {
+		// this is broken now
 		const res = await config.getAll();
 
 		const configEmbed = new MessageEmbed()
@@ -80,13 +81,18 @@ export async function execute(intr: CommandInteraction) {
 
 	switch (option) {
 		case "member-log":
-			await logs({ intr, option, method, config: config.setTable("logs").setKey("member_log_channel_id") });
+			config.setTable("logs").setKey("member_log_channel_id");
+			await methods({ intr, option, method, config });
 			break;
+
 		case "bot-log":
-			await logs({ intr, option, method, config: config.setTable("logs").setKey("bot_log_channel_id") });
+			config.setTable("logs").setKey("bot_log_channel_id");
+			await methods({ intr, option, method, config });
 			break;
+
 		case "muted-role":
-			await logs({ intr, option, method, config: config.setTable("roles").setKey("muted_role_id") });
+			config.setTable("roles").setKey("muted_role_id");
+			await methods({ intr, option, method, config });
 			break;
 	}
 }
