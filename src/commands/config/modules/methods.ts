@@ -1,0 +1,69 @@
+import type { AllowedConfigTextChannels, ConfigCommandData } from "../../../typings.js";
+import type { Role } from "discord.js";
+import { MessageEmbed } from "discord.js";
+
+export default async function logs(data: ConfigCommandData) {
+	const { config, intr, method, option } = data;
+
+	// TODO: refactor
+	const [emptyFileEmoji, channelEmoji, fileEmoji, roleEmoji] = intr.client.moji.findAndParse(
+		"empty_file",
+		"channel",
+		"file",
+		"at"
+	);
+
+	switch (method) {
+		case "view": {
+			const channel = await config.getChannel();
+			const role = await config.getRole();
+
+			const getValueStr = (value: Role | AllowedConfigTextChannels, emoji: string) => {
+				return `${emoji}Value: ${value} (${value.id})`;
+			};
+
+			const valueStr = channel
+				? getValueStr(channel, channelEmoji)
+				: role
+				? getValueStr(role, roleEmoji)
+				: `Not set`;
+
+			const viewOptionEmbed = new MessageEmbed()
+				.setAuthor(intr.user.tag, intr.member.displayAvatarURL())
+				.setColor(intr.client.colors.try("INVIS"))
+				.addField(option, valueStr);
+
+			intr.editReply({ embeds: [viewOptionEmbed] });
+
+			intr.logger.log(
+				`Used method VIEW on option ${option.toUpperCase()}:\n  ${(channel ?? role)?.id ?? "Not set"}`
+			);
+			break;
+		}
+
+		case "set": {
+			const res = intr.options.getChannel("channel") ?? intr.options.getRole("role");
+
+			const value = res?.id ?? "null";
+			await config.set(value);
+
+			const updatedValueStr = res
+				? `${fileEmoji}New value: ${res} (${res.id})`
+				: `${emptyFileEmoji}Removed value`;
+
+			const viewOptionEmbed = new MessageEmbed()
+				.setAuthor(intr.user.tag, intr.member.displayAvatarURL())
+				.setColor(intr.client.colors.try("INVIS"))
+				.addField(option, updatedValueStr);
+
+			intr.editReply({ embeds: [viewOptionEmbed] });
+
+			intr.logger.log(`Used method SET on option ${option.toUpperCase()}:\n  ${value}`);
+			break;
+		}
+
+		default: {
+			break;
+		}
+	}
+}
