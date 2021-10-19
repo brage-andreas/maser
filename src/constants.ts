@@ -108,6 +108,7 @@ const CONFIG_CHANNEL_OPTIONS = [
 		]
 	}
 ];
+
 const CONFIG_ROLE_OPTIONS = [
 	{
 		name: "view",
@@ -127,6 +128,7 @@ const CONFIG_ROLE_OPTIONS = [
 		]
 	}
 ];
+
 export const CONFIG_OPTIONS = {
 	CHANNEL: CONFIG_CHANNEL_OPTIONS,
 	ROLE: CONFIG_ROLE_OPTIONS
