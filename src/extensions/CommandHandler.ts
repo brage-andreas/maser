@@ -64,6 +64,9 @@ export default class CommandHandler {
 		return await this._put(clientId, guildId, true);
 	}
 
+	/**
+	 * Get a command's data.
+	 */
 	public get(command: CommandInteraction | string): Command {
 		const name = typeof command === "string" ? command : command.commandName;
 		return this._get(name);
