@@ -30,7 +30,7 @@ export default async function logs(data: ConfigCommandData) {
 
 			const viewOptionEmbed = new MessageEmbed()
 				.setAuthor(intr.user.tag, intr.member.displayAvatarURL())
-				.setColor(intr.client.colors.try("INVIS"))
+				.setColor(intr.client.colors.try("YELLOW"))
 				.addField(option, valueStr);
 
 			intr.editReply({ embeds: [viewOptionEmbed] });
