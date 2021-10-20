@@ -16,16 +16,34 @@ export type ConfigColumns = "id" | "bot_log_channel_id" | "member_log_channel_id
 export type Color = `#${string}`;
 export type ColorMap = Map<string, Color>;
 
+export interface CommandModule {
+	getCommand: () => PartialCommand;
+}
+
+export interface PartialCommand {
+	execute?: (interaction: CommandInteraction) => Promise<void> | void;
+	data?: ApplicationCommandData;
+	options?: {
+		defaultHide?: boolean;
+		logLevel?: 2 | 1 | 0;
+		private?: boolean;
+		wip?: boolean;
+	};
+}
+
 export interface Command {
-	execute(interaction: CommandInteraction): Promise<void> | void;
-	defaultHide?: boolean;
-	logLevel?: 2 | 1 | 0;
-	priv?: boolean; // "private" isn't allowed
+	execute: (interaction: CommandInteraction) => Promise<void> | void;
 	data: ApplicationCommandData;
+	options: {
+		defaultHide: boolean;
+		logLevel: 2 | 1 | 0;
+		private: boolean;
+		wip: boolean;
+	};
 }
 
 export interface Event {
-	execute(client: Client, ...args: unknown[]): Promise<void> | void;
+	execute: (client: Client, ...args: unknown[]) => Promise<void> | void;
 }
 
 export interface CommandInteraction extends Discord.CommandInteraction {
