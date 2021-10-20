@@ -1,5 +1,5 @@
 import type { ApplicationCommandData, Message } from "discord.js";
-import type { CommandInteraction } from "../../typings.js";
+import type { CommandInteraction, PartialCommand } from "../../typings.js";
 
 import { MessageAttachment, MessageButton } from "discord.js";
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
@@ -7,9 +7,12 @@ import { ButtonManager } from "../../extensions/";
 import evaluate from "../../utils/eval.js";
 import Util from "../../utils/";
 
-export const priv = true;
-export const logLevel = 2;
-export const data: ApplicationCommandData = {
+const options = {
+	logLevel: 2,
+	private: true
+};
+
+const data: ApplicationCommandData = {
 	name: "eval",
 	description: "Runs code",
 	options: [
@@ -27,7 +30,7 @@ export const data: ApplicationCommandData = {
 	]
 };
 
-export async function execute(intr: CommandInteraction) {
+async function execute(intr: CommandInteraction) {
 	const code = intr.options.getString("code", true);
 	const reply = intr.options.getBoolean("reply") ?? true;
 
@@ -78,3 +81,5 @@ export async function execute(intr: CommandInteraction) {
 
 	intr.logger.log(`Code:\n${Util.indent(code, 4)}`, `Output:\n${Util.indent(output, 4)}`);
 }
+
+export const getCommand = () => ({ options, data, execute } as PartialCommand);

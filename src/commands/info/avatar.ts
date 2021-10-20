@@ -1,5 +1,5 @@
 import type { AllowedImageSize, ApplicationCommandData, GuildMember } from "discord.js";
-import type { CommandInteraction } from "../../typings.js";
+import type { CommandInteraction, PartialCommand } from "../../typings.js";
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import { MessageEmbed } from "discord.js";
 
@@ -23,7 +23,7 @@ const getAllowedSizeFn = (useless: unknown, index: number) => {
 
 const allowedSizeArray = Array.from({ length: 9 }, getAllowedSizeFn);
 
-export const data: ApplicationCommandData = {
+const data: ApplicationCommandData = {
 	name: "avatar",
 	description: "Sends a user's avatar",
 	options: [
@@ -48,7 +48,7 @@ export const data: ApplicationCommandData = {
 
 type ImageFormats = "webp" | "png" | "jpg";
 
-export async function execute(intr: CommandInteraction) {
+async function execute(intr: CommandInteraction) {
 	const includeGuildAvatar = intr.options.getBoolean("guild-avatar") ?? true;
 	const member = intr.options.getMember("user") as GuildMember | null;
 	const size = (intr.options.getInteger("size") ?? 2048) as AllowedImageSize;
@@ -88,3 +88,5 @@ export async function execute(intr: CommandInteraction) {
 
 	intr.logger.log(`Sent avatar of ${user.tag} (${user.id})`);
 }
+
+export const getCommand = () => ({ data, execute } as PartialCommand);

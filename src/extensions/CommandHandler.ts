@@ -7,13 +7,13 @@ import type {
 	ApplicationCommandSubCommandData,
 	ApplicationCommandSubGroupData
 } from "discord.js";
-import type { CommandInteraction, Command } from "../typings.js";
+import type { CommandInteraction, Command, CommandModule } from "../typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import { ErrorLogger, InfoLogger } from "../utils/logger";
 import { readdirSync } from "fs";
-import { REGEX } from "../constants.js";
 import { Routes } from "discord-api-types/v9";
+import { REGEX } from "../constants.js";
 import { REST } from "@discordjs/rest";
 
 const COMMAND_DIR = new URL("../commands", import.meta.url);
@@ -101,14 +101,25 @@ export default class CommandHandler {
 			const files = this._readDir(FOLDER_DIR).filter((f) => f.toLowerCase().endsWith(".js"));
 
 			for (let fileName of files) {
-				const command = await import(`../commands/${folder}/${fileName}`);
+				const commandModule = (await import(`../commands/${folder}/${fileName}`)) as CommandModule;
+				const partialCommand = commandModule.getCommand();
+
 				const name = fileName.split(".")[0];
 
-				if (!command.data || !command.execute) {
+				if (!partialCommand.data || !partialCommand.execute) {
 					throw new Error(`File "/commands/${folder}/${fileName}" is missing command properties`);
 				}
 
-				hash.set(name, command as Command);
+				partialCommand.options ??= {};
+
+				const command = partialCommand as Command;
+
+				command.options.defaultHide ??= true;
+				command.options.logLevel ??= 1;
+				command.options.private ??= false;
+				command.options.wip ??= false;
+
+				hash.set(name, command);
 			}
 		}
 
@@ -121,11 +132,11 @@ export default class CommandHandler {
 	public getDefaultHide(intr: CommandInteraction | string): boolean {
 		if (typeof intr !== "string") {
 			const commandOption = intr.options.getBoolean("hide");
-			const standard = this._get(intr.commandName).defaultHide ?? true;
+			const standard = this._get(intr.commandName).options.defaultHide ?? true;
 
 			return commandOption ?? standard;
 		} else {
-			return this._get(intr).defaultHide ?? true;
+			return this._get(intr).options.defaultHide ?? true;
 		}
 	}
 

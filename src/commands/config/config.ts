@@ -1,4 +1,4 @@
-import type { CommandInteraction, ConfigColumns } from "../../typings.js";
+import type { CommandInteraction, ConfigColumns, PartialCommand } from "../../typings.js";
 import type { ApplicationCommandData } from "discord.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
@@ -7,8 +7,11 @@ import { MessageEmbed } from "discord.js";
 import ConfigManager from "../../database/src/config/ConfigManager.js";
 import methods from "./modules/methods.js";
 
-export const priv = true;
-export const data: ApplicationCommandData = {
+const options = {
+	private: true
+};
+
+const data: ApplicationCommandData = {
 	name: "config",
 	description: "Manages this server's config",
 	options: [
@@ -38,7 +41,7 @@ export const data: ApplicationCommandData = {
 	]
 };
 
-export async function execute(intr: CommandInteraction) {
+async function execute(intr: CommandInteraction) {
 	const option = intr.options.getSubcommandGroup(false);
 	const method = intr.options.getSubcommand();
 
@@ -88,3 +91,5 @@ export async function execute(intr: CommandInteraction) {
 			break;
 	}
 }
+
+export const getCommand = () => ({ options, data, execute } as PartialCommand);

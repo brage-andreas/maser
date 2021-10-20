@@ -1,12 +1,12 @@
 import type { ApplicationCommandData, GuildMember } from "discord.js";
-import type { CommandInteraction } from "../../typings.js";
+import type { CommandInteraction, PartialCommand } from "../../typings.js";
 
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import { MessageEmbed } from "discord.js";
 import { USER_FLAGS } from "../../constants.js";
 import Util from "../../utils/index.js";
 
-export const data: ApplicationCommandData = {
+const data: ApplicationCommandData = {
 	name: "user",
 	description: "Sends information about a user",
 	options: [
@@ -18,7 +18,7 @@ export const data: ApplicationCommandData = {
 	]
 };
 
-export async function execute(intr: CommandInteraction) {
+async function execute(intr: CommandInteraction) {
 	const userOptionIsProvided = !!intr.options.getUser("user");
 	const user = userOptionIsProvided ? intr.options.getUser("user", true) : intr.user;
 	const member = userOptionIsProvided ? (intr.options.getMember("user") as GuildMember | null) : intr.member;
@@ -94,3 +94,5 @@ export async function execute(intr: CommandInteraction) {
 
 	intr.logger.log(`Sent info of ${user.tag} (${user.id})`);
 }
+
+export const getCommand = () => ({ data, execute } as PartialCommand);

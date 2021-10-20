@@ -1,16 +1,16 @@
+import type { CommandInteraction, PartialCommand } from "../../typings.js";
 import type { ApplicationCommandData, Guild } from "discord.js";
-import type { CommandInteraction } from "../../typings.js";
 
 import { MessageEmbed } from "discord.js";
 import Util from "../../utils/";
 import { BOOST_LEVELS } from "../../constants.js";
 
-export const data: ApplicationCommandData = {
+const data: ApplicationCommandData = {
 	name: "server",
 	description: "Sends information about this server"
 };
 
-export async function execute(intr: CommandInteraction) {
+async function execute(intr: CommandInteraction) {
 	const applyS = (string: string, size: number) => (size !== 1 ? string + "s" : string);
 	const { guild } = intr;
 
@@ -94,3 +94,5 @@ export async function execute(intr: CommandInteraction) {
 
 	intr.logger.log(`Sent info of ${guild.name} (${guild.id})`);
 }
+
+export const getCommand = () => ({ data, execute } as PartialCommand);
