@@ -20,7 +20,15 @@ export default class CommandManager {
 	 */
 	public get isPrivate(): boolean {
 		this.checkCommand();
-		return this.command!.priv ?? false;
+		return this.command!.options.private;
+	}
+
+	/**
+	 * See if this command is work-in-progress or not.
+	 */
+	public get isWIP(): boolean {
+		this.checkCommand();
+		return this.command!.options.wip;
 	}
 
 	/**
@@ -36,7 +44,7 @@ export default class CommandManager {
 	 */
 	public get logLevel(): 2 | 1 | 0 {
 		this.checkCommand();
-		return this.command!.logLevel ?? 1;
+		return this.command!.options.logLevel;
 	}
 
 	/**
@@ -44,7 +52,7 @@ export default class CommandManager {
 	 */
 	public get hidden(): boolean {
 		this.checkCommand();
-		const standard = this.command!.defaultHide ?? true;
+		const standard = this.command!.options.defaultHide;
 		const option = this.interaction!.options.getBoolean("hide");
 
 		return option ?? standard;
