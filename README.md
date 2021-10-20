@@ -13,9 +13,13 @@ A Discord bot made with discord.js version 13.
 
 ![Image of terminal](https://i.imgur.com/X6UqMhJ.png)
 
+## How to deploy commands
+1. Fill `CLIENT_ID` and/or `GUILD_ID` keys in `.env` file.
+	If no `GUILD_ID` is present, it will deploy commands globally.
+2. Run `npm run build` or `npm run clear`
+
 ## Features
 * Command handler
-    * Supports slash commands
     * Folder-sorted structure
     * Automatic and dynamic "hide" option will be applied to all commands, and will defer commands ephemerally based on it
     * Built-in logger, for ease of use
