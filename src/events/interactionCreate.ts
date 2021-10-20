@@ -3,7 +3,7 @@ import type { Client } from "../extensions/";
 import { CommandLogger } from "../utils/logger/";
 
 export async function execute(client: Client, intr: CommandInteraction) {
-	if (!intr.isCommand() || !intr.guild || !intr.member) return;
+	if (!intr.isCommand() || !intr.inCachedGuild()) return;
 
 	const [idEm, wip] = intr.client.moji.findAndParse("id-red", "wip");
 	const isNotOwner = intr.user.id !== client.application.owner?.id;
