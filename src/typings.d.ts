@@ -42,8 +42,6 @@ export interface ConfigResult {
 	muted_role_id?: string | null;
 }
 
-export type ConfigTables = "logs" | "roles";
-
 export interface ExistsResult {
 	exists: boolean;
 }

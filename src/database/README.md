@@ -27,19 +27,13 @@ maser
 ```
 maser
 └── configs
-    ├── logs
-    └── roles
+    └── guilds
 ```
 
-**logs**
+**guilds**
 | Column                  | Type     | Key        |
 | ----------------------- | -------- | ---------- |
 | `id`                    | `bigint` | guild id   |
 | `bot_log_channel_id`    | `bigint` | channel id |
 | `member_log_channel_id` | `bigint` | channel id |
-
-**roles**
-| Column          | Type     | Key      |
-| --------------- | -------- | -------- |
-| `id`            | `bigint` | guild id |
-| `muted_role_id` | `bigint` | role id  |
+| `muted_role_id`         | `bigint` | role id    |

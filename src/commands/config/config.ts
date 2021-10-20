@@ -46,13 +46,12 @@ export async function execute(intr: CommandInteraction) {
 
 	// TODO
 	if (method === "view-config") {
-		// this is broken now
 		const res = await config.getAll();
 
 		const configEmbed = new MessageEmbed()
 			.setAuthor(`${intr.user.tag} (${intr.user.id})`, intr.member.displayAvatarURL())
-			.setColor(intr.client.colors.try("INVIS"))
-			.setTitle("Config")
+			.setColor(intr.client.colors.try("YELLOW"))
+			.setTitle("Your config")
 			.setTimestamp();
 
 		for (let [key, value] of Object.entries(res)) {
@@ -62,14 +61,7 @@ export async function execute(intr: CommandInteraction) {
 			const channel = intr.guild.channels.cache.get(value)?.toString() ?? null;
 			const role = intr.guild.roles.cache.get(value)?.toString() ?? null;
 
-			const notFound = !!value && !guild && !channel && !role;
-			const none = !value;
-
-			const valueStr = none
-				? "None"
-				: notFound
-				? `Couldn't find anything with id: ${value}`
-				: guild ?? channel ?? role ?? "Something went wrong";
+			const valueStr = guild ?? channel ?? role ?? `Couldn't find anything with id: ${value}`;
 
 			configEmbed.addField(key, valueStr);
 		}
@@ -81,18 +73,18 @@ export async function execute(intr: CommandInteraction) {
 
 	switch (option) {
 		case "member-log":
-			config.setTable("logs").setKey("member_log_channel_id");
-			await methods({ intr, option, method, config });
+			config.setKey("member_log_channel_id");
+			await methods({ intr, option: CONFIG_RESULT_KEYS["member_log_channel_id"], method, config });
 			break;
 
 		case "bot-log":
-			config.setTable("logs").setKey("bot_log_channel_id");
-			await methods({ intr, option, method, config });
+			config.setKey("bot_log_channel_id");
+			await methods({ intr, option: CONFIG_RESULT_KEYS["bot_log_channel_id"], method, config });
 			break;
 
 		case "muted-role":
-			config.setTable("roles").setKey("muted_role_id");
-			await methods({ intr, option, method, config });
+			config.setKey("muted_role_id");
+			await methods({ intr, option: CONFIG_RESULT_KEYS["muted_role_id"], method, config });
 			break;
 	}
 }

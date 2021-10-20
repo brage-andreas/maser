@@ -1,27 +1,20 @@
-import type { AllowedConfigTextChannels, ConfigColumns, ConfigResult, ConfigTables } from "../../../typings.js";
+import type { AllowedConfigTextChannels, ConfigColumns, ConfigResult } from "../../../typings.js";
 import type { Client } from "../../../extensions";
 import Postgres from "../postgres.js";
 import { Role } from "discord.js";
 
 export default class ConfigManager extends Postgres {
-	public table: ConfigTables | null;
 	public key: ConfigColumns | null;
 
-	constructor(client: Client, guildId: string, table?: ConfigTables, key?: ConfigColumns | null) {
-		const options = { schema: "configs", table: table ?? null, guildResolvable: guildId };
+	constructor(client: Client, guildId: string, key?: ConfigColumns | null) {
+		const options = { schema: "configs", table: "guilds", guildResolvable: guildId };
 		super(client, options);
 
-		this.table = table ?? null;
 		this.key = key ?? null;
 	}
 
 	public setKey(key: ConfigColumns): this {
 		this.key = key;
-		return this;
-	}
-
-	public setTable(key: ConfigTables): this {
-		this.table = key;
 		return this;
 	}
 
