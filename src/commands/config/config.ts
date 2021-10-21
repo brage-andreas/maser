@@ -1,9 +1,8 @@
 import type { CommandInteraction, ConfigColumns, PartialCommand } from "../../typings.js";
-import type { ApplicationCommandData } from "discord.js";
+import { MessageEmbed, type ApplicationCommandData } from "discord.js";
 
-import { ApplicationCommandOptionType } from "discord-api-types/v9";
 import { CONFIG_OPTIONS, CONFIG_RESULT_KEYS } from "../../constants.js";
-import { MessageEmbed } from "discord.js";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import ConfigManager from "../../database/src/config/ConfigManager.js";
 import methods from "./modules/methods.js";
 
@@ -18,25 +17,25 @@ const data: ApplicationCommandData = {
 		{
 			name: "bot-log",
 			description: "Options for this server's bot log channel",
-			type: ApplicationCommandOptionType.SubcommandGroup as number,
+			type: ApplicationCommandOptionTypes.SUB_COMMAND_GROUP,
 			options: CONFIG_OPTIONS.CHANNEL
 		},
 		{
 			name: "member-log",
 			description: "Options for this server's member log channel",
-			type: ApplicationCommandOptionType.SubcommandGroup as number,
+			type: ApplicationCommandOptionTypes.SUB_COMMAND_GROUP,
 			options: CONFIG_OPTIONS.CHANNEL
 		},
 		{
 			name: "muted-role",
 			description: "Options for this server's muted role",
-			type: ApplicationCommandOptionType.SubcommandGroup as number,
+			type: ApplicationCommandOptionTypes.SUB_COMMAND_GROUP,
 			options: CONFIG_OPTIONS.ROLE
 		},
 		{
 			name: "view-config",
 			description: "Sends the full config",
-			type: ApplicationCommandOptionType.Subcommand as number
+			type: ApplicationCommandOptionTypes.SUB_COMMAND
 		}
 	]
 };

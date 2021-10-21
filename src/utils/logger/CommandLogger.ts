@@ -1,7 +1,6 @@
-import type { Guild, TextBasedChannels, TextChannel, User } from "discord.js";
+import { MessageEmbed, type Guild, type TextBasedChannels, type User } from "discord.js";
 import type { CommandInteraction } from "../../typings.js";
 
-import { MessageEmbed } from "discord.js";
 import { LOGGER_TYPES } from "../../constants.js";
 import ConfigManager from "../../database/src/config/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";

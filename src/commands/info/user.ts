@@ -1,8 +1,7 @@
-import type { ApplicationCommandData, GuildMember } from "discord.js";
+import { MessageEmbed, type ApplicationCommandData, type GuildMember } from "discord.js";
 import type { CommandInteraction, PartialCommand } from "../../typings.js";
 
-import { ApplicationCommandOptionType } from "discord-api-types/v9";
-import { MessageEmbed } from "discord.js";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { USER_FLAGS } from "../../constants.js";
 import Util from "../../utils/index.js";
 
@@ -13,7 +12,7 @@ const data: ApplicationCommandData = {
 		{
 			name: "user",
 			description: "The user to target",
-			type: ApplicationCommandOptionType.User as number
+			type: ApplicationCommandOptionTypes.USER
 		}
 	]
 };
@@ -21,7 +20,7 @@ const data: ApplicationCommandData = {
 async function execute(intr: CommandInteraction) {
 	const userOptionIsProvided = !!intr.options.getUser("user");
 	const user = userOptionIsProvided ? intr.options.getUser("user", true) : intr.user;
-	const member = userOptionIsProvided ? (intr.options.getMember("user") as GuildMember | null) : intr.member;
+	const member = userOptionIsProvided ? intr.options.getMember("user") : intr.member;
 
 	const getRoles = (member: GuildMember | null) => {
 		if (!member) return null;

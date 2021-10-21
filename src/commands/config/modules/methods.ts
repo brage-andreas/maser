@@ -1,12 +1,11 @@
 import type { AllowedConfigTextChannels, ConfigCommandData } from "../../../typings.js";
-import type { Role } from "discord.js";
-import { MessageEmbed } from "discord.js";
+import { MessageEmbed, type Role } from "discord.js";
 
 export default async function logs(data: ConfigCommandData) {
 	const { config, intr, method, option } = data;
 
 	// TODO: refactor
-	const [emptyFileEmoji, channelEmoji, fileEmoji, roleEmoji] = intr.client.moji.findAndParse(
+	const [emptyFileEmoji, channelEmoji, fileEmoji, roleEmoji] = intr.client.systemEmojis.findAndParse(
 		"empty_file",
 		"channel",
 		"file",

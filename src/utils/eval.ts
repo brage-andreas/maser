@@ -1,9 +1,9 @@
 import type { CommandInteraction, EvalOutput } from "../typings.js";
 import type { Client } from "../extensions/";
 
-import Discord, { Message, MessageEmbed } from "discord.js";
-import { REGEX } from "../constants.js";
+import Discord, { MessageEmbed, Message } from "discord.js";
 import { performance } from "perf_hooks";
+import { REGEX } from "../constants.js";
 import Util from "./";
 import ms from "ms";
 
@@ -26,6 +26,8 @@ export default async function evaluate(code: string, that: CommandInteraction | 
 	const client = that.client as Client;
 	Discord; // "ReferenceError: Discord is not defined" if not here
 
+	const [errorEm, successEm, inputEm] = client.systemEmojis.findAndParse("exclamation", "success", "input");
+
 	try {
 		const start = performance.now();
 		const result = await eval(`(async () => {\n${code}\n})()`);
@@ -39,8 +41,8 @@ export default async function evaluate(code: string, that: CommandInteraction | 
 
 		const stringedOutput = stringify(result).replaceAll(new RegExp(REGEX.TOKEN, "g"), "[REDACTED]");
 
-		const parsedInput = parse(code, "**Input**");
-		const parsedOutput = parse(stringedOutput, "**Output**");
+		const parsedInput = parse(code, `${inputEm}**Input**`);
+		const parsedOutput = parse(stringedOutput, `${successEm}**Output**`);
 
 		const successInputEmbed = new MessageEmbed()
 			.setAuthor(authorName, authorAvatar)
@@ -66,8 +68,8 @@ export default async function evaluate(code: string, that: CommandInteraction | 
 		const error = err as Error;
 		const msg = error.stack ?? error.toString();
 
-		const parsedInput = parse(code, "**Input**");
-		const parsedError = parse(msg, "**Error**");
+		const parsedInput = parse(code, `${inputEm}**Input**`);
+		const parsedError = parse(msg, `${errorEm}**Error**`);
 
 		const errorInputEmbed = new MessageEmbed()
 			.setAuthor(authorName, authorAvatar)

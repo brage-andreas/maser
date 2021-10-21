@@ -1,6 +1,13 @@
-import type { CollectorFilter, InteractionCollector, Message, User } from "discord.js";
+import {
+	MessageActionRow,
+	MessageButton,
+	MessageComponentInteraction,
+	type CollectorFilter,
+	type InteractionCollector,
+	type Message,
+	type User
+} from "discord.js";
 import type { CommandInteraction } from "../typings.js";
-import { MessageActionRow, MessageButton, MessageComponentInteraction } from "discord.js";
 import ms from "ms";
 
 type Filter = CollectorFilter<[MessageComponentInteraction]>;

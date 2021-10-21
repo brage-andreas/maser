@@ -1,7 +1,6 @@
 import type { CommandInteraction, PartialCommand } from "../../typings.js";
-import type { ApplicationCommandData, Guild } from "discord.js";
+import { MessageEmbed, type ApplicationCommandData, type Guild } from "discord.js";
 
-import { MessageEmbed } from "discord.js";
 import Util from "../../utils/";
 import { BOOST_LEVELS } from "../../constants.js";
 

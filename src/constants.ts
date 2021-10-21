@@ -1,5 +1,5 @@
-import { ApplicationCommandOptionType } from "discord-api-types/v9";
-import { Intents } from "discord.js";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import { Intents, type ApplicationCommandSubCommandData } from "discord.js";
 
 export const INTENTS = [
 	Intents.FLAGS.GUILDS, //
@@ -10,21 +10,19 @@ export const INTENTS = [
 export const MAX_EMBED_DESCRIPTION_LEN = 4096;
 
 // const GUILD_EMOJI_REGEX = /<?(a)?:?(\w{2,32}):(\d{17,19})>?/;
-// const INVITE_REGEX = /(?:https?:\/\/)?(?:www\.)?discord(?:\.gg|(?:app)?\.com\/invite)\/(\S+)/;
 const CODEBLOCK_REGEX = /```(?:(?<lang>\S+)\n)?\s?(?<code>[^]+?)\s?```/;
 const CHANNEL_REGEX = /^<#\d{17,19}>$/;
+// const INVITE_REGEX = /(?:https?:\/\/)?(?:www\.)?discord(?:\.gg|(?:app)?\.com\/invite)\/(\S+)/;
 const TOKEN_REGEX = /[\w-]{24}\.[\w-]{6}\.[\w-]{27}/;
 const CODE_REGEX = /`(?<code>.+?)`/;
 const ROLE_REGEX = /^<@&\d{17,19}>$/;
 const USER_REGEX = /^<@!?\d{17,19}>$/;
 const ID_REGEX = /^\d{17,19}$/;
 export const REGEX = {
-	/*
-    GUILD_EMOJI: GUILD_EMOJI_REGEX,
-    INVITE: INVITE_REGEX,
-    */
+	//GUILD_EMOJI: GUILD_EMOJI_REGEX,
 	CODEBLOCK: CODEBLOCK_REGEX,
 	CHANNEL: CHANNEL_REGEX,
+	//INVITE: INVITE_REGEX,
 	TOKEN: TOKEN_REGEX,
 	CODE: CODE_REGEX,
 	ROLE: ROLE_REGEX,
@@ -88,42 +86,42 @@ export enum CONFIG_RESULT_KEYS {
 	muted_role_id = "Muted role"
 }
 
-const CONFIG_CHANNEL_OPTIONS = [
+const CONFIG_CHANNEL_OPTIONS: ApplicationCommandSubCommandData[] = [
 	{
 		name: "view",
 		description: "Sends the option's value",
-		type: ApplicationCommandOptionType.Subcommand as number
+		type: ApplicationCommandOptionTypes.SUB_COMMAND
 	},
 	{
 		name: "set",
 		description: "Sets a new value for the option",
-		type: ApplicationCommandOptionType.Subcommand as number,
+		type: ApplicationCommandOptionTypes.SUB_COMMAND,
 		options: [
 			{
 				name: "channel",
 				description: "The new channel to set to. Omitting this option will remove its value",
-				channelTypes: ["GUILD_TEXT", "GUILD_NEWS", "GUILD_STORE"],
-				type: ApplicationCommandOptionType.Channel as number
+				channelTypes: ["GUILD_TEXT", "GUILD_NEWS"],
+				type: ApplicationCommandOptionTypes.CHANNEL
 			}
 		]
 	}
 ];
 
-const CONFIG_ROLE_OPTIONS = [
+const CONFIG_ROLE_OPTIONS: ApplicationCommandSubCommandData[] = [
 	{
 		name: "view",
 		description: "Sends the option's value",
-		type: ApplicationCommandOptionType.Subcommand as number
+		type: ApplicationCommandOptionTypes.SUB_COMMAND
 	},
 	{
 		name: "set",
 		description: "Sets a new value for the option",
-		type: ApplicationCommandOptionType.Subcommand as number,
+		type: ApplicationCommandOptionTypes.SUB_COMMAND,
 		options: [
 			{
 				name: "role",
 				description: "The new role to set to. Omitting this option will remove its value",
-				type: ApplicationCommandOptionType.Role as number
+				type: ApplicationCommandOptionTypes.ROLE
 			}
 		]
 	}

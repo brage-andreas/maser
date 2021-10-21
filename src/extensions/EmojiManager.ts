@@ -1,6 +1,9 @@
 import type { Client } from "./";
-import type { Guild, GuildEmoji } from "discord.js";
-import { REGEX } from "../constants";
+import { REGEX } from "../constants.js";
+
+// Emoji source files used are located in /resources/icons
+// File names match names present in this source code
+// with the exception of id_red and id_green
 
 /**
  * Manages emojis for the client.

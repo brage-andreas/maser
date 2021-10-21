@@ -1,8 +1,7 @@
-import type { ApplicationCommandData, Message } from "discord.js";
 import type { CommandInteraction, PartialCommand } from "../../typings.js";
+import { MessageAttachment, MessageButton, type ApplicationCommandData, type Message } from "discord.js";
 
-import { MessageAttachment, MessageButton } from "discord.js";
-import { ApplicationCommandOptionType } from "discord-api-types/v9";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { ButtonManager } from "../../extensions/";
 import evaluate from "../../utils/eval.js";
 import Util from "../../utils/";
@@ -19,13 +18,13 @@ const data: ApplicationCommandData = {
 		{
 			name: "code",
 			description: "The code to run",
-			type: ApplicationCommandOptionType.String as number,
+			type: ApplicationCommandOptionTypes.STRING,
 			required: true
 		},
 		{
 			name: "reply",
 			description: "Reply to the command. Default is true",
-			type: ApplicationCommandOptionType.Boolean as number
+			type: ApplicationCommandOptionTypes.BOOLEAN
 		}
 	]
 };
@@ -34,7 +33,7 @@ async function execute(intr: CommandInteraction) {
 	const code = intr.options.getString("code", true);
 	const reply = intr.options.getBoolean("reply") ?? true;
 
-	const [errorEm, successEm, inputEm] = intr.client.moji.find("exclamation", "success", "input");
+	const [errorEm, successEm, inputEm] = intr.client.systemEmojis.find("exclamation", "success", "input");
 
 	const { embeds, output, type } = await evaluate(code, intr);
 

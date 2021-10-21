@@ -1,6 +1,6 @@
-import type { AllowedImageSize, ApplicationCommandData, GuildMember } from "discord.js";
+import type { AllowedImageSize, ApplicationCommandData } from "discord.js";
 import type { CommandInteraction, PartialCommand } from "../../typings.js";
-import { ApplicationCommandOptionType } from "discord-api-types/v9";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { MessageEmbed } from "discord.js";
 
 /*
@@ -30,18 +30,18 @@ const data: ApplicationCommandData = {
 		{
 			name: "user",
 			description: "The user to target. Default is you",
-			type: ApplicationCommandOptionType.User as number
+			type: ApplicationCommandOptionTypes.USER
 		},
 		{
 			name: "size",
 			description: "Size of the image. Default is 2048px",
-			type: ApplicationCommandOptionType.Integer as number,
+			type: ApplicationCommandOptionTypes.INTEGER,
 			choices: allowedSizeArray
 		},
 		{
 			name: "guild-avatar",
 			description: "Include guild avatars. Default is true",
-			type: ApplicationCommandOptionType.Boolean as number
+			type: ApplicationCommandOptionTypes.BOOLEAN
 		}
 	]
 };
@@ -50,7 +50,7 @@ type ImageFormats = "webp" | "png" | "jpg";
 
 async function execute(intr: CommandInteraction) {
 	const includeGuildAvatar = intr.options.getBoolean("guild-avatar") ?? true;
-	const member = intr.options.getMember("user") as GuildMember | null;
+	const member = intr.options.getMember("user");
 	const size = (intr.options.getInteger("size") ?? 2048) as AllowedImageSize;
 	const user = intr.options.getUser("user") ?? intr.user;
 
