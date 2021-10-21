@@ -12,7 +12,7 @@ export async function execute(client: Client, msg: Message) {
 	if (msg.author.id !== client.application.owner?.id) return;
 	if (["DM", "GROUP_DM"].includes(msg.channel.type) || !msg.guild || !msg.member) return;
 
-	const [errorEm, successEm, inputEm] = client.moji.find("exclamation", "success", "input");
+	const [errorEm, successEm, inputEm] = client.systemEmojis.find("exclamation", "success", "input");
 
 	const split = msg.content.split(/\s+/g);
 	const [mention, command] = split.splice(0, 2);

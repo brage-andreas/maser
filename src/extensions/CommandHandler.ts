@@ -132,11 +132,11 @@ export default class CommandHandler {
 	public getDefaultHide(intr: CommandInteraction | string): boolean {
 		if (typeof intr !== "string") {
 			const commandOption = intr.options.getBoolean("hide");
-			const standard = this._get(intr.commandName).options.defaultHide ?? true;
+			const standard = this._get(intr.commandName).options.defaultHide;
 
 			return commandOption ?? standard;
 		} else {
-			return this._get(intr).options.defaultHide ?? true;
+			return this._get(intr).options.defaultHide;
 		}
 	}
 

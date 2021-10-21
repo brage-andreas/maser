@@ -5,7 +5,7 @@ import { CommandLogger } from "../utils/logger/";
 export async function execute(client: Client, intr: CommandInteraction) {
 	if (!intr.isCommand() || !intr.inCachedGuild()) return;
 
-	const [idEm, wip] = intr.client.moji.findAndParse("id-red", "wip");
+	const [idEm, wip] = intr.client.systemEmojis.findAndParse("id_red", "wip");
 	const isNotOwner = intr.user.id !== client.application.owner?.id;
 
 	intr.logger = new CommandLogger(intr);

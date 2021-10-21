@@ -6,12 +6,12 @@ import Discord from "discord.js";
 import CommandManager from "./CommandManager";
 
 export default class Client extends Discord.Client<true> {
+	systemEmojis: EmojiManager;
 	commands: CommandHandler;
 	command: CommandManager;
 	events: EventManager;
 	colors: ColorManager;
 	logger: InfoLogger;
-	moji: EmojiManager;
 
 	constructor(options?: ClientOptions) {
 		const defaultCacheSettings = {
@@ -42,6 +42,6 @@ export default class Client extends Discord.Client<true> {
 		this.events = new EventManager(this);
 		this.colors = new ColorManager();
 		this.logger = new InfoLogger();
-		this.moji = new EmojiManager(this);
+		this.systemEmojis = new EmojiManager(this);
 	}
 }
