@@ -46,7 +46,12 @@ export interface Event {
 	execute: (client: Client, ...args: unknown[]) => Promise<void> | void;
 }
 
+interface CommandInteractionOptionResolver extends Discord.CommandInteractionOptionResolver {
+	getMember: (name: string, required = false) => GuildMember | null;
+}
+
 export interface CommandInteraction extends Discord.CommandInteraction {
+	options: CommandInteractionOptionResolver;
 	logger: CommandLogger;
 	member: GuildMember;
 	client: Client;
