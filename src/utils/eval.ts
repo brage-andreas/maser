@@ -14,8 +14,9 @@ const stringify = (output: any): string => {
 	return JSON.stringify(output, null, 2) ?? "Something went wrong with the output";
 };
 
-const parse = (output: string, label: string, embedStyle?: string) => {
-	return Util.fitCodeblock(output, { label, lang: embedStyle ?? "js", size: 4096 });
+const parse = (string: string, label: string, embedStyle?: string) => {
+	if (!string.length) return null;
+	return Util.fitCodeblock(string, { label, lang: embedStyle ?? "js", size: 4096 });
 };
 
 export default async function evaluate(code: string, that: CommandInteraction | Message) {
@@ -47,13 +48,13 @@ export default async function evaluate(code: string, that: CommandInteraction | 
 		const successInputEmbed = new MessageEmbed()
 			.setAuthor(authorName, authorAvatar)
 			.setColor(client.colors.try("GREEN"))
-			.setDescription(parsedInput)
+			.setDescription(parsedInput ?? "No input")
 			.setTimestamp();
 
 		const successOutputEmbed = new MessageEmbed()
 			.setAuthor(authorName, authorAvatar)
 			.setColor(client.colors.try("GREEN"))
-			.setDescription(parsedOutput)
+			.setDescription(parsedOutput ?? "No output")
 			.setFooter(`${timeTaken} • ${type} (${constructor})`)
 			.setTimestamp();
 
@@ -74,13 +75,13 @@ export default async function evaluate(code: string, that: CommandInteraction | 
 		const errorInputEmbed = new MessageEmbed()
 			.setAuthor(authorName, authorAvatar)
 			.setColor(client.colors.try("RED"))
-			.setDescription(parsedInput)
+			.setDescription(parsedInput ?? "No input")
 			.setTimestamp();
 
 		const errorOutputEmbed = new MessageEmbed()
 			.setAuthor(authorName, authorAvatar)
 			.setColor(client.colors.try("RED"))
-			.setDescription(parsedError)
+			.setDescription(parsedError ?? "No error")
 			.setFooter("Evaluation failed")
 			.setTimestamp();
 
