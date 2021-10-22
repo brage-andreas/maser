@@ -9,7 +9,7 @@ import type {
 } from "discord.js";
 import type { CommandInteraction, Command, CommandModule } from "../typings.js";
 
-import { ApplicationCommandOptionType } from "discord-api-types/v9";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums.js";
 import { ErrorLogger, InfoLogger } from "../utils/logger";
 import { readdirSync } from "fs";
 import { Routes } from "discord-api-types/v9";
@@ -18,8 +18,8 @@ import { REST } from "@discordjs/rest";
 
 const COMMAND_DIR = new URL("../commands", import.meta.url);
 
-const SUBGROUP_TYPE = ApplicationCommandOptionType.SubcommandGroup as number;
-const SUB_TYPE = ApplicationCommandOptionType.Subcommand as number;
+const SUBGROUP_TYPE = ApplicationCommandOptionTypes.SUB_COMMAND_GROUP;
+const SUB_TYPE = ApplicationCommandOptionTypes.SUB_COMMAND;
 
 // TODO: fix this mess
 type SubInGroupOption =
@@ -67,9 +67,8 @@ export default class CommandHandler {
 	/**
 	 * Get a command's data.
 	 */
-	public get(command: CommandInteraction | string): Command {
-		const name = typeof command === "string" ? command : command.commandName;
-		return this._get(name);
+	public get(command: string): Command {
+		return this._get(command);
 	}
 
 	/**
@@ -78,7 +77,7 @@ export default class CommandHandler {
 	private _get(key: string): Command {
 		const data = this._commands.get(key);
 
-		// data should never be undefined here
+		// This should never be undefined
 		if (!data) throw new Error(`No internal command found with name: ${key}`);
 		return data;
 	}
@@ -104,22 +103,26 @@ export default class CommandHandler {
 				const commandModule = (await import(`../commands/${folder}/${fileName}`)) as CommandModule;
 				const partialCommand = commandModule.getCommand();
 
-				const name = fileName.split(".")[0];
-
 				if (!partialCommand.data || !partialCommand.execute) {
 					throw new Error(`File "/commands/${folder}/${fileName}" is missing command properties`);
 				}
 
-				partialCommand.options ??= {};
+				if (!partialCommand.options) {
+					partialCommand.options = {
+						defaultHide: true,
+						logLevel: 1,
+						private: false,
+						wip: false
+					};
+				} else {
+					partialCommand.options.defaultHide ??= true;
+					partialCommand.options.logLevel ??= 1;
+					partialCommand.options.private ??= false;
+					partialCommand.options.wip ??= false;
+				}
 
 				const command = partialCommand as Command;
-
-				command.options.defaultHide ??= true;
-				command.options.logLevel ??= 1;
-				command.options.private ??= false;
-				command.options.wip ??= false;
-
-				hash.set(name, command);
+				hash.set(command.data.name, command);
 			}
 		}
 
@@ -149,7 +152,7 @@ export default class CommandHandler {
 			const hideOption = {
 				name: "hide",
 				description: `Hide the response. Default is ${hide}`,
-				type: ApplicationCommandOptionType.Boolean as number
+				type: ApplicationCommandOptionTypes.BOOLEAN
 			} as T;
 
 			options.push(hideOption);
@@ -163,9 +166,10 @@ export default class CommandHandler {
 	 * Ensures a "hide" option in all chat-input commands.
 	 */
 	private _getData(): ApplicationCommandData[] {
-		return [...this._commands.values()].map((cmd) => {
-			if (cmd.data.type && cmd.data.type !== "CHAT_INPUT") return cmd.data;
+		const dataSet: Set<ApplicationCommandData> = new Set();
+		const commands = [...this._commands.values()];
 
+		commands.forEach((cmd) => {
 			cmd.data.options ??= [];
 
 			const subcommandGroups = cmd.data.options.filter(
@@ -193,8 +197,10 @@ export default class CommandHandler {
 				cmd.data.options = this._addHideOption(cmd.data.options, cmd.data.name);
 			}
 
-			return cmd.data;
+			dataSet.add(cmd.data);
 		});
+
+		return [...dataSet];
 	}
 
 	/**

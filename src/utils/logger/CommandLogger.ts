@@ -77,7 +77,7 @@ export default class CommandLogger extends BaseLogger {
 		const logLevel = client.command.logLevel;
 		if (logLevel === 0) return;
 
-		const createEmbed = (description: string, index: number, total: number) => {
+		const createEmbed = (description: string, index=0, total=1) => {
 			const { user } = this.interaction!;
 
 			const embed = new MessageEmbed()
@@ -98,6 +98,7 @@ export default class CommandLogger extends BaseLogger {
 			if (!channel) return;
 
 			const prefix = `\`${Util.commandToString(this.interaction)}\`\n`;
+			
 			let embeds: MessageEmbed[] = [];
 
 			if (logLevel === 2) {
@@ -108,7 +109,7 @@ export default class CommandLogger extends BaseLogger {
 					return createEmbed(msg, i, messages.length);
 				});
 			} else {
-				embeds.push(createEmbed(prefix, 0, 1));
+				embeds.push(createEmbed(prefix));
 			}
 
 			channel.send({ embeds }).catch(() => null);

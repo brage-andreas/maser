@@ -1,27 +1,17 @@
-import type { AllowedImageSize, ApplicationCommandData } from "discord.js";
-import type { CommandInteraction, PartialCommand } from "../../typings.js";
+import {
+	MessageEmbed,
+	type AllowedImageSize,
+	type ApplicationCommandData,
+} from "discord.js";
+import type { Command, CommandInteraction } from "../../typings.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { MessageEmbed } from "discord.js";
 
-/*
-Explaining the magic numbers:
-    Powers of two from 16 to 4096 is allowed.
-    Array with length of 9, making first index 0 and last index 8.
-    2 ** (index + 4) will then be valid ranges.
-
-    Every power of two between:
-    2 ** (0+4) = 16 and 2 ** (8+4) = 4096
-*/
-
-const getAllowedSizeFn = (useless: unknown, index: number) => {
-	index += 4;
+const sizeChoices = [16, 32, 64, 128, 256, 512, 1024, 2048, 4096].map((size) => {
 	return {
-		name: `${2 ** index}px`,
-		value: 2 ** index
+		name: `${size}px`,
+		value: size
 	};
-};
-
-const allowedSizeArray = Array.from({ length: 9 }, getAllowedSizeFn);
+});
 
 const data: ApplicationCommandData = {
 	name: "avatar",
@@ -36,7 +26,7 @@ const data: ApplicationCommandData = {
 			name: "size",
 			description: "Size of the image. Default is 2048px",
 			type: ApplicationCommandOptionTypes.INTEGER,
-			choices: allowedSizeArray
+			choices: sizeChoices
 		},
 		{
 			name: "guild-avatar",
@@ -89,4 +79,4 @@ async function execute(intr: CommandInteraction) {
 	intr.logger.log(`Sent avatar of ${user.tag} (${user.id})`);
 }
 
-export const getCommand = () => ({ data, execute } as PartialCommand);
+export const getCommand = () => ({ data, execute } as Partial<Command>);

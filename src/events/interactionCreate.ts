@@ -10,25 +10,20 @@ export async function execute(client: Client, intr: CommandInteraction) {
 
 	intr.logger = new CommandLogger(intr);
 
-	const commandData = client.commands.get(intr);
+	const commandData = client.commands.get(intr.commandName);
 	const command = client.command.setCommand(intr, commandData);
 
-	if (command.isWIP) {
-		if (isNotOwner) {
-			await intr.reply({ content: `${wip}This command is work-in-progress`, ephemeral: true });
-			return;
-		}
+	if (command.isWIP && isNotOwner) {
+		await intr.reply({ content: `${wip}This command is work-in-progress`, ephemeral: true });
+		return;
 	}
 
-	if (command.isPrivate) {
-		if (isNotOwner) {
-			await intr.reply({ content: `${idEm}This command is private`, ephemeral: true });
-			return;
-		}
+	if (command.isPrivate && isNotOwner) {
+		await intr.reply({ content: `${idEm}This command is private`, ephemeral: true });
+		return;
 	}
 
-	const ephemeral = command.hidden;
-	await intr.deferReply({ ephemeral });
+	await intr.deferReply({ ephemeral: command.hidden });
 
 	command.execute();
 }
