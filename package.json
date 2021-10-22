@@ -6,6 +6,8 @@
 	"type": "module",
 	"scripts": {
 		"prestart": "tsc",
+		"prebuild": "tsc",
+		"preclear": "tsc",
 		"start": "node --experimental-specifier-resolution=node .",
 		"build": "node --experimental-specifier-resolution=node dist/utils/COMMANDS/BUILD_COMMANDS.js",
 		"clear": "node --experimental-specifier-resolution=node dist/utils/COMMANDS/CLEAR_COMMANDS.js"
@@ -16,9 +18,6 @@
 	},
 	"author": "Drango",
 	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/hellobafu/maser/issues"
-	},
 	"homepage": "https://github.com/hellobafu/maser#readme",
 	"dependencies": {
 		"@discordjs/rest": "^0.1.0-canary.0",
