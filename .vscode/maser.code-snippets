@@ -1,0 +1,31 @@
+{
+	"Base for a command": {
+		"scope": "typescript",
+		"prefix": ["command", "cmd"],
+		"body": [
+			"import type { CommandInteraction, Command } from \"../../typings.js\";",
+			"import type { ApplicationCommandData } from \"discord.js\";",
+			"",
+			"import { ApplicationCommandOptionTypes } from \"discord.js/typings/enums\";",
+			"",
+			"const data: ApplicationCommandData = {",
+			"\tname: ,",
+			"\tdescription: ,",
+			"\toptions: [",
+			"\t\t{",
+			"\t\t\tname: ,",
+			"\t\t\tdescription: ,",
+			"\t\t\ttype: ApplicationCommandOptionTypes.STRING",
+			"\t\t}",
+			"\t]",
+			"};",
+			"",
+			"async function execute(intr: CommandInteraction) {",
+			"\tintr.logger.log();",
+			"}",
+			"",
+			"export const getCommand = () => ({ data, execute } as Partial<Command>);",
+			""
+		]
+	}
+}
