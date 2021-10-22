@@ -4,13 +4,8 @@ import { MessageEmbed, type Role } from "discord.js";
 export default async function logs(data: ConfigCommandData) {
 	const { config, intr, method, option } = data;
 
-	// TODO: refactor
-	const [emptyFileEmoji, channelEmoji, fileEmoji, roleEmoji] = intr.client.systemEmojis.findAndParse(
-		"empty_file",
-		"channel",
-		"file",
-		"at"
-	);
+	const { findAndParse } = intr.client.systemEmojis
+	const [emptyFileEm, channelEm, fileEm, atEm] = findAndParse("empty_file", "channel", "file", "at");
 
 	switch (method) {
 		case "view": {
@@ -22,10 +17,10 @@ export default async function logs(data: ConfigCommandData) {
 			};
 
 			const valueStr = channel
-				? getValueStr(channel, channelEmoji)
+				? getValueStr(channel, channelEm)
 				: role
-				? getValueStr(role, roleEmoji)
-				: `Not set`;
+				? getValueStr(role, atEm)
+				: `${emptyFileEm}Not set`;
 
 			const viewOptionEmbed = new MessageEmbed()
 				.setAuthor(intr.user.tag, intr.member.displayAvatarURL())
@@ -47,8 +42,8 @@ export default async function logs(data: ConfigCommandData) {
 			await config.set(value);
 
 			const updatedValueStr = res
-				? `${fileEmoji}New value: ${res} (${res.id})`
-				: `${emptyFileEmoji}Removed value`;
+				? `${fileEm}New value: ${res} (${res.id})`
+				: `${emptyFileEm}Removed value`;
 
 			const viewOptionEmbed = new MessageEmbed()
 				.setAuthor(intr.user.tag, intr.member.displayAvatarURL())
