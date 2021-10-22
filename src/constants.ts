@@ -1,10 +1,9 @@
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { Intents, type ApplicationCommandSubCommandData } from "discord.js";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 
 export const INTENTS = [
 	Intents.FLAGS.GUILDS, //
-	Intents.FLAGS.GUILD_MEMBERS,
-	Intents.FLAGS.GUILD_MESSAGES // temporary until multi-line slashie
+	Intents.FLAGS.GUILD_MEMBERS
 ];
 
 export const MAX_EMBED_DESCRIPTION_LEN = 4096;
