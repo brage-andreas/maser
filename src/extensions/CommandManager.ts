@@ -1,8 +1,8 @@
 import type { Command, CommandInteraction } from "../typings.js";
 
 export default class CommandManager {
-	public interaction: CommandInteraction | null;
-	public command: Command | null;
+	public interaction: Readonly<CommandInteraction> | null;
+	public command: Readonly<Command> | null;
 
 	constructor(interaction?: CommandInteraction | null, data?: Command | null) {
 		this.interaction = interaction ?? null;

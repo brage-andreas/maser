@@ -1,11 +1,11 @@
-import { MessageEmbed, type ApplicationCommandData, type GuildMember } from "discord.js";
+import { MessageEmbed, type ChatInputApplicationCommandData, type GuildMember } from "discord.js";
 import type { CommandInteraction, Command } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { USER_FLAGS } from "../../constants.js";
 import Util from "../../utils/index.js";
 
-const data: ApplicationCommandData = {
+const data: ChatInputApplicationCommandData = {
 	name: "user",
 	description: "Sends information about a user",
 	options: [

@@ -1,5 +1,5 @@
 import type { CommandInteraction, Command } from "../../typings.js";
-import { MessageAttachment, MessageButton, type ApplicationCommandData, type Message } from "discord.js";
+import { MessageAttachment, MessageButton, type ChatInputApplicationCommandData, type Message } from "discord.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { ButtonManager } from "../../extensions/";
@@ -11,7 +11,7 @@ const options = {
 	private: true
 };
 
-const data: ApplicationCommandData = {
+const data: ChatInputApplicationCommandData = {
 	name: "eval",
 	description: "Runs code",
 	options: [

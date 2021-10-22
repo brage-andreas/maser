@@ -1,5 +1,5 @@
 import type { CommandInteraction, ConfigColumns, Command } from "../../typings.js";
-import { MessageEmbed, type ApplicationCommandData } from "discord.js";
+import { MessageEmbed, type ChatInputApplicationCommandData } from "discord.js";
 
 import { CONFIG_OPTIONS, CONFIG_RESULT_KEYS } from "../../constants.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
@@ -10,7 +10,7 @@ const options = {
 	private: true
 };
 
-const data: ApplicationCommandData = {
+const data: ChatInputApplicationCommandData = {
 	name: "config",
 	description: "Manages this server's config",
 	options: [

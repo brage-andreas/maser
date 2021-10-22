@@ -1,4 +1,4 @@
-import type { ApplicationCommandData } from "discord.js";
+import type { ChatInputApplicationCommandData } from "discord.js";
 import type { CommandInteraction, Command } from "../../typings.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 
@@ -6,7 +6,7 @@ const options = {
 	wip: true
 };
 
-const data: ApplicationCommandData = {
+const data: ChatInputApplicationCommandData = {
 	name: "mute",
 	description: "Mutes a user for a given time",
 	options: [

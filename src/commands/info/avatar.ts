@@ -1,7 +1,7 @@
 import {
 	MessageEmbed,
 	type AllowedImageSize,
-	type ApplicationCommandData,
+	type ChatInputApplicationCommandData,
 } from "discord.js";
 import type { Command, CommandInteraction } from "../../typings.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
@@ -13,7 +13,7 @@ const sizeChoices = [16, 32, 64, 128, 256, 512, 1024, 2048, 4096].map((size) => 
 	};
 });
 
-const data: ApplicationCommandData = {
+const data: ChatInputApplicationCommandData = {
 	name: "avatar",
 	description: "Sends a user's avatar",
 	options: [

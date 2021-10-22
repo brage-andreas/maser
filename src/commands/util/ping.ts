@@ -1,7 +1,7 @@
+import type { ChatInputApplicationCommandData } from "discord.js";
 import type { CommandInteraction, Command } from "../../typings.js";
-import type { ApplicationCommandData } from "discord.js";
 
-const data: ApplicationCommandData = {
+const data: ChatInputApplicationCommandData = {
 	name: "ping",
 	description: "Check if the bot is running"
 };

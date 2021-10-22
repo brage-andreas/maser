@@ -1,10 +1,10 @@
 import type { CommandInteraction, Command } from "../../typings.js";
-import { MessageEmbed, type ApplicationCommandData, type Guild } from "discord.js";
+import { MessageEmbed, type ChatInputApplicationCommandData, type Guild } from "discord.js";
 
 import Util from "../../utils/";
 import { BOOST_LEVELS } from "../../constants.js";
 
-const data: ApplicationCommandData = {
+const data: ChatInputApplicationCommandData = {
 	name: "server",
 	description: "Sends information about this server"
 };

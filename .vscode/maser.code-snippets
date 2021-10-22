@@ -4,11 +4,11 @@
 		"prefix": ["command", "cmd"],
 		"body": [
 			"import type { CommandInteraction, Command } from \"../../typings.js\";",
-			"import type { ApplicationCommandData } from \"discord.js\";",
+			"import type { ChatInputApplicationCommandData } from \"discord.js\";",
 			"",
 			"import { ApplicationCommandOptionTypes } from \"discord.js/typings/enums\";",
 			"",
-			"const data: ApplicationCommandData = {",
+			"const data: ChatInputApplicationCommandData = {",
 			"\tname: ,",
 			"\tdescription: ,",
 			"\toptions: [",
