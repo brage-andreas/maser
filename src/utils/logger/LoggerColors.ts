@@ -14,7 +14,7 @@ const RESET = "\x1b[0m";
 const validate = (color: string) => Object.keys(colors).includes(color);
 
 export const wrap = (text: string, color: string) => {
-	if (!validate(color.toLowerCase())) throw new TypeError(`color must be a pre-defined color: ${color}`);
+	if (!validate(color.toLowerCase())) throw new TypeError(`Color must be a pre-defined color: ${color}`);
 	return colors[color.toLowerCase()] + text + RESET;
 };
 
