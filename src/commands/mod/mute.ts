@@ -1,5 +1,5 @@
 import type { ApplicationCommandData } from "discord.js";
-import type { CommandInteraction, PartialCommand } from "../../typings.js";
+import type { CommandInteraction, Command } from "../../typings.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 
 const options = {
@@ -45,4 +45,4 @@ async function execute(intr: CommandInteraction) {
 	intr.logger.log(`mute`);
 }
 
-export const getCommand = () => ({ options, data, execute } as PartialCommand);
+export const getCommand = () => ({ options, data, execute } as Partial<Command>);

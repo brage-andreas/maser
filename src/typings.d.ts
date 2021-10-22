@@ -1,13 +1,15 @@
 import type Discord, {
-	ApplicationCommandData,
 	Guild,
 	GuildMember,
 	NewsChannel,
 	StoreChannel,
 	TextChannel,
-	MessageEmbed
+	MessageEmbed,
+	UserApplicationCommandData,
+	MessageApplicationCommandData,
+	ChatInputApplicationCommandData
 } from "discord.js";
-import type { CommandLogger } from "./utils/logger/CommandLogger.js";
+import type { CommandLogger } from "./utils/logger/";
 import type ConfigManager from "./database/src/config/ConfigManager.js";
 import type { Client } from "./extensions/";
 
@@ -17,23 +19,12 @@ export type Color = `#${string}`;
 export type ColorMap = Map<string, Color>;
 
 export interface CommandModule {
-	getCommand: () => PartialCommand;
-}
-
-export interface PartialCommand {
-	execute?: (interaction: CommandInteraction) => Promise<void> | void;
-	data?: ApplicationCommandData;
-	options?: {
-		defaultHide?: boolean;
-		logLevel?: 2 | 1 | 0;
-		private?: boolean;
-		wip?: boolean;
-	};
+	getCommand: () => Partial<Command>;
 }
 
 export interface Command {
-	execute: (interaction: CommandInteraction) => Promise<void> | void;
-	data: ApplicationCommandData;
+	execute: (interaction: CommandInteraction | ContextMenuInteraction) => Promise<void> | void;
+	data: ChatInputApplicationCommandData;
 	options: {
 		defaultHide: boolean;
 		logLevel: 2 | 1 | 0;
@@ -50,6 +41,7 @@ interface CommandInteractionOptionResolver extends Discord.CommandInteractionOpt
 	getMember: (name: string, required = false) => GuildMember | null;
 }
 
+// TODO: fix this
 export interface CommandInteraction extends Discord.CommandInteraction {
 	options: CommandInteractionOptionResolver;
 	logger: CommandLogger;

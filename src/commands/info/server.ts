@@ -1,4 +1,4 @@
-import type { CommandInteraction, PartialCommand } from "../../typings.js";
+import type { CommandInteraction, Command } from "../../typings.js";
 import { MessageEmbed, type ApplicationCommandData, type Guild } from "discord.js";
 
 import Util from "../../utils/";
@@ -94,4 +94,4 @@ async function execute(intr: CommandInteraction) {
 	intr.logger.log(`Sent info of ${guild.name} (${guild.id})`);
 }
 
-export const getCommand = () => ({ data, execute } as PartialCommand);
+export const getCommand = () => ({ data, execute } as Partial<Command>);

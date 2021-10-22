@@ -1,4 +1,4 @@
-import type { CommandInteraction, PartialCommand } from "../../typings.js";
+import type { CommandInteraction, Command } from "../../typings.js";
 import type { ApplicationCommandData } from "discord.js";
 
 const data: ApplicationCommandData = {
@@ -11,4 +11,4 @@ async function execute(intr: CommandInteraction) {
 	intr.logger.log("Pinged");
 }
 
-export const getCommand = () => ({ data, execute } as PartialCommand);
+export const getCommand = () => ({ data, execute } as Partial<Command>);

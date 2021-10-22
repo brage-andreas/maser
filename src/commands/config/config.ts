@@ -1,4 +1,4 @@
-import type { CommandInteraction, ConfigColumns, PartialCommand } from "../../typings.js";
+import type { CommandInteraction, ConfigColumns, Command } from "../../typings.js";
 import { MessageEmbed, type ApplicationCommandData } from "discord.js";
 
 import { CONFIG_OPTIONS, CONFIG_RESULT_KEYS } from "../../constants.js";
@@ -91,4 +91,4 @@ async function execute(intr: CommandInteraction) {
 	}
 }
 
-export const getCommand = () => ({ options, data, execute } as PartialCommand);
+export const getCommand = () => ({ options, data, execute } as Partial<Command>);

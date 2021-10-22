@@ -1,4 +1,4 @@
-import type { CommandInteraction, PartialCommand } from "../../typings.js";
+import type { CommandInteraction, Command } from "../../typings.js";
 import { MessageAttachment, MessageButton, type ApplicationCommandData, type Message } from "discord.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
@@ -81,4 +81,4 @@ async function execute(intr: CommandInteraction) {
 	intr.logger.log(`Code:\n${Util.indent(code, 4)}`, `Output:\n${Util.indent(output, 4)}`);
 }
 
-export const getCommand = () => ({ options, data, execute } as PartialCommand);
+export const getCommand = () => ({ options, data, execute } as Partial<Command>);
