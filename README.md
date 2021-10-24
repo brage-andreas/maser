@@ -18,27 +18,16 @@ A Discord bot made with discord.js version 13.
 	If no `GUILD_ID` is present, it will deploy commands globally.
 2. Run `npm run build` or `npm run clear`
 
-## Features
-* Command handler
-    * Folder-sorted structure
-    * Automatic and dynamic "hide" option will be applied to all commands, and will defer commands ephemerally based on it
-    * Built-in logger, for ease of use
-    * Can deploy commands
-* Event handler
-    * Multitude of built-in loggers
-    * File names are event names
-    * No folder-sorted structure
-* Extensions
-    * A modified discord.js Client which has utility attached to it.
-    * Multitude of managers, for buttons, commands, emojis, etc.
-* Utils
-    * A rich eval command
-    * Loggers for commands, events, errors, and info
-    * Script that deploys commands
+## Notable features
+* Loggers, both in console and in Discord
+* Hide option on all commands
+* Manager classes make tasks easy to do
+* Private — only logs successful actions
+* Good command UI and UX
 
 <br /> <br />
 
 ![Work in progress](https://i.imgur.com/eS4Md4Q.png)
-🛠️ This will be filled out later.
+> \* This applies to both the bot and this README
 
 Made by drango#2399.
