@@ -1,18 +1,19 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-
-# NPM
-node_modules/
-.npm
-
-# ENV
-.env
-.env.test
-
-# Dist
-dist
-
 # Emojis
 resources/icons/export/
+
+# Logs
+npm-debug.log*
+logs
+*.log
+
+# Node
+node_modules/
+dist
+.npm
+
+# Windows
+desktop.ini
+
+# Env
+.env.test
+.env
