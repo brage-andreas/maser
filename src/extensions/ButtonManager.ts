@@ -81,14 +81,12 @@ export default class ButtonManager {
 	 */
 	public createCollector(options?: { filter?: Filter; time?: string; authorOnly?: boolean }): ButtonCollector {
 		let { filter, time, authorOnly } = options ?? {};
-
-		if (!this.message) throw new Error("A message must be set to the button manager");
-		if (!this.user) throw new Error("A user must be set to the button manager");
-
-		const userId = this.user.id;
-
+			
 		authorOnly ??= true;
-		filter ??= authorOnly ? (intr) => intr.user.id === userId : () => true;
+		filter ??= authorOnly ? (intr) => intr.user.id === this.user?.id : () => true;
+
+		if (authorOnly && !this.user) throw new Error("A user must be set to the button manager");
+		if (!this.message) throw new Error("A message must be set to the button manager");
 
 		const milliseconds = time ? ms(time) : undefined;
 		return this.message.createMessageComponentCollector({ filter, time: milliseconds });
@@ -220,10 +218,10 @@ export class ConfirmationButtons extends ButtonManager {
 
 			collector.on("collect", (intr) => {
 				if (intr.customId === "yes") {
-					this._updateOrEditReply(onYes, []);
+					if (!options?.noReply) this._updateOrEditReply(onYes, []);
 					resolve();
 				} else {
-					this._updateOrEditReply(onNo, []);
+					if (!options?.noReply) this._updateOrEditReply(onNo, []);
 					reject();
 				}
 
@@ -244,8 +242,8 @@ export class ConfirmationButtons extends ButtonManager {
 		const isButtonIntr = medium instanceof MessageComponentInteraction;
 
 		const msg = isButtonIntr
-			? medium.update({ content, components, fetchReply: true })
-			: medium.editReply({ content, components });
+			? medium.update({ content, components, allowedMentions: { parse: [] }, fetchReply: true })
+			: medium.editReply({ content, components, allowedMentions: { parse: [] } });
 
 		return msg as Promise<Message>;
 	}
