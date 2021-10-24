@@ -4,8 +4,8 @@ import { MessageEmbed, type Role } from "discord.js";
 export default async function logs(data: ConfigCommandData) {
 	const { config, intr, method, option } = data;
 
-	const { findAndParse } = intr.client.systemEmojis
-	const [emptyFileEm, channelEm, fileEm, atEm] = findAndParse("empty_file", "channel", "file", "at");
+	const [emptyFileEm, channelEm] = intr.client.systemEmojis.findAndParse("empty_file", "channel");
+	const [fileEm, atEm] = intr.client.systemEmojis.findAndParse("file", "at");
 
 	switch (method) {
 		case "view": {
