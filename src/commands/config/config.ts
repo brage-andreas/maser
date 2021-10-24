@@ -44,9 +44,9 @@ async function execute(intr: CommandInteraction) {
 	const option = intr.options.getSubcommandGroup(false);
 	const method = intr.options.getSubcommand();
 
-	let config = new ConfigManager(intr.client, intr.guild.id);
+	const config = new ConfigManager(intr.client, intr.guild.id);
 
-	// TODO
+	// TODO - not done
 	if (method === "view-config") {
 		const res = await config.getAll();
 
