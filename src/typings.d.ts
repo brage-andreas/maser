@@ -14,8 +14,10 @@ import type ConfigManager from "./database/src/config/ConfigManager.js";
 import type { Client } from "./extensions/";
 
 type AllowedConfigTextChannels = TextChannel | NewsChannel;
+
+// Slightly borked
 interface CommandInteractionOptionResolver extends Discord.CommandInteractionOptionResolver {
-	getMember: (name: string, required = false) => GuildMember | null;
+	getMember: (name: string, required?: boolean) => GuildMember | null;
 }
 
 export type ConfigColumns = "id" | "bot_log_channel_id" | "member_log_channel_id" | "muted_role_id";
