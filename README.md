@@ -11,7 +11,7 @@ Note: This is a personal project—please do not engage in the development with 
 # Maser
 A Discord bot made with discord.js version 13.
 
-![Image of terminal](https://i.imgur.com/X6UqMhJ.png)
+![Image of terminal](https://i.imgur.com/6e9wm50.png)
 
 ## How to deploy commands
 1. Fill `CLIENT_ID` and/or `GUILD_ID` keys in `.env` file.
