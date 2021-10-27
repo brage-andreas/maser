@@ -14,7 +14,14 @@ const data: ChatInputApplicationCommandData = {
 		{
 			name: "global",
 			description: "Build global commands",
-			type: ApplicationCommandOptionTypes.SUB_COMMAND
+			type: ApplicationCommandOptionTypes.SUB_COMMAND,
+			options: [
+				{
+					name: "clear",
+					description: "Clear commands instead of building",
+					type: ApplicationCommandOptionTypes.BOOLEAN
+				}
+			]
 		},
 		{
 			name: "guild",
@@ -25,6 +32,11 @@ const data: ChatInputApplicationCommandData = {
 					name: "guild",
 					description: "A specific guild to build to",
 					type: ApplicationCommandOptionTypes.STRING
+				},
+				{
+					name: "clear",
+					description: "Clear commands instead of building",
+					type: ApplicationCommandOptionTypes.BOOLEAN
 				}
 			]
 		}
@@ -33,6 +45,7 @@ const data: ChatInputApplicationCommandData = {
 
 async function execute(intr: CommandInteraction) {
 	const type = intr.options.getSubcommand(true);
+	const clear = intr.options.getBoolean("clear") ?? false;
 	const guildId = intr.options.getString("guild") ?? intr.guildId;
 	const clientId = intr.client.user.id;
 
@@ -43,11 +56,20 @@ async function execute(intr: CommandInteraction) {
 			return;
 		}
 
-		intr.client.commands.put(clientId, guildId);
-		intr.logger.log(`Put commands in guild: ${guild.name} (${guild.id})`);
+		if (clear) {
+			intr.client.commands.clear(clientId, guildId);
+		} else {
+			intr.client.commands.put(clientId, guildId);
+		}
+
+		intr.editReply(`${clear ? "Cleared" : "Put"} commands in guild: ${guild.name} (${guild.id})`);
+		intr.logger.log(`${clear ? "Cleared" : "Put"} commands in guild: ${guild.name} (${guild.id})`);
 	} else {
-		intr.client.commands.put(clientId);
-		intr.logger.log("Put commands in global commands");
+		if (clear) intr.client.commands.clear(clientId);
+		else intr.client.commands.put(clientId);
+
+		intr.editReply(`${clear ? "Cleared" : "Put"} global commands`);
+		intr.logger.log(`${clear ? "Cleared" : "Put"} global commands`);
 	}
 }
 
