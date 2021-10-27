@@ -124,7 +124,7 @@ async function execute(intr: CommandInteraction) {
 	const target = intr.options.getMember("user");
 	const reason = intr.options.getString("reason");
 	const duration = intr.options.getInteger("duration") ?? THREE_HRS;
-	const endTimestamp = Date.now() + duration;
+	const expiration = Date.now() + duration;
 
 	const [idEm, atEm, errEm, successEm] = intr.client.systemEmojis.findAndParse(
 		"id_red",
@@ -284,13 +284,13 @@ async function execute(intr: CommandInteraction) {
 			});
 		}
 
-		const reasonStr = reason ?? "No reason provided";
-		const expiration = Date.now() + duration;
+		const info =
+			`• Reason: ${reason ?? "No reason provided"}\n` +
+			`• Duration: ${ms(duration, { long: true })} (${Util.date(expiration)})\n` +
+			`• Target: ${target.user.tag} (${target} ${target.id})`;
 
-		const query =
-			`${atEm}Are you sure you want to mute ${target} ` +
-			(reason ? `${reasonStr} ` : "") +
-			`for ${ms(duration, { long: true })} (${Util.date(expiration)})?`;
+		const query = `${atEm}Are you sure you want to mute ${target}\n${info}`;
+
 		const collector = new ConfirmationButtons({ author: intr.user })
 			.setInteraction(intr)
 			.setUser(intr.user)
@@ -299,10 +299,23 @@ async function execute(intr: CommandInteraction) {
 		collector
 			.start({ noReply: true })
 			.then(() => {
-				intr.editReply({ content: "omg muted", components: [] });
+				target.roles
+					.add(mutedRole)
+					.then(() => {
+						intr.editReply({
+							content: `Successfully muted ${target.user.tag} (${target.id})\n${info}`,
+							components: []
+						});
+					})
+					.catch(() => {
+						intr.editReply({
+							content: `${errEm}I failed to give ${target.user.tag} (${target.id}) role ${mutedRole}`,
+							components: []
+						});
+					});
 			})
 			.catch(() => {
-				intr.editReply({ content: "ok", components: [] });
+				intr.editReply({ content: "Gotcha. Command canceled", components: [] });
 			});
 	}
 
