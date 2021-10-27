@@ -285,11 +285,11 @@ async function execute(intr: CommandInteraction) {
 		}
 
 		const info =
-			`• Reason: ${reason ?? "No reason provided"}\n` +
-			`• Duration: ${ms(duration, { long: true })} (${Util.date(expiration)})\n` +
-			`• Target: ${target.user.tag} (${target} ${target.id})`;
+			`• **Reason**: ${reason ?? "No reason provided"}\n` +
+			`• **Duration**: ${ms(duration, { long: true })} (${Util.date(expiration)})\n` +
+			`• **Target**: ${target.user.tag} (${target} ${target.id})`;
 
-		const query = `${atEm}Are you sure you want to mute ${target}\n${info}`;
+		const query = `${atEm}Are you sure you want to mute ${target}?\n\n${info}`;
 
 		const collector = new ConfirmationButtons({ author: intr.user })
 			.setInteraction(intr)
@@ -303,7 +303,7 @@ async function execute(intr: CommandInteraction) {
 					.add(mutedRole)
 					.then(() => {
 						intr.editReply({
-							content: `Successfully muted ${target.user.tag} (${target.id})\n${info}`,
+							content: `${successEm}Successfully muted ${target.user.tag} (${target.id})\n\n${info}`,
 							components: []
 						});
 					})
@@ -319,7 +319,9 @@ async function execute(intr: CommandInteraction) {
 			});
 	}
 
-	intr.logger.log(`Muted`);
+	intr.logger.log(
+		`Muted ${target.user.tag} (${target.id}) for ${ms(duration, { long: true })} with reason: ${reason}`
+	);
 }
 
 export const getCommand = () => ({ options, data, execute } as Partial<Command>);
