@@ -9,8 +9,10 @@ import type {
 import type { CommandInteraction, Command } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import ConfigManager from "../../database/src/config/ConfigManager.js";
 import { ConfirmationButtons } from "../../extensions/ButtonManager.js";
+import ConfigManager from "../../database/src/config/ConfigManager.js";
+import Util from "../../utils/index.js";
+import ms from "ms";
 
 const options = {
 	wip: true
@@ -117,9 +119,10 @@ const data: ChatInputApplicationCommandData = {
 };
 
 // TODO: refactor
+// this needs :alot: of refactoring
 async function execute(intr: CommandInteraction) {
-	const target = intr.options.getMember("user", true);
-	const reason = intr.options.getString("reason") ?? "No reason provided";
+	const target = intr.options.getMember("user");
+	const reason = intr.options.getString("reason");
 	const duration = intr.options.getInteger("duration") ?? THREE_HRS;
 	const endTimestamp = Date.now() + duration;
 
@@ -155,18 +158,30 @@ async function execute(intr: CommandInteraction) {
 		return;
 	}
 
-	if (target.manageable) {
-		intr.editReply(`${errEm}I cannot perform any action on this user. Are they above me in the role hierarchy?`);
+	if (target.permissions.has("MANAGE_ROLES")) {
+		intr.editReply(`${errEm}The user to target cannot be muted`);
 		return;
 	}
 
 	const config = new ConfigManager(intr.client, intr.guild.id, "muted_role_id");
+	const existingMuteRole = intr.guild.roles.cache.find((role) => roleNames.includes(role.name.toLowerCase()));
 	const mutedRole = await config.getRole();
 
-	if (!mutedRole) {
-		const existingMuteRole = intr.guild.roles.cache.find((role) => roleNames.includes(role.name.toLowerCase()));
+	const existingMuteRoleValid = existingMuteRole?.comparePositionTo(intr.guild.me.roles.highest) ?? -1 >= 0;
+	const muteRoleValid = mutedRole?.comparePositionTo(intr.guild.me.roles.highest) ?? -1 >= 0;
 
+	if (!mutedRole) {
 		if (existingMuteRole) {
+			if (!existingMuteRoleValid) {
+				intr.editReply({
+					content:
+						`I found the role ${existingMuteRole} but I cannot use it.` +
+						"Give me a higher role, or move the role below mine.",
+					allowedMentions: { parse: [] }
+				});
+				return;
+			}
+
 			const query = atEm + NO_MUTE_ROLE.USE(existingMuteRole);
 			const collector = new ConfirmationButtons({ author: intr.user })
 				.setInteraction(intr)
@@ -183,7 +198,7 @@ async function execute(intr: CommandInteraction) {
 						})
 						.catch(() => {
 							intr.editReply({
-								content: `${errEm}Something went wrong with setting your mute role.`,
+								content: `${errEm}Something went wrong with setting your mute role. `,
 								components: []
 							});
 						});
@@ -260,7 +275,35 @@ async function execute(intr: CommandInteraction) {
 				});
 		}
 	} else {
-		intr.editReply("omg muted");
+		if (!muteRoleValid) {
+			intr.editReply({
+				content:
+					`I found the role from your config (${mutedRole}) but I cannot use it. ` +
+					"Give me a higher role, or move the role below mine.",
+				allowedMentions: { parse: [] }
+			});
+		}
+
+		const reasonStr = reason ?? "No reason provided";
+		const expiration = Date.now() + duration;
+
+		const query =
+			`${atEm}Are you sure you want to mute ${target} ` +
+			(reason ? `${reasonStr} ` : "") +
+			`for ${ms(duration, { long: true })} (${Util.date(expiration)})?`;
+		const collector = new ConfirmationButtons({ author: intr.user })
+			.setInteraction(intr)
+			.setUser(intr.user)
+			.setQuery(query);
+
+		collector
+			.start({ noReply: true })
+			.then(() => {
+				intr.editReply({ content: "omg muted", components: [] });
+			})
+			.catch(() => {
+				intr.editReply({ content: "ok", components: [] });
+			});
 	}
 
 	intr.logger.log(`Muted`);
