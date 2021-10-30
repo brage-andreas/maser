@@ -1,6 +1,7 @@
 import type { CommandInteraction, Command } from "../../typings.js";
-import { MessageAttachment, MessageButton, type ChatInputApplicationCommandData, type Message } from "discord.js";
+import type { ChatInputApplicationCommandData, Message } from "discord.js";
 
+import { MessageAttachment, MessageButton } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { ButtonManager } from "../../extensions/";
 import evaluate from "../../utils/eval.js";
@@ -33,7 +34,7 @@ async function execute(intr: CommandInteraction) {
 	const code = intr.options.getString("code", true);
 	const reply = intr.options.getBoolean("reply") ?? true;
 
-	const { emError, emSuccess, emInput } = intr.client.systemEmojis
+	const { emError, emSuccess, emInput } = intr.client.systemEmojis;
 
 	const { embeds, output, type } = await evaluate(code, intr);
 

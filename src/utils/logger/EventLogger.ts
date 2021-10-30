@@ -1,6 +1,7 @@
-import { MessageEmbed, type Guild, type GuildMember } from "discord.js";
+import type { Guild, GuildMember } from "discord.js";
 import type { Client } from "../../extensions/";
 
+import { MessageEmbed } from "discord.js";
 import { LOGGER_TYPES } from "../../constants.js";
 import ConfigManager from "../../database/src/config/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";

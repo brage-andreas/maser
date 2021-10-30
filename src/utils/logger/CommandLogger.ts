@@ -1,6 +1,7 @@
-import { MessageEmbed, type Guild, type TextBasedChannels, type User } from "discord.js";
+import type { Guild, TextBasedChannels, User } from "discord.js";
 import type { CommandInteraction } from "../../typings.js";
 
+import { MessageEmbed } from "discord.js";
 import { LOGGER_TYPES } from "../../constants.js";
 import ConfigManager from "../../database/src/config/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";
@@ -77,7 +78,7 @@ export default class CommandLogger extends BaseLogger {
 		const logLevel = client.command.logLevel;
 		if (logLevel === 0) return;
 
-		const createEmbed = (description: string, index=0, total=1) => {
+		const createEmbed = (description: string, index = 0, total = 1) => {
 			const { user } = this.interaction!;
 
 			const embed = new MessageEmbed()
@@ -98,7 +99,7 @@ export default class CommandLogger extends BaseLogger {
 			if (!channel) return;
 
 			const prefix = `\`${Util.commandToString(this.interaction)}\`\n`;
-			
+
 			let embeds: MessageEmbed[] = [];
 
 			if (logLevel === 2) {

@@ -1,8 +1,9 @@
 import type { CommandInteraction, ConfigColumns, Command } from "../../typings.js";
-import { MessageEmbed, type ChatInputApplicationCommandData } from "discord.js";
+import type { ChatInputApplicationCommandData } from "discord.js";
 
 import { CONFIG_OPTIONS, CONFIG_RESULT_KEYS } from "../../constants.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import { MessageEmbed } from "discord.js";
 import ConfigManager from "../../database/src/config/ConfigManager.js";
 import methods from "./modules/methods.js";
 

@@ -1,9 +1,9 @@
 import type { ClientOptions } from "discord.js";
 import { CommandHandler, EventManager, ColorManager } from "./";
-import { InfoLogger } from "../utils/logger";
 import { INTENTS, EMOJIS } from "../constants.js";
-import Discord from "discord.js";
+import { InfoLogger } from "../utils/logger";
 import CommandManager from "./CommandManager";
+import Discord from "discord.js";
 
 export default class Client extends Discord.Client<true> {
 	systemEmojis = EMOJIS;

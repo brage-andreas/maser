@@ -1,8 +1,9 @@
+import type { ChatInputApplicationCommandData, Guild } from "discord.js";
 import type { CommandInteraction, Command } from "../../typings.js";
-import { MessageEmbed, type ChatInputApplicationCommandData, type Guild } from "discord.js";
 
-import Util from "../../utils/";
+import { MessageEmbed } from "discord.js";
 import { BOOST_LEVELS } from "../../constants.js";
+import Util from "../../utils/";
 
 const data: ChatInputApplicationCommandData = {
 	name: "server",

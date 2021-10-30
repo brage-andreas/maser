@@ -1,13 +1,6 @@
-import {
-	MessageActionRow,
-	MessageButton,
-	MessageComponentInteraction,
-	type CollectorFilter,
-	type InteractionCollector,
-	type Message,
-	type User
-} from "discord.js";
+import type { CollectorFilter, InteractionCollector, Message, User } from "discord.js";
 import type { CommandInteraction } from "../typings.js";
+import { MessageActionRow, MessageButton, MessageComponentInteraction } from "discord.js";
 import ms from "ms";
 
 type Filter = CollectorFilter<[MessageComponentInteraction]>;
@@ -81,7 +74,7 @@ export default class ButtonManager {
 	 */
 	public createCollector(options?: { filter?: Filter; time?: string; authorOnly?: boolean }): ButtonCollector {
 		let { filter, time, authorOnly } = options ?? {};
-			
+
 		authorOnly ??= true;
 		filter ??= authorOnly ? (intr) => intr.user.id === this.user?.id : () => true;
 

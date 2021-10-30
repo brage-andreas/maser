@@ -22,9 +22,4 @@ client.login(process.env.TOKEN);
 	- mute
 	- channel info
 	- role info
- TODO: more emojis
-    - Cancelled
-    - "something broke"
-    - owner
-    - Missing permissions
 */

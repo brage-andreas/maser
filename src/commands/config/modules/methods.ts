@@ -1,10 +1,11 @@
 import type { AllowedConfigTextChannels, ConfigCommandData } from "../../../typings.js";
-import { MessageEmbed, type Role } from "discord.js";
+import type { Role } from "discord.js";
+import { MessageEmbed } from "discord.js";
 
 export default async function logs(data: ConfigCommandData) {
 	const { config, intr, method, option } = data;
 
-	const { emEmptyFile, emAt, emFileGreen, emChannel } = intr.client.systemEmojis
+	const { emEmptyFile, emAt, emFileGreen, emChannel } = intr.client.systemEmojis;
 
 	switch (method) {
 		case "view": {
@@ -40,9 +41,7 @@ export default async function logs(data: ConfigCommandData) {
 			const value = res?.id ?? "null";
 			await config.set(value);
 
-			const updatedValueStr = res
-				? `${emFileGreen}New value: ${res} (${res.id})`
-				: `${emEmptyFile}Removed value`;
+			const updatedValueStr = res ? `${emFileGreen}New value: ${res} (${res.id})` : `${emEmptyFile}Removed value`;
 
 			const viewOptionEmbed = new MessageEmbed()
 				.setAuthor(intr.user.tag, intr.member.displayAvatarURL())
