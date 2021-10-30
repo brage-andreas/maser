@@ -29,27 +29,8 @@ const TWELVE_HRS = 44200000;
 const ONE_DAY = 86400000;
 const THREE_DAYS = 259200000;
 
-const NO_MUTE_ROLE = {
-	USE: (role: Role) => {
-		return `You have not set a mute role in your config. Do you want to set it to ${role}?`;
-	},
-	CREATE:
-		"You have not set a mute role in your config. " +
-		"Do you want to me to create one? (You can always edit it afterwards.)\n " +
-		`Tip: If you name your muted role one of "${roleNames.join('", "')}", I will automatically detect them.`
-};
-
-const CREATED_MUTE_ROLE = {
-	SUCCESS: (role: Role) => {
-		return `Done! Created ${role} and set it to your config. You're good to go now.`;
-	},
-	FAIL: (role: Role) => {
-		return `Created ${role} and set it to your config, but omething went wrong with setting your mute role.`;
-	}
-};
-
 const getDefaultMuteRoleData = (intr: CommandInteraction) => ({
-	reason: `Automatic mute role created by ${intr.user.tag} (${intr.user.id})`,
+	reason: `Automatic muted role created by ${intr.user.tag} (${intr.user.id})`,
 	mentionable: false,
 	name: "Muted",
 	hoist: false,
@@ -120,41 +101,72 @@ const data: ChatInputApplicationCommandData = {
 
 // TODO: refactor
 // this needs :alot: of refactoring
+// TODO: action log and cases
+// TODO: duration
 async function execute(intr: CommandInteraction) {
 	const target = intr.options.getMember("user");
 	const reason = intr.options.getString("reason");
 	const duration = intr.options.getInteger("duration") ?? THREE_HRS;
 	const expiration = Date.now() + duration;
 
-	const { emError, emUserLock, emSuccess, emCrown, emIdRed, emXMark, emAt } = intr.client.systemEmojis;
+	const { emError, emUserLock, emSuccess, emCrown, emIdRed, emXMark, emAt, emCheckMark } = intr.client.systemEmojis;
+
+	const CANCELED = `${emCheckMark} Gotcha. Command canceled`;
+
+	const NO_MUTE_ROLE = {
+		USE: (role: Role) => {
+			return `${emAt} You have not set a muted role in your config. Do you want to set it to ${role}?`;
+		},
+		CREATE:
+			`${emAt} You have not set a muted role in your config.+\n` +
+			"Do you want to me to create one? (You can always edit it afterwards.)"
+	};
+
+	const CREATED_MUTE_ROLE = {
+		SUCCESS: (role: Role) => {
+			return `${emSuccess} Done! Created ${role} and set it to your config. You're good to go now.`;
+		},
+		CONFIG_FAIL: (role: Role) => {
+			return `${emError} Created ${role} but failed to set it to your config.`;
+		},
+		FAIL: (reason: string) => `${emError} Creating the role failed with reason: ${reason}`
+	};
+
+	const EXISTING_ROLE = {
+		NOT_VALID: (role: Role) =>
+			`${emXMark} I found the role ${role} but I cannot use it. ` +
+			"Give me a higher role, or move the role below mine.",
+		SUCCESS: `${emSuccess} Done! You're good to go now.`,
+		FAIL: `${emError} Something went wrong with setting your muted role. `
+	};
 
 	if (!intr.guild.me?.permissions.has("MANAGE_ROLES")) {
-		intr.editReply(`${emUserLock}I don't have permissions to add or remove roles`);
+		intr.editReply(`${emUserLock} I don't have permissions to add or remove roles`);
 		return;
 	}
 
 	if (!target) {
-		intr.editReply(`${emIdRed}The user to target was not found in this server`);
+		intr.editReply(`${emIdRed} The user to target was not found in this server`);
 		return;
 	}
 
 	if (target.id === intr.user.id) {
-		intr.editReply(`${emError}You cannot do this action on yourself`);
+		intr.editReply(`${emError} You cannot do this action on yourself`);
 		return;
 	}
 
 	if (target.id === intr.client.user.id) {
-		intr.editReply(`${emError}I cannot do this action on myself`);
+		intr.editReply(`${emError} I cannot do this action on myself`);
 		return;
 	}
 
 	if (target.id === intr.guild.ownerId) {
-		intr.editReply(`${emCrown}The user to target is the owner of this server`);
+		intr.editReply(`${emCrown} The user to target is the owner of this server`);
 		return;
 	}
 
 	if (target.permissions.has("MANAGE_ROLES")) {
-		intr.editReply(`${emXMark}The user to target cannot be muted`);
+		intr.editReply(`${emXMark} The user to target cannot be muted`);
 		return;
 	}
 
@@ -169,9 +181,7 @@ async function execute(intr: CommandInteraction) {
 		if (existingMuteRole) {
 			if (!existingMuteRoleValid) {
 				intr.editReply({
-					content:
-						`I found the role ${existingMuteRole} but I cannot use it.` +
-						"Give me a higher role, or move the role below mine.",
+					content: EXISTING_ROLE.NOT_VALID(existingMuteRole),
 					allowedMentions: { parse: [] }
 				});
 				return;
@@ -189,24 +199,23 @@ async function execute(intr: CommandInteraction) {
 					config
 						.set(existingMuteRole.id)
 						.then(() => {
-							intr.editReply({ content: `${emSuccess}Done! You're good to go now.`, components: [] });
+							intr.editReply({ content: EXISTING_ROLE.SUCCESS, components: [] });
 						})
 						.catch(() => {
 							intr.editReply({
-								content: `${emError}Something went wrong with setting your mute role. `,
+								content: EXISTING_ROLE.FAIL,
 								components: []
 							});
 						});
 				})
 				.catch(() => {
-					intr.editReply({ content: "Gotcha. Command canceled", components: [] });
+					intr.editReply({ content: CANCELED, components: [] });
 				});
 		} else {
-			const query = emAt + NO_MUTE_ROLE.CREATE;
 			const collector = new ConfirmationButtons({ author: intr.user })
 				.setInteraction(intr)
 				.setUser(intr.user)
-				.setQuery(query);
+				.setQuery(NO_MUTE_ROLE.CREATE);
 
 			collector
 				.start({ noReply: true })
@@ -214,17 +223,24 @@ async function execute(intr: CommandInteraction) {
 					intr.guild.roles
 						.create(getDefaultMuteRoleData(intr))
 						.then((newMutedRole) => {
-							const onSuccess = emSuccess + CREATED_MUTE_ROLE.SUCCESS(newMutedRole);
-							const fail = emError + CREATED_MUTE_ROLE.FAIL(newMutedRole);
 							// this isn't all needed perms, apparently
 							const canOverwrite = intr.guild.me?.permissions.has("MANAGE_CHANNELS");
+
+							const overwriteWarning =
+								"**Note:** I don't have permissions edit channel overwrites for you.";
+							const onSuccess =
+								CREATED_MUTE_ROLE.SUCCESS(newMutedRole) + (!canOverwrite ? overwriteWarning : "");
+							const onFail =
+								CREATED_MUTE_ROLE.CONFIG_FAIL(newMutedRole) + (!canOverwrite ? overwriteWarning : "");
 
 							if (canOverwrite) {
 								const channels = intr.guild.channels.cache.filter((ch) =>
 									["GUILD_TEXT", "GUILD_VOICE", "GUILD_CATEGORY"].includes(ch.type)
 								) as Collection<string, GuildChannel | VoiceChannel | CategoryChannel>;
 
-								const reason = `Automatic mute role created by ${intr.user.tag} (${intr.user.id})`;
+								// this is bad
+								// you probably don't want to do this
+								const reason = `Automatic muted role created by ${intr.user.tag} (${intr.user.id})`;
 								channels.forEach((channel) => {
 									channel.permissionOverwrites.edit(newMutedRole, OVERWRITES_PERMS_OBJ, {
 										type: 0,
@@ -238,11 +254,7 @@ async function execute(intr: CommandInteraction) {
 								.then(() => {
 									intr.editReply({
 										allowedMentions: { parse: [] },
-										content:
-											onSuccess +
-											(!canOverwrite
-												? "\n **Note:** I don't have permissions edit channel overwrites for you."
-												: ""),
+										content: onSuccess,
 										components: []
 									});
 								})
@@ -250,41 +262,35 @@ async function execute(intr: CommandInteraction) {
 									intr.editReply({
 										allowedMentions: { parse: [] },
 										components: [],
-										content:
-											fail +
-											(!canOverwrite
-												? "\n **Note:** I don't have permissions edit channel overwrites for you."
-												: "")
+										content: onFail
 									});
 								});
 						})
 						.catch((reason) => {
 							intr.editReply({
-								content: `${emError}Creating the role failed with reason: ${reason}`,
+								content: CREATED_MUTE_ROLE.FAIL(reason),
 								components: []
 							});
 						});
 				})
 				.catch(() => {
-					intr.editReply("Gotcha. Command canceled");
+					intr.editReply(CANCELED);
 				});
 		}
 	} else {
 		if (!muteRoleValid) {
 			intr.editReply({
-				content:
-					`I found the role from your config (${mutedRole}) but I cannot use it. ` +
-					"Give me a higher role, or move the role below mine.",
+				content: EXISTING_ROLE.NOT_VALID(mutedRole),
 				allowedMentions: { parse: [] }
 			});
 		}
 
 		const info =
 			`• **Reason**: ${reason ?? "No reason provided"}\n` +
-			`• **Duration**: ${ms(duration, { long: true })} (${Util.date(expiration)})\n` +
+			`• **Duration**: ${ms(duration, { long: true })} (Expiration ${Util.date(expiration)})\n` +
 			`• **Target**: ${target.user.tag} (${target} ${target.id})`;
 
-		const query = `${emAt}Are you sure you want to mute ${target}?\n\n${info}`;
+		const query = `Are you sure you want to mute ${target.user.tag} (${target.id})?\n\n${info}`;
 
 		const collector = new ConfirmationButtons({ author: intr.user })
 			.setInteraction(intr)
@@ -298,19 +304,19 @@ async function execute(intr: CommandInteraction) {
 					.add(mutedRole)
 					.then(() => {
 						intr.editReply({
-							content: `${emSuccess}Successfully muted ${target.user.tag} (${target.id})\n\n${info}`,
+							content: `${emSuccess} Successfully muted ${target.user.tag} (${target.id})\n\n${info}`,
 							components: []
 						});
 					})
 					.catch(() => {
 						intr.editReply({
-							content: `${emError}I failed to give ${target.user.tag} (${target.id}) role ${mutedRole}`,
+							content: `${emError} I failed to give ${target.user.tag} (${target.id}) role ${mutedRole}`,
 							components: []
 						});
 					});
 			})
 			.catch(() => {
-				intr.editReply({ content: "Gotcha. Command canceled", components: [] });
+				intr.editReply({ content: CANCELED, components: [] });
 			});
 	}
 
