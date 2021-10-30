@@ -5,7 +5,7 @@ import { CommandLogger } from "../utils/logger/";
 export async function execute(client: Client, intr: CommandInteraction) {
 	if (!intr.isCommand() || !intr.inCachedGuild()) return;
 
-	const [idEm, wip] = intr.client.systemEmojis.findAndParse("id_red", "wip");
+	const { emIdRed: emId, emWIP } = client.systemEmojis;
 	const isNotOwner = intr.user.id !== client.application.owner?.id;
 
 	intr.logger = new CommandLogger(intr);
@@ -14,12 +14,12 @@ export async function execute(client: Client, intr: CommandInteraction) {
 	const command = client.command.setCommand(intr, commandData);
 
 	if (command.isWIP && isNotOwner) {
-		await intr.reply({ content: `${wip}This command is work-in-progress`, ephemeral: true });
+		await intr.reply({ content: `${emWIP} This command is work-in-progress`, ephemeral: true });
 		return;
 	}
 
 	if (command.isPrivate && isNotOwner) {
-		await intr.reply({ content: `${idEm}This command is private`, ephemeral: true });
+		await intr.reply({ content: `${emId} This command is private`, ephemeral: true });
 		return;
 	}
 

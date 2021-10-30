@@ -29,6 +29,30 @@ export const REGEX = {
 	ID: ID_REGEX
 };
 
+// Source of emojis are located in root/resources/icons
+export const EMOJIS = {
+	"emUserRemoved": "<:user_removed:903948599048667216>",
+	"emEmptyFile": "<:empty_file:903948597790388244>",
+	"emFileGreen": "<:file:903948597832318986>",
+	"emCheckMark": "<:check_mark:903948598155309096>",
+	"emUserLock": "<:user_lock:903948598448893972>",
+	"emUnlocked": "<:unlocked:903948598532767775>",
+	"emFileRed": "<:file:903948598348222465>",
+	"emIdGreen": "<:id:903948599136763904>",
+	"emChannel": "<:channel:903948598306291712>",
+	"emSuccess": "<:success:903948598834782249>",
+	"emLocked": "<:locked:903948598318874655>",
+	"emError": "<:exclamation:903948598562144296>",
+	"emIdRed": "<:id:903948598427930654>",
+	"emXMark": "<:x_mark:903948598302093332>",
+	"emCrown": "<:crown:903948598834782250>",
+	"emInput": "<:input:903948598356623360>",
+	"emBug": "<:bug:903948597182218321>",
+	"emURL": "<:url:903948599556186112>",
+	"emWIP": "<:wip:903948598453076018>",
+	"emAt": "<:at:903948597551329300>",
+} as const;
+
 const BLURPLE = "5865F2";
 const ORANGE = "FF8741";
 const YELLOW = "FFC152";

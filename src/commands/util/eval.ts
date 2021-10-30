@@ -33,7 +33,7 @@ async function execute(intr: CommandInteraction) {
 	const code = intr.options.getString("code", true);
 	const reply = intr.options.getBoolean("reply") ?? true;
 
-	const [errorEm, successEm, inputEm] = intr.client.systemEmojis.find("exclamation", "success", "input");
+	const { emError, emSuccess, emInput } = intr.client.systemEmojis
 
 	const { embeds, output, type } = await evaluate(code, intr);
 
@@ -44,13 +44,13 @@ async function execute(intr: CommandInteraction) {
 			.setLabel(`Full ${type}`)
 			.setCustomId("output")
 			.setStyle("SECONDARY")
-			.setEmoji((type === "error" ? errorEm : successEm) ?? "📤");
+			.setEmoji((type === "error" ? emError : emSuccess) ?? "📤");
 
 		const codeButton = new MessageButton() //
 			.setLabel("Full input")
 			.setCustomId("code")
 			.setStyle("SECONDARY")
-			.setEmoji(inputEm ?? "📥");
+			.setEmoji(emInput ?? "📥");
 
 		buttonManager.setRows(outputButton, codeButton).setUser(intr.user);
 
@@ -59,7 +59,7 @@ async function execute(intr: CommandInteraction) {
 
 		collector.on("collect", (interaction) => {
 			if (interaction.customId === "output") {
-				const attachment = new MessageAttachment(Buffer.from(output), "output.txt");
+				const attachment = new MessageAttachment(Buffer.from(output), `${type}.txt`);
 
 				interaction.followUp({ files: [attachment] });
 

@@ -1,12 +1,12 @@
 import type { ClientOptions } from "discord.js";
-import { CommandHandler, EventManager, ColorManager, EmojiManager } from "./";
+import { CommandHandler, EventManager, ColorManager } from "./";
 import { InfoLogger } from "../utils/logger";
-import { INTENTS } from "../constants.js";
+import { INTENTS, EMOJIS } from "../constants.js";
 import Discord from "discord.js";
 import CommandManager from "./CommandManager";
 
 export default class Client extends Discord.Client<true> {
-	systemEmojis: EmojiManager;
+	systemEmojis = EMOJIS;
 	commands: CommandHandler;
 	command: CommandManager;
 	events: EventManager;
@@ -42,6 +42,5 @@ export default class Client extends Discord.Client<true> {
 		this.events = new EventManager(this);
 		this.colors = new ColorManager();
 		this.logger = new InfoLogger();
-		this.systemEmojis = new EmojiManager(this);
 	}
 }

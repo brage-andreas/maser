@@ -126,40 +126,35 @@ async function execute(intr: CommandInteraction) {
 	const duration = intr.options.getInteger("duration") ?? THREE_HRS;
 	const expiration = Date.now() + duration;
 
-	const [idEm, atEm, errEm, successEm] = intr.client.systemEmojis.findAndParse(
-		"id_red",
-		"at",
-		"exclamation",
-		"success"
-	);
+	const { emError, emUserLock, emSuccess, emCrown, emIdRed, emXMark, emAt } = intr.client.systemEmojis;
 
 	if (!intr.guild.me?.permissions.has("MANAGE_ROLES")) {
-		intr.editReply(`${errEm}I don't have permissions to add or remove roles`);
+		intr.editReply(`${emUserLock}I don't have permissions to add or remove roles`);
 		return;
 	}
 
 	if (!target) {
-		intr.editReply(`${idEm}The user to target was not found in this server`);
+		intr.editReply(`${emIdRed}The user to target was not found in this server`);
 		return;
 	}
 
 	if (target.id === intr.user.id) {
-		intr.editReply(`${errEm}You cannot do this action on yourself`);
+		intr.editReply(`${emError}You cannot do this action on yourself`);
 		return;
 	}
 
 	if (target.id === intr.client.user.id) {
-		intr.editReply(`${errEm}I cannot do this action on myself`);
+		intr.editReply(`${emError}I cannot do this action on myself`);
 		return;
 	}
 
 	if (target.id === intr.guild.ownerId) {
-		intr.editReply(`${errEm}The user to target is the owner of this server`);
+		intr.editReply(`${emCrown}The user to target is the owner of this server`);
 		return;
 	}
 
 	if (target.permissions.has("MANAGE_ROLES")) {
-		intr.editReply(`${errEm}The user to target cannot be muted`);
+		intr.editReply(`${emXMark}The user to target cannot be muted`);
 		return;
 	}
 
@@ -182,7 +177,7 @@ async function execute(intr: CommandInteraction) {
 				return;
 			}
 
-			const query = atEm + NO_MUTE_ROLE.USE(existingMuteRole);
+			const query = emAt + NO_MUTE_ROLE.USE(existingMuteRole);
 			const collector = new ConfirmationButtons({ author: intr.user })
 				.setInteraction(intr)
 				.setUser(intr.user)
@@ -194,11 +189,11 @@ async function execute(intr: CommandInteraction) {
 					config
 						.set(existingMuteRole.id)
 						.then(() => {
-							intr.editReply({ content: `${successEm}Done! You're good to go now.`, components: [] });
+							intr.editReply({ content: `${emSuccess}Done! You're good to go now.`, components: [] });
 						})
 						.catch(() => {
 							intr.editReply({
-								content: `${errEm}Something went wrong with setting your mute role. `,
+								content: `${emError}Something went wrong with setting your mute role. `,
 								components: []
 							});
 						});
@@ -207,7 +202,7 @@ async function execute(intr: CommandInteraction) {
 					intr.editReply({ content: "Gotcha. Command canceled", components: [] });
 				});
 		} else {
-			const query = atEm + NO_MUTE_ROLE.CREATE;
+			const query = emAt + NO_MUTE_ROLE.CREATE;
 			const collector = new ConfirmationButtons({ author: intr.user })
 				.setInteraction(intr)
 				.setUser(intr.user)
@@ -219,8 +214,8 @@ async function execute(intr: CommandInteraction) {
 					intr.guild.roles
 						.create(getDefaultMuteRoleData(intr))
 						.then((newMutedRole) => {
-							const success = successEm + CREATED_MUTE_ROLE.SUCCESS(newMutedRole);
-							const fail = errEm + CREATED_MUTE_ROLE.FAIL(newMutedRole);
+							const onSuccess = emSuccess + CREATED_MUTE_ROLE.SUCCESS(newMutedRole);
+							const fail = emError + CREATED_MUTE_ROLE.FAIL(newMutedRole);
 							// this isn't all needed perms, apparently
 							const canOverwrite = intr.guild.me?.permissions.has("MANAGE_CHANNELS");
 
@@ -244,7 +239,7 @@ async function execute(intr: CommandInteraction) {
 									intr.editReply({
 										allowedMentions: { parse: [] },
 										content:
-											success +
+											onSuccess +
 											(!canOverwrite
 												? "\n **Note:** I don't have permissions edit channel overwrites for you."
 												: ""),
@@ -265,7 +260,7 @@ async function execute(intr: CommandInteraction) {
 						})
 						.catch((reason) => {
 							intr.editReply({
-								content: `${errEm}Creating the role failed with reason: ${reason}`,
+								content: `${emError}Creating the role failed with reason: ${reason}`,
 								components: []
 							});
 						});
@@ -289,7 +284,7 @@ async function execute(intr: CommandInteraction) {
 			`• **Duration**: ${ms(duration, { long: true })} (${Util.date(expiration)})\n` +
 			`• **Target**: ${target.user.tag} (${target} ${target.id})`;
 
-		const query = `${atEm}Are you sure you want to mute ${target}?\n\n${info}`;
+		const query = `${emAt}Are you sure you want to mute ${target}?\n\n${info}`;
 
 		const collector = new ConfirmationButtons({ author: intr.user })
 			.setInteraction(intr)
@@ -303,13 +298,13 @@ async function execute(intr: CommandInteraction) {
 					.add(mutedRole)
 					.then(() => {
 						intr.editReply({
-							content: `${successEm}Successfully muted ${target.user.tag} (${target.id})\n\n${info}`,
+							content: `${emSuccess}Successfully muted ${target.user.tag} (${target.id})\n\n${info}`,
 							components: []
 						});
 					})
 					.catch(() => {
 						intr.editReply({
-							content: `${errEm}I failed to give ${target.user.tag} (${target.id}) role ${mutedRole}`,
+							content: `${emError}I failed to give ${target.user.tag} (${target.id}) role ${mutedRole}`,
 							components: []
 						});
 					});
