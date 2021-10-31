@@ -54,24 +54,16 @@ export const EMOJIS = {
 	emAt: "<:at:903948597551329300>"
 } as const;
 
-const BLURPLE = "5865F2";
-const ORANGE = "FF8741";
-const YELLOW = "FFC152";
-const BLACK = "000000";
-const GREEN = "5AD658";
-const INVIS = "2F3136";
-const WHITE = "FFFFFF";
-const RED = "FF5733";
 export const COLORS = {
-	BLACK,
-	BLURPLE,
-	ORANGE,
-	YELLOW,
-	GREEN,
-	INVIS,
-	WHITE,
-	RED
-};
+	invisible: "#2F3136",
+	blurple: "#5865F2",
+	orange: "#FF8741",
+	yellow: "#FFC152",
+	black: "#000000",
+	green: "#5AD658",
+	white: "#FFFFFF",
+	red: "#FF5733"
+} as const;
 
 export const USER_FLAGS = {
 	EARLY_VERIFIED_BOT_DEVELOPER: "early developer",
