@@ -1,8 +1,8 @@
 import type { AllowedImageSize, ChatInputApplicationCommandData } from "discord.js";
 import type { Command, CommandInteraction } from "../../typings.js";
 
-import { MessageEmbed } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import { MessageEmbed } from "discord.js";
 
 const sizeChoices = [16, 32, 64, 128, 256, 512, 1024, 2048, 4096].map((size) => {
 	return {
@@ -66,7 +66,7 @@ async function execute(intr: CommandInteraction) {
 
 	const embed = new MessageEmbed()
 		.setAuthor(intr.user.tag, intr.user.displayAvatarURL())
-		.setColor(intr.client.colors.try("INVIS"))
+		.setColor(intr.client.colors.green)
 		.setDescription(description.join(" "))
 		.setTitle(nameStr)
 		.setImage(dynamic)

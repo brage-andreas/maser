@@ -47,13 +47,13 @@ export default async function evaluate(code: string, that: CommandInteraction | 
 
 		const successInputEmbed = new MessageEmbed()
 			.setAuthor(authorName, authorAvatar)
-			.setColor(client.colors.try("GREEN"))
+			.setColor(client.colors.green)
 			.setDescription(parsedInput ?? "No input")
 			.setTimestamp();
 
 		const successOutputEmbed = new MessageEmbed()
 			.setAuthor(authorName, authorAvatar)
-			.setColor(client.colors.try("GREEN"))
+			.setColor(client.colors.green)
 			.setDescription(parsedOutput ?? "No output")
 			.setFooter(`${timeTaken} • ${type} (${constructor})`)
 			.setTimestamp();
@@ -74,13 +74,13 @@ export default async function evaluate(code: string, that: CommandInteraction | 
 
 		const errorInputEmbed = new MessageEmbed()
 			.setAuthor(authorName, authorAvatar)
-			.setColor(client.colors.try("RED"))
+			.setColor(client.colors.red)
 			.setDescription(parsedInput ?? "No input")
 			.setTimestamp();
 
 		const errorOutputEmbed = new MessageEmbed()
 			.setAuthor(authorName, authorAvatar)
-			.setColor(client.colors.try("RED"))
+			.setColor(client.colors.red)
 			.setDescription(parsedError ?? "No error")
 			.setFooter("Evaluation failed")
 			.setTimestamp();

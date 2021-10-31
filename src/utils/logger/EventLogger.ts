@@ -42,7 +42,7 @@ export default class EventLogger extends BaseLogger {
 		const channel = await config.getChannel();
 		if (!channel) return;
 
-		const color = this.client.colors.try(joined ? "GREEN" : "RED");
+		const color = this.client.colors[joined ? "green" : "red"];
 		const footer = joined ? "User joined" : "User left";
 		const descriptionArray = [
 			`User: ${member} (${member.id})\n`,

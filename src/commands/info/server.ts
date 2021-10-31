@@ -71,7 +71,7 @@ async function execute(intr: CommandInteraction) {
 
 	const guildEmbed = new MessageEmbed()
 		.setAuthor(`${intr.user.tag} (${intr.user.id})`, intr.user.displayAvatarURL())
-		.setColor(intr.client.colors.try("YELLOW"))
+		.setColor(intr.client.colors.green)
 		.setThumbnail(icon)
 		.setTimestamp()
 		.setTitle(name);

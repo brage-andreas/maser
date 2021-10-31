@@ -1,17 +1,18 @@
 import type { ClientOptions } from "discord.js";
-import { CommandHandler, EventManager, ColorManager } from "./";
-import { INTENTS, EMOJIS } from "../constants.js";
+import { CommandHandler, EventManager } from "./";
+import { INTENTS, EMOJIS, COLORS } from "../constants.js";
 import { InfoLogger } from "../utils/logger";
 import CommandManager from "./CommandManager";
 import Discord from "discord.js";
 
 export default class Client extends Discord.Client<true> {
-	systemEmojis = EMOJIS;
-	commands: CommandHandler;
-	command: CommandManager;
-	events: EventManager;
-	colors: ColorManager;
-	logger: InfoLogger;
+	public commands: CommandHandler;
+	public command: CommandManager;
+	public events: EventManager;
+	public logger: InfoLogger;
+
+	public systemEmojis = EMOJIS;
+	public colors = COLORS;
 
 	constructor(options?: ClientOptions) {
 		const defaultCacheSettings = {
@@ -40,7 +41,6 @@ export default class Client extends Discord.Client<true> {
 		this.commands = new CommandHandler();
 		this.command = new CommandManager();
 		this.events = new EventManager(this);
-		this.colors = new ColorManager();
 		this.logger = new InfoLogger();
 	}
 }

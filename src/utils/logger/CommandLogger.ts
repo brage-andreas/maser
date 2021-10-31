@@ -82,7 +82,7 @@ export default class CommandLogger extends BaseLogger {
 			const { user } = this.interaction!;
 
 			const embed = new MessageEmbed()
-				.setColor(this.interaction!.client.colors.try("INVIS"))
+				.setColor(this.interaction!.client.colors.invisible)
 				.setDescription(description)
 				.setTimestamp();
 

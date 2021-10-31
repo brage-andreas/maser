@@ -24,7 +24,7 @@ export default async function logs(data: ConfigCommandData) {
 
 			const viewOptionEmbed = new MessageEmbed()
 				.setAuthor(intr.user.tag, intr.member.displayAvatarURL())
-				.setColor(intr.client.colors.try("YELLOW"))
+				.setColor(intr.client.colors.green)
 				.addField(option, valueStr);
 
 			intr.editReply({ embeds: [viewOptionEmbed] });
@@ -45,16 +45,12 @@ export default async function logs(data: ConfigCommandData) {
 
 			const viewOptionEmbed = new MessageEmbed()
 				.setAuthor(intr.user.tag, intr.member.displayAvatarURL())
-				.setColor(intr.client.colors.try("INVIS"))
+				.setColor(intr.client.colors.green)
 				.addField(option, updatedValueStr);
 
 			intr.editReply({ embeds: [viewOptionEmbed] });
 
 			intr.logger.log(`Used method SET on option ${option.toUpperCase()}:\n  ${value}`);
-			break;
-		}
-
-		default: {
 			break;
 		}
 	}

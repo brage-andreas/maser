@@ -45,10 +45,10 @@ async function execute(intr: CommandInteraction) {
 	};
 
 	const getColor = (hex: `#${string}` | undefined) => {
-		const invis = intr.client.colors.try("INVIS");
-		if (!hex) return invis;
+		const green = intr.client.colors.green;
+		if (!hex) return green;
 		const empty = hex === "#000000" || hex.toLowerCase() === "#ffffff";
-		return empty ? invis : hex;
+		return empty ? green : hex;
 	};
 
 	const rawFlags = (await user.fetchFlags()).toArray();
