@@ -5,6 +5,7 @@ import { MessageEmbed } from "discord.js";
 import { LOGGER_TYPES } from "../../constants.js";
 import ConfigManager from "../../database/src/config/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";
+import { gray } from "./LoggerColors.js";
 import Util from "../";
 
 export default class CommandLogger extends BaseLogger {
@@ -27,7 +28,12 @@ export default class CommandLogger extends BaseLogger {
 
 	public log(...messages: string[]) {
 		if (!this.name) throw new Error("Name of command must be set to log command");
-		this.print(LOGGER_TYPES.COMMAND, this.name, ...messages);
+
+		const command = this.interaction?.toString();
+		const logLevel = this.interaction?.client.command.logLevel ?? 1;
+		const toLog = command && logLevel !== 2 ? [gray(`>>> ${command}`), ...messages] : messages;
+
+		this.print(LOGGER_TYPES.COMMAND, this.name, ...toLog);
 		this.channelLog(...messages);
 	}
 
@@ -98,7 +104,7 @@ export default class CommandLogger extends BaseLogger {
 			if (!this.interaction) return; // not really needed - mostly for TS
 			if (!channel) return;
 
-			const prefix = `\`${Util.commandToString(this.interaction)}\`\n`;
+			const prefix = `\`${this.interaction.toString()}\`\n`;
 
 			let embeds: MessageEmbed[] = [];
 
