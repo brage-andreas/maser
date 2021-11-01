@@ -44,12 +44,10 @@ export interface Event {
 	execute: (client: Client, ...args: unknown[]) => Promise<void> | void;
 }
 
-export interface CommandInteraction extends Discord.CommandInteraction {
+export interface CommandInteraction extends Discord.CommandInteraction<"cached"> {
 	options: CommandInteractionOptionResolver;
 	logger: CommandLogger;
-	member: GuildMember;
 	client: Client;
-	guild: Guild;
 }
 
 export interface ConfigCommandData {
