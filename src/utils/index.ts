@@ -84,21 +84,4 @@ export default class Util {
 
 		return `${label}\`\`\`${lang}\n${code}\n\`\`\``;
 	}
-
-	public static commandToString(command: CommandInteraction): string {
-		const group = command.options.getSubcommandGroup(false);
-		const sub = command.options.getSubcommand(false);
-
-		const options = command.options["_hoistedOptions"]
-			.filter((option) => option.value !== undefined)
-			.map((option) => `${option.name}: "${option.value}"`);
-
-		const array = [`/${command.commandName}`];
-
-		if (group) array.push(group);
-		if (sub) array.push(sub);
-		if (options.length) array.push(...options);
-
-		return array.join(" ");
-	}
 }
