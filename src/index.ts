@@ -19,7 +19,5 @@ client.login(process.env.TOKEN);
 	- purge
 	- lockdown
 	- kick ban/hackban softban
-	- mute
 	- channel info
-	- role info
 */
