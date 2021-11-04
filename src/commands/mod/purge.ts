@@ -25,7 +25,7 @@ const data: ChatInputApplicationCommandData = {
 		},
 		{
 			name: "channel",
-			description: "The channel to delete messages in",
+			description: "The channel to delete messages in. Default is current channel",
 			type: ApplicationCommandOptionTypes.CHANNEL,
 			channelTypes: ["GUILD_TEXT", "GUILD_NEWS"]
 		},
@@ -63,14 +63,13 @@ async function execute(intr: CommandInteraction) {
 	// To not delete the bot's own reply
 	const { id } = await intr.fetchReply();
 	const target = await channel.messages
-		.fetch({ limit: desiredAmount })
+		.fetch({ before: id, limit: desiredAmount })
 		.then((msgs) => (!pins ? msgs.filter((msg) => !msg.pinned) : msgs));
-	target.delete(id);
 
 	const info =
 		`• **Reason**: ${reason ?? "No reason provided"}\n` +
 		`• **Amount**: ${target.size === desiredAmount ? target.size : `${target.size} (desired ${desiredAmount})`}\n` +
-		`• **Channel**: ${emChannel} ${channel.name} (${channel} ${channel.id})`;
+		`• **Channel**: ${emChannel}${channel.name} (${channel} ${channel.id})`;
 
 	const collector = new ConfirmationButtons({ author: intr.user })
 		.setInteraction(intr)
