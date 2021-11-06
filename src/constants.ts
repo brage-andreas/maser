@@ -96,10 +96,10 @@ export enum BOOST_LEVELS {
 }
 
 export enum CONFIG_RESULT_KEYS {
-	id = "Guild",
-	bot_log_channel_id = "Bot log channel",
-	member_log_channel_id = "Member log channel",
-	muted_role_id = "Muted role"
+	guildId = "Guild",
+	botLogChannel = "Bot log channel",
+	memberLogChannel = "Member log channel",
+	mutedRole = "Muted role"
 }
 
 const CONFIG_CHANNEL_OPTIONS: ApplicationCommandSubCommandData[] = [
@@ -148,6 +148,14 @@ export const CONFIG_OPTIONS = {
 	ROLE: CONFIG_ROLE_OPTIONS
 };
 
+export enum INSTANCE_TYPES {
+	BAN = 0,
+	KICK = 1,
+	SOFTBAN = 2,
+	MUTE = 3,
+	WARN = 4
+}
+
 export default {
 	INTENTS,
 	MAX_EMBED_DESCRIPTION_LEN,
@@ -157,5 +165,6 @@ export default {
 	LOGGER_TYPES,
 	BOOST_LEVELS,
 	CONFIG_RESULT_KEYS,
-	CONFIG_OPTIONS
+	CONFIG_OPTIONS,
+	INSTANCE_TYPES
 };

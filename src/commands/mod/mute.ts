@@ -170,7 +170,7 @@ async function execute(intr: CommandInteraction) {
 		return;
 	}
 
-	const config = new ConfigManager(intr.client, intr.guild.id, "muted_role_id");
+	const config = new ConfigManager(intr.client, intr.guild.id, "mutedRole");
 	const existingMuteRole = intr.guild.roles.cache.find((role) => roleNames.includes(role.name.toLowerCase()));
 	const mutedRole = await config.getRole();
 

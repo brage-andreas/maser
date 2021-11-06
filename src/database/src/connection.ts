@@ -1,3 +1,4 @@
+import type { ConfigResult, ExistsResult, InstanceData, PgResponses } from "../../typings.js";
 import type { Client } from "../../extensions/";
 import postgres from "pg-promise";
 
@@ -14,9 +15,7 @@ export default class PostgresConnection {
 		this.client = client;
 	}
 
-	// Short-hands
-	// Very loose generics
-	public async one<T>(query: string): Promise<T> {
+	public async one<T extends PgResponses>(query: string): Promise<T> {
 		return this.connection.one<T>(query);
 	}
 
@@ -24,7 +23,7 @@ export default class PostgresConnection {
 		return void this.connection.none(query);
 	}
 
-	public async oneOrNone<T>(query: string): Promise<T | null> {
+	public async oneOrNone<T extends Exclude<PgResponses, ExistsResult>>(query: string): Promise<T | null> {
 		return this.connection.oneOrNone<T>(query);
 	}
 }

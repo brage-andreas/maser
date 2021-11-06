@@ -7,8 +7,7 @@ export default class ConfigManager extends Postgres {
 	public key: ConfigColumns | null;
 
 	constructor(client: Client, guildId: string, key?: ConfigColumns | null) {
-		const options = { schema: "configs", table: "guilds", guildResolvable: guildId };
-		super(client, options);
+		super(client, { schema: "guilds", table: "configs", idKey: "guildId", id: guildId });
 
 		this.key = key ?? null;
 	}
@@ -19,7 +18,7 @@ export default class ConfigManager extends Postgres {
 	}
 
 	public async getChannel(): Promise<AllowedConfigTextChannels | null> {
-		if (!this.guildId) throw new Error("Guild id must be set to the ConfigManager");
+		if (!this.id) throw new Error("Guild id must be set to the ConfigManager");
 		if (!this.key) throw new Error("Key must be set to the ConfigManager");
 
 		const id = await this.getAll().then((result) => {
@@ -27,7 +26,7 @@ export default class ConfigManager extends Postgres {
 		});
 		if (!id) return null;
 
-		const guild = this.client.guilds.cache.get(this.guildId);
+		const guild = this.client.guilds.cache.get(this.id);
 		if (!guild) return null;
 
 		const channel = guild.channels.cache.get(id) as AllowedConfigTextChannels | undefined;
@@ -35,7 +34,7 @@ export default class ConfigManager extends Postgres {
 	}
 
 	public async getRole(): Promise<Role | null> {
-		if (!this.guildId) throw new Error("Guild id must be set to the ConfigManager");
+		if (!this.id) throw new Error("Guild id must be set to the ConfigManager");
 		if (!this.key) throw new Error("Key must be set to the ConfigManager");
 
 		const id = await this.getAll().then((result) => {
@@ -43,7 +42,7 @@ export default class ConfigManager extends Postgres {
 		});
 		if (!id) return null;
 
-		const guild = this.client.guilds.cache.get(this.guildId);
+		const guild = this.client.guilds.cache.get(this.id);
 		if (!guild) return null;
 
 		return guild.roles.cache.get(id) ?? null;
@@ -52,19 +51,19 @@ export default class ConfigManager extends Postgres {
 	public async set(value: string, key?: ConfigColumns): Promise<void> {
 		if (!key && !this.key) throw new Error("Key must be set or provided to the ConfigManager");
 
-		await this.still();
+		await this.still([this.idKey], [this.id]);
 
 		return this.updateRow([key ?? this.key!], [value]);
 	}
 
 	public async getAll(): Promise<ConfigResult> {
-		if (!this.guildId) throw new Error("Guild id must be set to the ConfigManager");
-		await this.still();
+		if (!this.id) throw new Error("Guild id must be set to the ConfigManager");
+		await this.still([this.idKey], [this.id]);
 
 		const query = `
             SELECT *
-            FROM configs."${this.table}"
-            WHERE id = ${this.guildId}
+            FROM ${this.schema}."${this.table}"
+            WHERE "guildId" = ${this.id}
         `;
 
 		return this.one<ConfigResult>(query);

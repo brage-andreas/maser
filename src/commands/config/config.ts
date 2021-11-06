@@ -76,18 +76,18 @@ async function execute(intr: CommandInteraction) {
 
 	switch (option) {
 		case "member-log":
-			config.setKey("member_log_channel_id");
-			await methods({ intr, option: CONFIG_RESULT_KEYS["member_log_channel_id"], method, config });
+			config.setKey("memberLogChannel");
+			await methods({ intr, option: CONFIG_RESULT_KEYS["memberLogChannel"], method, config });
 			break;
 
 		case "bot-log":
-			config.setKey("bot_log_channel_id");
-			await methods({ intr, option: CONFIG_RESULT_KEYS["bot_log_channel_id"], method, config });
+			config.setKey("botLogChannel");
+			await methods({ intr, option: CONFIG_RESULT_KEYS["botLogChannel"], method, config });
 			break;
 
 		case "muted-role":
-			config.setKey("muted_role_id");
-			await methods({ intr, option: CONFIG_RESULT_KEYS["muted_role_id"], method, config });
+			config.setKey("mutedRole");
+			await methods({ intr, option: CONFIG_RESULT_KEYS["mutedRole"], method, config });
 			break;
 	}
 }

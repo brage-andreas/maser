@@ -98,7 +98,7 @@ export default class CommandLogger extends BaseLogger {
 			return embed;
 		};
 
-		const botLogManager = new ConfigManager(client, guild.id, "bot_log_channel_id");
+		const botLogManager = new ConfigManager(client, guild.id, "botLogChannel");
 
 		botLogManager.getChannel().then((channel) => {
 			if (!this.interaction) return; // not really needed - mostly for TS

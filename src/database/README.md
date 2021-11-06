@@ -2,14 +2,23 @@
 ```
 postgres
 └── maser
-    └── configs
-        ├── logs
-        │   ├── id
-        │   ├── bot_log_channel_id
-        │   └── member_log_channel_id
-        └── roles
-            ├── id
-            └── muted_role_id
+    └── guilds
+        ├── configs
+        │   ├── guildId
+        │   ├── botLogChannel
+        │   ├── memberLogChannel
+        │   └── mutedRole
+		└── instances-[guild id]
+			├── guildId
+			├── referenceId
+			├── executorTag
+			├── executorId
+			├── targetTag
+			├── timestamp
+			├── targetId
+			├── duration
+			├── reason
+			└── type
 ```
 
 ## Databases
@@ -20,20 +29,34 @@ maser
 ## Schemas
 ```
 maser
-└── configs
+└── guilds
 ```
 
 ## Tables
 ```
 maser
-└── configs
-    └── guilds
+└── guilds
+    └── configs
 ```
 
-**guilds**
-| Column                  | Type     | Key        |
-| ----------------------- | -------- | ---------- |
-| `id`                    | `bigint` | guild id   |
-| `bot_log_channel_id`    | `bigint` | channel id |
-| `member_log_channel_id` | `bigint` | channel id |
-| `muted_role_id`         | `bigint` | role id    |
+**configs**
+| Column             | Type     |
+| ------------------ | -------- |
+| `guildId`          | `bigint` |
+| `botLogChannel`    | `bigint` |
+| `memberLogChannel` | `bigint` |
+| `mutedRole`        | `bigint` |
+
+**instances-[guild id]**
+| Column        | Type      |
+| ------------- | --------- |
+| `guildId`     | `bigint`  |
+| `referenceId` | `integer` |
+| `executorTag` | `text`    |
+| `executorId`  | `bigint`  |
+| `targetTag`   | `text`    |
+| `timestamp`   | `bigint`  |
+| `targetId`    | `bigint`  |
+| `duration`    | `bigint`  |
+| `reason`      | `text`    |
+| `type`        | `integer` |

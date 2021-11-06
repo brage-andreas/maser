@@ -20,7 +20,7 @@ interface CommandInteractionOptionResolver extends Discord.CommandInteractionOpt
 	getMember: (name: string, required?: boolean) => GuildMember | null;
 }
 
-export type ConfigColumns = "id" | "bot_log_channel_id" | "member_log_channel_id" | "muted_role_id";
+export type ConfigColumns = "guildId" | "botLogChannel" | "memberLogChannel" | "mutedRole";
 
 export type ColorMap = Map<string, Color>;
 export type Color = `#${string}`;
@@ -64,18 +64,39 @@ export interface EvalOutput {
 }
 
 export interface PostgresOptions {
-	guildResolvable?: Guild | string | null;
-	schema?: string | null;
-	table?: string | null;
+	id: string;
+	schema: string;
+	idKey: string;
+	table: string;
 }
 
 export interface ConfigResult {
-	id?: string;
-	bot_log_channel_id?: string | null;
-	member_log_channel_id?: string | null;
-	muted_role_id?: string | null;
+	guildId: string;
+	memberLogChannel?: string | null;
+	botLogChannel?: string | null;
+	mutedRole?: string | null;
 }
 
 export interface ExistsResult {
 	exists: boolean;
 }
+
+export interface InstanceData {
+	instanceId: number;
+	guildId: string;
+	referenceId?: number;
+	executorTag: string;
+	executorId: string;
+	targetTag?: string;
+	timestamp: number;
+	targetId?: string;
+	duration?: number;
+	reason?: string;
+	type: InstanceTypes;
+}
+
+export interface InstanceIdResult {
+	instanceId: number;
+}
+
+export type PgResponses = ConfigResult | ExistsResult | InstanceData | InstanceIdResult;
