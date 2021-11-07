@@ -11,25 +11,14 @@ export default class InstanceManager extends Postgres {
 	}
 
 	public async createInstance(data: Partial<InstanceData>): Promise<Instance> {
-		data.timestamp ??= Date.now();
-		data.guildId ??= this.id ?? undefined;
+		const patchedData = await this.patch(data);
 
-		this.test("executorTag", data.executorTag);
-		this.test("executorId", data.executorId, { id: true });
-		this.test("targetTag", data.targetTag, { required: false });
-		this.test("targetId", data.targetId, { id: true, required: false });
-		this.test("guildId", data.guildId, { id: true });
-		this.test("type", data.type);
-
-		data.instanceId = await this.getId();
-
-		const completeData = data as InstanceData;
-		const columnNames = Object.keys(completeData);
-		const values = Object.values(completeData);
+		const columnNames = Object.keys(patchedData);
+		const values = Object.values(patchedData);
 
 		await this.createRow(columnNames, values);
 
-		return new Instance(this.client, completeData);
+		return new Instance(this.client, patchedData);
 	}
 
 	public async getInstance(instanceId: string): Promise<Instance | null> {
@@ -46,7 +35,32 @@ export default class InstanceManager extends Postgres {
 		return data ? new Instance(this.client, data) : null;
 	}
 
-	public async editInstance() {}
+	public async editInstance(data: Partial<InstanceData>) {
+		/*const patchedData = await this.patch(data);
+
+		const columnNames = Object.keys(patchedData);
+		const values = Object.values(patchedData);
+
+		await this.createRow(columnNames, values);
+
+		return new Instance(this.client, patchedData);*/
+	}
+
+	private async patch(data: Partial<InstanceData>) {
+		data.timestamp ??= Date.now();
+		data.guildId ??= this.id ?? undefined;
+
+		this.test("executorTag", data.executorTag);
+		this.test("executorId", data.executorId, { id: true });
+		this.test("targetTag", data.targetTag, { required: false });
+		this.test("targetId", data.targetId, { id: true, required: false });
+		this.test("guildId", data.guildId, { id: true });
+		this.test("type", data.type);
+
+		data.instanceId = await this.getId();
+
+		return data as InstanceData;
+	}
 
 	private async getId(): Promise<number> {
 		const query = `
