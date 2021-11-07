@@ -7,6 +7,6 @@ export default class ErrorLogger extends BaseLogger {
 	}
 
 	public log(...messages: string[]) {
-		this.print(LOGGER_TYPES.ERROR, "ERROR", ...messages);
+		this.print(LOGGER_TYPES.Error, "ERROR", ...messages);
 	}
 }

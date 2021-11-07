@@ -65,27 +65,27 @@ export const COLORS = {
 	red: "#FF5733"
 } as const;
 
-export const USER_FLAGS = {
-	EARLY_VERIFIED_BOT_DEVELOPER: "early developer",
-	DISCORD_CERTIFIED_MODERATOR: "certified mod",
-	PARTNERED_SERVER_OWNER: "partnered",
-	BUGHUNTER_LEVEL_1: "bughunter",
-	BUGHUNTER_LEVEL_2: "bughunter²",
-	DISCORD_EMPLOYEE: "discord employee",
-	HYPESQUAD_EVENTS: "hypesquad events",
-	HOUSE_BRILLIANCE: "brilliance",
-	EARLY_SUPPORTER: "early supporter",
-	HOUSE_BRAVERY: "bravery",
-	HOUSE_BALANCE: "balance",
-	VERIFIED_BOT: "verified bot",
-	TEAM_USER: "team user"
-};
+export enum USER_FLAGS {
+	EARLY_VERIFIED_BOT_DEVELOPER = "early developer",
+	DISCORD_CERTIFIED_MODERATOR = "certified mod",
+	PARTNERED_SERVER_OWNER = "partnered",
+	BUGHUNTER_LEVEL_1 = "bughunter",
+	BUGHUNTER_LEVEL_2 = "bughunter²",
+	DISCORD_EMPLOYEE = "discord employee",
+	HYPESQUAD_EVENTS = "hypesquad events",
+	HOUSE_BRILLIANCE = "brilliance",
+	EARLY_SUPPORTER = "early supporter",
+	HOUSE_BRAVERY = "bravery",
+	HOUSE_BALANCE = "balance",
+	VERIFIED_BOT = "verified bot",
+	TEAM_USER = "team user"
+}
 
 export enum LOGGER_TYPES {
-	COMMAND,
-	ERROR,
-	EVENT,
-	INFO
+	Command,
+	Error,
+	Event,
+	Info
 }
 
 export enum BOOST_LEVELS {
@@ -149,11 +149,11 @@ export const CONFIG_OPTIONS = {
 };
 
 export enum INSTANCE_TYPES {
-	BAN = 0,
-	KICK = 1,
-	SOFTBAN = 2,
-	MUTE = 3,
-	WARN = 4
+	Ban = 0,
+	Kick = 1,
+	Softban = 2,
+	Mute = 3,
+	Warn = 4
 }
 
 export default {

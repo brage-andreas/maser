@@ -18,22 +18,22 @@ export default class Instance {
 		const { colors } = this.client;
 		const { type } = this.data;
 
-		if (type === INSTANCE_TYPES.SOFTBAN) return colors.orange;
-		if (type === INSTANCE_TYPES.KICK) return colors.yellow;
-		if (type === INSTANCE_TYPES.WARN) return colors.black;
-		if (type === INSTANCE_TYPES.MUTE) return "#FFDA9B";
-		if (type === INSTANCE_TYPES.BAN) return colors.red;
+		if (type === INSTANCE_TYPES.Softban) return colors.orange;
+		if (type === INSTANCE_TYPES.Kick) return colors.yellow;
+		if (type === INSTANCE_TYPES.Warn) return colors.black;
+		if (type === INSTANCE_TYPES.Mute) return "#FFDA9B";
+		if (type === INSTANCE_TYPES.Ban) return colors.red;
 		return colors.green;
 	}
 
 	get type() {
 		const { type } = this.data;
 
-		if (type === INSTANCE_TYPES.SOFTBAN) return "Softban";
-		if (type === INSTANCE_TYPES.KICK) return "Kick";
-		if (type === INSTANCE_TYPES.WARN) return "Warn";
-		if (type === INSTANCE_TYPES.MUTE) return "Mute";
-		if (type === INSTANCE_TYPES.BAN) return "Ban";
+		if (type === INSTANCE_TYPES.Softban) return "Softban";
+		if (type === INSTANCE_TYPES.Kick) return "Kick";
+		if (type === INSTANCE_TYPES.Warn) return "Warn";
+		if (type === INSTANCE_TYPES.Mute) return "Mute";
+		if (type === INSTANCE_TYPES.Ban) return "Ban";
 		return "Unknown";
 	}
 
@@ -50,25 +50,23 @@ export default class Instance {
 			reason
 		} = this.data;
 
-		//const executor = await this.client.users.fetch(executorId).catch(() => null);
-		//const target = await this.client.users.fetch(targetId).catch(() => null)
-
 		const instanceEmbed = new MessageEmbed()
 			.setAuthor(`${executorTag} (${executorId})`)
 			.setColor(this.hexColor)
 			.setFooter(`#${instanceId}`)
-			.setTimestamp(timestamp)
-			.setDescription(this.type);
+			.setTimestamp(timestamp);
 
-		if (targetTag || targetId) {
-			const targetStr = `Tag: ${targetTag ?? "Unavailable"}\nId: ${targetId ?? "Unavailable"}`;
-			instanceEmbed.addField("Target", targetStr);
-		}
+		const description = [`**Type**: ${this.type}`];
 
-		if (reason) instanceEmbed.addField("Reason", reason);
-		if (duration) instanceEmbed.addField("Duration", ms(duration));
-		if (referenceId) instanceEmbed.addField("Reference", `#${referenceId}`);
+		if (targetTag || targetId)
+			description.push(
+				`**Target**: ${targetTag ?? "Tag unavailable"} (${targetId ? targetId : "id unavailable"})`
+			);
 
-		return instanceEmbed;
+		if (reason) description.push(`**Reason**: ${reason}`);
+		if (duration) description.push(`**Duration**: ${ms(duration)}`);
+		if (referenceId) description.push(`**Reference**: #${referenceId}`);
+
+		return instanceEmbed.setDescription(description.join("\n"));
 	}
 }

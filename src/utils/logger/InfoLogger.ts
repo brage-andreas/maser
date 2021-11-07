@@ -7,6 +7,6 @@ export default class InfoLogger extends BaseLogger {
 	}
 
 	public log(...messages: string[]) {
-		this.print(LOGGER_TYPES.INFO, "INFO", ...messages);
+		this.print(LOGGER_TYPES.Info, "INFO", ...messages);
 	}
 }

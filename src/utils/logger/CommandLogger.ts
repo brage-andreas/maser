@@ -33,7 +33,7 @@ export default class CommandLogger extends BaseLogger {
 		const logLevel = this.interaction?.client.command.logLevel ?? 1;
 		const toLog = command && logLevel !== 2 ? [gray(`>>> ${command}`), ...messages] : messages;
 
-		this.print(LOGGER_TYPES.COMMAND, this.name, ...toLog);
+		this.print(LOGGER_TYPES.Command, this.name, ...toLog);
 		this.channelLog(...messages);
 	}
 

@@ -23,7 +23,7 @@ export default class EventLogger extends BaseLogger {
 	}
 
 	public log(...messages: string[]) {
-		this.print(LOGGER_TYPES.EVENT, this.event ?? "EVENT", ...messages);
+		this.print(LOGGER_TYPES.Event, this.event ?? "EVENT", ...messages);
 	}
 
 	public setEvent(event: string | null) {

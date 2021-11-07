@@ -27,9 +27,9 @@ export const gray = (text: string) => wrap(text, "gray");
 export const red = (text: string) => wrap(text, "red");
 
 export const getColor = (type: LOGGER_TYPES) => {
-	if (type === LOGGER_TYPES.COMMAND) return green;
-	if (type === LOGGER_TYPES.ERROR) return red;
-	if (type === LOGGER_TYPES.EVENT) return blue;
-	if (type === LOGGER_TYPES.INFO) return yellow;
+	if (type === LOGGER_TYPES.Command) return green;
+	if (type === LOGGER_TYPES.Error) return red;
+	if (type === LOGGER_TYPES.Event) return blue;
+	if (type === LOGGER_TYPES.Info) return yellow;
 	return black;
 };
