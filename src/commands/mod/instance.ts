@@ -1,13 +1,22 @@
-import type { CommandInteraction, Command, InstanceData } from "../../typings.js";
 import type { ApplicationCommandSubCommandData, ChatInputApplicationCommandData } from "discord.js";
+import type { CommandInteraction, Command, InstanceData } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import { INSTANCE_TYPES } from "../../constants.js";
 import InstanceManager from "../../database/src/instance/InstanceManager.js";
 import ms from "ms";
 
 const options = {
 	private: true
 };
+
+// stupid enum shenanigans
+const TYPE_CHOICES = Object.entries(INSTANCE_TYPES)
+	.filter(([, value]) => typeof value !== "string")
+	.map(([key, value]) => ({
+		name: key,
+		value: value
+	}));
 
 const dataOptions = [
 	{
@@ -20,12 +29,7 @@ const dataOptions = [
 		name: "type",
 		description: "The type of instance",
 		type: ApplicationCommandOptionTypes.INTEGER,
-		choices: [
-			{
-				name: "Ban",
-				value: 0
-			}
-		],
+		choices: TYPE_CHOICES,
 		required: true
 	},
 	{
@@ -124,7 +128,7 @@ async function execute(intr: CommandInteraction) {
 		const instance = await instances.createInstance(data);
 		intr.editReply({ embeds: [instance.toEmbed()] });
 
-		intr.logger.log(`Manually created new instance of type ${type}`);
+		intr.logger.log(`Manually created new instance of type ${INSTANCE_TYPES[type] ?? "Unknown"}`);
 	} else if (sub === "show") {
 		const instanceId = intr.options.getInteger("instance", true);
 		const instance = instances.getInstance(`${instanceId}`);
