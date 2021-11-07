@@ -36,7 +36,8 @@ maser
 ```
 maser
 └── guilds
-    └── configs
+	├── configs
+    └── instances-[guild id]
 ```
 
 **configs**
@@ -50,6 +51,7 @@ maser
 **instances-[guild id]**
 | Column        | Type      |
 | ------------- | --------- |
+| `instanceId`  | `integer` |
 | `guildId`     | `bigint`  |
 | `referenceId` | `integer` |
 | `executorTag` | `text`    |
