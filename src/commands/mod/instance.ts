@@ -104,6 +104,7 @@ async function execute(intr: CommandInteraction) {
 
 	const { emXMark } = intr.client.systemEmojis;
 	const instances = new InstanceManager(intr.client, intr.guildId);
+	await instances.initialise();
 
 	if (sub === "create") {
 		const duration = intr.options.getString("duration");
@@ -131,12 +132,14 @@ async function execute(intr: CommandInteraction) {
 		intr.logger.log(`Manually created new instance of type ${INSTANCE_TYPES[type] ?? "Unknown"}`);
 	} else if (sub === "show") {
 		const instanceId = intr.options.getInteger("instance", true);
-		const instance = instances.getInstance(`${instanceId}`);
+		const instance = await instances.getInstance(`${instanceId}`);
 
 		if (!instance) {
 			intr.editReply(`${emXMark} I found no instance with the id \`${instanceId}\``);
 			return;
 		}
+
+		intr.editReply({ embeds: [instance.toEmbed()] });
 
 		intr.logger.log();
 	}
