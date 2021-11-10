@@ -1,8 +1,8 @@
 import type { ExistsResult, PostgresOptions } from "../../typings.js";
 import type { Client } from "../../extensions/";
-import type { Guild } from "discord.js";
 
 import PostgresConnection from "./connection.js";
+import { REGEX } from "../../constants.js";
 
 export default abstract class Postgres extends PostgresConnection {
 	protected idKey: string;
@@ -12,6 +12,9 @@ export default abstract class Postgres extends PostgresConnection {
 
 	constructor(client: Client, options: PostgresOptions) {
 		super(client);
+
+		if (!REGEX.ID.test(options.id))
+			throw new TypeError(`Provided id is not a valid id (reading: "${options.id}")"`);
 
 		this.id = options.id;
 		this.schema = options?.schema ?? null;
@@ -55,16 +58,11 @@ export default abstract class Postgres extends PostgresConnection {
 		const data = columns.map((column, i) => `"${column}"='${newValues[i]}'`);
 
 		const query = `
-			UPDATE ${this.schema}."${this.table!}"
+			UPDATE ${this.schema}."${this.table}"
 			SET ${data.join(",\n")}
-			WHERE "${this.idKey}"=${this.id!}
+			WHERE "${this.idKey}"=${this.id}
         `;
 
 		return this.none(query);
-	}
-
-	protected resolveGuild(guildResolvable: Guild | string | undefined | null): string | null {
-		if (!guildResolvable) return null;
-		return typeof guildResolvable === "string" ? guildResolvable : guildResolvable.id;
 	}
 }
