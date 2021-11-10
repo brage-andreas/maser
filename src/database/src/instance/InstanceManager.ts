@@ -6,11 +6,41 @@ import { REGEX } from "../../../constants.js";
 import Postgres from "../postgres.js";
 
 export default class InstanceManager extends Postgres {
+	private initialised = false;
+
 	constructor(client: Client, guildId: string) {
-		super(client, { schema: "guilds", table: `instances-${guildId}`, idKey: "instanceId", id: guildId });
+		super(client, { schema: "guilds", table: "instances", idKey: "instanceId", id: guildId });
+	}
+
+	public async initialise(): Promise<this> {
+		const query = `
+            CREATE TABLE IF NOT EXISTS guilds."instances-${this.id}"
+            (
+                "instanceId" integer NOT NULL,
+                "guildId" bigint,
+                "referenceId" integer,
+                "executorTag" text COLLATE pg_catalog."default",
+                "executorId" bigint,
+                "targetTag" text COLLATE pg_catalog."default",
+                "timestamp" bigint,
+                "targetId" bigint,
+                "duration" bigint,
+                "reason" text COLLATE pg_catalog."default",
+                "type" integer,
+
+                CONSTRAINT "instances-${this.id}_pkey" PRIMARY KEY ("instanceId")
+            )
+        `;
+
+		await this.none(query);
+		this.initialised = true;
+
+		return this;
 	}
 
 	public async createInstance(data: Partial<InstanceData>): Promise<Instance> {
+		if (!this.initialised) throw new Error("InstanceManager must be initialised before use");
+
 		const patchedData = await this.patch(data);
 
 		const columnNames = Object.keys(patchedData);
@@ -22,6 +52,7 @@ export default class InstanceManager extends Postgres {
 	}
 
 	public async getInstance(instanceId: string): Promise<Instance | null> {
+		if (!this.initialised) throw new Error("InstanceManager must be initialised before use");
 		if (!this.id) throw new Error("Guild id must be set");
 
 		const query = `
@@ -36,7 +67,8 @@ export default class InstanceManager extends Postgres {
 	}
 
 	public async editInstance(data: Partial<InstanceData>) {
-		/*const patchedData = await this.patch(data);
+		/*if (!this.initialised) throw new Error("InstanceManager must be initialised before use");
+        const patchedData = await this.patch(data);
 
 		const columnNames = Object.keys(patchedData);
 		const values = Object.values(patchedData);
@@ -67,6 +99,7 @@ export default class InstanceManager extends Postgres {
 			SELECT "${this.idKey}" FROM (
 				SELECT "${this.idKey}"
 				FROM ${this.schema}."${this.table}"
+                WHERE "guildId" = ${this.id}
 				ORDER BY "${this.idKey}" DESC
 				LIMIT 1
 			) AS _ ORDER BY "${this.idKey}" ASC;
