@@ -9,6 +9,7 @@ import type {
 import type { CommandInteraction, Command } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import { DURATIONS, BASE_MOD_CMD_OPTS } from "../../constants.js";
 import { ConfirmationButtons } from "../../extensions/ButtonManager.js";
 import ConfigManager from "../../database/src/config/ConfigManager.js";
 import Util from "../../utils/index.js";
@@ -19,15 +20,6 @@ const options = {
 };
 
 const roleNames = ["muted", "mute", "silenced"];
-
-const FIFTEEN_MIN = 900000;
-const FOURTY_FIVE_MIN = 2700000;
-const ONE_AND_HALF_HRS = 129600000;
-const THREE_HRS = 10800000;
-const SIX_HRS = 21600000;
-const TWELVE_HRS = 44200000;
-const ONE_DAY = 86400000;
-const THREE_DAYS = 259200000;
 
 const getDefaultMuteRoleData = (intr: CommandInteraction) => ({
 	reason: `Automatic muted role created by ${intr.user.tag} (${intr.user.id})`,
@@ -76,26 +68,8 @@ const data: ChatInputApplicationCommandData = {
 			description: "The user to mute",
 			required: true
 		},
-		{
-			name: "reason",
-			type: ApplicationCommandOptionTypes.STRING,
-			description: "The reason for this mute"
-		},
-		{
-			name: "duration",
-			type: ApplicationCommandOptionTypes.INTEGER,
-			description: "The duration for this mute",
-			choices: [
-				{ name: "3 hours (default)", value: THREE_HRS },
-				{ name: "15 minutes", value: FIFTEEN_MIN },
-				{ name: "45 minutes", value: FOURTY_FIVE_MIN },
-				{ name: "1,5 hours", value: ONE_AND_HALF_HRS },
-				{ name: "6 hours", value: SIX_HRS },
-				{ name: "12 hours", value: TWELVE_HRS },
-				{ name: "1 day", value: ONE_DAY },
-				{ name: "3 days", value: THREE_DAYS }
-			]
-		}
+		BASE_MOD_CMD_OPTS.REASON("mute"),
+		BASE_MOD_CMD_OPTS.DURATION("mute")
 	]
 };
 
@@ -106,7 +80,7 @@ const data: ChatInputApplicationCommandData = {
 async function execute(intr: CommandInteraction) {
 	const target = intr.options.getMember("user");
 	const reason = intr.options.getString("reason");
-	const duration = intr.options.getInteger("duration") ?? THREE_HRS;
+	const duration = intr.options.getInteger("duration") ?? DURATIONS.THREE_HRS;
 	const expiration = Date.now() + duration;
 
 	const { emError, emUserLock, emSuccess, emCrown, emIdRed, emXMark, emAt, emCheckMark } = intr.client.systemEmojis;
@@ -146,7 +120,7 @@ async function execute(intr: CommandInteraction) {
 	}
 
 	if (!target) {
-		intr.editReply(`${emIdRed} The user to target was not found in this server`);
+		intr.editReply(`${emXMark} The user to target was not found in this server`);
 		return;
 	}
 

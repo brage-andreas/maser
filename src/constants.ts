@@ -1,4 +1,4 @@
-import type { ApplicationCommandSubCommandData } from "discord.js";
+import type { ApplicationCommandOptionData, ApplicationCommandSubCommandData } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { Intents } from "discord.js";
 
@@ -6,6 +6,25 @@ export const INTENTS = [
 	Intents.FLAGS.GUILDS, //
 	Intents.FLAGS.GUILD_MEMBERS
 ];
+
+const ONE_AND_HALF_HRS = 129600000;
+const FOURTY_FIVE_MIN = 2700000;
+const FIFTEEN_MIN = 900000;
+const THREE_DAYS = 259200000;
+const TWELVE_HRS = 44200000;
+const THREE_HRS = 10800000;
+const ONE_DAY = 86400000;
+const SIX_HRS = 21600000;
+export const DURATIONS = {
+	ONE_AND_HALF_HRS,
+	FOURTY_FIVE_MIN,
+	FIFTEEN_MIN,
+	THREE_DAYS,
+	TWELVE_HRS,
+	THREE_HRS,
+	ONE_DAY,
+	SIX_HRS
+};
 
 export const MAX_EMBED_DESCRIPTION_LEN = 4096;
 
@@ -156,15 +175,39 @@ export enum INSTANCE_TYPES {
 	Warn = 4
 }
 
+export const BASE_MOD_CMD_OPTS = {
+	REASON: (action: string): ApplicationCommandOptionData => ({
+		name: "reason",
+		type: ApplicationCommandOptionTypes.STRING,
+		description: `The reason for this ${action}`
+	}),
+	DURATION: (action: string): ApplicationCommandOptionData => ({
+		name: "duration",
+		type: ApplicationCommandOptionTypes.INTEGER,
+		description: `The duration for this ${action}`,
+		choices: [
+			{ name: "3 hours (default)", value: THREE_HRS },
+			{ name: "15 minutes", value: FIFTEEN_MIN },
+			{ name: "45 minutes", value: FOURTY_FIVE_MIN },
+			{ name: "1,5 hours", value: ONE_AND_HALF_HRS },
+			{ name: "6 hours", value: SIX_HRS },
+			{ name: "12 hours", value: TWELVE_HRS },
+			{ name: "1 day", value: ONE_DAY },
+			{ name: "3 days", value: THREE_DAYS }
+		]
+	})
+};
+
 export default {
-	INTENTS,
 	MAX_EMBED_DESCRIPTION_LEN,
-	REGEX,
-	COLORS,
-	USER_FLAGS,
+	CONFIG_RESULT_KEYS,
+	BASE_MOD_CMD_OPTS,
+	INSTANCE_TYPES,
+	CONFIG_OPTIONS,
 	LOGGER_TYPES,
 	BOOST_LEVELS,
-	CONFIG_RESULT_KEYS,
-	CONFIG_OPTIONS,
-	INSTANCE_TYPES
+	USER_FLAGS,
+	INTENTS,
+	COLORS,
+	REGEX
 };
