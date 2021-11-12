@@ -42,8 +42,8 @@ export default async function evaluate(code: string, that: CommandInteraction | 
 
 		const stringedOutput = stringify(result).replaceAll(new RegExp(REGEX.TOKEN, "g"), "[REDACTED]");
 
-		const parsedInput = parse(code, `${emInput}**Input**`);
-		const parsedOutput = parse(stringedOutput, `${emSuccess}**Output**`);
+		const parsedInput = parse(code, `${emInput} **Input**`);
+		const parsedOutput = parse(stringedOutput, `${emSuccess} **Output**`);
 
 		const successInputEmbed = new MessageEmbed()
 			.setAuthor(authorName, authorAvatar)
@@ -69,8 +69,8 @@ export default async function evaluate(code: string, that: CommandInteraction | 
 		const error = err as Error;
 		const msg = error.stack ?? error.toString();
 
-		const parsedInput = parse(code, `${emInput}**Input**`);
-		const parsedError = parse(msg, `${emError}**Error**`);
+		const parsedInput = parse(code, `${emInput} **Input**`);
+		const parsedError = parse(msg, `${emError} **Error**`, "");
 
 		const errorInputEmbed = new MessageEmbed()
 			.setAuthor(authorName, authorAvatar)
