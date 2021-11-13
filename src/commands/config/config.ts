@@ -5,7 +5,7 @@ import { CONFIG_OPTIONS, CONFIG_RESULT_KEYS } from "../../constants.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { MessageEmbed } from "discord.js";
 import ConfigManager from "../../database/src/config/ConfigManager.js";
-import methods from "./modules/methods.js";
+import methods from "./.methods.js";
 
 const options = {
 	private: true
