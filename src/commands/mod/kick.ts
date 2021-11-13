@@ -1,21 +1,13 @@
 import type { ChatInputApplicationCommandData } from "discord.js";
 import type { CommandInteraction, Command } from "../../typings.js";
-
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { BASE_MOD_CMD_OPTS } from "../../constants.js";
+import { REASON, USER } from "./.methods.js";
+import InstanceManager from "../../database/src/instance/InstanceManager.js";
+import { INSTANCE_TYPES } from "../../constants.js";
 
 const data: ChatInputApplicationCommandData = {
 	name: "kick",
 	description: "Kicks a user off this server",
-	options: [
-		{
-			name: "user",
-			description: "The user to target",
-			type: ApplicationCommandOptionTypes.USER,
-			required: true
-		},
-		BASE_MOD_CMD_OPTS.REASON("kick")
-	]
+	options: [USER(true), REASON("kick")]
 };
 
 async function execute(intr: CommandInteraction) {
@@ -54,7 +46,19 @@ async function execute(intr: CommandInteraction) {
 		return;
 	}
 
-	intr.logger.log();
+	const instances = await new InstanceManager(intr.client, intr.guildId).initialise();
+	await instances.createInstance({
+		executorTag: intr.user.tag,
+		executorId: intr.user.id,
+		targetTag: target.user.tag,
+		targetId: target.id,
+		reason: reason ?? "null",
+		type: INSTANCE_TYPES.Kick
+	});
+
+	intr.logger.log(
+		`Kicked ${target.user.tag} (${target.id}) ${reason ? `with reason: "${reason}"` : "with no provided reason"}`
+	);
 }
 
 export const getCommand = () => ({ data, execute } as Partial<Command>);
