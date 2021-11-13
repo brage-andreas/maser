@@ -175,38 +175,15 @@ export enum INSTANCE_TYPES {
 	Warn = 4
 }
 
-export const BASE_MOD_CMD_OPTS = {
-	REASON: (action: string): ApplicationCommandOptionData => ({
-		name: "reason",
-		type: ApplicationCommandOptionTypes.STRING,
-		description: `The reason for this ${action}`
-	}),
-	DURATION: (action: string): ApplicationCommandOptionData => ({
-		name: "duration",
-		type: ApplicationCommandOptionTypes.INTEGER,
-		description: `The duration for this ${action}`,
-		choices: [
-			{ name: "3 hours (default)", value: THREE_HRS },
-			{ name: "15 minutes", value: FIFTEEN_MIN },
-			{ name: "45 minutes", value: FOURTY_FIVE_MIN },
-			{ name: "1,5 hours", value: ONE_AND_HALF_HRS },
-			{ name: "6 hours", value: SIX_HRS },
-			{ name: "12 hours", value: TWELVE_HRS },
-			{ name: "1 day", value: ONE_DAY },
-			{ name: "3 days", value: THREE_DAYS }
-		]
-	})
-};
-
 export default {
 	MAX_EMBED_DESCRIPTION_LEN,
 	CONFIG_RESULT_KEYS,
-	BASE_MOD_CMD_OPTS,
 	INSTANCE_TYPES,
 	CONFIG_OPTIONS,
 	LOGGER_TYPES,
 	BOOST_LEVELS,
 	USER_FLAGS,
+	DURATIONS,
 	INTENTS,
 	COLORS,
 	REGEX
