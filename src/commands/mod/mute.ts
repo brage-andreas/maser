@@ -8,10 +8,10 @@ import type {
 } from "discord.js";
 import type { CommandInteraction, Command } from "../../typings.js";
 
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { DURATIONS, BASE_MOD_CMD_OPTS } from "../../constants.js";
+import { DURATION, REASON, USER } from "./.methods.js";
 import { ConfirmationButtons } from "../../extensions/ButtonManager.js";
 import ConfigManager from "../../database/src/config/ConfigManager.js";
+import { DURATIONS } from "../../constants.js";
 import Util from "../../utils/index.js";
 import ms from "ms";
 
@@ -61,16 +61,7 @@ const OVERWRITES_PERMS_OBJ = {
 const data: ChatInputApplicationCommandData = {
 	name: "mute",
 	description: "Mutes a user for a given time",
-	options: [
-		{
-			name: "user",
-			type: ApplicationCommandOptionTypes.USER,
-			description: "The user to mute",
-			required: true
-		},
-		BASE_MOD_CMD_OPTS.REASON("mute"),
-		BASE_MOD_CMD_OPTS.DURATION("mute")
-	]
+	options: [USER(true), REASON("mute"), DURATION("mute")]
 };
 
 // TODO: refactor
@@ -83,9 +74,9 @@ async function execute(intr: CommandInteraction) {
 	const duration = intr.options.getInteger("duration") ?? DURATIONS.THREE_HRS;
 	const expiration = Date.now() + duration;
 
-	const { emError, emUserLock, emSuccess, emCrown, emIdRed, emXMark, emAt, emCheckMark } = intr.client.systemEmojis;
+	const { emError, emUserLock, emSuccess, emCrown, emXMark, emAt, emCheckMark } = intr.client.systemEmojis;
 
-	const CANCELED = `${emCheckMark} Gotcha. Command canceled`;
+	const CANCELLED = `${emCheckMark} Gotcha. Command cancelled`;
 
 	const NO_MUTE_ROLE = {
 		USE: (role: Role) => {
@@ -183,7 +174,7 @@ async function execute(intr: CommandInteraction) {
 						});
 				})
 				.catch(() => {
-					intr.editReply({ content: CANCELED, components: [] });
+					intr.editReply({ content: CANCELLED, components: [] });
 				});
 		} else {
 			const collector = new ConfirmationButtons({ author: intr.user })
@@ -248,7 +239,7 @@ async function execute(intr: CommandInteraction) {
 						});
 				})
 				.catch(() => {
-					intr.editReply(CANCELED);
+					intr.editReply(CANCELLED);
 				});
 		}
 	} else {
@@ -290,7 +281,7 @@ async function execute(intr: CommandInteraction) {
 					});
 			})
 			.catch(() => {
-				intr.editReply({ content: CANCELED, components: [] });
+				intr.editReply({ content: CANCELLED, components: [] });
 			});
 	}
 
