@@ -2,6 +2,7 @@ import type { InstanceData, InstanceIdResult } from "../../../typings.js";
 import type { Client } from "../../../extensions/";
 
 import { Instance } from "../../../extensions/";
+import InfoLogger from "../../../utils/logger/InfoLogger.js";
 import { REGEX } from "../../../constants.js";
 import Postgres from "../postgres.js";
 
@@ -9,7 +10,7 @@ export default class InstanceManager extends Postgres {
 	private initialised = false;
 
 	constructor(client: Client, guildId: string) {
-		super(client, { schema: "guilds", table: "instances", idKey: "instanceId", id: guildId });
+		super(client, { schema: "guilds", table: `instances-${guildId}`, idKey: "instanceId", id: guildId });
 	}
 
 	public async initialise(): Promise<this> {
@@ -47,8 +48,16 @@ export default class InstanceManager extends Postgres {
 		const values = Object.values(patchedData);
 
 		await this.createRow(columnNames, values);
+		const instance = new Instance(this.client, patchedData);
 
-		return new Instance(this.client, patchedData);
+		const guild = this.client.guilds.cache.get(patchedData.guildId)?.name ?? "unknown name";
+		new InfoLogger().log(
+			`Created new instance with id: ${patchedData.instanceId}`,
+			`in guild: "${guild}" (${patchedData.guildId})`,
+			`of type: "${instance.type.toLowerCase()}" (${patchedData.type})`
+		);
+
+		return instance;
 	}
 
 	public async getInstance(instanceId: string): Promise<Instance | null> {
