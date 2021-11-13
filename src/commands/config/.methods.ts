@@ -1,4 +1,6 @@
-import type { AllowedConfigTextChannels, ConfigCommandData } from "../../../typings.js";
+// This is not a command
+
+import type { AllowedConfigTextChannels, ConfigCommandData } from "../../typings.js";
 import type { Role } from "discord.js";
 import { MessageEmbed } from "discord.js";
 
@@ -20,7 +22,7 @@ export default async function logs(data: ConfigCommandData) {
 				? getValueStr(channel, emChannel)
 				: role
 				? getValueStr(role, emAt)
-				: `${emEmptyFile}Not set`;
+				: `${emEmptyFile} Not set`;
 
 			const viewOptionEmbed = new MessageEmbed()
 				.setAuthor(intr.user.tag, intr.member.displayAvatarURL())
@@ -41,7 +43,9 @@ export default async function logs(data: ConfigCommandData) {
 			const value = res?.id ?? "null";
 			await config.set(value);
 
-			const updatedValueStr = res ? `${emFileGreen}New value: ${res} (${res.id})` : `${emEmptyFile}Removed value`;
+			const updatedValueStr = res
+				? `${emFileGreen} New value: ${res} (${res.id})`
+				: `${emEmptyFile} Removed value`;
 
 			const viewOptionEmbed = new MessageEmbed()
 				.setAuthor(intr.user.tag, intr.member.displayAvatarURL())
