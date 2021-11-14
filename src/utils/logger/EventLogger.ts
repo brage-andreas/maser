@@ -44,18 +44,17 @@ export default class EventLogger extends BaseLogger {
 
 		const color = this.client.colors[joined ? "green" : "red"];
 		const footer = joined ? "User joined" : "User left";
-		const descriptionArray = [
-			`User: ${member} (${member.id})\n`,
-			`Account made: ${Util.date(member.user.createdAt)}\n`,
-			`Joined: ${member.joinedAt ? Util.date(member.joinedAt) : "Date not found"}`
-		];
+		const descriptionStr =
+			`User: ${member} (${member.id})\n` +
+			`Account made: ${Util.date(member.user.createdAt)}\n` +
+			`Joined: ${member.joinedAt ? Util.date(member.joinedAt) : "Date not found"}`;
 
 		const embed = new MessageEmbed()
 			.setTimestamp()
 			.setAuthor(`${member.user.tag} (${member.id})`, member.user.displayAvatarURL())
 			.setColor(color)
 			.setFooter(footer)
-			.setDescription(descriptionArray.join("\n"));
+			.setDescription(descriptionStr);
 
 		channel.send({ embeds: [embed] }).catch(() => {});
 	}
