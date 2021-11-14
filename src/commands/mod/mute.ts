@@ -251,7 +251,7 @@ async function execute(intr: CommandInteraction) {
 			`• **Duration**: ${ms(duration, { long: true })} (Expiration ${Util.date(expiration)})\n` +
 			`• **Target**: ${target.user.tag} (${target} ${target.id})`;
 
-		const query = `Are you sure you want to mute ${target.user.tag} (${target.id})?\n\n${info}`;
+		const query = `Are you sure you want to **mute ${target.user.tag}** (${target.id})?\n\n${info}`;
 
 		const collector = new ConfirmationButtons({ author: intr.user })
 			.setInteraction(intr)
