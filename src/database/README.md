@@ -8,8 +8,9 @@ postgres
     └── guilds
         ├── configs
         │   ├── guildId
-        │   ├── botLogChannel
         │   ├── memberLogChannel
+        │   ├── botLogChannel
+		│   ├── modLogChannel
         │   └── mutedRole
 		└── instances-[guild id]
             ├── istanceId
@@ -48,8 +49,9 @@ maser
 | Column             | Type     |
 | ------------------ | -------- |
 | `guildId`          | `bigint` |
-| `botLogChannel`    | `bigint` |
 | `memberLogChannel` | `bigint` |
+| `botLogChannel`    | `bigint` |
+| `modLogChannel`    | `bigint` |
 | `mutedRole`        | `bigint` |
 
 **instances-[guild id]**
