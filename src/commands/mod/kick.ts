@@ -3,6 +3,7 @@ import type { CommandInteraction, Command } from "../../typings.js";
 import { REASON, USER } from "./.methods.js";
 import InstanceManager from "../../database/src/instance/InstanceManager.js";
 import { INSTANCE_TYPES } from "../../constants.js";
+import { ConfirmationButtons } from "../../extensions/ButtonManager.js";
 
 const data: ChatInputApplicationCommandData = {
 	name: "kick",
@@ -14,7 +15,7 @@ async function execute(intr: CommandInteraction) {
 	const target = intr.options.getMember("user");
 	const reason = intr.options.getString("reason");
 
-	const { emXMark, emUserLock, emError, emCrown } = intr.client.systemEmojis;
+	const { emXMark, emUserLock, emError, emCrown, emSuccess, emCheckMark } = intr.client.systemEmojis;
 
 	if (!target) {
 		intr.editReply(`${emXMark} The user to target was not found in this server`);
@@ -46,19 +47,60 @@ async function execute(intr: CommandInteraction) {
 		return;
 	}
 
-	const instances = await new InstanceManager(intr.client, intr.guildId).initialise();
-	await instances.createInstance({
-		executorTag: intr.user.tag,
-		executorId: intr.user.id,
-		targetTag: target.user.tag,
-		targetId: target.id,
-		reason: reason ?? "null",
-		type: INSTANCE_TYPES.Kick
-	});
+	let reasonStr = `${reason ? `${reason} | ` : ""}By ${intr.user.tag} (${intr.user.id})`;
+	if (reasonStr.length > 512) {
+		const base = ` | By ${intr.user.tag} (${intr.user.id})`;
+		reasonStr = `${reason!.slice(512 - base.length - 3)}...${base}`;
+	}
 
-	intr.logger.log(
-		`Kicked ${target.user.tag} (${target.id}) ${reason ? `with reason: "${reason}"` : "with no provided reason"}`
-	);
+	const info =
+		`• **Reason**: ${reason ?? "No reason provided"}\n` +
+		`• **Target**: ${target.user.tag} (${target} ${target.id})`;
+
+	const query = `Are you sure you want to **kick ${target.user.tag}** (${target.id})?\n\n${info}`;
+
+	const collector = new ConfirmationButtons({ author: intr.user })
+		.setInteraction(intr)
+		.setUser(intr.user)
+		.setQuery(query);
+
+	collector
+		.start({ noReply: true })
+		.then(() => {
+			target
+				.kick(reasonStr)
+				.then(async () => {
+					const instances = await new InstanceManager(intr.client, intr.guildId).initialise();
+					await instances.createInstance({
+						executorTag: intr.user.tag,
+						executorId: intr.user.id,
+						targetTag: target.user.tag,
+						targetId: target.id,
+						reason: reason ?? "null",
+						type: INSTANCE_TYPES.Kick
+					});
+
+					intr.logger.log(
+						`Kicked ${target.user.tag} (${target.id}) ${
+							reason ? `with reason: "${reason}"` : "with no reason"
+						}`
+					);
+
+					intr.editReply({
+						content: `${emSuccess} Successfully kicked ${target.user.tag} (${target.id})\n\n${info}`,
+						components: []
+					});
+				})
+				.catch(() => {
+					intr.editReply({
+						content: `${emError} Failed to kick ${target.user.tag} (${target.id})\n\n${info}`,
+						components: []
+					});
+				});
+		})
+		.catch(() => {
+			intr.editReply({ content: `${emCheckMark} Gotcha. Command cancelled`, components: [] });
+		});
 }
 
 export const getCommand = () => ({ data, execute } as Partial<Command>);
