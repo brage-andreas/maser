@@ -15,23 +15,8 @@ export default class Client extends Discord.Client<true> {
 	public colors = COLORS;
 
 	constructor(options?: ClientOptions) {
-		const defaultCacheSettings = {
-			...Discord.Options.defaultMakeCacheSettings,
-			/*MessageManager: {
-				sweepInterval: 120, // 2 min
-				sweepFilter: () => (msg: Message) => {
-					const age = msg.editedTimestamp ?? msg.createdTimestamp;
-					const fromBot = msg.author.bot;
-					const now = Date.now();
-					return fromBot || now - age > 900_000; // 15 min
-				}
-			}*/
-			MessageManager: 0
-		};
-
 		const defaultOptions: ClientOptions = {
-			makeCache: Discord.Options.cacheWithLimits(defaultCacheSettings),
-			allowedMentions: { repliedUser: false },
+			allowedMentions: { repliedUser: false, parse: [] },
 			failIfNotExists: false,
 			intents: INTENTS
 		};
