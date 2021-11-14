@@ -20,7 +20,7 @@ interface CommandInteractionOptionResolver extends Discord.CommandInteractionOpt
 	getMember: (name: string, required?: boolean) => GuildMember | null;
 }
 
-export type ConfigColumns = "guildId" | "botLogChannel" | "memberLogChannel" | "mutedRole";
+export type ConfigColumns = "guildId" | "botLogChannel" | "modLogChannel" | "memberLogChannel" | "mutedRole";
 
 export type ColorMap = Map<string, Color>;
 export type Color = `#${string}`;
@@ -74,6 +74,7 @@ export interface ConfigResult {
 	guildId: string;
 	memberLogChannel?: string | null;
 	botLogChannel?: string | null;
+	modLogChannel?: string | null;
 	mutedRole?: string | null;
 }
 

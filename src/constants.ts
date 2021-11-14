@@ -1,4 +1,4 @@
-import type { ApplicationCommandOptionData, ApplicationCommandSubCommandData } from "discord.js";
+import type { ApplicationCommandSubCommandData } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { Intents } from "discord.js";
 
@@ -116,8 +116,9 @@ export enum BOOST_LEVELS {
 
 export enum CONFIG_RESULT_KEYS {
 	guildId = "Guild",
-	botLogChannel = "Bot log channel",
 	memberLogChannel = "Member log channel",
+	modLogChannel = "Member log channel",
+	botLogChannel = "Bot log channel",
 	mutedRole = "Muted role"
 }
 
