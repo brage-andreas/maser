@@ -146,8 +146,7 @@ async function execute(intr: CommandInteraction) {
 		if (existingMuteRole) {
 			if (!existingMuteRoleValid) {
 				intr.editReply({
-					content: EXISTING_ROLE.NOT_VALID(existingMuteRole),
-					allowedMentions: { parse: [] }
+					content: EXISTING_ROLE.NOT_VALID(existingMuteRole)
 				});
 				return;
 			}
@@ -218,14 +217,12 @@ async function execute(intr: CommandInteraction) {
 								.set(newMutedRole.id)
 								.then(() => {
 									intr.editReply({
-										allowedMentions: { parse: [] },
 										content: onSuccess,
 										components: []
 									});
 								})
 								.catch(() => {
 									intr.editReply({
-										allowedMentions: { parse: [] },
 										components: [],
 										content: onFail
 									});
@@ -245,8 +242,7 @@ async function execute(intr: CommandInteraction) {
 	} else {
 		if (!muteRoleValid) {
 			intr.editReply({
-				content: EXISTING_ROLE.NOT_VALID(mutedRole),
-				allowedMentions: { parse: [] }
+				content: EXISTING_ROLE.NOT_VALID(mutedRole)
 			});
 		}
 

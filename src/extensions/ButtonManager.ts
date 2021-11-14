@@ -235,8 +235,8 @@ export class ConfirmationButtons extends ButtonManager {
 		const isButtonIntr = medium instanceof MessageComponentInteraction;
 
 		const msg = isButtonIntr
-			? medium.update({ content, components, allowedMentions: { parse: [] }, fetchReply: true })
-			: medium.editReply({ content, components, allowedMentions: { parse: [] } });
+			? medium.update({ content, components, fetchReply: true })
+			: medium.editReply({ content, components });
 
 		return msg as Promise<Message>;
 	}
