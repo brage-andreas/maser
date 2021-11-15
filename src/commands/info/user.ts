@@ -74,7 +74,7 @@ async function execute(intr: CommandInteraction) {
 		.setTitle(name);
 
 	if (member) userEmbed.addField("Tag", tag);
-	userEmbed.addField("Id", id);
+	userEmbed.addField("ID", id);
 
 	if (member) {
 		userEmbed
