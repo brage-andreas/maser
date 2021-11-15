@@ -77,7 +77,7 @@ const data: ChatInputApplicationCommandData = {
 			options: [
 				{
 					name: "instance",
-					description: "The id of the instance to show",
+					description: "The ID of the instance to show",
 					type: ApplicationCommandOptionTypes.INTEGER,
 					required: true
 				}
@@ -90,7 +90,7 @@ const data: ChatInputApplicationCommandData = {
 			options: [
 				{
 					name: "instance",
-					description: "The id of the instance to delete",
+					description: "The ID of the instance to delete",
 					type: ApplicationCommandOptionTypes.INTEGER,
 					required: true
 				}
@@ -122,7 +122,7 @@ async function execute(intr: CommandInteraction) {
 			targetId: target?.id,
 			guildId: intr.guildId,
 			reason: reason ?? undefined,
-			timestamp: time ? ms(`-${time}`) : undefined,
+			timestamp: time ? Date.now() - ms(time) : Date.now(),
 			type
 		};
 
@@ -132,10 +132,10 @@ async function execute(intr: CommandInteraction) {
 		intr.logger.log(`Manually created new instance of type ${INSTANCE_TYPES[type] ?? "Unknown"}`);
 	} else if (sub === "show") {
 		const instanceId = intr.options.getInteger("instance", true);
-		const instance = await instances.getInstance(`${instanceId}`);
+		const instance = await instances.getInstance(instanceId);
 
 		if (!instance) {
-			intr.editReply(`${emXMark} I found no instance with the id \`${instanceId}\``);
+			intr.editReply(`${emXMark} I found no instance with the ID \`${instanceId}\``);
 			return;
 		}
 
