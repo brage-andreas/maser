@@ -14,7 +14,7 @@ export default class Instance {
 		this.data = data;
 	}
 
-	get hexColor() {
+	public get hexColor(): "#FF8741" | "#FFC152" | "#000000" | "#5AD658" | "#FF5733" | "#FFDA9B" {
 		const { colors } = this.client;
 		const { type } = this.data;
 
@@ -26,7 +26,7 @@ export default class Instance {
 		return colors.green;
 	}
 
-	get type() {
+	public get type(): "Softban" | "Kick" | "Warn" | "Mute" | "Ban" | "Unknown" {
 		const { type } = this.data;
 
 		if (type === INSTANCE_TYPES.Softban) return "Softban";
@@ -37,7 +37,16 @@ export default class Instance {
 		return "Unknown";
 	}
 
-	public toEmbed() {
+	public get id(): number {
+		return this.data.instanceId;
+	}
+
+	public get duration(): string | null {
+		if (!this.data.duration) return null;
+		return ms(this.data.duration, { long: true });
+	}
+
+	public toEmbed(): MessageEmbed {
 		const {
 			instanceId, //
 			referenceId,
@@ -46,25 +55,24 @@ export default class Instance {
 			targetTag,
 			timestamp,
 			targetId,
-			duration,
 			reason
 		} = this.data;
 
 		const instanceEmbed = new MessageEmbed()
 			.setAuthor(`${executorTag} (${executorId})`)
-			.setColor(this.hexColor)
 			.setFooter(`#${instanceId}`)
-			.setTimestamp(timestamp);
+			.setTimestamp(timestamp)
+			.setColor(this.hexColor);
 
 		const description = [`**Type**: ${this.type}`];
 
 		if (targetTag || targetId)
 			description.push(
-				`**Target**: ${targetTag ?? "Tag unavailable"} (${targetId ? targetId : "id unavailable"})`
+				`**Target**: ${targetTag ?? "Name unavailable"} (${targetId ? targetId : "ID unavailable"})`
 			);
 
 		if (reason) description.push(`**Reason**: ${reason}`);
-		if (duration) description.push(`**Duration**: ${ms(duration)}`);
+		if (this.duration) description.push(`**Duration**: ${this.duration}`);
 		if (referenceId) description.push(`**Reference**: #${referenceId}`);
 
 		return instanceEmbed.setDescription(description.join("\n"));
