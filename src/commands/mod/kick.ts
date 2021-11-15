@@ -71,12 +71,12 @@ async function execute(intr: CommandInteraction) {
 				.kick(reasonStr)
 				.then(async () => {
 					const instances = await new InstanceManager(intr.client, intr.guildId).initialise();
-					await instances.createInstance({
+					const instance = await instances.createInstance({
 						executorTag: intr.user.tag,
 						executorId: intr.user.id,
 						targetTag: target.user.tag,
 						targetId: target.id,
-						reason: reason ?? "null",
+						reason: reason ?? undefined,
 						type: INSTANCE_TYPES.Kick
 					});
 
@@ -87,7 +87,9 @@ async function execute(intr: CommandInteraction) {
 					);
 
 					intr.editReply({
-						content: `${emSuccess} Successfully kicked ${target.user.tag} (${target.id})\n\n${info}`,
+						content:
+							`${emSuccess} Successfully **kicked ${target.user.tag}** (${target.id})` +
+							`in case **#${instance.id}**\n\n${info}`,
 						components: []
 					});
 				})
