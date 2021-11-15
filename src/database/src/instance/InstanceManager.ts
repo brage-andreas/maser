@@ -6,6 +6,7 @@ import InfoLogger from "../../../utils/logger/InfoLogger.js";
 import { REGEX } from "../../../constants.js";
 import Postgres from "../postgres.js";
 
+// TODO logging
 export default class InstanceManager extends Postgres {
 	private initialised = false;
 
@@ -60,7 +61,7 @@ export default class InstanceManager extends Postgres {
 		return instance;
 	}
 
-	public async getInstance(instanceId: string): Promise<Instance | null> {
+	public async getInstance(instanceId: string | number): Promise<Instance | null> {
 		if (!this.initialised) throw new Error("InstanceManager must be initialised before use");
 		if (!this.id) throw new Error("Guild id must be set");
 
@@ -72,6 +73,8 @@ export default class InstanceManager extends Postgres {
 		`;
 
 		const data = await this.oneOrNone<InstanceData>(query);
+		if (data) data.timestamp = data.timestamp as number; // bigints turn to strings :pepeHands:
+
 		return data ? new Instance(this.client, data) : null;
 	}
 
