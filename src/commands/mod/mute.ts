@@ -8,10 +8,11 @@ import type {
 } from "discord.js";
 import type { CommandInteraction, Command } from "../../typings.js";
 
+import { DURATIONS, INSTANCE_TYPES } from "../../constants.js";
 import { DURATION, REASON, USER } from "./.methods.js";
 import { ConfirmationButtons } from "../../extensions/ButtonManager.js";
+import InstanceManager from "../../database/src/instance/InstanceManager.js";
 import ConfigManager from "../../database/src/config/ConfigManager.js";
-import { DURATIONS } from "../../constants.js";
 import Util from "../../utils/index.js";
 import ms from "ms";
 
@@ -66,8 +67,6 @@ const data: ChatInputApplicationCommandData = {
 
 // TODO: refactor
 // this needs :alot: of refactoring
-// TODO: action log and cases
-// TODO: duration
 async function execute(intr: CommandInteraction) {
 	const target = intr.options.getMember("user");
 	const reason = intr.options.getString("reason");
@@ -151,7 +150,7 @@ async function execute(intr: CommandInteraction) {
 				return;
 			}
 
-			const query = emAt + NO_MUTE_ROLE.USE(existingMuteRole);
+			const query = NO_MUTE_ROLE.USE(existingMuteRole);
 			const collector = new ConfirmationButtons({ author: intr.user })
 				.setInteraction(intr)
 				.setUser(intr.user)
@@ -263,9 +262,22 @@ async function execute(intr: CommandInteraction) {
 			.then(() => {
 				target.roles
 					.add(mutedRole)
-					.then(() => {
+					.then(async () => {
+						const instances = await new InstanceManager(intr.client, intr.guildId).initialise();
+						const instance = await instances.createInstance({
+							executorTag: intr.user.tag,
+							executorId: intr.user.id,
+							targetTag: target.user.tag,
+							targetId: target.id,
+							duration,
+							reason: reason ?? undefined,
+							type: INSTANCE_TYPES.Mute
+						});
+
 						intr.editReply({
-							content: `${emSuccess} Successfully muted ${target.user.tag} (${target.id})\n\n${info}`,
+							content:
+								`${emSuccess} Successfully **muted ${target.user.tag}** (${target.id}) ` +
+								`in instance **#${instance.id}**\n\n${info}`,
 							components: []
 						});
 					})
