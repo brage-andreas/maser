@@ -28,6 +28,12 @@ const data: ChatInputApplicationCommandData = {
 			options: CONFIG_OPTIONS.CHANNEL
 		},
 		{
+			name: "mod-log",
+			description: "Options for this server's mod log channel",
+			type: ApplicationCommandOptionTypes.SUB_COMMAND_GROUP,
+			options: CONFIG_OPTIONS.CHANNEL
+		},
+		{
 			name: "muted-role",
 			description: "Options for this server's muted role",
 			type: ApplicationCommandOptionTypes.SUB_COMMAND_GROUP,
@@ -88,6 +94,11 @@ async function execute(intr: CommandInteraction) {
 		case "muted-role":
 			config.setKey("mutedRole");
 			await methods({ intr, option: CONFIG_RESULT_KEYS["mutedRole"], method, config });
+			break;
+
+		case "mod-log":
+			config.setKey("modLogChannel");
+			await methods({ intr, option: CONFIG_RESULT_KEYS["modLogChannel"], method, config });
 			break;
 	}
 }
