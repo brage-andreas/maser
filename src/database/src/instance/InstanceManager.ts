@@ -6,7 +6,6 @@ import InfoLogger from "../../../utils/logger/InfoLogger.js";
 import { REGEX } from "../../../constants.js";
 import Postgres from "../postgres.js";
 
-// TODO logging
 export default class InstanceManager extends Postgres {
 	private initialised = false;
 

@@ -12,12 +12,3 @@ await client.commands.init();
 await client.events.init();
 
 client.login(process.env.TOKEN);
-
-/*
- TODO: util command for creating muted role
- TODO: commands
-	- purge
-	- lockdown
-	- kick ban/hackban softban
-	- channel info
-*/

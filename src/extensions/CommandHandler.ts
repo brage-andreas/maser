@@ -10,7 +10,7 @@ import type {
 import type { CommandInteraction, Command, CommandModule } from "../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums.js";
-import { ErrorLogger, InfoLogger } from "../utils/logger";
+import { ErrorLogger, InfoLogger } from "../utils/logger/";
 import { readdirSync } from "fs";
 import { Routes } from "discord-api-types/v9";
 import { REGEX } from "../constants.js";
@@ -21,7 +21,6 @@ const COMMAND_DIR = new URL("../commands", import.meta.url);
 const SUBGROUP_TYPE = ApplicationCommandOptionTypes.SUB_COMMAND_GROUP;
 const SUB_TYPE = ApplicationCommandOptionTypes.SUB_COMMAND;
 
-// TODO: fix this mess
 type SubInGroupOption =
 	| ApplicationCommandNonOptionsData
 	| ApplicationCommandChannelOptionData
@@ -182,9 +181,6 @@ export default class CommandHandler {
 				(option) => option.type === SUB_TYPE
 			) as ApplicationCommandSubCommandData[];
 
-			// TODO: find out how to properly type this
-			// At least it doesn't error now
-			// but i truly cannot figure this out
 			subcommandGroups.forEach((subgroup) => {
 				subgroup.options?.forEach((subcommand) => {
 					subcommand.options = this._addHideOption(subcommand.options ?? [], cmd.data.name);

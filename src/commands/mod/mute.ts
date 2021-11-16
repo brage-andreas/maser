@@ -65,8 +65,6 @@ const data: ChatInputApplicationCommandData = {
 	options: [USER(true), REASON("mute"), DURATION("mute")]
 };
 
-// TODO: refactor
-// this needs :alot: of refactoring
 async function execute(intr: CommandInteraction) {
 	const target = intr.options.getMember("user");
 	const reason = intr.options.getString("reason");

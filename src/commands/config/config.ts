@@ -53,7 +53,6 @@ async function execute(intr: CommandInteraction) {
 
 	const config = new ConfigManager(intr.client, intr.guild.id);
 
-	// TODO - not done
 	if (method === "view-config") {
 		const res = await config.getAll();
 
