@@ -8,9 +8,9 @@
 		"prestart": "tsc",
 		"prebuild": "tsc",
 		"preclear": "tsc",
-		"start": "node --experimental-specifier-resolution=node .",
-		"build": "node --experimental-specifier-resolution=node dist/utils/COMMANDS/BUILD_COMMANDS.js",
-		"clear": "node --experimental-specifier-resolution=node dist/utils/COMMANDS/CLEAR_COMMANDS.js"
+		"start": "node .",
+		"build": "node dist/utils/COMMANDS/BUILD_COMMANDS.js",
+		"clear": "node dist/utils/COMMANDS/CLEAR_COMMANDS.js"
 	},
 	"repository": {
 		"type": "git",
