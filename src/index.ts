@@ -1,4 +1,4 @@
-import { Client } from "./extensions/";
+import { Client } from "./extensions/index.js";
 import dotenv from "dotenv";
 dotenv.config();
 

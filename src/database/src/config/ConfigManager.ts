@@ -1,5 +1,5 @@
 import type { AllowedConfigTextChannels, ConfigColumns, ConfigResult } from "../../../typings.js";
-import type { Client } from "../../../extensions";
+import type { Client } from "../../../extensions/index.js";
 import Postgres from "../postgres.js";
 import { Role } from "discord.js";
 

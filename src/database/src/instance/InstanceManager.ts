@@ -1,7 +1,7 @@
 import type { InstanceData, InstanceIdResult } from "../../../typings.js";
-import type { Client } from "../../../extensions/";
+import type { Client } from "../../../extensions/index.js";
 
-import { Instance } from "../../../extensions/";
+import { Instance } from "../../../extensions/index.js";
 import InfoLogger from "../../../utils/logger/InfoLogger.js";
 import { REGEX } from "../../../constants.js";
 import Postgres from "../postgres.js";

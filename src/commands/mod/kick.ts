@@ -1,9 +1,9 @@
 import type { ChatInputApplicationCommandData } from "discord.js";
 import type { CommandInteraction, Command } from "../../typings.js";
+import { ConfirmationButtons } from "../../extensions/ButtonManager.js";
+import { INSTANCE_TYPES } from "../../constants.js";
 import { REASON, USER } from "./.methods.js";
 import InstanceManager from "../../database/src/instance/InstanceManager.js";
-import { INSTANCE_TYPES } from "../../constants.js";
-import { ConfirmationButtons } from "../../extensions/ButtonManager.js";
 
 const data: ChatInputApplicationCommandData = {
 	name: "kick",

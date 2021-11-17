@@ -1,4 +1,4 @@
-import { CommandHandler } from "../../extensions/";
+import { CommandHandler } from "../../extensions/index.js";
 import dotenv from "dotenv";
 dotenv.config();
 

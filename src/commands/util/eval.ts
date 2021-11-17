@@ -1,11 +1,11 @@
-import type { CommandInteraction, Command } from "../../typings.js";
 import type { ChatInputApplicationCommandData, Message } from "discord.js";
+import type { CommandInteraction, Command } from "../../typings.js";
 
 import { MessageAttachment, MessageButton } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { ButtonManager } from "../../extensions/";
+import { ButtonManager } from "../../extensions/index.js";
 import evaluate from "../../utils/eval.js";
-import Util from "../../utils/";
+import Util from "../../utils/index.js";
 
 const options = {
 	logLevel: 2,

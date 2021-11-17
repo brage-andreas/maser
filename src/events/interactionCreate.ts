@@ -1,6 +1,6 @@
 import type { CommandInteraction } from "../typings.js";
-import type { Client } from "../extensions/";
-import { CommandLogger } from "../utils/logger/";
+import type { Client } from "../extensions/index.js";
+import { CommandLogger } from "../utils/logger/index.js";
 
 export async function execute(client: Client, intr: CommandInteraction) {
 	if (!intr.isCommand() || !intr.inCachedGuild()) return;

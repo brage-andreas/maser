@@ -3,7 +3,7 @@ import type { CommandInteraction, Command } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { MessageEmbed, Role } from "discord.js";
-import Util from "../../utils/";
+import Util from "../../utils/index.js";
 
 const data: ChatInputApplicationCommandData = {
 	name: "role",

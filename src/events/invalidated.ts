@@ -1,4 +1,4 @@
-import type { Client } from "../extensions/";
+import type { Client } from "../extensions/index.js";
 
 export async function execute(client: Client) {
 	client.events.logger //

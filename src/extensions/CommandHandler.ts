@@ -10,7 +10,7 @@ import type {
 import type { CommandInteraction, Command, CommandModule } from "../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums.js";
-import { ErrorLogger, InfoLogger } from "../utils/logger/";
+import { ErrorLogger, InfoLogger } from "../utils/logger/index.js";
 import { readdirSync } from "fs";
 import { Routes } from "discord-api-types/v9";
 import { REGEX } from "../constants.js";

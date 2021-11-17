@@ -1,5 +1,5 @@
 import type { InstanceData } from "../typings.js";
-import type { Client } from "./";
+import type { Client } from "./index.js";
 
 import { INSTANCE_TYPES } from "../constants.js";
 import { MessageEmbed } from "discord.js";

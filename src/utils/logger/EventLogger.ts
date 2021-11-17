@@ -5,7 +5,7 @@ import { MessageEmbed } from "discord.js";
 import { LOGGER_TYPES } from "../../constants.js";
 import ConfigManager from "../../database/src/config/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";
-import Util from "../";
+import Util from "../index.js";
 
 export default class EventLogger extends BaseLogger {
 	client: Client;

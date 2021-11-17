@@ -1,5 +1,5 @@
-import type { CommandInteraction, Command } from "../../typings.js";
 import type { ChatInputApplicationCommandData } from "discord.js";
+import type { CommandInteraction, Command } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 

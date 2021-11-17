@@ -1,4 +1,4 @@
-import type { ChatInputApplicationCommandData, Collection, Message, NewsChannel, TextChannel } from "discord.js";
+import type { ChatInputApplicationCommandData, NewsChannel, TextChannel } from "discord.js";
 import type { CommandInteraction, Command } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";

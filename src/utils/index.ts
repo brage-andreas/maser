@@ -1,5 +1,4 @@
 import { MAX_EMBED_DESCRIPTION_LEN } from "../constants.js";
-import { CommandInteraction } from "../typings.js";
 
 export default class Util {
 	/**

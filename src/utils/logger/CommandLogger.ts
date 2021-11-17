@@ -1,12 +1,12 @@
 import type { Guild, TextBasedChannels, User } from "discord.js";
 import type { CommandInteraction } from "../../typings.js";
 
-import { MessageEmbed } from "discord.js";
 import { LOGGER_TYPES } from "../../constants.js";
+import { MessageEmbed } from "discord.js";
 import ConfigManager from "../../database/src/config/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";
 import { gray } from "./LoggerColors.js";
-import Util from "../";
+import Util from "../index.js";
 
 export default class CommandLogger extends BaseLogger {
 	public interaction: CommandInteraction | null;

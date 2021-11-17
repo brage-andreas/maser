@@ -1,8 +1,9 @@
 import type { ClientOptions } from "discord.js";
-import { CommandHandler, EventManager } from "./";
+
+import { CommandHandler, EventManager } from "./index.js";
 import { INTENTS, EMOJIS, COLORS } from "../constants.js";
-import { InfoLogger } from "../utils/logger";
-import CommandManager from "./CommandManager";
+import { InfoLogger } from "../utils/logger/index.js";
+import CommandManager from "./CommandManager.js";
 import Discord from "discord.js";
 
 export default class Client extends Discord.Client<true> {

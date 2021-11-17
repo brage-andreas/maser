@@ -1,5 +1,5 @@
 import type { ExistsResult, PostgresOptions } from "../../typings.js";
-import type { Client } from "../../extensions/";
+import type { Client } from "../../extensions/index.js";
 
 import PostgresConnection from "./connection.js";
 import { REGEX } from "../../constants.js";

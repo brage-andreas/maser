@@ -4,7 +4,7 @@ import type { Client } from "../extensions/";
 import Discord, { MessageEmbed, Message } from "discord.js";
 import { performance } from "perf_hooks";
 import { REGEX } from "../constants.js";
-import Util from "./";
+import Util from "./index.js";
 import ms from "ms";
 
 const stringify = (output: any): string => {
