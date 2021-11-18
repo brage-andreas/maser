@@ -116,8 +116,8 @@ export default class InstanceManager extends Postgres {
 			) AS _ ORDER BY "${this.idKey}" ASC;
 		`;
 
-		const { instanceId } = (await this.oneOrNone<InstanceIdResult>(query)) ?? { instanceId: 0 };
-		return instanceId + 1;
+		const res = await this.oneOrNone<InstanceIdResult>(query);
+		return (res?.instanceId ?? 0) + 1;
 	}
 
 	private test(column: string, value: string | number | undefined, opt?: { id?: boolean; required?: boolean }): void;
