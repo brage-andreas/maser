@@ -1,4 +1,4 @@
-import type { ApplicationCommandSubCommandData, ChatInputApplicationCommandData } from "discord.js";
+import type { ChatInputApplicationCommandData } from "discord.js";
 import type { CommandInteraction, Command, InstanceData } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
@@ -12,47 +12,9 @@ const options = {
 
 // stupid enum shenanigans
 const TYPE_CHOICES = Object.entries(INSTANCE_TYPES)
-	.filter(([, value]) => typeof value !== "string")
-	.map(([key, value]) => ({
-		name: key,
-		value: value
-	}));
-
-const dataOptions = [
-	{
-		name: "executor",
-		description: "The executor of this instance",
-		type: ApplicationCommandOptionTypes.USER,
-		required: true
-	},
-	{
-		name: "type",
-		description: "The type of instance",
-		type: ApplicationCommandOptionTypes.INTEGER,
-		choices: TYPE_CHOICES,
-		required: true
-	},
-	{
-		name: "reason",
-		description: "The reason for this instance",
-		type: ApplicationCommandOptionTypes.STRING
-	},
-	{
-		name: "target",
-		description: "The target of this instance",
-		type: ApplicationCommandOptionTypes.USER
-	},
-	{
-		name: "time",
-		description: 'The time since this instance. Accepts relative times ("5 min"). Default is current time',
-		type: ApplicationCommandOptionTypes.STRING
-	},
-	{
-		name: "duration",
-		description: 'The duration of this instance. Accepts timestamps and relative times ("5min")',
-		type: ApplicationCommandOptionTypes.STRING
-	}
-] as ApplicationCommandSubCommandData["options"];
+	.filter(([, value]) => typeof value === "number")
+	.map(([key, value]) => ({ name: key, value: value }));
+// { name: "Ban", value: 0 } etc.
 
 const data: ChatInputApplicationCommandData = {
 	name: "instance",
@@ -62,13 +24,91 @@ const data: ChatInputApplicationCommandData = {
 			name: "create",
 			description: "Manually create an instance",
 			type: ApplicationCommandOptionTypes.SUB_COMMAND,
-			options: dataOptions
+			options: [
+				{
+					name: "executor",
+					description: "The executor of this instance",
+					type: ApplicationCommandOptionTypes.USER,
+					required: true
+				},
+				{
+					name: "type",
+					description: "The type of instance",
+					type: ApplicationCommandOptionTypes.INTEGER,
+					choices: TYPE_CHOICES,
+					required: true
+				},
+				{
+					name: "reason",
+					description: "The reason for this instance",
+					type: ApplicationCommandOptionTypes.STRING
+				},
+				{
+					name: "reference-id",
+					description: "The instance to reference's ID",
+					type: ApplicationCommandOptionTypes.INTEGER
+				},
+				{
+					name: "target",
+					description: "The target of this instance",
+					type: ApplicationCommandOptionTypes.USER
+				},
+				{
+					name: "time",
+					description:
+						'The time since this instance. Accepts relative times (e.g. "5 min"). Default is current time',
+					type: ApplicationCommandOptionTypes.STRING
+				},
+				{
+					name: "duration",
+					description: 'The duration of this instance. Accepts timestamps and relative times (e.g. "5min")',
+					type: ApplicationCommandOptionTypes.STRING
+				}
+			]
 		},
 		{
 			name: "edit",
 			description: "Edit an instance",
 			type: ApplicationCommandOptionTypes.SUB_COMMAND,
-			options: dataOptions
+			options: [
+				{
+					name: "instance-id",
+					description: "The ID of the instance to edit",
+					type: ApplicationCommandOptionTypes.INTEGER,
+					required: true
+				},
+				{
+					name: "executor",
+					description: "The executor of this instance",
+					type: ApplicationCommandOptionTypes.USER
+				},
+				{
+					name: "reason",
+					description: "The reason for this instance",
+					type: ApplicationCommandOptionTypes.STRING
+				},
+				{
+					name: "reference-id",
+					description: "The instance to reference's ID",
+					type: ApplicationCommandOptionTypes.INTEGER
+				},
+				{
+					name: "target",
+					description: "The target of this instance",
+					type: ApplicationCommandOptionTypes.USER
+				},
+				{
+					name: "time",
+					description:
+						'The time since this instance. Accepts relative times ("5 min"). Default is current time',
+					type: ApplicationCommandOptionTypes.STRING
+				},
+				{
+					name: "duration",
+					description: 'The duration of this instance. Accepts timestamps and relative times ("5min")',
+					type: ApplicationCommandOptionTypes.STRING
+				}
+			]
 		},
 		{
 			name: "show",
@@ -102,11 +142,12 @@ const data: ChatInputApplicationCommandData = {
 async function execute(intr: CommandInteraction) {
 	const sub = intr.options.getSubcommand();
 
-	const { emXMark } = intr.client.systemEmojis;
+	const { emXMark, emError } = intr.client.systemEmojis;
 	const instances = new InstanceManager(intr.client, intr.guildId);
 	await instances.initialise();
 
 	if (sub === "create") {
+		const reference = intr.options.getInteger("reference");
 		const duration = intr.options.getString("duration");
 		const executor = intr.options.getUser("executor", true);
 		const reason = intr.options.getString("reason");
@@ -115,6 +156,7 @@ async function execute(intr: CommandInteraction) {
 		const time = intr.options.getString("time");
 
 		const data: Partial<InstanceData> = {
+			referenceId: reference ?? undefined,
 			executorTag: executor.tag,
 			executorId: executor.id,
 			targetTag: target?.tag,
@@ -123,7 +165,7 @@ async function execute(intr: CommandInteraction) {
 			guildId: intr.guildId,
 			reason: reason ?? undefined,
 			timestamp: time ? Date.now() - ms(time) : Date.now(),
-			type
+			type: type
 		};
 
 		const instance = await instances.createInstance(data);
@@ -135,13 +177,55 @@ async function execute(intr: CommandInteraction) {
 		const instance = await instances.getInstance(instanceId);
 
 		if (!instance) {
-			intr.editReply(`${emXMark} I found no instance with the ID \`${instanceId}\``);
+			intr.editReply(`${emXMark} Instance #${instanceId} was not found`);
 			return;
 		}
 
 		intr.editReply({ embeds: [instance.toEmbed()] });
 
-		intr.logger.log();
+		intr.logger.log(`Viewed instance #${instanceId}`);
+	} else if (sub === "edit") {
+		const referenceId = intr.options.getInteger("reference-id");
+		const instanceId = intr.options.getInteger("instance-id", true);
+		const duration = intr.options.getString("duration");
+		const executor = intr.options.getUser("executor");
+		const reason = intr.options.getString("reason");
+		const target = intr.options.getUser("target");
+		const time = intr.options.getString("time");
+
+		const oldInstance = await instances.getInstance(instanceId);
+		if (!oldInstance) {
+			intr.editReply(`${emXMark} Instance #${instanceId} was not found`);
+			return;
+		}
+
+		const oldData = oldInstance.data;
+		let newData: Partial<InstanceData> = {};
+
+		if (executor) {
+			newData.executorTag = executor.tag;
+			newData.executorId = executor.id;
+		}
+		if (target) {
+			newData.targetTag = target.tag;
+			newData.targetId = target.id;
+		}
+		if (referenceId) newData.referenceId = referenceId;
+		if (duration) newData.duration = ms(duration);
+		if (reason) newData.reason = reason;
+		if (time) newData.timestamp = Date.now() - ms(time);
+
+		const data = Object.assign({}, oldData, newData);
+
+		const newInstance = await instances.editInstance(instanceId, data);
+		if (!newInstance) {
+			intr.editReply(`${emError} Something went wrong with editing instance #${instanceId}`);
+			return;
+		}
+
+		intr.editReply({ embeds: [newInstance.toEmbed()] });
+
+		intr.logger.log(`Manually edited instance #${instanceId}`);
 	}
 }
 
