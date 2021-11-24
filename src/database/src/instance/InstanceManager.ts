@@ -1,7 +1,7 @@
 import type { InstanceData, InstanceIdResult } from "../../../typings.js";
-import type { Client } from "../../../extensions/index.js";
+import type { Client } from "../../../modules/index.js";
 
-import { Instance } from "../../../extensions/index.js";
+import { Instance } from "../../../modules/index.js";
 import InfoLogger from "../../../utils/logger/InfoLogger.js";
 import { REGEX } from "../../../constants.js";
 import Postgres from "../postgres.js";
@@ -18,16 +18,16 @@ export default class InstanceManager extends Postgres {
             CREATE TABLE IF NOT EXISTS guilds."instances-${this.id}"
             (
                 "instanceId" integer NOT NULL,
-                "guildId" bigint,
-                "referenceId" integer,
-                "executorTag" text COLLATE pg_catalog."default",
-                "executorId" bigint,
-                "targetTag" text COLLATE pg_catalog."default",
-                "timestamp" bigint,
-                "targetId" bigint,
-                "duration" bigint,
-                "reason" text COLLATE pg_catalog."default",
-                "type" integer,
+				"guildId" bigint NOT NULL,
+				"referenceId" integer,
+				"executorTag" text NOT NULL,
+				"executorId" bigint NOT NULL,
+				"targetTag" text,
+				"timestamp" bigint NOT NULL,
+				"targetId" bigint,
+				"duration" bigint,
+				"reason" text,
+				"type" integer NOT NULL,
 
                 CONSTRAINT "instances-${this.id}_pkey" PRIMARY KEY ("instanceId")
             )
@@ -72,21 +72,46 @@ export default class InstanceManager extends Postgres {
 		`;
 
 		const data = await this.oneOrNone<InstanceData>(query);
-		if (data) data.timestamp = data.timestamp as number; // bigints turn to strings :pepeHands:
-
-		return data ? new Instance(this.client, data) : null;
+		return this._createInstance(data);
 	}
 
-	public async editInstance(data: Partial<InstanceData>) {
-		/*if (!this.initialised) throw new Error("InstanceManager must be initialised before use");
-        const patchedData = await this.patch(data);
+	public async editInstance(instanceId: string | number, data: Partial<InstanceData>): Promise<Instance | null> {
+		if (!this.initialised) throw new Error("InstanceManager must be initialised before use");
 
-		const columnNames = Object.keys(patchedData);
-		const values = Object.values(patchedData);
+		try {
+			data = await this.patch(data);
+		} catch {
+			return null;
+		}
 
-		await this.createRow(columnNames, values);
+		const columnNames = Object.keys(data);
+		const values = Object.values(data);
 
-		return new Instance(this.client, patchedData);*/
+		await this.updateRow(columnNames, values, `"instanceId"=${instanceId}`);
+
+		const newData = await this.getData(instanceId);
+		return this._createInstance(newData);
+	}
+
+	private async getData(instanceId: string | number): Promise<InstanceData | null> {
+		const query = `
+			SELECT *
+			FROM ${this.schema}."${this.table}"
+			WHERE "guildId" = ${this.id}
+			AND "${this.idKey}" = ${instanceId}
+		`;
+
+		return this.oneOrNone<InstanceData>(query);
+	}
+
+	private _createInstance(data: InstanceData | null) {
+		if (!data) return null;
+
+		// bigints turn to strings via pg-promise
+		data.timestamp = Number(data.timestamp);
+		data.duration = data.duration ? Number(data.duration) : null;
+
+		return new Instance(this.client, data);
 	}
 
 	private async patch(data: Partial<InstanceData>) {
@@ -100,7 +125,11 @@ export default class InstanceManager extends Postgres {
 		this.test("guildId", data.guildId, { id: true });
 		this.test("type", data.type);
 
-		data.instanceId = await this.getId();
+		data.instanceId ??= await this.getId();
+		Object.entries(data).forEach(([key]) => {
+			// @ts-expect-error
+			data[key] ??= "NULL";
+		});
 
 		return data as InstanceData;
 	}
@@ -120,11 +149,15 @@ export default class InstanceManager extends Postgres {
 		return (res?.instanceId ?? 0) + 1;
 	}
 
-	private test(column: string, value: string | number | undefined, opt?: { id?: boolean; required?: boolean }): void;
-	private test(column: string, value: string | undefined, opt?: { id?: true; required?: boolean }): void;
+	private test(column: string, value: string | null | undefined, opt?: { id?: true; required?: boolean }): void;
 	private test(
 		column: string,
-		value: string | number | undefined,
+		value: string | number | null | undefined,
+		opt?: { id?: boolean; required?: boolean }
+	): void;
+	private test(
+		column: string,
+		value: string | number | null | undefined,
 		opt: { id?: boolean; required?: boolean } = { id: false, required: true }
 	): void {
 		opt.required ??= true;
