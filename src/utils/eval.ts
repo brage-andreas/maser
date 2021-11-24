@@ -1,5 +1,5 @@
 import type { CommandInteraction, EvalOutput } from "../typings.js";
-import type { Client } from "../extensions/";
+import type { Client } from "../modules";
 
 import Discord, { MessageEmbed, Message } from "discord.js";
 import { performance } from "perf_hooks";

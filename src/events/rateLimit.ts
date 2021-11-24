@@ -1,5 +1,5 @@
 import { RateLimitData } from "discord.js";
-import { Client } from "../extensions/index.js";
+import { Client } from "../modules/index.js";
 
 export async function execute(client: Client, object: RateLimitData) {
 	const { global, limit, method, path, route, timeout } = object;

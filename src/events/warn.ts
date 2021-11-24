@@ -1,4 +1,4 @@
-import { Client } from "../extensions/index.js";
+import { Client } from "../modules/index.js";
 
 export async function execute(client: Client, info: string) {
 	client.events.logger //

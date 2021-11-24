@@ -11,7 +11,7 @@ import type Discord, {
 } from "discord.js";
 import type { CommandLogger } from "./utils/logger/";
 import type ConfigManager from "./database/src/config/ConfigManager.js";
-import type { Client } from "./extensions/";
+import type { Client } from "./modules/";
 
 type AllowedConfigTextChannels = TextChannel | NewsChannel;
 
@@ -85,14 +85,14 @@ export interface ExistsResult {
 export interface InstanceData {
 	instanceId: number;
 	guildId: string;
-	referenceId?: number;
+	referenceId: number | null;
 	executorTag: string;
 	executorId: string;
-	targetTag?: string;
+	targetTag: string | null;
 	timestamp: number;
-	targetId?: string;
-	duration?: number;
-	reason?: string;
+	targetId: string | null;
+	duration: number | null;
+	reason: string | null;
 	type: InstanceTypes;
 }
 

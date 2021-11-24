@@ -1,6 +1,6 @@
 import type { ChatInputApplicationCommandData } from "discord.js";
 import type { CommandInteraction, Command } from "../../typings.js";
-import { ConfirmationButtons } from "../../extensions/ButtonManager.js";
+import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { INSTANCE_TYPES } from "../../constants.js";
 import { REASON, USER } from "./.methods.js";
 import InstanceManager from "../../database/src/instance/InstanceManager.js";

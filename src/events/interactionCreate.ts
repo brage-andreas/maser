@@ -1,5 +1,5 @@
 import type { CommandInteraction } from "../typings.js";
-import type { Client } from "../extensions/index.js";
+import type { Client } from "../modules/index.js";
 import { CommandLogger } from "../utils/logger/index.js";
 
 export async function execute(client: Client, intr: CommandInteraction) {

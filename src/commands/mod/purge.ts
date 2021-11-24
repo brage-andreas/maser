@@ -2,7 +2,7 @@ import type { ChatInputApplicationCommandData, NewsChannel, TextChannel } from "
 import type { CommandInteraction, Command } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { ConfirmationButtons } from "../../extensions/ButtonManager.js";
+import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 
 const options = {
 	private: true

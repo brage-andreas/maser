@@ -10,7 +10,7 @@ import type { CommandInteraction, Command } from "../../typings.js";
 
 import { DURATIONS, INSTANCE_TYPES } from "../../constants.js";
 import { DURATION, REASON, USER } from "./.methods.js";
-import { ConfirmationButtons } from "../../extensions/ButtonManager.js";
+import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import InstanceManager from "../../database/src/instance/InstanceManager.js";
 import ConfigManager from "../../database/src/config/ConfigManager.js";
 import Util from "../../utils/index.js";

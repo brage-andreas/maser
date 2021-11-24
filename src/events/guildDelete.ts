@@ -1,4 +1,4 @@
-import type { Client } from "../extensions/index.js";
+import type { Client } from "../modules/index.js";
 import type { Guild } from "discord.js";
 
 export async function execute(client: Client, guild: Guild) {

@@ -1,5 +1,5 @@
 import type { ExistsResult, PostgresOptions } from "../../typings.js";
-import type { Client } from "../../extensions/index.js";
+import type { Client } from "../../modules/index.js";
 
 import PostgresConnection from "./connection.js";
 import { REGEX } from "../../constants.js";
@@ -54,13 +54,15 @@ export default abstract class Postgres extends PostgresConnection {
 		return this.none(query);
 	}
 
-	protected async updateRow(columns: string[], newValues: string[]): Promise<void> {
-		const data = columns.map((column, i) => `"${column}"='${newValues[i]}'`);
+	protected async updateRow(columns: string[], newValues: string[], whereQuery?: string): Promise<void> {
+		const data = columns.map(
+			(column, i) => `"${column}"=${newValues[i] === "NULL" ? "NULL" : `'${newValues[i]}'`}`
+		);
 
 		const query = `
 			UPDATE ${this.schema}."${this.table}"
 			SET ${data.join(",\n")}
-			WHERE "${this.idKey}"=${this.id}
+			WHERE ${whereQuery ?? `"${this.idKey}"=${this.id}`}
         `;
 
 		return this.none(query);

@@ -3,7 +3,7 @@ import type { CommandInteraction, Command } from "../../typings.js";
 
 import { MessageAttachment, MessageButton } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { ButtonManager } from "../../extensions/index.js";
+import { ButtonManager } from "../../modules/index.js";
 import evaluate from "../../utils/eval.js";
 import Util from "../../utils/index.js";
 
