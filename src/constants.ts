@@ -81,6 +81,7 @@ export const COLORS = {
 	black: "#000000",
 	green: "#5AD658",
 	white: "#FFFFFF",
+	blue: "#5591FF",
 	red: "#FF5733"
 } as const;
 
@@ -173,7 +174,8 @@ export enum INSTANCE_TYPES {
 	Kick = 1,
 	Softban = 2,
 	Mute = 3,
-	Warn = 4
+	Warn = 4,
+	Unban = 5
 }
 
 export default {
