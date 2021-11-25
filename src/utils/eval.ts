@@ -8,15 +8,13 @@ import Util from "./index.js";
 import ms from "ms";
 
 const stringify = (output: any): string => {
-	if (!output) return `${output}`;
-	if (typeof output === "function") return output.toString();
-
-	return JSON.stringify(output, null, 2) ?? "Something went wrong with the output";
+	const replacer = (_: string, value: any) => (typeof value === "function" || output == null ? `${value}` : value);
+	return JSON.stringify(output, replacer, 2) ?? "Something went wrong with the output";
 };
 
-const parse = (string: string, label: string, embedStyle?: string) => {
+const parse = (string: string, prefix: string, embedStyle?: string | null) => {
 	if (!string.length) return null;
-	return Util.fitCodeblock(string, { label, lang: embedStyle ?? "js", size: 4096 });
+	return Util.mergeForCodeblock(string, { prefix, lang: embedStyle === undefined ? "js" : null });
 };
 
 export default async function evaluate(code: string, that: CommandInteraction | Message) {
@@ -70,7 +68,7 @@ export default async function evaluate(code: string, that: CommandInteraction | 
 		const msg = error.stack ?? error.toString();
 
 		const parsedInput = parse(code, `${emInput} **Input**`);
-		const parsedError = parse(msg, `${emError} **Error**`, "");
+		const parsedError = parse(msg, `${emError} **Error**`, null);
 
 		const errorInputEmbed = new MessageEmbed()
 			.setAuthor(authorName, authorAvatar)
