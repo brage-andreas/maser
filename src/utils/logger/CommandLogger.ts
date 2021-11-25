@@ -104,19 +104,19 @@ export default class CommandLogger extends BaseLogger {
 			if (!this.interaction) return; // not really needed - mostly for TS
 			if (!channel) return;
 
-			const prefix = `\`${this.interaction.toString()}\`\n`;
+			const commandStr = `\`${this.interaction.toString()}\`\n`;
 
 			let embeds: MessageEmbed[] = [];
 
 			if (logLevel === 2) {
 				embeds = messages.map((msg, i) => {
-					const label = i === 0 ? prefix : "";
-					msg = Util.fitCodeblock(msg, { label, size: 4096 });
+					const prefix = i === 0 ? commandStr : "";
+					msg = Util.mergeForCodeblock(msg, { prefix });
 
 					return createEmbed(msg, i, messages.length);
 				});
 			} else {
-				embeds.push(createEmbed(prefix));
+				embeds.push(createEmbed(commandStr));
 			}
 
 			channel.send({ embeds }).catch(() => null);
