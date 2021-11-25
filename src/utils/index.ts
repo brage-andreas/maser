@@ -67,20 +67,34 @@ export default class Util {
 	/**
 	 * Makes sure any given pair of label and codeblock fits within given size.
 	 */
-	public static fitCodeblock(code: string, options?: { label?: string; lang?: string; size?: number }): string {
-		let { label, lang, size } = options ?? {};
+	public static mergeForCodeblock(
+		input: string,
+		options?: {
+			prefix?: string | null | undefined;
+			suffix?: string | null | undefined;
+			maxLen?: number | null | undefined;
+			lang?: string | null | undefined;
+		}
+	): string {
+		if (!input.length) throw new Error("input cannot be empty string");
 
-		const CODEBLOCK_LEN = 8;
+		const maxLen = options?.maxLen ?? MAX_EMBED_DESCRIPTION_LEN;
+		const prefix = options?.prefix ?? "";
+		const suffix = options?.suffix ?? "";
+		const lang = options?.lang ?? "";
 
-		label = !!label ? label + "\n" : "";
-		size ??= 2000;
-		lang ??= "";
+		const createString = (input?: string) => {
+			return `${prefix}\n` + `\`\`\`${lang}\n` + (input ?? "") + `\n\`\`\`\n` + suffix;
+		};
 
-		const totalLen = label.length + code.length + lang.length + CODEBLOCK_LEN;
-		const maxLen = size - label.length - lang.length - CODEBLOCK_LEN;
+		const lenWithoutInput = createString().length;
+		let string = createString(input);
 
-		if (totalLen > MAX_EMBED_DESCRIPTION_LEN) code = code.slice(0, maxLen - 3) + "...";
+		if (string.length > maxLen) {
+			const lenLeftForInput = maxLen - lenWithoutInput;
+			string = createString(input.slice(0, lenLeftForInput - 3) + "...");
+		}
 
-		return `${label}\`\`\`${lang}\n${code}\n\`\`\``;
+		return string;
 	}
 }
