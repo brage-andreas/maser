@@ -5,18 +5,22 @@ import PostgresConnection from "./connection.js";
 import { REGEX } from "../../constants.js";
 
 export default abstract class Postgres extends PostgresConnection {
-	protected idKey: string;
-	protected id: string;
+	public client: Client;
+	protected idValue: string;
 	protected schema: string;
+	protected idKey: string;
 	protected table: string;
 
 	constructor(client: Client, options: PostgresOptions) {
-		super(client);
+		super();
 
-		if (!REGEX.ID.test(options.id))
-			throw new TypeError(`Provided id is not a valid id (reading: "${options.id}")"`);
+		if (!REGEX.ID.test(options.id)) {
+			throw new TypeError(`Provided argument for idValue is not a valid ID (reading: "${options.id}")"`);
+		}
 
-		this.id = options.id;
+		this.client = client;
+		this.idValue = options.id;
+
 		this.schema = options?.schema ?? null;
 		this.table = options?.table ?? null;
 		this.idKey = options.idKey;
@@ -33,7 +37,7 @@ export default abstract class Postgres extends PostgresConnection {
 			SELECT EXISTS (
 				SELECT 1
 				FROM ${this.schema}."${this.table}"
-				WHERE "${this.idKey}"=${this.id}
+				WHERE "${this.idKey}"=${this.idValue}
 			)
 		`;
 
@@ -62,7 +66,7 @@ export default abstract class Postgres extends PostgresConnection {
 		const query = `
 			UPDATE ${this.schema}."${this.table}"
 			SET ${data.join(",\n")}
-			WHERE ${whereQuery ?? `"${this.idKey}"=${this.id}`}
+			WHERE ${whereQuery ?? `"${this.idKey}"=${this.idValue}`}
         `;
 
 		return this.none(query);
