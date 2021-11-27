@@ -6,10 +6,10 @@ import { MessageEmbed } from "discord.js";
 import ms from "ms";
 
 export default class Instance {
-	public client: Client;
+	public readonly client: Client;
 	public data: InstanceData;
 
-	// Data
+	// Data shorthands
 	public referenceId: number | null;
 	public timestamp: number;
 	public reason: string | null;
@@ -66,6 +66,17 @@ export default class Instance {
 			tag: this.data.targetTag,
 			id: this.data.targetId
 		};
+	}
+
+	public get messageURL() {
+		return this.data.url;
+	}
+
+	public post() {
+		// TODO
+		// * find mod log channel
+		// * send message, store URL
+		// * update URL in
 	}
 
 	public toEmbed(): MessageEmbed {
