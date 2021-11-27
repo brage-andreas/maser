@@ -1,8 +1,8 @@
 import type { Guild, GuildMember } from "discord.js";
 import type { Client } from "../../modules";
 
-import { MessageEmbed } from "discord.js";
 import { LOGGER_TYPES } from "../../constants.js";
+import { MessageEmbed } from "../../modules/";
 import ConfigManager from "../../database/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";
 import Util from "../index.js";
@@ -50,8 +50,7 @@ export default class EventLogger extends BaseLogger {
 			`Joined: ${member.joinedAt ? Util.date(member.joinedAt) : "Date not found"}`;
 
 		const embed = new MessageEmbed()
-			.setTimestamp()
-			.setAuthor(`${member.user.tag} (${member.id})`, member.user.displayAvatarURL())
+			.setAuthor(`${member.user.tag} (${member.id})`, member.displayAvatarURL())
 			.setColor(color)
 			.setFooter(footer)
 			.setDescription(descriptionStr);

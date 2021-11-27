@@ -2,7 +2,7 @@ import type { ChatInputApplicationCommandData, GuildMember } from "discord.js";
 import type { CommandInteraction, Command } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { MessageEmbed } from "discord.js";
+import { MessageEmbed } from "../../modules/";
 import { USER_FLAGS } from "../../constants.js";
 import Util from "../../utils/index.js";
 
@@ -66,12 +66,7 @@ async function execute(intr: CommandInteraction) {
 	const roles = getRoles(member);
 	const name = member?.displayName ?? user.tag;
 
-	const userEmbed = new MessageEmbed()
-		.setAuthor(`${intr.user.tag} (${intr.user.id})`, intr.user.displayAvatarURL())
-		.setTimestamp()
-		.setColor(color)
-		.setThumbnail(avatar)
-		.setTitle(name);
+	const userEmbed = new MessageEmbed(intr).setColor(color).setThumbnail(avatar).setTitle(name);
 
 	if (member) userEmbed.addField("Tag", tag);
 	userEmbed.addField("ID", id);

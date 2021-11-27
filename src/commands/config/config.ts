@@ -3,7 +3,7 @@ import type { ChatInputApplicationCommandData } from "discord.js";
 
 import { CONFIG_OPTIONS, CONFIG_RESULT_KEYS } from "../../constants.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { MessageEmbed } from "discord.js";
+import { MessageEmbed } from "../../modules/";
 import ConfigManager from "../../database/ConfigManager.js";
 import methods from "./.methods.js";
 
@@ -56,11 +56,7 @@ async function execute(intr: CommandInteraction) {
 	if (method === "view-config") {
 		const res = await config.getAll();
 
-		const configEmbed = new MessageEmbed()
-			.setAuthor(`${intr.user.tag} (${intr.user.id})`, intr.member.displayAvatarURL())
-			.setColor(intr.client.colors.yellow)
-			.setTitle("Your config")
-			.setTimestamp();
+		const configEmbed = new MessageEmbed(intr).setTitle("Your config");
 
 		for (let [key, value] of Object.entries(res)) {
 			key = CONFIG_RESULT_KEYS[key as ConfigColumns];

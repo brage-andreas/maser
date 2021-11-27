@@ -2,7 +2,7 @@ import type { ChatInputApplicationCommandData, Guild } from "discord.js";
 import type { CommandInteraction, Command } from "../../typings.js";
 
 import { BOOST_LEVELS } from "../../constants.js";
-import { MessageEmbed } from "discord.js";
+import { MessageEmbed } from "../../modules/";
 import Util from "../../utils/index.js";
 
 const data: ChatInputApplicationCommandData = {
@@ -69,12 +69,7 @@ async function execute(intr: CommandInteraction) {
 
 	const emojisAndStickerStr = getEmojisAndStickers(guild);
 
-	const guildEmbed = new MessageEmbed()
-		.setAuthor(`${intr.user.tag} (${intr.user.id})`, intr.user.displayAvatarURL())
-		.setColor(intr.client.colors.green)
-		.setThumbnail(icon)
-		.setTimestamp()
-		.setTitle(name);
+	const guildEmbed = new MessageEmbed(intr).setThumbnail(icon).setTitle(name);
 
 	if (partnered && !verified) guildEmbed.setDescription(`A Discord partner ${vanityStr}`);
 	if (verified) guildEmbed.setDescription(`A verified server ${vanityStr}`);

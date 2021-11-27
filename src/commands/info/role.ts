@@ -2,7 +2,8 @@ import type { ChatInputApplicationCommandData } from "discord.js";
 import type { CommandInteraction, Command } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { MessageEmbed, Role } from "discord.js";
+import { MessageEmbed } from "../../modules/";
+import { Role } from "discord.js";
 import Util from "../../utils/index.js";
 
 const data: ChatInputApplicationCommandData = {
@@ -52,11 +53,9 @@ async function execute(intr: CommandInteraction) {
 		? "I cannot get an accurate number"
 		: `${role.members.size} ${applyS("member", role.members.size)}`;
 
-	const roleEmbed = new MessageEmbed()
-		.setAuthor(`${intr.user.tag} (${intr.user.id})`, intr.user.displayAvatarURL())
+	const roleEmbed = new MessageEmbed(intr)
 		.setColor(getColor(role.hexColor))
 		.setTitle(role.name)
-		.setTimestamp()
 		.addField("Created", Util.date(role.createdTimestamp))
 		.addField("Members", memberCount)
 		.addField("Hoisted", role.hoist ? "Yes" : "No")

@@ -2,7 +2,7 @@ import type { AllowedImageSize, ChatInputApplicationCommandData } from "discord.
 import type { Command, CommandInteraction } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { MessageEmbed } from "discord.js";
+import { MessageEmbed } from "../../modules/";
 
 const sizeChoices = [16, 32, 64, 128, 256, 300, 512, 600, 1024, 2048, 4096].map((size) => {
 	return {
@@ -72,13 +72,7 @@ async function execute(intr: CommandInteraction) {
 
 	description.push(`[png](${png}) [jpg](${jpg}) [webp](${webp})`);
 
-	const embed = new MessageEmbed()
-		.setAuthor(intr.user.tag, intr.user.displayAvatarURL())
-		.setColor(intr.client.colors.green)
-		.setDescription(description.join(" "))
-		.setTitle(nameStr)
-		.setImage(dynamic)
-		.setTimestamp();
+	const embed = new MessageEmbed(intr).setDescription(description.join(" ")).setTitle(nameStr).setImage(dynamic);
 
 	intr.editReply({ embeds: [embed] });
 

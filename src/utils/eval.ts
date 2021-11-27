@@ -1,7 +1,8 @@
 import type { CommandInteraction, EvalOutput } from "../typings.js";
 import type { Client } from "../modules";
 
-import Discord, { MessageEmbed, Message } from "discord.js";
+import Discord from "discord.js";
+import { MessageEmbed } from "../modules";
 import { performance } from "perf_hooks";
 import { REGEX } from "../constants.js";
 import Util from "./index.js";
@@ -17,11 +18,7 @@ const parse = (string: string, prefix: string, embedStyle?: string | null) => {
 	return Util.mergeForCodeblock(string, { prefix, lang: embedStyle === undefined ? "js" : null });
 };
 
-export default async function evaluate(code: string, that: CommandInteraction | Message) {
-	const author = that instanceof Message ? that.author : that.user;
-	const authorName = `${author.tag} (${author.id})`;
-	const authorAvatar = author.displayAvatarURL();
-
+export default async function evaluate(code: string, that: CommandInteraction) {
 	const client = that.client as Client;
 	Discord; // "ReferenceError: Discord is not defined" if not here
 
@@ -43,18 +40,11 @@ export default async function evaluate(code: string, that: CommandInteraction | 
 		const parsedInput = parse(code, `${emInput} **Input**`);
 		const parsedOutput = parse(stringedOutput, `${emSuccess} **Output**`);
 
-		const successInputEmbed = new MessageEmbed()
-			.setAuthor(authorName, authorAvatar)
-			.setColor(client.colors.green)
-			.setDescription(parsedInput ?? "No input")
-			.setTimestamp();
+		const successInputEmbed = new MessageEmbed(that).setDescription(parsedInput ?? "No input");
 
-		const successOutputEmbed = new MessageEmbed()
-			.setAuthor(authorName, authorAvatar)
-			.setColor(client.colors.green)
+		const successOutputEmbed = new MessageEmbed(that)
 			.setDescription(parsedOutput ?? "No output")
-			.setFooter(`${timeTaken} • ${type} (${constructor})`)
-			.setTimestamp();
+			.setFooter(`${timeTaken} • ${type} (${constructor})`);
 
 		const output: EvalOutput = {
 			embeds: [successInputEmbed, successOutputEmbed],
@@ -70,18 +60,14 @@ export default async function evaluate(code: string, that: CommandInteraction | 
 		const parsedInput = parse(code, `${emInput} **Input**`);
 		const parsedError = parse(msg, `${emError} **Error**`, null);
 
-		const errorInputEmbed = new MessageEmbed()
-			.setAuthor(authorName, authorAvatar)
+		const errorInputEmbed = new MessageEmbed(that)
 			.setColor(client.colors.red)
-			.setDescription(parsedInput ?? "No input")
-			.setTimestamp();
+			.setDescription(parsedInput ?? "No input");
 
-		const errorOutputEmbed = new MessageEmbed()
-			.setAuthor(authorName, authorAvatar)
+		const errorOutputEmbed = new MessageEmbed(that)
 			.setColor(client.colors.red)
 			.setDescription(parsedError ?? "No error")
-			.setFooter("Evaluation failed")
-			.setTimestamp();
+			.setFooter("Evaluation failed");
 
 		const output: EvalOutput = {
 			embeds: [errorInputEmbed, errorOutputEmbed],

@@ -2,7 +2,7 @@
 
 import type { AllowedConfigTextChannels, ConfigCommandData } from "../../typings.js";
 import type { Role } from "discord.js";
-import { MessageEmbed } from "discord.js";
+import { MessageEmbed } from "../../modules/";
 
 export default async function logs(data: ConfigCommandData) {
 	const { config, intr, method, option } = data;
@@ -24,10 +24,7 @@ export default async function logs(data: ConfigCommandData) {
 				? getValueStr(role, emAt)
 				: `${emEmptyFile} Not set`;
 
-			const viewOptionEmbed = new MessageEmbed()
-				.setAuthor(intr.user.tag, intr.member.displayAvatarURL())
-				.setColor(intr.client.colors.green)
-				.addField(option, valueStr);
+			const viewOptionEmbed = new MessageEmbed(intr).addField(option, valueStr);
 
 			intr.editReply({ embeds: [viewOptionEmbed] });
 
@@ -47,10 +44,7 @@ export default async function logs(data: ConfigCommandData) {
 				? `${emFileGreen} New value: ${res} (${res.id})`
 				: `${emEmptyFile} Removed value`;
 
-			const viewOptionEmbed = new MessageEmbed()
-				.setAuthor(intr.user.tag, intr.member.displayAvatarURL())
-				.setColor(intr.client.colors.green)
-				.addField(option, updatedValueStr);
+			const viewOptionEmbed = new MessageEmbed(intr).addField(option, updatedValueStr);
 
 			intr.editReply({ embeds: [viewOptionEmbed] });
 

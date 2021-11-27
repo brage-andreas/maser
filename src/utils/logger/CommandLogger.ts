@@ -1,8 +1,8 @@
 import type { Guild, TextBasedChannels, User } from "discord.js";
 import type { CommandInteraction } from "../../typings.js";
 
-import { LOGGER_TYPES } from "../../constants.js";
-import { MessageEmbed } from "discord.js";
+import { COLORS, LOGGER_TYPES } from "../../constants.js";
+import { MessageEmbed } from "../../modules/";
 import ConfigManager from "../../database/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";
 import { gray } from "./LoggerColors.js";
@@ -87,10 +87,7 @@ export default class CommandLogger extends BaseLogger {
 		const createEmbed = (description: string, index = 0, total = 1) => {
 			const { user } = this.interaction!;
 
-			const embed = new MessageEmbed()
-				.setColor(this.interaction!.client.colors.invisible)
-				.setDescription(description)
-				.setTimestamp();
+			const embed = new MessageEmbed().setColor(COLORS.invisible).setDescription(description);
 
 			if (index === 0) embed.setAuthor(`${user.tag} (${user.id})`);
 			if (total > 1) embed.setFooter(`${index + 1}/${total}`);
