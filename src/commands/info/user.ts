@@ -53,7 +53,7 @@ async function execute(intr: CommandInteraction) {
 
 	const rawFlags = (await user.fetchFlags()).toArray();
 	const created = Util.date(user.createdTimestamp);
-	const avatar = user.displayAvatarURL({ size: 2048, dynamic: true });
+	const avatar = (member ?? user).displayAvatarURL({ size: 2048, dynamic: true });
 	const flags = rawFlags.map((flag) => USER_FLAGS[flag] ?? flag);
 	const bot = user.bot;
 	const tag = user.tag;
