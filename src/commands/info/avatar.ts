@@ -84,16 +84,18 @@ async function execute(intr: CommandInteraction) {
 
 	const buttonManager = new ButtonManager();
 	const outputButton = new MessageButton() //
-		.setLabel("Normal avatar")
+		.setDisabled(!includeGuildAvatar)
 		.setCustomId("user")
+		.setLabel("User avatar")
 		.setStyle("SECONDARY")
-		.setDisabled(!includeGuildAvatar);
+		.setEmoji("🙃");
 
 	const codeButton = new MessageButton() //
-		.setLabel("Guild avatar")
+		.setDisabled(includeGuildAvatar)
 		.setCustomId("member")
+		.setLabel("Guild avatar")
 		.setStyle("SECONDARY")
-		.setDisabled(includeGuildAvatar);
+		.setEmoji(intr.client.systemEmojis.emCrown);
 
 	if (hasGuildAvatar) {
 		buttonManager.setRows(outputButton, codeButton).setUser(intr.user);
