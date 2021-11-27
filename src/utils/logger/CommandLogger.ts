@@ -2,7 +2,7 @@ import type { Guild, TextBasedChannels, User } from "discord.js";
 import type { CommandInteraction } from "../../typings.js";
 
 import { COLORS, LOGGER_TYPES } from "../../constants.js";
-import { MessageEmbed } from "../../modules/";
+import { MessageEmbed } from "../../modules/index.js";
 import ConfigManager from "../../database/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";
 import { gray } from "./LoggerColors.js";

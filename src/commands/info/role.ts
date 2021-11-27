@@ -2,7 +2,7 @@ import type { ChatInputApplicationCommandData } from "discord.js";
 import type { CommandInteraction, Command } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { MessageEmbed } from "../../modules/";
+import { MessageEmbed } from "../../modules/index.js";
 import { Role } from "discord.js";
 import Util from "../../utils/index.js";
 

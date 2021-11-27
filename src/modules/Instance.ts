@@ -2,7 +2,7 @@ import type { InstanceData } from "../typings.js";
 import type { Client } from "./index.js";
 
 import { INSTANCE_TYPES } from "../constants.js";
-import { MessageEmbed } from "./";
+import { MessageEmbed } from "./index.js";
 import ms from "ms";
 
 export default class Instance {

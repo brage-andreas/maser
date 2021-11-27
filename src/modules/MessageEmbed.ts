@@ -1,5 +1,5 @@
 import type { CommandInteraction } from "../typings.js";
-import { COLORS } from "../constants";
+import { COLORS } from "../constants.js";
 import Discord from "discord.js";
 
 export default class MessageEmbed extends Discord.MessageEmbed {

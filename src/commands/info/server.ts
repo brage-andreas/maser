@@ -2,7 +2,7 @@ import type { ChatInputApplicationCommandData, Guild } from "discord.js";
 import type { CommandInteraction, Command } from "../../typings.js";
 
 import { BOOST_LEVELS } from "../../constants.js";
-import { MessageEmbed } from "../../modules/";
+import { MessageEmbed } from "../../modules/index.js";
 import Util from "../../utils/index.js";
 
 const data: ChatInputApplicationCommandData = {

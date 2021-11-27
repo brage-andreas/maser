@@ -2,7 +2,7 @@ import type { AllowedImageSize, ChatInputApplicationCommandData } from "discord.
 import type { Command, CommandInteraction } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { MessageEmbed } from "../../modules/";
+import { MessageEmbed } from "../../modules/index.js";
 
 const sizeChoices = [16, 32, 64, 128, 256, 512, 1024, 2048, 4096].map((size) => {
 	return {

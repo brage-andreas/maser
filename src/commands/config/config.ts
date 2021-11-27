@@ -3,7 +3,7 @@ import type { ChatInputApplicationCommandData } from "discord.js";
 
 import { CONFIG_OPTIONS, CONFIG_RESULT_KEYS } from "../../constants.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { MessageEmbed } from "../../modules/";
+import { MessageEmbed } from "../../modules/index.js";
 import ConfigManager from "../../database/ConfigManager.js";
 import methods from "./.methods.js";
 

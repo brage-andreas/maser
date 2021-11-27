@@ -1,10 +1,10 @@
 import type { CommandInteraction, EvalOutput } from "../typings.js";
 import type { Client } from "../modules";
 
-import Discord from "discord.js";
-import { MessageEmbed } from "../modules";
+import { MessageEmbed } from "../modules/index.js";
 import { performance } from "perf_hooks";
 import { REGEX } from "../constants.js";
+import Discord from "discord.js";
 import Util from "./index.js";
 import ms from "ms";
 
