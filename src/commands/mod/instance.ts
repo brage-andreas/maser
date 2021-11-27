@@ -3,7 +3,7 @@ import type { CommandInteraction, Command, InstanceData } from "../../typings.js
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { INSTANCE_TYPES } from "../../constants.js";
-import InstanceManager from "../../database/src/instance/InstanceManager.js";
+import InstanceManager from "../../database/InstanceManager.js";
 import ms from "ms";
 
 const options = {

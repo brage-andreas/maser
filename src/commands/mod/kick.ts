@@ -3,7 +3,7 @@ import type { CommandInteraction, Command } from "../../typings.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { INSTANCE_TYPES } from "../../constants.js";
 import { REASON, USER } from "./.methods.js";
-import InstanceManager from "../../database/src/instance/InstanceManager.js";
+import InstanceManager from "../../database/InstanceManager.js";
 
 const data: ChatInputApplicationCommandData = {
 	name: "kick",

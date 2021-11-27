@@ -1,10 +1,10 @@
-import type { InstanceData, InstanceIdResult } from "../../../typings.js";
-import type { Client } from "../../../modules/index.js";
+import type { InstanceData, InstanceIdResult } from "../typings.js";
+import type { Client } from "../modules/index.js";
 
-import { Instance } from "../../../modules/index.js";
-import InfoLogger from "../../../utils/logger/InfoLogger.js";
-import { REGEX } from "../../../constants.js";
-import Postgres from "../postgres.js";
+import { Instance } from "../modules/index.js";
+import InfoLogger from "../utils/logger/InfoLogger.js";
+import { REGEX } from "../constants.js";
+import Postgres from "./src/postgres.js";
 
 export default class InstanceManager extends Postgres {
 	private initialised = false;
@@ -15,7 +15,7 @@ export default class InstanceManager extends Postgres {
 
 	public async initialise(): Promise<this> {
 		const query = `
-            CREATE TABLE IF NOT EXISTS guilds."instances-${this.id}"
+            CREATE TABLE IF NOT EXISTS guilds."instances-${this.idValue}"
             (
                 "instanceId" integer NOT NULL,
 				"guildId" bigint NOT NULL,
@@ -26,10 +26,12 @@ export default class InstanceManager extends Postgres {
 				"timestamp" bigint NOT NULL,
 				"targetId" bigint,
 				"duration" bigint,
+				"edited" boolean NOT NULL,
 				"reason" text,
 				"type" integer NOT NULL,
+				"url" text,
 
-                CONSTRAINT "instances-${this.id}_pkey" PRIMARY KEY ("instanceId")
+                CONSTRAINT "instances-${this.idValue}_pkey" PRIMARY KEY ("instanceId")
             )
         `;
 
@@ -62,12 +64,12 @@ export default class InstanceManager extends Postgres {
 
 	public async getInstance(instanceId: string | number): Promise<Instance | null> {
 		if (!this.initialised) throw new Error("InstanceManager must be initialised before use");
-		if (!this.id) throw new Error("Guild id must be set");
+		if (!this.idValue) throw new Error("Guild id must be set");
 
 		const query = `
 			SELECT *
 			FROM ${this.schema}."${this.table}"
-			WHERE "guildId" = ${this.id}
+			WHERE "guildId" = ${this.idValue}
 			AND "${this.idKey}" = ${instanceId}
 		`;
 
@@ -97,7 +99,7 @@ export default class InstanceManager extends Postgres {
 		const query = `
 			SELECT *
 			FROM ${this.schema}."${this.table}"
-			WHERE "guildId" = ${this.id}
+			WHERE "guildId" = ${this.idValue}
 			AND "${this.idKey}" = ${instanceId}
 		`;
 
@@ -116,7 +118,7 @@ export default class InstanceManager extends Postgres {
 
 	private async patch(data: Partial<InstanceData>) {
 		data.timestamp ??= Date.now();
-		data.guildId ??= this.id ?? undefined;
+		data.guildId ??= this.idValue ?? undefined;
 
 		this.test("executorTag", data.executorTag);
 		this.test("executorId", data.executorId, { id: true });
@@ -139,7 +141,7 @@ export default class InstanceManager extends Postgres {
 			SELECT "${this.idKey}" FROM (
 				SELECT "${this.idKey}"
 				FROM ${this.schema}."${this.table}"
-                WHERE "guildId" = ${this.id}
+                WHERE "guildId" = ${this.idValue}
 				ORDER BY "${this.idKey}" DESC
 				LIMIT 1
 			) AS _ ORDER BY "${this.idKey}" ASC;

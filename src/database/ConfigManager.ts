@@ -1,6 +1,6 @@
-import type { AllowedConfigTextChannels, ConfigColumns, ConfigResult } from "../../../typings.js";
-import type { Client } from "../../../modules/index.js";
-import Postgres from "../postgres.js";
+import type { AllowedConfigTextChannels, ConfigColumns, ConfigResult } from "../typings.js";
+import type { Client } from "../modules/index.js";
+import Postgres from "./src/postgres.js";
 import { Role } from "discord.js";
 
 export default class ConfigManager extends Postgres {
@@ -18,7 +18,7 @@ export default class ConfigManager extends Postgres {
 	}
 
 	public async getChannel(): Promise<AllowedConfigTextChannels | null> {
-		if (!this.id) throw new Error("Guild id must be set to the ConfigManager");
+		if (!this.idValue) throw new Error("Guild id must be set to the ConfigManager");
 		if (!this.key) throw new Error("Key must be set to the ConfigManager");
 
 		const id = await this.getAll().then((result) => {
@@ -26,7 +26,7 @@ export default class ConfigManager extends Postgres {
 		});
 		if (!id) return null;
 
-		const guild = this.client.guilds.cache.get(this.id);
+		const guild = this.client.guilds.cache.get(this.idValue);
 		if (!guild) return null;
 
 		const channel = guild.channels.cache.get(id) as AllowedConfigTextChannels | undefined;
@@ -34,7 +34,7 @@ export default class ConfigManager extends Postgres {
 	}
 
 	public async getRole(): Promise<Role | null> {
-		if (!this.id) throw new Error("Guild id must be set to the ConfigManager");
+		if (!this.idValue) throw new Error("Guild id must be set to the ConfigManager");
 		if (!this.key) throw new Error("Key must be set to the ConfigManager");
 
 		const id = await this.getAll().then((result) => {
@@ -42,7 +42,7 @@ export default class ConfigManager extends Postgres {
 		});
 		if (!id) return null;
 
-		const guild = this.client.guilds.cache.get(this.id);
+		const guild = this.client.guilds.cache.get(this.idValue);
 		if (!guild) return null;
 
 		return guild.roles.cache.get(id) ?? null;
@@ -51,19 +51,19 @@ export default class ConfigManager extends Postgres {
 	public async set(value: string, key?: ConfigColumns): Promise<void> {
 		if (!key && !this.key) throw new Error("Key must be set or provided to the ConfigManager");
 
-		await this.still([this.idKey], [this.id]);
+		await this.still([this.idKey], [this.idValue]);
 
 		return this.updateRow([key ?? this.key!], [value]);
 	}
 
 	public async getAll(): Promise<ConfigResult> {
-		if (!this.id) throw new Error("Guild id must be set to the ConfigManager");
-		await this.still([this.idKey], [this.id]);
+		if (!this.idValue) throw new Error("Guild id must be set to the ConfigManager");
+		await this.still([this.idKey], [this.idValue]);
 
 		const query = `
             SELECT *
             FROM ${this.schema}."${this.table}"
-            WHERE "guildId" = ${this.id}
+            WHERE "guildId" = ${this.idValue}
         `;
 
 		return this.one<ConfigResult>(query);

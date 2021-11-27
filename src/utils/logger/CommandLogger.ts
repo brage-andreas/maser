@@ -3,7 +3,7 @@ import type { CommandInteraction } from "../../typings.js";
 
 import { LOGGER_TYPES } from "../../constants.js";
 import { MessageEmbed } from "discord.js";
-import ConfigManager from "../../database/src/config/ConfigManager.js";
+import ConfigManager from "../../database/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";
 import { gray } from "./LoggerColors.js";
 import Util from "../index.js";
