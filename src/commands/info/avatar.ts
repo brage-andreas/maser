@@ -40,9 +40,12 @@ async function execute(intr: CommandInteraction) {
 	const includeGuildAvatar = intr.options.getBoolean("guild-avatar") ?? true;
 	const member = intr.options.getMember("user");
 	const size = (intr.options.getInteger("size") ?? 2048) as AllowedImageSize;
-	const user = intr.options.getUser("user") ?? intr.user;
+	const user = intr.options.getUser("user");
 
-	const target = includeGuildAvatar && member ? member : user;
+	const memberTarget = user ? member : intr.member;
+	const userTarget = user ?? intr.user;
+
+	const target = includeGuildAvatar ? memberTarget ?? userTarget : userTarget;
 
 	const baseURL = target.displayAvatarURL();
 	const base = baseURL.split(".").slice(0, -1).join(".");
@@ -54,7 +57,7 @@ async function execute(intr: CommandInteraction) {
 	const jpg = getURL("jpg");
 	const dynamic = target.displayAvatarURL({ size, dynamic: true });
 
-	const name = member && !member.pending ? member.displayName : user.username;
+	const name = memberTarget && !memberTarget.pending ? memberTarget.displayName : userTarget.username;
 	const nameStr = name.endsWith("s") || name.endsWith("z") ? `${name}' avatar` : `${name}'s avatar`;
 
 	const description: string[] = [];
@@ -74,7 +77,7 @@ async function execute(intr: CommandInteraction) {
 
 	intr.editReply({ embeds: [embed] });
 
-	intr.logger.log(`Sent avatar of ${user.tag} (${user.id})`);
+	intr.logger.log(`Sent avatar of ${userTarget.tag} (${userTarget.id})`);
 }
 
 export const getCommand = () => ({ data, execute } as Partial<Command>);
