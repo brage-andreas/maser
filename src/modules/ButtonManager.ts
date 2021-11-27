@@ -89,16 +89,16 @@ export default class ButtonManager {
 	/**
 	 * Disables one or more buttons on this interaction.
 	 */
-	public disable(intr: MessageComponentInteraction, ...customIds: string[]): this {
-		this._toggleButtons(intr, customIds, true);
+	public disable(...customIds: string[]): this {
+		this._toggleButtons(customIds, true);
 		return this;
 	}
 
 	/**
 	 * Enables one or more buttons on this interaction.
 	 */
-	public enable(intr: MessageComponentInteraction, ...customIds: string[]): this {
-		this._toggleButtons(intr, customIds, false);
+	public enable(...customIds: string[]): this {
+		this._toggleButtons(customIds, false);
 		return this;
 	}
 
@@ -131,9 +131,9 @@ export default class ButtonManager {
 	}
 
 	/**
-	 * Toggles one or more buttons on or off, and updates the interaction with the new buttons.
+	 * Toggles one or more buttons on or off.
 	 */
-	private _toggleButtons(intr: MessageComponentInteraction, customIds: string[], disable: boolean) {
+	private _toggleButtons(customIds: string[], disable: boolean) {
 		this.rows = this.rows.map((row) => {
 			row.components = row.components.map((button) => {
 				if (button.customId && customIds.includes(button.customId)) {
@@ -143,8 +143,6 @@ export default class ButtonManager {
 			});
 			return row;
 		});
-
-		intr.update({ components: this.rows });
 	}
 }
 

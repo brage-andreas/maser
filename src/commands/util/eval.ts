@@ -64,7 +64,9 @@ async function execute(intr: CommandInteraction) {
 
 				interaction.followUp({ files: [attachment] });
 
-				buttonManager.disable(interaction, "output");
+				buttonManager.disable("output");
+				interaction.update({ components: buttonManager.rows });
+
 				intr.logger.log(`Sent output as an attachment:\n${Util.indent(output)}`);
 			}
 			//
@@ -73,7 +75,9 @@ async function execute(intr: CommandInteraction) {
 
 				interaction.followUp({ files: [attachment] });
 
-				buttonManager.disable(interaction, "code");
+				buttonManager.disable("code");
+				interaction.update({ components: buttonManager.rows });
+
 				intr.logger.log(`Sent code as an attachment:\n${Util.indent(code)}`);
 			}
 		});
