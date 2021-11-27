@@ -83,14 +83,14 @@ async function execute(intr: CommandInteraction) {
 	const embed = new MessageEmbed(intr).setTitle("Avatar").setDescription(description).setImage(avatar);
 
 	const buttonManager = new ButtonManager();
-	const outputButton = new MessageButton() //
+	const outputButton = new MessageButton()
 		.setDisabled(!includeGuildAvatar)
 		.setCustomId("user")
 		.setLabel("User avatar")
 		.setStyle("SECONDARY")
 		.setEmoji("🙃");
 
-	const codeButton = new MessageButton() //
+	const codeButton = new MessageButton()
 		.setDisabled(includeGuildAvatar)
 		.setCustomId("member")
 		.setLabel("Guild avatar")
