@@ -1,19 +1,13 @@
 import type { ExistsResult, PgResponses } from "../../typings.js";
-import type { Client } from "../../modules/index.js";
 import postgres from "pg-promise";
 
 // This will error with "Error: connect ECONNREFUSED 127.0.0.1:5432"
 // if you don't have postgres installed
-const connectionString = "postgres://postgres:admin@localhost:5432/maser";
-const connection = postgres()(connectionString);
+
+const singletonConnection = postgres()("postgres://postgres:admin@localhost:5432/maser");
 
 export default class PostgresConnection {
-	public connection = connection;
-	public client: Client;
-
-	constructor(client: Client) {
-		this.client = client;
-	}
+	public readonly connection = singletonConnection;
 
 	public async one<T extends PgResponses>(query: string): Promise<T> {
 		return this.connection.one<T>(query);
@@ -25,5 +19,10 @@ export default class PostgresConnection {
 
 	public async oneOrNone<T extends Exclude<PgResponses, ExistsResult>>(query: string): Promise<T | null> {
 		return this.connection.oneOrNone<T>(query);
+	}
+
+	public async manyOrNone<T extends Exclude<PgResponses, ExistsResult>>(query: string): Promise<T[] | null> {
+		const res = await this.connection.manyOrNone<T>(query);
+		return res.length ? res : null;
 	}
 }
