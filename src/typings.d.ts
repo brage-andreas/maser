@@ -92,8 +92,10 @@ export interface InstanceData {
 	timestamp: number;
 	targetId: string | null;
 	duration: number | null;
+	edited: boolean;
 	reason: string | null;
 	type: InstanceTypes;
+	url: string | null;
 }
 
 export interface InstanceIdResult {
