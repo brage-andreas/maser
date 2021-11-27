@@ -15,6 +15,7 @@ postgres
 		└── instances-[guild id]
             ├── istanceId
 			├── guildId
+			├── url
 			├── referenceId
 			├── executorTag
 			├── executorId
@@ -22,6 +23,7 @@ postgres
 			├── timestamp
 			├── targetId
 			├── duration
+			├── edited
 			├── reason
 			└── type
 ```
@@ -67,4 +69,6 @@ maser
 | `targetId`    | `bigint`  |
 | `duration`    | `bigint`  |
 | `reason`      | `text`    |
+| `edited`      | `boolean` |
 | `type`        | `integer` |
+| `url`         | `text`    |
