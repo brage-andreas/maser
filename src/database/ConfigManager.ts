@@ -7,7 +7,7 @@ export default class ConfigManager extends Postgres {
 	public key: ConfigColumns | null;
 
 	constructor(client: Client, guildId: string, key?: ConfigColumns | null) {
-		super(client, { schema: "guilds", table: "configs", idKey: "guildId", id: guildId });
+		super(client, { schema: "guilds", table: "configs", idKey: "guildId", idValue: guildId });
 
 		this.key = key ?? null;
 	}

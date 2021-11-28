@@ -14,12 +14,12 @@ export default abstract class Postgres extends PostgresConnection {
 	constructor(client: Client, options: PostgresOptions) {
 		super();
 
-		if (!REGEX.ID.test(options.id)) {
-			throw new TypeError(`Provided argument for idValue is not a valid ID (reading: "${options.id}")"`);
+		if (!REGEX.ID.test(options.idValue)) {
+			throw new TypeError(`Provided argument for idValue is not a valid ID (reading: "${options.idValue}")"`);
 		}
 
 		this.client = client;
-		this.idValue = options.id;
+		this.idValue = options.idValue;
 
 		this.schema = options?.schema ?? null;
 		this.table = options?.table ?? null;

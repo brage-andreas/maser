@@ -64,7 +64,7 @@ export interface EvalOutput {
 }
 
 export interface PostgresOptions {
-	id: string;
+	idValue: string;
 	schema: string;
 	idKey: string;
 	table: string;
