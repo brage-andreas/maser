@@ -10,10 +10,12 @@ export default class InstanceManager extends Postgres {
 	private initialised = false;
 
 	constructor(client: Client, guildId: string) {
-		super(client, { schema: "guilds", table: `instances-${guildId}`, idKey: "instanceId", id: guildId });
+		super(client, { schema: "guilds", table: `instances-${guildId}`, idKey: "instanceId", idValue: guildId });
 	}
 
 	public async initialise(): Promise<this> {
+		if (!this.idValue) throw new Error("Guild id must be set");
+
 		const query = `
             CREATE TABLE IF NOT EXISTS guilds."instances-${this.idValue}"
             (
@@ -42,7 +44,7 @@ export default class InstanceManager extends Postgres {
 	}
 
 	public async createInstance(data: Partial<InstanceData>): Promise<Instance> {
-		if (!this.initialised) throw new Error("InstanceManager must be initialised before use");
+		if (!this.initialised) await this.initialise();
 
 		const patchedData = await this.patch(data);
 
@@ -50,35 +52,27 @@ export default class InstanceManager extends Postgres {
 		const values = Object.values(patchedData);
 
 		await this.createRow(columnNames, values);
-		const instance = new Instance(this.client, patchedData);
+		const instance = await this.getInstance(patchedData.instanceId);
 
 		const guild = this.client.guilds.cache.get(patchedData.guildId)?.name ?? "unknown name";
 		new InfoLogger().log(
 			`Created new instance with id: ${patchedData.instanceId}`,
 			`in guild: "${guild}" (${patchedData.guildId})`,
-			`of type: "${instance.type.toLowerCase()}" (${patchedData.type})`
+			`of type: "${instance!.type.toLowerCase()}" (${patchedData.type})`
 		);
 
-		return instance;
+		return instance!;
 	}
 
 	public async getInstance(instanceId: string | number): Promise<Instance | null> {
-		if (!this.initialised) throw new Error("InstanceManager must be initialised before use");
-		if (!this.idValue) throw new Error("Guild id must be set");
+		if (!this.initialised) await this.initialise();
 
-		const query = `
-			SELECT *
-			FROM ${this.schema}."${this.table}"
-			WHERE "guildId" = ${this.idValue}
-			AND "${this.idKey}" = ${instanceId}
-		`;
-
-		const data = await this.oneOrNone<InstanceData>(query);
+		const data = await this.getData(instanceId);
 		return this._createInstance(data);
 	}
 
 	public async editInstance(instanceId: string | number, data: Partial<InstanceData>): Promise<Instance | null> {
-		if (!this.initialised) throw new Error("InstanceManager must be initialised before use");
+		if (!this.initialised) await this.initialise();
 
 		try {
 			data = await this.patch(data);
@@ -91,11 +85,12 @@ export default class InstanceManager extends Postgres {
 
 		await this.updateRow(columnNames, values, `"instanceId"=${instanceId}`);
 
-		const newData = await this.getData(instanceId);
-		return this._createInstance(newData);
+		return await this.getInstance(instanceId);
 	}
 
 	private async getData(instanceId: string | number): Promise<InstanceData | null> {
+		if (!this.initialised) await this.initialise();
+
 		const query = `
 			SELECT *
 			FROM ${this.schema}."${this.table}"
@@ -103,7 +98,7 @@ export default class InstanceManager extends Postgres {
 			AND "${this.idKey}" = ${instanceId}
 		`;
 
-		return this.oneOrNone<InstanceData>(query);
+		return await this.oneOrNone<InstanceData>(query);
 	}
 
 	private _createInstance(data: InstanceData | null) {
@@ -137,6 +132,8 @@ export default class InstanceManager extends Postgres {
 	}
 
 	private async getId(): Promise<number> {
+		if (!this.initialised) await this.initialise();
+
 		const query = `
 			SELECT "${this.idKey}" FROM (
 				SELECT "${this.idKey}"
