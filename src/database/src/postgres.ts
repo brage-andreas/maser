@@ -47,7 +47,7 @@ export default abstract class Postgres extends PostgresConnection {
 
 	protected createRow(columns: string[], values: any[]): Promise<void> {
 		columns = columns.map((e) => `"${e}"`);
-		values = values.map((e) => (typeof e === "string" ? `'${e}'` : `${e ?? "NULL"}`));
+		values = values.map((e) => (typeof e === "string" && e !== "NULL" ? `'${e}'` : `${e ?? "NULL"}`));
 
 		const query = `
             INSERT INTO ${this.schema}."${this.table}" (\n${columns.join(", ")}\n)
