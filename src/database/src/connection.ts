@@ -10,15 +10,15 @@ export default class PostgresConnection {
 	public readonly connection = singletonConnection;
 
 	public async one<T extends PgResponses>(query: string): Promise<T> {
-		return this.connection.one<T>(query);
+		return await this.connection.one<T>(query);
 	}
 
 	public async none(query: string): Promise<void> {
-		return void this.connection.none(query);
+		return void (await this.connection.none(query));
 	}
 
 	public async oneOrNone<T extends Exclude<PgResponses, ExistsResult>>(query: string): Promise<T | null> {
-		return this.connection.oneOrNone<T>(query);
+		return await this.connection.oneOrNone<T>(query);
 	}
 
 	public async manyOrNone<T extends Exclude<PgResponses, ExistsResult>>(query: string): Promise<T[] | null> {
