@@ -159,13 +159,15 @@ async function execute(intr: CommandInteraction) {
 			referenceId: reference ?? undefined,
 			executorTag: executor.tag,
 			executorId: executor.id,
+			timestamp: time ? Date.now() - ms(time) : Date.now(),
 			targetTag: target?.tag,
 			duration: duration ? ms(duration) : undefined,
 			targetId: target?.id,
 			guildId: intr.guildId,
+			edited: false,
 			reason: reason ?? undefined,
-			timestamp: time ? Date.now() - ms(time) : Date.now(),
-			type: type
+			type: type,
+			url: undefined
 		};
 
 		const instance = await instances.createInstance(data);
@@ -216,6 +218,7 @@ async function execute(intr: CommandInteraction) {
 		if (time) newData.timestamp = Date.now() - ms(time);
 
 		const data = Object.assign({}, oldData, newData);
+		data.edited = true;
 
 		const newInstance = await instances.editInstance(instanceId, data);
 		if (!newInstance) {
