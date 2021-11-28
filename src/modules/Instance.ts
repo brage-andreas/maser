@@ -7,13 +7,14 @@ import ms from "ms";
 
 export default class Instance {
 	public readonly client: Client;
-	public data: InstanceData;
+	public readonly data: InstanceData;
 
 	// Data shorthands
-	public referenceId: number | null;
-	public timestamp: number;
-	public reason: string | null;
-	public id: number;
+	public readonly referenceId: number | null;
+	public readonly timestamp: number;
+	public readonly edited: boolean;
+	public readonly reason: string | null;
+	public readonly id: number;
 
 	constructor(client: Client, data: InstanceData) {
 		this.client = client;
@@ -21,6 +22,7 @@ export default class Instance {
 
 		this.referenceId = data.referenceId;
 		this.timestamp = data.timestamp;
+		this.edited = data.edited;
 		this.reason = data.reason;
 		this.id = data.instanceId;
 	}
@@ -82,7 +84,7 @@ export default class Instance {
 	public toEmbed(): MessageEmbed {
 		const instanceEmbed = new MessageEmbed()
 			.setAuthor(`${this.executor.tag} (${this.executor.id})`)
-			.setFooter(`#${this.id}`)
+			.setFooter(`#${this.id} ${this.edited ? "• This instance has been edited" : ""}`)
 			.setTimestamp(this.timestamp)
 			.setColor(this.hexColor);
 
