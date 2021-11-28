@@ -77,8 +77,8 @@ async function execute(intr: CommandInteraction) {
 	const description =
 		`**User**: ${user}\n` +
 		(user.avatar ? `**Size**: ${size} px\n\n` : "\n") +
-		(hasGuildAvatar ? `**Guild avatars**: ${guildAvatarLinks!.join(", ")}\n` : "") +
-		`**Avatars**: ${userAvatarLinks.join(", ")}`;
+		(hasGuildAvatar ? `**Guild avatar**: ${guildAvatarLinks!.join(", ")}\n` : "") +
+		`**Avatar**: ${userAvatarLinks.join(", ")}`;
 
 	const embed = new MessageEmbed(intr).setTitle("Avatar").setDescription(description).setImage(avatar);
 
