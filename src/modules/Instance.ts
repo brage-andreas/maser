@@ -1,4 +1,4 @@
-import type { InstanceData } from "../typings.js";
+import type { InstanceData, InstanceTypes } from "../typings.js";
 import type { Client } from "./index.js";
 
 import { INSTANCE_TYPES } from "../constants.js";
@@ -40,18 +40,34 @@ export default class Instance {
 		return colors.invisible;
 	}
 
-	public get type(): "Softban" | "Kick" | "Warn" | "Mute" | "Ban" | "Unknown" {
+	public get type(): InstanceTypes {
 		const { type } = this.data;
 
-		if (type === INSTANCE_TYPES.Softban) return "Softban";
-		if (type === INSTANCE_TYPES.Kick) return "Kick";
-		if (type === INSTANCE_TYPES.Warn) return "Warn";
-		if (type === INSTANCE_TYPES.Mute) return "Mute";
-		if (type === INSTANCE_TYPES.Ban) return "Ban";
-		return "Unknown";
+		switch (type) {
+			case INSTANCE_TYPES.Softban:
+				return "Softban";
+
+			case INSTANCE_TYPES.Unban:
+				return "Unban";
+
+			case INSTANCE_TYPES.Kick:
+				return "Kick";
+
+			case INSTANCE_TYPES.Warn:
+				return "Warn";
+
+			case INSTANCE_TYPES.Mute:
+				return "Mute";
+
+			case INSTANCE_TYPES.Ban:
+				return "Ban";
+
+			default:
+				return "Unknown";
+		}
 	}
 
-	public get duration(): string | null {
+	public get duration() {
 		if (!this.data.duration) return null;
 		return ms(this.data.duration, { long: true });
 	}
@@ -97,7 +113,7 @@ export default class Instance {
 		}
 
 		if (this.reason) description.push(`**Reason**: ${this.reason}`);
-		if (this.duration) description.push(`**Duration**: ${this.duration}`);
+		if (this.duration && this.type === "Mute") description.push(`**Duration**: ${this.duration}`);
 		if (this.referenceId) description.push(`**Reference**: #${this.referenceId}`);
 
 		return instanceEmbed.setDescription(description.join("\n"));
