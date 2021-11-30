@@ -9,9 +9,10 @@ import type Discord, {
 	MessageApplicationCommandData,
 	ChatInputApplicationCommandData
 } from "discord.js";
+import type { INSTANCE_TYPES } from "./constants.js";
 import type { CommandLogger } from "./utils/logger/";
 import type ConfigManager from "./database/src/config/ConfigManager.js";
-import type { Client } from "./modules/";
+import type { Client } from "./modules/index.js";
 
 type AllowedConfigTextChannels = TextChannel | NewsChannel;
 
@@ -94,12 +95,14 @@ export interface InstanceData {
 	duration: number | null;
 	edited: boolean;
 	reason: string | null;
-	type: InstanceTypes;
+	type: INSTANCE_TYPES;
 	url: string | null;
 }
 
 export interface InstanceIdResult {
 	instanceId: number;
 }
+
+export type InstanceTypes = "Softban" | "Kick" | "Warn" | "Mute" | "Ban" | "Unban" | "Unknown";
 
 export type PgResponses = ConfigResult | ExistsResult | InstanceData | InstanceIdResult;
