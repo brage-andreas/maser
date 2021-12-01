@@ -58,7 +58,11 @@ export default abstract class Postgres extends PostgresConnection {
 		return this.none(query);
 	}
 
-	protected async updateRow(columns: string[], newValues: string[], whereQuery?: string): Promise<void> {
+	protected async updateRow(
+		columns: string[],
+		newValues: (string | number | boolean | null)[],
+		whereQuery?: string
+	): Promise<void> {
 		const data = columns.map(
 			(column, i) => `"${column}"=${newValues[i] === "NULL" ? "NULL" : `'${newValues[i]}'`}`
 		);
