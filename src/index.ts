@@ -2,8 +2,7 @@ import { Client } from "./modules/index.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-// clears console
-// console.clear() does not fully clear
+// clears console -- console.clear() does not fully clear it
 process.stdout.write("\x1Bc");
 
 const client = new Client();
