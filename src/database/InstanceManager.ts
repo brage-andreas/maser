@@ -3,7 +3,7 @@ import type { Client } from "../modules/index.js";
 
 import { Instance } from "../modules/index.js";
 import InfoLogger from "../utils/logger/InfoLogger.js";
-import { REGEX } from "../constants.js";
+import { REGEXP } from "../constants.js";
 import Postgres from "./src/postgres.js";
 
 export default class InstanceManager extends Postgres {
@@ -167,7 +167,7 @@ export default class InstanceManager extends Postgres {
 			else return;
 		}
 
-		if (opt.id && !REGEX.ID.test(value as string)) {
+		if (opt.id && !REGEXP.ID.test(value as string)) {
 			throw new Error(`A valid argument for "${column}" must be provided (reading: ${value})`);
 		}
 	}

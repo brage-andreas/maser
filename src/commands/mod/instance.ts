@@ -2,7 +2,7 @@ import type { ChatInputApplicationCommandData } from "discord.js";
 import type { CommandInteraction, Command, InstanceData } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { INSTANCE_TYPES } from "../../constants.js";
+import { InstanceTypes } from "../../constants.js";
 import InstanceManager from "../../database/InstanceManager.js";
 import ms from "ms";
 
@@ -11,7 +11,7 @@ const options = {
 };
 
 // stupid enum shenanigans
-const TYPE_CHOICES = Object.entries(INSTANCE_TYPES)
+const TYPE_CHOICES = Object.entries(InstanceTypes)
 	.filter(([, value]) => typeof value === "number")
 	.map(([key, value]) => ({ name: key, value: value }));
 // { name: "Ban", value: 0 } etc.
@@ -173,7 +173,7 @@ async function execute(intr: CommandInteraction) {
 		const instance = await instances.createInstance(data);
 		intr.editReply({ embeds: [instance.toEmbed()] });
 
-		intr.logger.log(`Manually created new instance of type ${INSTANCE_TYPES[type] ?? "Unknown"}`);
+		intr.logger.log(`Manually created new instance of type ${InstanceTypes[type] ?? "Unknown"}`);
 	} else if (sub === "show") {
 		const instanceId = intr.options.getInteger("instance", true);
 		const instance = await instances.getInstance(instanceId);

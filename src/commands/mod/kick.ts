@@ -1,7 +1,7 @@
 import type { ChatInputApplicationCommandData } from "discord.js";
 import type { CommandInteraction, Command } from "../../typings.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
-import { INSTANCE_TYPES } from "../../constants.js";
+import { InstanceTypes } from "../../constants.js";
 import { REASON, USER } from "./.methods.js";
 import InstanceManager from "../../database/InstanceManager.js";
 
@@ -77,7 +77,7 @@ async function execute(intr: CommandInteraction) {
 						targetTag: target.user.tag,
 						targetId: target.id,
 						reason: reason ?? undefined,
-						type: INSTANCE_TYPES.Kick
+						type: InstanceTypes.Kick
 					});
 
 					intr.logger.log(

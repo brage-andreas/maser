@@ -1,4 +1,4 @@
-import { LOGGER_TYPES } from "../../constants.js";
+import { LoggerTypes } from "../../constants.js";
 
 const colors: Record<string, string> = {
 	yellow: "\x1b[93m",
@@ -26,10 +26,10 @@ export const blue = (text: string) => wrap(text, "blue");
 export const gray = (text: string) => wrap(text, "gray");
 export const red = (text: string) => wrap(text, "red");
 
-export const getColor = (type: LOGGER_TYPES) => {
-	if (type === LOGGER_TYPES.Command) return green;
-	if (type === LOGGER_TYPES.Error) return red;
-	if (type === LOGGER_TYPES.Event) return blue;
-	if (type === LOGGER_TYPES.Info) return yellow;
+export const getColor = (type: LoggerTypes) => {
+	if (type === LoggerTypes.Command) return green;
+	if (type === LoggerTypes.Error) return red;
+	if (type === LoggerTypes.Event) return blue;
+	if (type === LoggerTypes.Info) return yellow;
 	return black;
 };

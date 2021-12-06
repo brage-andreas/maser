@@ -2,7 +2,7 @@ import type { ExistsResult, PostgresOptions } from "../../typings.js";
 import type { Client } from "../../modules/index.js";
 
 import PostgresConnection from "./connection.js";
-import { REGEX } from "../../constants.js";
+import { REGEXP } from "../../constants.js";
 
 export default abstract class Postgres extends PostgresConnection {
 	public client: Client;
@@ -14,7 +14,7 @@ export default abstract class Postgres extends PostgresConnection {
 	constructor(client: Client, options: PostgresOptions) {
 		super();
 
-		if (!REGEX.ID.test(options.idValue)) {
+		if (!REGEXP.ID.test(options.idValue)) {
 			throw new TypeError(`Provided argument for idValue is not a valid ID (reading: "${options.idValue}")"`);
 		}
 

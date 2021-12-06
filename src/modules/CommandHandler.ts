@@ -13,7 +13,7 @@ import { ApplicationCommandOptionTypes } from "discord.js/typings/enums.js";
 import { ErrorLogger, InfoLogger } from "../utils/logger/index.js";
 import { readdirSync } from "fs";
 import { Routes } from "discord-api-types/v9";
-import { REGEX } from "../constants.js";
+import { REGEXP } from "../constants.js";
 import { REST } from "@discordjs/rest";
 
 const COMMAND_DIR = new URL("../commands", import.meta.url);
@@ -214,12 +214,12 @@ export default class CommandHandler {
 			return false;
 		}
 
-		if (!REGEX.ID.test(clientId)) {
+		if (!REGEXP.ID.test(clientId)) {
 			errorLogger.log(`Client id is faulty: ${clientId}`);
 			return false;
 		}
 
-		if (guildId && !REGEX.ID.test(guildId)) {
+		if (guildId && !REGEXP.ID.test(guildId)) {
 			errorLogger.log(`Guild id is faulty: ${guildId}`);
 			return false;
 		}

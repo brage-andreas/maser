@@ -2,7 +2,7 @@ import type { Guild, GuildMember } from "discord.js";
 import type { Client } from "../../modules";
 
 import { MessageEmbed } from "../../modules/index.js";
-import { LOGGER_TYPES } from "../../constants.js";
+import { LoggerTypes } from "../../constants.js";
 import ConfigManager from "../../database/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";
 import Util from "../index.js";
@@ -23,7 +23,7 @@ export default class EventLogger extends BaseLogger {
 	}
 
 	public log(...messages: string[]) {
-		this.print(LOGGER_TYPES.Event, this.event ?? "EVENT", ...messages);
+		this.print(LoggerTypes.Event, this.event ?? "EVENT", ...messages);
 	}
 
 	public setEvent(event: string | null) {

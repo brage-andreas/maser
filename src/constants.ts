@@ -2,52 +2,42 @@ import type { ApplicationCommandSubCommandData } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { Intents } from "discord.js";
 
-export const INTENTS = [
-	Intents.FLAGS.GUILDS, //
-	Intents.FLAGS.GUILD_MEMBERS
-];
-
-const ONE_AND_HALF_HRS = 129600000;
-const FOURTY_FIVE_MIN = 2700000;
-const FIFTEEN_MIN = 900000;
-const THREE_DAYS = 259200000;
-const TWELVE_HRS = 44200000;
-const THREE_HRS = 10800000;
-const ONE_DAY = 86400000;
-const SIX_HRS = 21600000;
-export const DURATIONS = {
-	ONE_AND_HALF_HRS,
-	FOURTY_FIVE_MIN,
-	FIFTEEN_MIN,
-	THREE_DAYS,
-	TWELVE_HRS,
-	THREE_HRS,
-	ONE_DAY,
-	SIX_HRS
-};
+// this file is a mess :D
 
 export const MAX_EMBED_DESCRIPTION_LEN = 4096;
 
-// const GUILD_EMOJI_REGEX = /<?(a)?:?(\w{2,32}):(\d{17,19})>?/;
-const CODEBLOCK_REGEX = /```(?:(?<lang>\S+)\n)?\s?(?<code>[^]+?)\s?```/;
-const CHANNEL_REGEX = /^<#\d{17,19}>$/;
-// const INVITE_REGEX = /(?:https?:\/\/)?(?:www\.)?discord(?:\.gg|(?:app)?\.com\/invite)\/(\S+)/;
-const TOKEN_REGEX = /[\w-]{24}\.[\w-]{6}\.[\w-]{27}/;
-const CODE_REGEX = /`(?<code>.+?)`/;
-const ROLE_REGEX = /^<@&\d{17,19}>$/;
-const USER_REGEX = /^<@!?\d{17,19}>$/;
-const ID_REGEX = /^\d{17,19}$/;
-export const REGEX = {
-	//GUILD_EMOJI: GUILD_EMOJI_REGEX,
-	CODEBLOCK: CODEBLOCK_REGEX,
-	CHANNEL: CHANNEL_REGEX,
-	//INVITE: INVITE_REGEX,
-	TOKEN: TOKEN_REGEX,
-	CODE: CODE_REGEX,
-	ROLE: ROLE_REGEX,
-	USER: USER_REGEX,
-	ID: ID_REGEX
-};
+export const INTENTS = [
+	Intents.FLAGS.GUILD_MEMBERS, //
+	Intents.FLAGS.GUILDS
+];
+
+export const DURATIONS = {
+	/* MINUTES */
+	FIFTEEN_MIN: 900000,
+	FOURTY_FIVE_MIN: 2700000,
+
+	/* HOURS */
+	ONE_AND_HALF_HRS: 129600000,
+	THREE_HRS: 10800000,
+	SIX_HRS: 21600000,
+	TWELVE_HRS: 44200000,
+
+	/* DAYS */
+	ONE_DAY: 86400000,
+	THREE_DAYS: 259200000
+} as const;
+
+export const REGEXP = {
+	/* GUILD_EMOJI: /<?(a)?:?(\w{2,32}):(\d{17,19})>?/, */
+	CODEBLOCK: /```(?:(?<lang>\S+)\n)?\s?(?<code>[^]+?)\s?```/,
+	CHANNEL: /^<#\d{17,19}>$/,
+	/* INVITE: /(?:https?:\/\/)?(?:www\.)?discord(?:\.gg|(?:app)?\.com\/invite)\/(\S+)/, */
+	TOKEN: /[\w-]{24}\.[\w-]{6}\.[\w-]{27}/,
+	CODE: /`(?<code>.+?)`/,
+	ROLE: /^<@&\d{17,19}>$/,
+	USER: /^<@!?\d{17,19}>$/,
+	ID: /^\d{17,19}$/
+} as const;
 
 // Source of emojis are located in root/resources/icons
 export const EMOJIS = {
@@ -85,43 +75,43 @@ export const COLORS = {
 	red: "#FF5733"
 } as const;
 
-export enum USER_FLAGS {
-	EARLY_VERIFIED_BOT_DEVELOPER = "early developer",
-	DISCORD_CERTIFIED_MODERATOR = "certified mod",
-	PARTNERED_SERVER_OWNER = "partnered",
-	BUGHUNTER_LEVEL_1 = "bughunter",
-	BUGHUNTER_LEVEL_2 = "bughunter²",
-	DISCORD_EMPLOYEE = "discord employee",
-	HYPESQUAD_EVENTS = "hypesquad events",
-	HOUSE_BRILLIANCE = "brilliance",
-	EARLY_SUPPORTER = "early supporter",
-	HOUSE_BRAVERY = "bravery",
-	HOUSE_BALANCE = "balance",
-	VERIFIED_BOT = "verified bot",
-	TEAM_USER = "team user"
-}
+export const USER_FLAGS = {
+	EARLY_VERIFIED_BOT_DEVELOPER: "early developer",
+	DISCORD_CERTIFIED_MODERATOR: "certified mod",
+	PARTNERED_SERVER_OWNER: "partnered",
+	BUGHUNTER_LEVEL_1: "bughunter",
+	BUGHUNTER_LEVEL_2: "bughunter²",
+	DISCORD_EMPLOYEE: "discord employee",
+	HYPESQUAD_EVENTS: "hypesquad events",
+	HOUSE_BRILLIANCE: "brilliance",
+	EARLY_SUPPORTER: "early supporter",
+	HOUSE_BRAVERY: "bravery",
+	HOUSE_BALANCE: "balance",
+	VERIFIED_BOT: "verified bot",
+	TEAM_USER: "team user"
+};
 
-export enum LOGGER_TYPES {
+export enum LoggerTypes {
 	Command,
 	Error,
 	Event,
 	Info
 }
 
-export enum BOOST_LEVELS {
-	TIER_3 = "boost level 3",
-	TIER_2 = "boost level 2",
-	TIER_1 = "boost level 1",
-	NONE = "no boost level"
-}
+export const BOOST_LEVELS = {
+	TIER_3: "boost level 3",
+	TIER_2: "boost level 2",
+	TIER_1: "boost level 1",
+	NONE: "no boost level"
+};
 
-export enum CONFIG_RESULT_KEYS {
-	guildId = "Guild",
-	memberLogChannel = "Member log channel",
-	modLogChannel = "Mod log channel",
-	botLogChannel = "Bot log channel",
-	mutedRole = "Muted role"
-}
+export const CONFIG_RESULT_KEYS = {
+	memberLogChannel: "Member log channel",
+	botLogChannel: "Bot log channel",
+	modLogChannel: "Mod log channel",
+	mutedRole: "Muted role",
+	guildId: "Guild"
+};
 
 const CONFIG_CHANNEL_OPTIONS: ApplicationCommandSubCommandData[] = [
 	{
@@ -169,7 +159,7 @@ export const CONFIG_OPTIONS = {
 	ROLE: CONFIG_ROLE_OPTIONS
 };
 
-export enum INSTANCE_TYPES {
+export enum InstanceTypes {
 	Ban = 0,
 	Kick = 1,
 	Softban = 2,
@@ -181,13 +171,13 @@ export enum INSTANCE_TYPES {
 export default {
 	MAX_EMBED_DESCRIPTION_LEN,
 	CONFIG_RESULT_KEYS,
-	INSTANCE_TYPES,
+	InstanceTypes,
 	CONFIG_OPTIONS,
-	LOGGER_TYPES,
+	LoggerTypes,
 	BOOST_LEVELS,
 	USER_FLAGS,
 	DURATIONS,
 	INTENTS,
 	COLORS,
-	REGEX
+	REGEXP
 };

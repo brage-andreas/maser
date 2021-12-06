@@ -1,7 +1,7 @@
 import type { Guild, TextBasedChannels, User } from "discord.js";
 import type { CommandInteraction } from "../../typings.js";
 
-import { COLORS, LOGGER_TYPES } from "../../constants.js";
+import { COLORS, LoggerTypes } from "../../constants.js";
 import { MessageEmbed } from "../../modules/index.js";
 import ConfigManager from "../../database/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";
@@ -33,7 +33,7 @@ export default class CommandLogger extends BaseLogger {
 		const logLevel = this.interaction?.client.command.logLevel ?? 1;
 		const toLog = command && logLevel !== 2 ? [gray(`>>> ${command}`), ...messages] : messages;
 
-		this.print(LOGGER_TYPES.Command, this.name, ...toLog);
+		this.print(LoggerTypes.Command, this.name, ...toLog);
 		this.channelLog(...messages);
 	}
 

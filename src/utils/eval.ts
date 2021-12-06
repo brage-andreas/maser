@@ -3,7 +3,7 @@ import type { Client } from "../modules";
 
 import { MessageEmbed } from "../modules/index.js";
 import { performance } from "perf_hooks";
-import { REGEX } from "../constants.js";
+import { REGEXP } from "../constants.js";
 import Discord from "discord.js";
 import Util from "./index.js";
 import ms from "ms";
@@ -35,7 +35,7 @@ export default async function evaluate(code: string, that: CommandInteraction) {
 		const time = Number((end - start).toFixed(3));
 		const timeTaken = ms(time, { long: true }).replace(".", ",");
 
-		const stringedOutput = stringify(result).replaceAll(new RegExp(REGEX.TOKEN, "g"), "[REDACTED]");
+		const stringedOutput = stringify(result).replaceAll(new RegExp(REGEXP.TOKEN, "g"), "[REDACTED]");
 
 		const parsedInput = parse(code, `${emInput} **Input**`);
 		const parsedOutput = parse(stringedOutput, `${emSuccess} **Output**`);

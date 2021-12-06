@@ -8,7 +8,7 @@ import type {
 } from "discord.js";
 import type { CommandInteraction, Command } from "../../typings.js";
 
-import { DURATIONS, INSTANCE_TYPES } from "../../constants.js";
+import { DURATIONS, InstanceTypes } from "../../constants.js";
 import { DURATION, REASON, USER } from "./.methods.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import InstanceManager from "../../database/InstanceManager.js";
@@ -269,7 +269,7 @@ async function execute(intr: CommandInteraction) {
 							targetId: target.id,
 							duration,
 							reason: reason ?? undefined,
-							type: INSTANCE_TYPES.Mute
+							type: InstanceTypes.Mute
 						});
 
 						intr.editReply({
