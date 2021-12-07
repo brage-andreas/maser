@@ -1,18 +1,11 @@
+## A Discord bot made with discord.js version 13.
 <p align="center">
     <a href="https://en.wikipedia.org/wiki/Maser">
         <img src="https://i.imgur.com/p0GGPVZ.png" alt="Logo of Maser" />
     </a>
 </p>
 
-<sub>This is a personal project—please do not engage in the development with PR's and issues.</sub>
-
-<br />
-
-A Discord bot made with discord.js version 13.
-
-![Image of terminal](https://i.imgur.com/6e9wm50.png)
-
-<br />
+---
 
 ## How to deploy commands
 1. Fill `CLIENT_ID` and/or `GUILD_ID` keys in `.env` file.
@@ -27,6 +20,11 @@ The `/build` command can do this from inside Discord, which you can use once you
 * Manager classes make tasks easy to do
 * Private — only logs successful actions
 * Good command UI and UX
+
+
+![Image of Maser's terminal](https://i.imgur.com/6e9wm50.png)
+
+---
 
 ## Example command file
 ```ts
@@ -79,8 +77,10 @@ export async function execute(client: Client, info: string) {
 }
 ```
 
-<br /><hr /><br />
+---
 
 ![Work in progress](https://i.imgur.com/eS4Md4Q.png)
 
-<sub>Made by drango#2399.</sub>
+---
+
+<sub>✨ Created and maintained by drango#2399 ✨</sub>
