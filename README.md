@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://en.wikipedia.org/wiki/Maser">
-        <img src="https://i.imgur.com/p0GGPVZ.png" />
+        <img src="https://i.imgur.com/p0GGPVZ.png" alt="Logo of Maser" />
     </a>
 </p>
 
@@ -79,12 +79,8 @@ export async function execute(client: Client, info: string) {
 }
 ```
 
-
-<br /> <br />
-
+<br /><hr /><br />
 
 ![Work in progress](https://i.imgur.com/eS4Md4Q.png)
-
-<sub>This applies to both the bot and this README</sub>
 
 <sub>Made by drango#2399.</sub>
