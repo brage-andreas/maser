@@ -6,15 +6,15 @@ Hit me up for any suggestions :D
 ```
 postgres
 └── maser
-    └── guilds
-        ├── configs
-        │   ├── guildId
-        │   ├── memberLogChannel
-        │   ├── botLogChannel
+	└── guilds
+		├── configs
+		│   ├── guildId
+		│   ├── memberLogChannel
+		│   ├── botLogChannel
 		│   ├── modLogChannel
-        │   └── mutedRole
+		│   └── mutedRole
 		└── instances-[guild id]
-            ├── istanceId
+			├── istanceId
 			├── guildId
 			├── url
 			├── referenceId
@@ -45,7 +45,7 @@ maser
 maser
 └── guilds
 	├── configs
-    └── instances-[guild id]
+	└── instances-[guild id]
 ```
 
 **configs**
