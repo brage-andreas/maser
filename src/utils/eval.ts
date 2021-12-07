@@ -8,9 +8,15 @@ import Discord from "discord.js";
 import Util from "./index.js";
 import ms from "ms";
 
-const stringify = (output: any): string => {
-	const replacer = (_: string, value: any) => (typeof value === "function" || output == null ? `${value}` : value);
-	return JSON.stringify(output, replacer, 2) ?? "Something went wrong with the output";
+const stringify = (value: any): string => {
+	const replacer = (_: string, val: any) => {
+		if (typeof val === "function" || val === null) return `${value}`;
+		if (typeof val === "bigint") return `${val}n`;
+		return val;
+	};
+
+	const string = JSON.stringify(value, replacer, 2) ?? "Something went wrong with stringifying the content";
+	return string.replace('"void"', "void");
 };
 
 const parse = (string: string, prefix: string, embedStyle?: string | null) => {
