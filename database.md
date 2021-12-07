@@ -1,6 +1,7 @@
 # PostgreSQL layout
 I'm not sure about the instances, to be honest.
-It has two IDs, which screams primary key, but that doesn't relly make it any more elegant.
+It has two IDs, which screams primary key, but that doesn't really make it any more elegant.
+Hit me up for any suggestions :D
 
 ```
 postgres

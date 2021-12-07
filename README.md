@@ -4,14 +4,15 @@
     </a>
 </p>
 
-Note: This is a personal project—please do not engage in the development with PR's and issues.
+<sub>This is a personal project—please do not engage in the development with PR's and issues.</sub>
 
 <br />
 
-# Maser
 A Discord bot made with discord.js version 13.
 
 ![Image of terminal](https://i.imgur.com/6e9wm50.png)
+
+<br />
 
 ## How to deploy commands
 1. Fill `CLIENT_ID` and/or `GUILD_ID` keys in `.env` file.
@@ -83,6 +84,7 @@ export async function execute(client: Client, info: string) {
 
 
 ![Work in progress](https://i.imgur.com/eS4Md4Q.png)
-> \* This applies to both the bot and this README
 
-Made by drango#2399.
+<sub>This applies to both the bot and this README</sub>
+
+<sub>Made by drango#2399.</sub>
