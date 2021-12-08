@@ -3,7 +3,9 @@ import type { Client } from "./index.js";
 
 import { InstanceTypes } from "../constants.js";
 import { MessageEmbed } from "./index.js";
+import ConfigManager from "../database/ConfigManager.js";
 import ms from "ms";
+import { Message } from "discord.js";
 
 export default class Instance {
 	public readonly client: Client;
@@ -12,6 +14,7 @@ export default class Instance {
 	// Data shorthands
 	public readonly referenceId: number | null;
 	public readonly timestamp: number;
+	public readonly guildId: string;
 	public readonly edited: boolean;
 	public readonly reason: string | null;
 	public readonly id: number;
@@ -22,6 +25,7 @@ export default class Instance {
 
 		this.referenceId = data.referenceId;
 		this.timestamp = data.timestamp;
+		this.guildId = data.guildId;
 		this.edited = data.edited;
 		this.reason = data.reason;
 		this.id = data.instanceId;
@@ -117,5 +121,14 @@ export default class Instance {
 		if (this.referenceId) description.push(`**Reference**: #${this.referenceId}`);
 
 		return instanceEmbed.setDescription(description.join("\n"));
+	}
+
+	public async channelLog(): Promise<Message | null> {
+		const modLogManager = new ConfigManager(this.client, this.guildId, "modLogChannel");
+
+		const channel = await modLogManager.getChannel();
+		if (!channel) return null;
+
+		return await channel.send({ embeds: [this.toEmbed()] }).catch(() => null);
 	}
 }

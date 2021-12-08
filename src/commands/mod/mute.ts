@@ -262,15 +262,18 @@ async function execute(intr: CommandInteraction) {
 					.add(mutedRole)
 					.then(async () => {
 						const instances = await new InstanceManager(intr.client, intr.guildId).initialise();
-						const instance = await instances.createInstance({
-							executorTag: intr.user.tag,
-							executorId: intr.user.id,
-							targetTag: target.user.tag,
-							targetId: target.id,
-							duration,
-							reason: reason ?? undefined,
-							type: InstanceTypes.Mute
-						});
+						const instance = await instances.createInstance(
+							{
+								executorTag: intr.user.tag,
+								executorId: intr.user.id,
+								targetTag: target.user.tag,
+								targetId: target.id,
+								duration,
+								reason: reason ?? undefined,
+								type: InstanceTypes.Mute
+							},
+							true
+						);
 
 						intr.editReply({
 							content:

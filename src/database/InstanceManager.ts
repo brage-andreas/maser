@@ -43,7 +43,7 @@ export default class InstanceManager extends Postgres {
 		return this;
 	}
 
-	public async createInstance(data: Partial<InstanceData>): Promise<Instance> {
+	public async createInstance(data: Partial<InstanceData>, logToChannel: boolean = false): Promise<Instance> {
 		if (!this.initialised) await this.initialise();
 
 		const patchedData = await this.patch(data);
@@ -53,6 +53,7 @@ export default class InstanceManager extends Postgres {
 
 		await this.createRow(columnNames, values);
 		const instance = await this.getInstance(patchedData.instanceId);
+		if (!instance) throw new Error("Something really went wrong");
 
 		const guild = this.client.guilds.cache.get(patchedData.guildId)?.name ?? "unknown name";
 		new InfoLogger().log(
@@ -61,7 +62,12 @@ export default class InstanceManager extends Postgres {
 			`of type: "${instance!.type.toLowerCase()}" (${patchedData.type})`
 		);
 
-		return instance!;
+		if (logToChannel) {
+			const message = await instance.channelLog();
+			if (message) this.setURL(patchedData.instanceId, message.url);
+		}
+
+		return instance;
 	}
 
 	public async getInstance(instanceId: string | number): Promise<Instance | null> {
@@ -86,6 +92,11 @@ export default class InstanceManager extends Postgres {
 		await this.updateRow(columnNames, values, `"instanceId"=${instanceId}`);
 
 		return await this.getInstance(instanceId);
+	}
+
+	public async setURL(instanceId: string | number, url: string) {
+		await this.updateRow(["url"], [url], `"instanceId"=${instanceId}`);
+		return this;
 	}
 
 	private async getData(instanceId: string | number): Promise<InstanceData | null> {
@@ -114,6 +125,7 @@ export default class InstanceManager extends Postgres {
 	private async patch(data: Partial<InstanceData>) {
 		data.timestamp ??= Date.now();
 		data.guildId ??= this.idValue ?? undefined;
+		data.edited ??= false;
 
 		this.test("executorTag", data.executorTag);
 		this.test("executorId", data.executorId, { id: true });
