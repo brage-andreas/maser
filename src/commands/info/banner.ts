@@ -65,14 +65,17 @@ async function execute(intr: CommandInteraction) {
 	const name = member?.displayName ?? user.username;
 	const nameStr = name.endsWith("s") || name.endsWith("z") ? `${name}' banner` : `${name}'s banner`;
 
-	const description: string[] = [];
-
+	const bannerLinks: string[] = [];
 	const isGIF = dynamic.endsWith(`.gif?size=${size}`);
-	if (isGIF) description.push(`[gif](${dynamic})`);
+	if (isGIF) bannerLinks.push(`[gif](${dynamic})`);
+	bannerLinks.push(`[png](${png}), [jpg](${jpg}), [webp](${webp})`);
 
-	description.push(`[png](${png}) [jpg](${jpg}) [webp](${webp})`);
+	const description =
+		`**User**: ${user}\n` + //
+		`**Size**: ${size} px\n\n` +
+		`**Banner**: ${bannerLinks.join(", ")}`;
 
-	const embed = new MessageEmbed(intr).setDescription(description.join(" ")).setTitle(nameStr).setImage(dynamic);
+	const embed = new MessageEmbed(intr).setDescription(description).setTitle(nameStr).setImage(dynamic);
 
 	intr.editReply({ embeds: [embed] });
 
