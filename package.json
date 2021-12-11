@@ -33,7 +33,7 @@
 	"devDependencies": {
 		"@types/ms": "^0.7.31",
 		"discord-api-types": "^0.22.0",
-		"prettier": "^2.4.1",
+		"prettier": "^2.5.1",
 		"typescript": "^4.5.2"
 	}
 }
