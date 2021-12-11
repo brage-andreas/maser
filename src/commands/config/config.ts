@@ -1,4 +1,4 @@
-import { type ConfigColumns, type Command } from "../../typings.js";
+import { type ConfigColumns, type Command } from "../../typings/index.js";
 import { MessageEmbed, type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
 
 import { CONFIG_OPTIONS, CONFIG_RESULT_KEYS, defaultEmbedOptions } from "../../constants.js";

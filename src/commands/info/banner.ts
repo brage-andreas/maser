@@ -4,7 +4,7 @@ import {
 	type AllowedImageSize,
 	type ChatInputApplicationCommandData
 } from "discord.js";
-import { type Command } from "../../typings.js";
+import { type Command } from "../../typings/index.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { defaultEmbedOptions } from "../../constants.js";

@@ -7,7 +7,7 @@ import {
 	type Role,
 	type VoiceChannel
 } from "discord.js";
-import { type Command } from "../../typings.js";
+import { type Command } from "../../typings/index.js";
 
 import { DURATIONS, InstanceTypes } from "../../constants.js";
 import { DURATION, REASON, USER } from "./.methods.js";

@@ -1,4 +1,4 @@
-import { type InstanceData, type InstanceIdResult } from "../typings.js";
+import { type InstanceData, type InstanceIdResult } from "../typings/index.js";
 import { type Client } from "discord.js";
 
 import { Instance } from "../modules/index.js";

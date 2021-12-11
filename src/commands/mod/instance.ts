@@ -3,7 +3,7 @@ import {
 	type ChatInputApplicationCommandData,
 	type CommandInteraction
 } from "discord.js";
-import { type Command, type InstanceData } from "../../typings.js";
+import { type Command, type InstanceData } from "../../typings/index.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { InstanceTypes } from "../../constants.js";

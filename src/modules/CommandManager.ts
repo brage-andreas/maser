@@ -1,5 +1,5 @@
 import { type CommandInteraction } from "discord.js";
-import { type Command } from "../typings.js";
+import { type Command } from "../typings/index.js";
 
 export default class CommandManager {
 	public interaction: Readonly<CommandInteraction<"cached">> | null;

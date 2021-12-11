@@ -1,5 +1,5 @@
 import { MessageEmbed, type Client, type Message } from "discord.js";
-import { type InstanceData } from "../typings.js";
+import { type InstanceData } from "../typings/index.js";
 
 import { InstanceTypes } from "../constants.js";
 import ConfigManager from "../database/ConfigManager.js";

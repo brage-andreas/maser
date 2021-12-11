@@ -1,5 +1,5 @@
 import Discord, { MessageEmbed, type CommandInteraction } from "discord.js";
-import { type EvalOutput } from "../typings.js";
+import { type EvalOutput } from "../typings/index.js";
 
 import { performance } from "perf_hooks";
 import { defaultEmbedOptions, REGEXP } from "../constants.js";

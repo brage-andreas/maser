@@ -1,4 +1,4 @@
-import type { Event } from "../typings.js";
+import type { Event } from "../typings/index.js";
 
 import { EventLogger } from "../utils/logger/index.js";
 import { readdirSync } from "fs";

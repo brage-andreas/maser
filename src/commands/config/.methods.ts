@@ -1,6 +1,6 @@
 // This is not a command
 
-import { type AllowedConfigTextChannels, type ConfigCommandData } from "../../typings.js";
+import { type AllowedConfigTextChannels, type ConfigCommandData } from "../../typings/index.js";
 import { MessageEmbed, type Role } from "discord.js";
 
 export default async function logs(data: ConfigCommandData) {

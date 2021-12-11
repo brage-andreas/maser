@@ -8,7 +8,7 @@ import {
 	type ApplicationCommandSubCommandData,
 	type ApplicationCommandSubGroupData
 } from "discord.js";
-import { type Command, type CommandModule } from "../typings.js";
+import { type Command, type CommandModule } from "../typings/index.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums.js";
 import { ErrorLogger, InfoLogger } from "../utils/logger/index.js";

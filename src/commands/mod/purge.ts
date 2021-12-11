@@ -4,7 +4,7 @@ import {
 	type NewsChannel,
 	type TextChannel
 } from "discord.js";
-import { type Command } from "../../typings.js";
+import { type Command } from "../../typings/index.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
