@@ -1,17 +1,18 @@
-import type { ExistsResult, PostgresOptions } from "../../typings.js";
-import type { Client } from "../../modules/index.js";
+import { type ExistsResult, type PostgresOptions } from "../../typings.js";
+import { type Client } from "discord.js";
 
 import PostgresConnection from "./connection.js";
 import { REGEXP } from "../../constants.js";
 
 export default abstract class Postgres extends PostgresConnection {
-	public client: Client;
+	public client: Client<true>;
+
 	protected idValue: string;
 	protected schema: string;
 	protected idKey: string;
 	protected table: string;
 
-	constructor(client: Client, options: PostgresOptions) {
+	constructor(client: Client<true>, options: PostgresOptions) {
 		super();
 
 		if (!REGEXP.ID.test(options.idValue)) {

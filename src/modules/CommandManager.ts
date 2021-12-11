@@ -1,15 +1,16 @@
-import type { Command, CommandInteraction } from "../typings.js";
+import { type CommandInteraction } from "discord.js";
+import { type Command } from "../typings.js";
 
 export default class CommandManager {
-	public interaction: Readonly<CommandInteraction> | null;
+	public interaction: Readonly<CommandInteraction<"cached">> | null;
 	public command: Readonly<Command> | null;
 
-	constructor(interaction?: CommandInteraction | null, data?: Command | null) {
+	constructor(interaction?: CommandInteraction<"cached"> | null, data?: Command | null) {
 		this.interaction = interaction ?? null;
 		this.command = data ?? null;
 	}
 
-	public setCommand(interaction: CommandInteraction | null, data: Command | null): this {
+	public setCommand(interaction: CommandInteraction<"cached"> | null, data: Command | null): this {
 		this.interaction = interaction;
 		this.command = data;
 		return this;

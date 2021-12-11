@@ -1,8 +1,8 @@
 import type { Event } from "../typings.js";
-import type { Client } from "./index.js";
 
 import { EventLogger } from "../utils/logger/index.js";
 import { readdirSync } from "fs";
+import { Client } from "discord.js";
 
 const EVENT_DIR = new URL("../events", import.meta.url);
 
@@ -12,12 +12,12 @@ const EVENT_DIR = new URL("../events", import.meta.url);
 export default class EventManager {
 	private _events: Map<string, Event>;
 	public logger: EventLogger;
-	public client: Client;
+	public client: Client<true>;
 
 	/**
 	 * Creates an event manager.
 	 */
-	constructor(client: Client) {
+	constructor(client: Client<true>) {
 		this._events = new Map<string, Event>();
 		this.logger = new EventLogger(client);
 		this.client = client;

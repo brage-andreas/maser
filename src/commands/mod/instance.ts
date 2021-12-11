@@ -1,5 +1,9 @@
-import type { ChatInputApplicationCommandData } from "discord.js";
-import type { CommandInteraction, Command, InstanceData } from "../../typings.js";
+import {
+	type AutocompleteInteraction,
+	type ChatInputApplicationCommandData,
+	type CommandInteraction
+} from "discord.js";
+import { type Command, type InstanceData } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { InstanceTypes } from "../../constants.js";
@@ -75,6 +79,7 @@ const data: ChatInputApplicationCommandData = {
 					name: "instance-id",
 					description: "The ID of the instance to edit",
 					type: ApplicationCommandOptionTypes.INTEGER,
+					autocomplete: true,
 					required: true
 				},
 				{
@@ -119,6 +124,7 @@ const data: ChatInputApplicationCommandData = {
 					name: "instance",
 					description: "The ID of the instance to show",
 					type: ApplicationCommandOptionTypes.INTEGER,
+					autocomplete: true,
 					required: true
 				}
 			]
@@ -132,6 +138,7 @@ const data: ChatInputApplicationCommandData = {
 					name: "instance",
 					description: "The ID of the instance to delete",
 					type: ApplicationCommandOptionTypes.INTEGER,
+					autocomplete: true,
 					required: true
 				}
 			]
@@ -139,12 +146,36 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-async function execute(intr: CommandInteraction) {
+async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteraction<"cached">) {
 	const sub = intr.options.getSubcommand();
 
 	const { emXMark, emError } = intr.client.systemEmojis;
 	const instances = new InstanceManager(intr.client, intr.guildId);
 	await instances.initialise();
+
+	if (intr.isAutocomplete()) {
+		const getData = async (focused?: number) => {
+			focused ??= 1;
+			const offset = [1, 2, 3].includes(focused) ? 0 : focused - 3;
+			const data = await instances.getInstanceDataWithinRange(offset);
+
+			return data?.map((data) => {
+				const tagStr = data.targetTag ? `on ${data.targetTag}` : "";
+				return {
+					name: `#${data.instanceId} - ${InstanceTypes[data.type]} ${tagStr}`,
+					value: data.instanceId
+				};
+			});
+		};
+
+		const emptyResponse = { name: "Whoa so empty—there are no instances", value: 0 };
+		const focused = Number(intr.options.getFocused()) || undefined;
+
+		const response = (await getData(focused)) ?? (await getData()) ?? [emptyResponse];
+
+		intr.respond(response);
+		return;
+	}
 
 	if (sub === "create") {
 		const reference = intr.options.getInteger("reference");

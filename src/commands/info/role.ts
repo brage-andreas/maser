@@ -1,10 +1,9 @@
-import type { ChatInputApplicationCommandData } from "discord.js";
-import type { CommandInteraction, Command } from "../../typings.js";
+import { MessageEmbed, Role, type CommandInteraction, type ChatInputApplicationCommandData } from "discord.js";
+import { type Command } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { MessageEmbed } from "../../modules/index.js";
-import { Role } from "discord.js";
 import Util from "../../utils/index.js";
+import { defaultEmbedOptions } from "../../constants.js";
 
 const data: ChatInputApplicationCommandData = {
 	name: "role",
@@ -19,7 +18,7 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-async function execute(intr: CommandInteraction) {
+async function execute(intr: CommandInteraction<"cached">) {
 	const applyS = (string: string, size: number) => (size !== 1 ? string + "s" : string);
 	const { guild } = intr;
 
@@ -53,7 +52,7 @@ async function execute(intr: CommandInteraction) {
 		? "I cannot get an accurate number"
 		: `${role.members.size} ${applyS("member", role.members.size)}`;
 
-	const roleEmbed = new MessageEmbed(intr)
+	const roleEmbed = new MessageEmbed(defaultEmbedOptions(intr))
 		.setColor(getColor(role.hexColor))
 		.setTitle(role.name)
 		.addField("Created", Util.date(role.createdTimestamp))

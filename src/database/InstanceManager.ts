@@ -1,5 +1,5 @@
-import type { InstanceData, InstanceIdResult } from "../typings.js";
-import type { Client } from "../modules/index.js";
+import { type InstanceData, type InstanceIdResult } from "../typings.js";
+import { type Client } from "discord.js";
 
 import { Instance } from "../modules/index.js";
 import InfoLogger from "../utils/logger/InfoLogger.js";
@@ -9,7 +9,7 @@ import Postgres from "./src/postgres.js";
 export default class InstanceManager extends Postgres {
 	private initialised = false;
 
-	constructor(client: Client, guildId: string) {
+	constructor(client: Client<true>, guildId: string) {
 		super(client, { schema: "guilds", table: `instances-${guildId}`, idKey: "instanceId", idValue: guildId });
 	}
 
@@ -77,6 +77,21 @@ export default class InstanceManager extends Postgres {
 		return this._createInstance(data);
 	}
 
+	public async getInstanceDataWithinRange(offset: number, limit: number = 25): Promise<InstanceData[] | null> {
+		if (!this.initialised) await this.initialise();
+
+		if (offset < 0) offset = 0;
+		if (limit < 1) limit = 1;
+
+		const query = `
+			SELECT *
+			FROM ${this.schema}."${this.table}"
+			LIMIT ${limit} OFFSET ${offset}
+		`;
+
+		return await this.manyOrNone<InstanceData>(query);
+	}
+
 	public async editInstance(instanceId: string | number, data: Partial<InstanceData>): Promise<Instance | null> {
 		if (!this.initialised) await this.initialise();
 
@@ -85,6 +100,8 @@ export default class InstanceManager extends Postgres {
 		} catch {
 			return null;
 		}
+
+		data.edited = true;
 
 		const columnNames = Object.keys(data);
 		const values = Object.values(data);
@@ -105,8 +122,7 @@ export default class InstanceManager extends Postgres {
 		const query = `
 			SELECT *
 			FROM ${this.schema}."${this.table}"
-			WHERE "guildId" = ${this.idValue}
-			AND "${this.idKey}" = ${instanceId}
+			WHERE "${this.idKey}" = ${instanceId}
 		`;
 
 		return await this.oneOrNone<InstanceData>(query);
@@ -150,7 +166,6 @@ export default class InstanceManager extends Postgres {
 			SELECT "${this.idKey}" FROM (
 				SELECT "${this.idKey}"
 				FROM ${this.schema}."${this.table}"
-                WHERE "guildId" = ${this.idValue}
 				ORDER BY "${this.idKey}" DESC
 				LIMIT 1
 			) AS _ ORDER BY "${this.idKey}" ASC;

@@ -1,13 +1,14 @@
-import type {
-	ApplicationCommandChannelOptionData,
-	ApplicationCommandChoicesData,
-	ApplicationCommandData,
-	ApplicationCommandNonOptionsData,
-	ApplicationCommandOptionData,
-	ApplicationCommandSubCommandData,
-	ApplicationCommandSubGroupData
+import {
+	type CommandInteraction,
+	type ApplicationCommandChannelOptionData,
+	type ApplicationCommandChoicesData,
+	type ApplicationCommandData,
+	type ApplicationCommandNonOptionsData,
+	type ApplicationCommandOptionData,
+	type ApplicationCommandSubCommandData,
+	type ApplicationCommandSubGroupData
 } from "discord.js";
-import type { CommandInteraction, Command, CommandModule } from "../typings.js";
+import { type Command, type CommandModule } from "../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums.js";
 import { ErrorLogger, InfoLogger } from "../utils/logger/index.js";
@@ -66,7 +67,7 @@ export default class CommandHandler {
 	/**
 	 * Get a command's data.
 	 */
-	public get(command: string): Command {
+	public getData(command: string): Command {
 		return this._get(command);
 	}
 
@@ -133,7 +134,7 @@ export default class CommandHandler {
 	/**
 	 * Gets the default hide option of this command.
 	 */
-	public getDefaultHide(intr: CommandInteraction | string): boolean {
+	public getDefaultHide(intr: CommandInteraction<"cached"> | string): boolean {
 		if (typeof intr !== "string") {
 			const commandOption = intr.options.getBoolean("hide");
 			const standard = this._get(intr.commandName).options.defaultHide;

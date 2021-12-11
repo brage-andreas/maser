@@ -1,5 +1,5 @@
-import type { ChatInputApplicationCommandData } from "discord.js";
-import type { CommandInteraction, Command } from "../../typings.js";
+import { type CommandInteraction, type ChatInputApplicationCommandData } from "discord.js";
+import { type Command } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 
@@ -57,16 +57,16 @@ async function execute(intr: CommandInteraction) {
 		}
 
 		if (clear) {
-			intr.client.commands.clear(clientId, guildId);
+			intr.client.commandHandler.clear(clientId, guildId);
 		} else {
-			intr.client.commands.put(clientId, guildId);
+			intr.client.commandHandler.put(clientId, guildId);
 		}
 
 		intr.editReply(`${clear ? "Cleared" : "Put"} commands in guild: ${guild.name} (${guild.id})`);
 		intr.logger.log(`${clear ? "Cleared" : "Put"} commands in guild: ${guild.name} (${guild.id})`);
 	} else {
-		if (clear) intr.client.commands.clear(clientId);
-		else intr.client.commands.put(clientId);
+		if (clear) intr.client.commandHandler.clear(clientId);
+		else intr.client.commandHandler.put(clientId);
 
 		intr.editReply(`${clear ? "Cleared" : "Put"} global commands`);
 		intr.logger.log(`${clear ? "Cleared" : "Put"} global commands`);

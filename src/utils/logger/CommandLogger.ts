@@ -1,18 +1,16 @@
-import type { Guild, TextBasedChannels, User } from "discord.js";
-import type { CommandInteraction } from "../../typings.js";
+import { CommandInteraction, Guild, MessageEmbed, TextBasedChannels, User } from "discord.js";
 
-import { COLORS, LoggerTypes } from "../../constants.js";
-import { MessageEmbed } from "../../modules/index.js";
+import { COLORS, defaultEmbedOptions, LoggerTypes } from "../../constants.js";
 import ConfigManager from "../../database/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";
 import { gray } from "./LoggerColors.js";
 import Util from "../index.js";
 
 export default class CommandLogger extends BaseLogger {
-	public interaction: CommandInteraction | null;
+	public interaction: CommandInteraction<"cached"> | null;
 	public name: string | null;
 
-	constructor(intr?: CommandInteraction) {
+	constructor(intr?: CommandInteraction<"cached">) {
 		super();
 
 		this.interaction = intr ?? null;
@@ -30,7 +28,7 @@ export default class CommandLogger extends BaseLogger {
 		if (!this.name) throw new Error("Name of command must be set to log command");
 
 		const command = this.interaction?.toString();
-		const logLevel = this.interaction?.client.command.logLevel ?? 1;
+		const logLevel = this.interaction?.commandOptions.logLevel ?? 1;
 		const toLog = command && logLevel !== 2 ? [gray(`>>> ${command}`), ...messages] : messages;
 
 		this.print(LoggerTypes.Command, this.name, ...toLog);
@@ -81,13 +79,15 @@ export default class CommandLogger extends BaseLogger {
 
 		const { client, guild } = this.interaction;
 
-		const logLevel = client.command.logLevel;
+		const logLevel = this.interaction.commandOptions.logLevel;
 		if (logLevel === 0) return;
 
 		const createEmbed = (description: string, index = 0, total = 1) => {
 			const { user } = this.interaction!;
 
-			const embed = new MessageEmbed().setColor(COLORS.invisible).setDescription(description);
+			const embed = new MessageEmbed(defaultEmbedOptions(this.interaction!))
+				.setColor(COLORS.invisible)
+				.setDescription(description);
 
 			if (index === 0) embed.setAuthor(`${user.tag} (${user.id})`);
 			if (total > 1) embed.setFooter(`${index + 1}/${total}`);

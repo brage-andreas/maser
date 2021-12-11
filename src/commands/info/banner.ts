@@ -1,8 +1,13 @@
-import type { AllowedImageSize, ChatInputApplicationCommandData } from "discord.js";
-import type { Command, CommandInteraction } from "../../typings.js";
+import {
+	MessageEmbed,
+	type CommandInteraction,
+	type AllowedImageSize,
+	type ChatInputApplicationCommandData
+} from "discord.js";
+import { type Command } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { MessageEmbed } from "../../modules/index.js";
+import { defaultEmbedOptions } from "../../constants.js";
 
 const sizeChoices = [16, 32, 64, 128, 256, 300, 512, 600, 1024, 2048, 4096].map((size) => {
 	return {
@@ -31,7 +36,7 @@ const data: ChatInputApplicationCommandData = {
 
 type ImageFormats = "webp" | "png" | "jpg";
 
-async function execute(intr: CommandInteraction) {
+async function execute(intr: CommandInteraction<"cached">) {
 	const userId = (intr.options.get("user")?.value as string | undefined) ?? intr.user.id;
 	const member = intr.options.getMember("user");
 	const size = (intr.options.getInteger("size") ?? 2048) as AllowedImageSize;
@@ -46,7 +51,7 @@ async function execute(intr: CommandInteraction) {
 		const userStr =
 			userId === intr.user.id
 				? "You do"
-				: userId === intr.client.user.id
+				: userId === intr.client.user!.id
 				? "I do"
 				: `${user.tag} (${user} ${user.id}) does`;
 		intr.editReply(`${emXMark} ${userStr} not have a banner`);
@@ -75,7 +80,10 @@ async function execute(intr: CommandInteraction) {
 		`**Size**: ${size} px\n\n` +
 		`**Banner**: ${bannerLinks.join(", ")}`;
 
-	const embed = new MessageEmbed(intr).setDescription(description).setTitle(nameStr).setImage(dynamic);
+	const embed = new MessageEmbed(defaultEmbedOptions(intr))
+		.setDescription(description)
+		.setTitle(nameStr)
+		.setImage(dynamic);
 
 	intr.editReply({ embeds: [embed] });
 

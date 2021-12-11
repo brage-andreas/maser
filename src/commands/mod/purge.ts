@@ -1,5 +1,10 @@
-import type { ChatInputApplicationCommandData, NewsChannel, TextChannel } from "discord.js";
-import type { CommandInteraction, Command } from "../../typings.js";
+import {
+	type CommandInteraction,
+	type ChatInputApplicationCommandData,
+	type NewsChannel,
+	type TextChannel
+} from "discord.js";
+import { type Command } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
@@ -37,7 +42,7 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-async function execute(intr: CommandInteraction) {
+async function execute(intr: CommandInteraction<"cached">) {
 	const desiredAmount = intr.options.getInteger("amount", true);
 	const reason = intr.options.getString("reason");
 	const channel = (intr.options.getChannel("channel") ?? intr.channel) as TextChannel | NewsChannel;

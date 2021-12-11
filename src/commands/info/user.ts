@@ -1,9 +1,13 @@
-import type { ChatInputApplicationCommandData, GuildMember } from "discord.js";
-import type { CommandInteraction, Command } from "../../typings.js";
+import {
+	MessageEmbed,
+	type CommandInteraction,
+	type ChatInputApplicationCommandData,
+	type GuildMember
+} from "discord.js";
+import { type Command } from "../../typings.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { MessageEmbed } from "../../modules/index.js";
-import { USER_FLAGS } from "../../constants.js";
+import { defaultEmbedOptions, USER_FLAGS } from "../../constants.js";
 import Util from "../../utils/index.js";
 
 const data: ChatInputApplicationCommandData = {
@@ -18,7 +22,7 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-async function execute(intr: CommandInteraction) {
+async function execute(intr: CommandInteraction<"cached">) {
 	const userOptionIsProvided = !!intr.options.getUser("user");
 	const user = userOptionIsProvided ? intr.options.getUser("user", true) : intr.user;
 	const member = userOptionIsProvided ? intr.options.getMember("user") : intr.member;
@@ -66,7 +70,7 @@ async function execute(intr: CommandInteraction) {
 	const roles = getRoles(member);
 	const name = member?.displayName ?? user.tag;
 
-	const userEmbed = new MessageEmbed(intr).setColor(color).setThumbnail(avatar).setTitle(name);
+	const userEmbed = new MessageEmbed(defaultEmbedOptions(intr)).setColor(color).setThumbnail(avatar).setTitle(name);
 
 	if (member) userEmbed.addField("Tag", tag);
 	userEmbed.addField("ID", id);

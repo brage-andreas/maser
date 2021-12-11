@@ -1,9 +1,8 @@
-import type { CommandInteraction, ConfigColumns, Command } from "../../typings.js";
-import type { ChatInputApplicationCommandData } from "discord.js";
+import { type ConfigColumns, type Command } from "../../typings.js";
+import { MessageEmbed, type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
 
-import { CONFIG_OPTIONS, CONFIG_RESULT_KEYS } from "../../constants.js";
+import { CONFIG_OPTIONS, CONFIG_RESULT_KEYS, defaultEmbedOptions } from "../../constants.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { MessageEmbed } from "../../modules/index.js";
 import ConfigManager from "../../database/ConfigManager.js";
 import methods from "./.methods.js";
 
@@ -47,7 +46,7 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-async function execute(intr: CommandInteraction) {
+async function execute(intr: CommandInteraction<"cached">) {
 	const option = intr.options.getSubcommandGroup(false);
 	const method = intr.options.getSubcommand();
 
@@ -56,13 +55,13 @@ async function execute(intr: CommandInteraction) {
 	if (method === "view-config") {
 		const res = await config.getAll();
 
-		const configEmbed = new MessageEmbed(intr).setTitle("Your config");
+		const configEmbed = new MessageEmbed(defaultEmbedOptions(intr)).setTitle("Your config");
 
 		for (let [key, value] of Object.entries(res)) {
 			key = CONFIG_RESULT_KEYS[key as ConfigColumns];
 
-			const guild = intr.client.guilds.cache.get(value)?.name ?? null;
 			const channel = intr.guild.channels.cache.get(value)?.toString() ?? null;
+			const guild = intr.client.guilds.cache.get(value)?.name ?? null;
 			const role = intr.guild.roles.cache.get(value)?.toString() ?? null;
 
 			const valueStr = guild ?? channel ?? role ?? `Couldn't find anything with id: ${value}`;

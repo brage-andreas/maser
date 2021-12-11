@@ -1,11 +1,9 @@
-import type { InstanceData } from "../typings.js";
-import type { Client } from "./index.js";
+import { MessageEmbed, type Client, type Message } from "discord.js";
+import { type InstanceData } from "../typings.js";
 
 import { InstanceTypes } from "../constants.js";
-import { MessageEmbed } from "./index.js";
 import ConfigManager from "../database/ConfigManager.js";
 import ms from "ms";
-import { Message } from "discord.js";
 
 export default class Instance {
 	public readonly client: Client;

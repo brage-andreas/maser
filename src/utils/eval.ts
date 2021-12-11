@@ -1,10 +1,8 @@
-import type { CommandInteraction, EvalOutput } from "../typings.js";
-import type { Client } from "../modules";
+import Discord, { MessageEmbed, type CommandInteraction } from "discord.js";
+import { type EvalOutput } from "../typings.js";
 
-import { MessageEmbed } from "../modules/index.js";
 import { performance } from "perf_hooks";
-import { REGEXP } from "../constants.js";
-import Discord from "discord.js";
+import { defaultEmbedOptions, REGEXP } from "../constants.js";
 import Util from "./index.js";
 import ms from "ms";
 
@@ -24,8 +22,8 @@ const parse = (string: string, prefix: string, embedStyle?: string | null) => {
 	return Util.mergeForCodeblock(string, { prefix, lang: embedStyle === undefined ? "js" : null });
 };
 
-export default async function evaluate(code: string, that: CommandInteraction) {
-	const client = that.client as Client;
+export default async function evaluate(code: string, that: CommandInteraction<"cached">) {
+	const client = that.client;
 	Discord; // "ReferenceError: Discord is not defined" if not here
 
 	const { emError, emSuccess, emInput } = client.systemEmojis;
@@ -46,9 +44,9 @@ export default async function evaluate(code: string, that: CommandInteraction) {
 		const parsedInput = parse(code, `${emInput} **Input**`);
 		const parsedOutput = parse(stringedOutput, `${emSuccess} **Output**`);
 
-		const successInputEmbed = new MessageEmbed(that).setDescription(parsedInput ?? "No input");
+		const successInputEmbed = new MessageEmbed(defaultEmbedOptions(that)).setDescription(parsedInput ?? "No input");
 
-		const successOutputEmbed = new MessageEmbed(that)
+		const successOutputEmbed = new MessageEmbed(defaultEmbedOptions(that))
 			.setDescription(parsedOutput ?? "No output")
 			.setFooter(`${timeTaken} • ${type} (${constructor})`);
 
@@ -66,11 +64,11 @@ export default async function evaluate(code: string, that: CommandInteraction) {
 		const parsedInput = parse(code, `${emInput} **Input**`);
 		const parsedError = parse(msg, `${emError} **Error**`, null);
 
-		const errorInputEmbed = new MessageEmbed(that)
+		const errorInputEmbed = new MessageEmbed(defaultEmbedOptions(that))
 			.setColor(client.colors.red)
 			.setDescription(parsedInput ?? "No input");
 
-		const errorOutputEmbed = new MessageEmbed(that)
+		const errorOutputEmbed = new MessageEmbed(defaultEmbedOptions(that))
 			.setColor(client.colors.red)
 			.setDescription(parsedError ?? "No error")
 			.setFooter("Evaluation failed");

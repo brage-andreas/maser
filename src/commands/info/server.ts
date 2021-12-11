@@ -1,8 +1,7 @@
-import type { ChatInputApplicationCommandData, Guild } from "discord.js";
-import type { CommandInteraction, Command } from "../../typings.js";
+import { MessageEmbed, type CommandInteraction, type ChatInputApplicationCommandData, type Guild } from "discord.js";
+import { type Command } from "../../typings.js";
 
-import { BOOST_LEVELS } from "../../constants.js";
-import { MessageEmbed } from "../../modules/index.js";
+import { BOOST_LEVELS, defaultEmbedOptions } from "../../constants.js";
 import Util from "../../utils/index.js";
 
 const data: ChatInputApplicationCommandData = {
@@ -10,7 +9,7 @@ const data: ChatInputApplicationCommandData = {
 	description: "Sends information about this server"
 };
 
-async function execute(intr: CommandInteraction) {
+async function execute(intr: CommandInteraction<"cached">) {
 	const applyS = (string: string, size: number) => (size !== 1 ? string + "s" : string);
 	const { guild } = intr;
 
@@ -69,7 +68,7 @@ async function execute(intr: CommandInteraction) {
 
 	const emojisAndStickerStr = getEmojisAndStickers(guild);
 
-	const guildEmbed = new MessageEmbed(intr).setThumbnail(icon).setTitle(name);
+	const guildEmbed = new MessageEmbed(defaultEmbedOptions(intr)).setThumbnail(icon).setTitle(name);
 
 	if (partnered && !verified) guildEmbed.setDescription(`A Discord partner ${vanityStr}`);
 	if (verified) guildEmbed.setDescription(`A verified server ${vanityStr}`);

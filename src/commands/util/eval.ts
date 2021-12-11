@@ -1,5 +1,5 @@
-import type { ChatInputApplicationCommandData, Message } from "discord.js";
-import type { CommandInteraction, Command } from "../../typings.js";
+import { type CommandInteraction, type ChatInputApplicationCommandData, type Message } from "discord.js";
+import { type Command } from "../../typings.js";
 
 import { MessageAttachment, MessageButton } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
@@ -30,7 +30,7 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-async function execute(intr: CommandInteraction) {
+async function execute(intr: CommandInteraction<"cached">) {
 	const code = intr.options.getString("code", true);
 	const reply = intr.options.getBoolean("reply") ?? true;
 

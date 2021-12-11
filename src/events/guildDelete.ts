@@ -1,6 +1,5 @@
-import type { Client } from "../modules/index.js";
-import type { Guild } from "discord.js";
+import { type Client, type Guild } from "discord.js";
 
-export async function execute(client: Client, guild: Guild) {
+export async function execute(client: Client<true>, guild: Guild) {
 	client.events.logger.setEvent("guild delete").log(`Left ${guild.name} (${guild.id})`);
 }

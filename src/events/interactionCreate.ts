@@ -1,29 +1,32 @@
-import type { CommandInteraction } from "../typings.js";
-import type { Client } from "../modules/index.js";
+import { type Client, type AutocompleteInteraction, type CommandInteraction } from "discord.js";
+import { CommandManager } from "../modules/index.js";
 import { CommandLogger } from "../utils/logger/index.js";
 
-export async function execute(client: Client, intr: CommandInteraction) {
-	if (!intr.isCommand() || !intr.inCachedGuild()) return;
+export async function execute(client: Client<true>, intr: CommandInteraction | AutocompleteInteraction) {
+	if ((!intr.isCommand() && !intr.isAutocomplete()) || !intr.inCachedGuild()) return;
 
 	const { emIdRed: emId, emWIP } = client.systemEmojis;
 	const isNotOwner = intr.user.id !== client.application.owner?.id;
 
+	intr.commandOptions = new CommandManager(intr);
 	intr.logger = new CommandLogger(intr);
 
-	const commandData = client.commands.get(intr.commandName);
-	const command = client.command.setCommand(intr, commandData);
+	const commandData = client.commandHandler.getData(intr.commandName);
+	const commandOptions = intr.commandOptions.setCommand(intr, commandData);
 
-	if (command.isWIP && isNotOwner) {
+	if (intr.isAutocomplete()) return commandOptions.execute();
+
+	if (commandOptions.isWIP && isNotOwner) {
 		await intr.reply({ content: `${emWIP} This command is work-in-progress`, ephemeral: true });
 		return;
 	}
 
-	if (command.isPrivate && isNotOwner) {
+	if (commandOptions.isPrivate && isNotOwner) {
 		await intr.reply({ content: `${emId} This command is private`, ephemeral: true });
 		return;
 	}
 
-	await intr.deferReply({ ephemeral: command.hidden });
+	await intr.deferReply({ ephemeral: commandOptions.hidden });
 
-	command.execute();
+	commandOptions.execute();
 }

@@ -1,25 +1,11 @@
-import type Discord, {
-	Guild,
-	GuildMember,
-	NewsChannel,
-	StoreChannel,
-	TextChannel,
-	MessageEmbed,
-	UserApplicationCommandData,
-	MessageApplicationCommandData,
-	ChatInputApplicationCommandData
-} from "discord.js";
+import type Discord, { NewsChannel, TextChannel, MessageEmbed, ChatInputApplicationCommandData } from "discord.js";
 import type { InstanceTypes } from "./constants.js";
 import type { CommandLogger } from "./utils/logger/";
+import type CommandManager from "./modules/CommandManager.js";
 import type ConfigManager from "./database/src/config/ConfigManager.js";
 import type { Client } from "./modules/index.js";
 
 type AllowedConfigTextChannels = TextChannel | NewsChannel;
-
-// Slightly borked
-interface CommandInteractionOptionResolver extends Discord.CommandInteractionOptionResolver {
-	getMember: (name: string, required?: boolean) => GuildMember | null;
-}
 
 export type ConfigColumns = "guildId" | "botLogChannel" | "modLogChannel" | "memberLogChannel" | "mutedRole";
 
@@ -43,12 +29,6 @@ export interface Command {
 
 export interface Event {
 	execute: (client: Client, ...args: unknown[]) => Promise<void> | void;
-}
-
-export interface CommandInteraction extends Discord.CommandInteraction<"cached"> {
-	options: CommandInteractionOptionResolver;
-	logger: CommandLogger;
-	client: Client;
 }
 
 export interface ConfigCommandData {

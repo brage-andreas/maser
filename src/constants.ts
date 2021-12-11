@@ -1,4 +1,4 @@
-import type { ApplicationCommandSubCommandData } from "discord.js";
+import type { ApplicationCommandSubCommandData, CommandInteraction, MessageEmbedOptions } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { Intents } from "discord.js";
 
@@ -166,6 +166,18 @@ export enum InstanceTypes {
 	Mute = 3,
 	Warn = 4,
 	Unban = 5
+}
+
+export function defaultEmbedOptions(intr?: CommandInteraction<"cached">): MessageEmbedOptions {
+	const options: MessageEmbedOptions = { color: COLORS.green };
+
+	if (intr) {
+		const iconURL = intr.member.displayAvatarURL();
+		const name = `${intr.user.tag} (${intr.user.id})`;
+		options.author = { iconURL, name };
+	}
+
+	return options;
 }
 
 export default {

@@ -1,5 +1,6 @@
-import type { ChatInputApplicationCommandData } from "discord.js";
-import type { CommandInteraction, Command } from "../../typings.js";
+import { type CommandInteraction, type ChatInputApplicationCommandData } from "discord.js";
+import { type Command } from "../../typings.js";
+
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { InstanceTypes } from "../../constants.js";
 import { REASON, USER } from "./.methods.js";
@@ -11,7 +12,7 @@ const data: ChatInputApplicationCommandData = {
 	options: [USER(true), REASON("kick")]
 };
 
-async function execute(intr: CommandInteraction) {
+async function execute(intr: CommandInteraction<"cached">) {
 	const target = intr.options.getMember("user");
 	const reason = intr.options.getString("reason");
 

@@ -1,12 +1,13 @@
-import type {
-	CategoryChannel,
-	ChatInputApplicationCommandData,
-	Collection,
-	GuildChannel,
-	Role,
-	VoiceChannel
+import {
+	type CommandInteraction,
+	type CategoryChannel,
+	type ChatInputApplicationCommandData,
+	type Collection,
+	type GuildChannel,
+	type Role,
+	type VoiceChannel
 } from "discord.js";
-import type { CommandInteraction, Command } from "../../typings.js";
+import { type Command } from "../../typings.js";
 
 import { DURATIONS, InstanceTypes } from "../../constants.js";
 import { DURATION, REASON, USER } from "./.methods.js";
@@ -22,7 +23,7 @@ const options = {
 
 const roleNames = ["muted", "mute", "silenced"];
 
-const getDefaultMuteRoleData = (intr: CommandInteraction) => ({
+const getDefaultMuteRoleData = (intr: CommandInteraction<"cached">) => ({
 	reason: `Automatic muted role created by ${intr.user.tag} (${intr.user.id})`,
 	mentionable: false,
 	name: "Muted",
@@ -65,7 +66,7 @@ const data: ChatInputApplicationCommandData = {
 	options: [USER(true), REASON("mute"), DURATION("mute")]
 };
 
-async function execute(intr: CommandInteraction) {
+async function execute(intr: CommandInteraction<"cached">) {
 	const target = intr.options.getMember("user");
 	const reason = intr.options.getString("reason");
 	const duration = intr.options.getInteger("duration") ?? DURATIONS.THREE_HRS;
