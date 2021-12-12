@@ -1,4 +1,5 @@
 import type {
+	Client,
 	ChatInputApplicationCommandData,
 	ContextMenuInteraction,
 	CommandInteraction,
@@ -7,7 +8,7 @@ import type {
 	TextChannel
 } from "discord.js";
 import type { InstanceTypes } from "../constants.js";
-import type ConfigManager from "./database/src/config/ConfigManager.js";
+import type ConfigManager from "../database/ConfigManager.js";
 
 /* * * * * * */
 
@@ -38,7 +39,7 @@ export interface ConfigCommandData {
 	config: ConfigManager;
 	method: string;
 	option: string;
-	intr: CommandInteraction;
+	intr: CommandInteraction<"cached">;
 }
 
 export interface EvalOutput {
