@@ -10,7 +10,7 @@ import {
 import { type Command } from "../../typings/index.js";
 
 import { DURATIONS, InstanceTypes } from "../../constants.js";
-import { DURATION, REASON, USER } from "./.methods.js";
+import { DURATION, REASON, USER } from "./noread.methods.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import InstanceManager from "../../database/InstanceManager.js";
 import ConfigManager from "../../database/ConfigManager.js";

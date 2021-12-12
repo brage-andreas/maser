@@ -4,7 +4,7 @@ import { MessageEmbed, type ChatInputApplicationCommandData, type CommandInterac
 import { CONFIG_OPTIONS, CONFIG_RESULT_KEYS, defaultEmbedOptions } from "../../constants.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import ConfigManager from "../../database/ConfigManager.js";
-import methods from "./.methods.js";
+import methods from "./noread.methods.js";
 
 const options = {
 	private: true

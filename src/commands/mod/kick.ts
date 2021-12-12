@@ -3,7 +3,7 @@ import { type Command } from "../../typings/index.js";
 
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { InstanceTypes } from "../../constants.js";
-import { REASON, USER } from "./.methods.js";
+import { REASON, USER } from "./noread.methods.js";
 import InstanceManager from "../../database/InstanceManager.js";
 
 const data: ChatInputApplicationCommandData = {

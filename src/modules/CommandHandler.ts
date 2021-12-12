@@ -98,7 +98,7 @@ export default class CommandHandler {
 		for (let folder of folders) {
 			const FOLDER_DIR = new URL(`../commands/${folder}`, import.meta.url);
 			const files = this._readDir(FOLDER_DIR).filter(
-				(fileName) => fileName.toLowerCase().endsWith(".js") && !fileName.startsWith(".")
+				(fileName) => fileName.toLowerCase().endsWith(".js") && !fileName.startsWith("noread.")
 			);
 
 			for (let fileName of files) {
