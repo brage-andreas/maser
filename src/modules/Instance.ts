@@ -2,12 +2,14 @@ import { MessageEmbed, type Client, type Message } from "discord.js";
 import { type InstanceData } from "../typings/index.js";
 
 import { InstanceTypes } from "../constants.js";
+import InstanceManager from "../database/InstanceManager.js";
 import ConfigManager from "../database/ConfigManager.js";
 import ms from "ms";
 
 export default class Instance {
 	public readonly client: Client;
 	public readonly data: InstanceData;
+	public reference: Instance | null;
 
 	// Data shorthands
 	public readonly referenceId: number | null;
@@ -18,6 +20,7 @@ export default class Instance {
 	public readonly id: number;
 
 	constructor(client: Client, data: InstanceData) {
+		this.reference = null;
 		this.client = client;
 		this.data = data;
 
@@ -92,17 +95,19 @@ export default class Instance {
 		return this.data.url;
 	}
 
-	public post() {
-		// TODO
-		// * find mod log channel
-		// * send message, store URL
-		// * update URL in
+	public async getReference(): Promise<Instance | null> {
+		if (!this.data.referenceId) return null;
+
+		const manager = new InstanceManager(this.client, this.data.guildId);
+		this.reference = await manager.getInstance(this.data.referenceId);
+
+		return this.reference;
 	}
 
 	public toEmbed(): MessageEmbed {
 		const instanceEmbed = new MessageEmbed()
 			.setAuthor(`${this.executor.tag} (${this.executor.id})`)
-			.setFooter(`#${this.id} ${this.edited ? "• This instance has been edited" : ""}`)
+			.setFooter(`#${this.id} ${this.edited ? "• Edited" : ""}`)
 			.setTimestamp(this.timestamp)
 			.setColor(this.hexColor);
 
@@ -116,7 +121,17 @@ export default class Instance {
 
 		if (this.reason) description.push(`**Reason**: ${this.reason}`);
 		if (this.duration && this.type === "Mute") description.push(`**Duration**: ${this.duration}`);
-		if (this.referenceId) description.push(`**Reference**: #${this.referenceId}`);
+
+		console.log(this.reference, this.referenceId);
+		console.log(this.data);
+		if (this.reference || this.referenceId) {
+			const validReference = !!this.reference && !!this.reference.data.url;
+			const str = validReference
+				? `[Instance #${this.reference!.id}](${this.reference!.data.url})`
+				: `#${this.referenceId}`;
+
+			description.push(`**Reference**: ${str}`);
+		}
 
 		return instanceEmbed.setDescription(description.join("\n"));
 	}

@@ -178,7 +178,7 @@ async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteract
 	}
 
 	if (sub === "create") {
-		const reference = intr.options.getInteger("reference");
+		const reference = intr.options.getInteger("reference-id");
 		const duration = intr.options.getString("duration");
 		const executor = intr.options.getUser("executor", true);
 		const reason = intr.options.getString("reason");
@@ -202,6 +202,8 @@ async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteract
 		};
 
 		const instance = await instances.createInstance(data);
+		await instance.getReference();
+
 		intr.editReply({ embeds: [instance.toEmbed()] });
 
 		intr.logger.log(`Manually created new instance of type ${InstanceTypes[type] ?? "Unknown"}`);
@@ -213,6 +215,8 @@ async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteract
 			intr.editReply(`${emXMark} Instance #${instanceId} was not found`);
 			return;
 		}
+
+		await instance.getReference();
 
 		intr.editReply({ embeds: [instance.toEmbed()] });
 
@@ -239,23 +243,30 @@ async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteract
 			newData.executorTag = executor.tag;
 			newData.executorId = executor.id;
 		}
+
 		if (target) {
 			newData.targetTag = target.tag;
 			newData.targetId = target.id;
 		}
+
 		if (referenceId) newData.referenceId = referenceId;
 		if (duration) newData.duration = ms(duration);
 		if (reason) newData.reason = reason;
 		if (time) newData.timestamp = Date.now() - ms(time);
 
-		const data = Object.assign({}, oldData, newData);
+		const data = Object.assign({}, oldData, newData); // merges the objects
+
+		data.timestamp = Date.now();
 		data.edited = true;
 
 		const newInstance = await instances.editInstance(instanceId, data);
+
 		if (!newInstance) {
 			intr.editReply(`${emError} Something went wrong with editing instance #${instanceId}`);
 			return;
 		}
+
+		await newInstance.getReference();
 
 		intr.editReply({ embeds: [newInstance.toEmbed()] });
 
