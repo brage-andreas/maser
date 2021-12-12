@@ -1,7 +1,7 @@
 {
 	"name": "maser",
 	"version": "2.0.0",
-	"description": "",
+	"description": "A Discord bot made with discord.js",
 	"main": "dist/index.js",
 	"type": "module",
 	"scripts": {
@@ -9,8 +9,8 @@
 		"prebuild": "tsc",
 		"preclear": "tsc",
 		"start": "node .",
-		"build": "node dist/utils/COMMANDS/BUILD_COMMANDS.js",
-		"clear": "node dist/utils/COMMANDS/CLEAR_COMMANDS.js"
+		"build": "node dist/scripts/commands/build.js",
+		"clear": "node dist/scripts/commands/clear.js"
 	},
 	"repository": {
 		"type": "git",
