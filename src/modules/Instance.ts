@@ -122,8 +122,6 @@ export default class Instance {
 		if (this.reason) description.push(`**Reason**: ${this.reason}`);
 		if (this.duration && this.type === "Mute") description.push(`**Duration**: ${this.duration}`);
 
-		console.log(this.reference, this.referenceId);
-		console.log(this.data);
 		if (this.reference || this.referenceId) {
 			const validReference = !!this.reference && !!this.reference.data.url;
 			const str = validReference
