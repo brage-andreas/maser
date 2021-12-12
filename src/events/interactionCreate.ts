@@ -26,7 +26,7 @@ export async function execute(client: Client<true>, intr: CommandInteraction | A
 		return;
 	}
 
-	await intr.deferReply({ ephemeral: commandOptions.hidden });
+	await intr.deferReply({ ephemeral: commandOptions.hide });
 
 	commandOptions.execute();
 }

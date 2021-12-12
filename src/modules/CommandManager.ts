@@ -2,7 +2,7 @@ import { type CommandInteraction } from "discord.js";
 import { type Command } from "../typings/index.js";
 
 export default class CommandManager {
-	public interaction: Readonly<CommandInteraction<"cached">> | null;
+	public interaction: CommandInteraction<"cached"> | null;
 	public command: Readonly<Command> | null;
 
 	constructor(interaction?: CommandInteraction<"cached"> | null, data?: Command | null) {
@@ -49,9 +49,9 @@ export default class CommandManager {
 	}
 
 	/**
-	 * Whether this command should be hidden or not.
+	 * Whether to hide this command.
 	 */
-	public get hidden(): boolean {
+	public get hide(): boolean {
 		this.checkCommand();
 		const standard = this.command!.options.defaultHide;
 		const option = this.interaction!.options.getBoolean("hide");
@@ -70,7 +70,7 @@ export default class CommandManager {
 	/**
 	 * Checks if command is present.
 	 */
-	private checkCommand() {
+	private checkCommand(): void {
 		if (!this.command) throw new Error("commandData must be set to the CommandManager");
 		if (!this.interaction) throw new Error("command must be set to the CommandManager");
 	}
