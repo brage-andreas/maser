@@ -1,23 +1,26 @@
-import type Discord, { NewsChannel, TextChannel, MessageEmbed, ChatInputApplicationCommandData } from "discord.js";
+import type {
+	ChatInputApplicationCommandData,
+	ContextMenuInteraction,
+	CommandInteraction,
+	MessageEmbed,
+	NewsChannel,
+	TextChannel
+} from "discord.js";
 import type { InstanceTypes } from "../constants.js";
-import type { CommandLogger } from "../utils/logger";
-import type CommandManager from "../modules/CommandManager.js";
 import type ConfigManager from "./database/src/config/ConfigManager.js";
-import type { Client } from "../modules/index.js";
 
-type AllowedConfigTextChannels = TextChannel | NewsChannel;
+/* * * * * * */
 
+export type AllowedConfigTextChannels = TextChannel | NewsChannel;
 export type ConfigColumns = "guildId" | "botLogChannel" | "modLogChannel" | "memberLogChannel" | "mutedRole";
-
-export type ColorMap = Map<string, Color>;
-export type Color = `#${string}`;
+export type PgResponses = ConfigResult | ExistsResult | InstanceData | InstanceIdResult;
 
 export interface CommandModule {
 	getCommand: () => Partial<Command>;
 }
 
 export interface Command {
-	execute: (interaction: CommandInteraction | ContextMenuInteraction) => Promise<void> | void;
+	execute: (interaction: CommandInteraction<"cached"> | ContextMenuInteraction<"cached">) => Promise<void> | void;
 	data: ChatInputApplicationCommandData;
 	options: {
 		defaultHide: boolean;
@@ -82,5 +85,3 @@ export interface InstanceData {
 export interface InstanceIdResult {
 	instanceId: number;
 }
-
-export type PgResponses = ConfigResult | ExistsResult | InstanceData | InstanceIdResult;
