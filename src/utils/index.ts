@@ -1,6 +1,6 @@
 import { MAX_EMBED_DESCRIPTION_LEN } from "../constants.js";
 
-export default class Util {
+export default class Util extends null {
 	/**
 	 * Parsed any given string by indenting it with a given width of spaces.
 	 * Returns null if the width is under 0 or more than 16.
