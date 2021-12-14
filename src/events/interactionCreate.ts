@@ -1,6 +1,6 @@
 import { type Client, type AutocompleteInteraction, type CommandInteraction } from "discord.js";
 import { CommandManager } from "../modules/index.js";
-import { CommandLogger } from "../utils/logger/index.js";
+import { CommandLogger } from "../logger/index.js";
 
 export async function execute(client: Client<true>, intr: CommandInteraction | AutocompleteInteraction) {
 	if ((!intr.isCommand() && !intr.isAutocomplete()) || !intr.inCachedGuild()) return;

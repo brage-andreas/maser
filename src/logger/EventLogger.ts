@@ -1,9 +1,9 @@
 import { Client, MessageEmbed, type Guild, type GuildMember } from "discord.js";
 
-import { LoggerTypes } from "../../constants.js";
-import ConfigManager from "../../database/ConfigManager.js";
+import { LoggerTypes } from "../constants.js";
+import ConfigManager from "../database/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";
-import Util from "../index.js";
+import Util from "../utils/index.js";
 
 export default class EventLogger extends BaseLogger {
 	client: Client;

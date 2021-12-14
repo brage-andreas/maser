@@ -2,7 +2,7 @@ import { type InstanceData, type InstanceIdResult } from "../typings/index.js";
 import { type Client } from "discord.js";
 
 import { Instance } from "../modules/index.js";
-import InfoLogger from "../utils/logger/InfoLogger.js";
+import InfoLogger from "../logger/InfoLogger.js";
 import { REGEXP } from "../constants.js";
 import Postgres from "./src/postgres.js";
 

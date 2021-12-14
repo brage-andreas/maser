@@ -1,7 +1,7 @@
 import { getColor, gray, yellow } from "./LoggerColors.js";
 import TraceValueManager from "./TraceValueManager.js";
-import { LoggerTypes } from "../../constants.js";
-import Util from "../index.js";
+import { LoggerTypes } from "../constants.js";
+import Util from "../utils/index.js";
 
 /**
  * Base for other logger classes. Should not be instantiated itself.

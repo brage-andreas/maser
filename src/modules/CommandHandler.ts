@@ -11,7 +11,7 @@ import {
 import { type Command, type CommandModule } from "../typings/index.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums.js";
-import { ErrorLogger, InfoLogger } from "../utils/logger/index.js";
+import { ErrorLogger, InfoLogger } from "../logger/index.js";
 import { readdirSync } from "fs";
 import { Routes } from "discord-api-types/v9";
 import { REGEXP } from "../constants.js";

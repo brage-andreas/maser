@@ -1,10 +1,10 @@
 import { CommandInteraction, Guild, MessageEmbed, TextBasedChannels, User } from "discord.js";
 
-import { COLORS, defaultEmbedOptions, LoggerTypes } from "../../constants.js";
-import ConfigManager from "../../database/ConfigManager.js";
+import { COLORS, defaultEmbedOptions, LoggerTypes } from "../constants.js";
+import ConfigManager from "../database/ConfigManager.js";
 import BaseLogger from "./BaseLogger.js";
 import { gray } from "./LoggerColors.js";
-import Util from "../index.js";
+import Util from "../utils/index.js";
 
 export default class CommandLogger extends BaseLogger {
 	public interaction: CommandInteraction<"cached"> | null;

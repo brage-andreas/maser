@@ -1,6 +1,6 @@
 import { CommandHandler, EventManager } from "./modules/index.js";
 import { COLORS, EMOJIS, INTENTS } from "./constants.js";
-import { InfoLogger } from "./utils/logger/index.js";
+import { InfoLogger } from "./logger/index.js";
 import { Client } from "discord.js";
 import dotenv from "dotenv";
 dotenv.config();
