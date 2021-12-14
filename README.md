@@ -28,49 +28,41 @@ The `/build` command can do this from inside Discord, which you can use once you
 
 ## Example command file
 ```ts
-// root/commands/category/command.ts
-import type { ChatInputApplicationCommandData } from "discord.js";
-import type { CommandInteraction, Command } from "../../typings.js";
+// root/commands/category/myCommand.ts
+import { type CommandInteraction, type ChatInputApplicationCommandData } from "discord.js";
+import { type Command } from "../../typings/index.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 
-// These are the default options. You can omit this.
-const options = {
-	defaultHide: true,
-	logLevel: 1,
-	private: false,
-	wip: false
-}
+const options: 
 
 const data: ChatInputApplicationCommandData = {
 	name: "command",
-	description: "Description",
+	description: "A very useful command",
 	options: [
 		{
-			name: "option",
-			description: "Option",
-			type: ApplicationCommandOptionTypes.STRING
+			name: "input",
+			description: "Write your heart out!",
+			type: ApplicationCommandOptionTypes.STRING,
+			required: true
 		}
 	]
 };
 
-async function execute(intr: CommandInteraction) {
-	// Command here
+async function execute(intr: CommandInteraction<"cached">) {
+	intr.reply("")
 	intr.logger.log("Command used");
 }
 
-export const getCommand = () => ({ data, options, execute } as Partial<Command>);
+export const getCommand = () => ({ data, execute } as Partial<Command>);
 ```
 
 ## Example event
 ```ts
-// root/events/event.ts
-import { Client } from "../extensions/";
+// root/events/myEvent.ts
+import { type Client } from "discord.js";
 
-// For messageUpdate it would be:
-//   execute(client: Client, oldMessage: Message, newMessage: Message)
-export async function execute(client: Client, info: string) {
-	// Warn event
+export async function execute(client: Client<true>, info: string) {
 	client.events.logger
 		.setEvent("warn")
 		.log(info);
