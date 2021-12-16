@@ -2,8 +2,6 @@ import type { ApplicationCommandSubCommandData, CommandInteraction, MessageEmbed
 import { Intents } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 
-// this file is a mess :D
-
 export const MAX_EMBED_DESCRIPTION_LEN = 4096;
 
 export const INTENTS = [
@@ -12,17 +10,14 @@ export const INTENTS = [
 ];
 
 export const DURATIONS = {
-	/* MINUTES */
 	FIFTEEN_MIN: 900000,
 	FOURTY_FIVE_MIN: 2700000,
 
-	/* HOURS */
 	ONE_AND_HALF_HRS: 129600000,
 	THREE_HRS: 10800000,
 	SIX_HRS: 21600000,
 	TWELVE_HRS: 44200000,
 
-	/* DAYS */
 	ONE_DAY: 86400000,
 	THREE_DAYS: 259200000
 } as const;
@@ -179,17 +174,3 @@ export function defaultEmbedOptions(intr?: CommandInteraction<"cached">): Messag
 
 	return options;
 }
-
-export default {
-	MAX_EMBED_DESCRIPTION_LEN,
-	CONFIG_RESULT_KEYS,
-	InstanceTypes,
-	CONFIG_OPTIONS,
-	LoggerTypes,
-	BOOST_LEVELS,
-	USER_FLAGS,
-	DURATIONS,
-	INTENTS,
-	COLORS,
-	REGEXP
-};
