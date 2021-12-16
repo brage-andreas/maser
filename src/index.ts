@@ -1,8 +1,8 @@
-import { CommandHandler, EventManager } from "./modules/index.js";
-import { COLORS, EMOJIS, INTENTS } from "./constants.js";
-import { InfoLogger } from "./logger/index.js";
 import { Client } from "discord.js";
 import dotenv from "dotenv";
+import { COLORS, EMOJIS, INTENTS } from "./constants.js";
+import { InfoLogger } from "./logger/index.js";
+import { CommandHandler, EventManager } from "./modules/index.js";
 dotenv.config();
 
 // clears console -- console.clear() does not fully clear it
@@ -22,4 +22,4 @@ client.colors = COLORS;
 await client.commandHandler.init();
 await client.events.init();
 
-client.login(process.env.TOKEN);
+client.login(process.env.BOT_TOKEN);

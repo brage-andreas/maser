@@ -210,7 +210,7 @@ export default class CommandHandler {
 		const errorLogger = new ErrorLogger();
 		const infoLogger = new InfoLogger();
 
-		if (!process.env.TOKEN) {
+		if (!process.env.BOT_TOKEN) {
 			errorLogger.log("Token not defined in .env file");
 			return false;
 		}
@@ -226,7 +226,7 @@ export default class CommandHandler {
 		}
 
 		const data = this._getData();
-		const rest = new REST({ version: "9" }).setToken(process.env.TOKEN);
+		const rest = new REST({ version: "9" }).setToken(process.env.BOT_TOKEN);
 
 		try {
 			const route = guildId
