@@ -1,23 +1,22 @@
 import {
-	type CommandInteraction,
 	type CategoryChannel,
 	type ChatInputApplicationCommandData,
 	type Collection,
+	type CommandInteraction,
 	type GuildChannel,
 	type Role,
 	type VoiceChannel
 } from "discord.js";
-import { type Command } from "../../typings/index.js";
-
-import { DURATIONS, InstanceTypes } from "../../constants.js";
-import { DURATION, REASON, USER } from "./noread.methods.js";
-import { ConfirmationButtons } from "../../modules/ButtonManager.js";
-import InstanceManager from "../../database/InstanceManager.js";
-import ConfigManager from "../../database/ConfigManager.js";
-import Util from "../../utils/index.js";
 import ms from "ms";
+import { DURATIONS, InstanceTypes } from "../../constants.js";
+import ConfigManager from "../../database/ConfigManager.js";
+import InstanceManager from "../../database/InstanceManager.js";
+import { ConfirmationButtons } from "../../modules/ButtonManager.js";
+import { type Command, type CommandOptions } from "../../typings/index.js";
+import Util from "../../utils/index.js";
+import { DURATION, REASON, USER } from "./noread.methods.js";
 
-const options = {
+const options: Partial<CommandOptions> = {
 	wip: true
 };
 

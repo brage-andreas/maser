@@ -23,12 +23,14 @@ export interface CommandModule {
 export interface Command {
 	execute: (interaction: CommandInteraction<"cached"> | ContextMenuInteraction<"cached">) => Promise<void> | void;
 	data: ChatInputApplicationCommandData;
-	options: {
-		defaultHide: boolean;
-		logLevel: 2 | 1 | 0;
-		private: boolean;
-		wip: boolean;
-	};
+	options: CommandOptions;
+}
+
+export interface CommandOptions {
+	defaultHide: boolean;
+	logLevel: 2 | 1 | 0;
+	private: boolean;
+	wip: boolean;
 }
 
 export interface Event {

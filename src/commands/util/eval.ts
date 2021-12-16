@@ -4,7 +4,7 @@ import Discord, {
 	type ChatInputApplicationCommandData,
 	type Message
 } from "discord.js";
-import { type EvalOutput } from "../../typings/index.js";
+import { CommandOptions, type EvalOutput } from "../../typings/index.js";
 import { type Command } from "../../typings/index.js";
 
 import { MessageAttachment, MessageButton } from "discord.js";
@@ -15,7 +15,7 @@ import { performance } from "perf_hooks";
 import Util from "../../utils/index.js";
 import ms from "ms";
 
-const options = {
+const options: Partial<CommandOptions> = {
 	logLevel: 2,
 	private: true
 };

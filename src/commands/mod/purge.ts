@@ -1,15 +1,14 @@
 import {
-	type CommandInteraction,
 	type ChatInputApplicationCommandData,
+	type CommandInteraction,
 	type NewsChannel,
 	type TextChannel
 } from "discord.js";
-import { type Command } from "../../typings/index.js";
-
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
+import { type Command, type CommandOptions } from "../../typings/index.js";
 
-const options = {
+const options: Partial<CommandOptions> = {
 	private: true
 };
 

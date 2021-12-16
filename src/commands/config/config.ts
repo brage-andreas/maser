@@ -1,12 +1,11 @@
-import { type ConfigColumns, type Command } from "../../typings/index.js";
 import { MessageEmbed, type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
-
-import { CONFIG_OPTIONS, CONFIG_RESULT_KEYS, defaultEmbedOptions } from "../../constants.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import { CONFIG_OPTIONS, CONFIG_RESULT_KEYS, defaultEmbedOptions } from "../../constants.js";
 import ConfigManager from "../../database/ConfigManager.js";
+import { type Command, type CommandOptions, type ConfigColumns } from "../../typings/index.js";
 import methods from "./noread.methods.js";
 
-const options = {
+const options: Partial<CommandOptions> = {
 	private: true
 };
 

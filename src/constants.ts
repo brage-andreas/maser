@@ -1,6 +1,6 @@
 import type { ApplicationCommandSubCommandData, CommandInteraction, MessageEmbedOptions } from "discord.js";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { Intents } from "discord.js";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 
 // this file is a mess :D
 

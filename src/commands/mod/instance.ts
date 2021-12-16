@@ -3,14 +3,13 @@ import {
 	type ChatInputApplicationCommandData,
 	type CommandInteraction
 } from "discord.js";
-import { type Command, type InstanceData } from "../../typings/index.js";
-
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import ms from "ms";
 import { InstanceTypes } from "../../constants.js";
 import InstanceManager from "../../database/InstanceManager.js";
-import ms from "ms";
+import { type Command, type CommandOptions, type InstanceData } from "../../typings/index.js";
 
-const options = {
+const options: Partial<CommandOptions> = {
 	private: true
 };
 

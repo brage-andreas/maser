@@ -1,9 +1,8 @@
-import { type CommandInteraction, type ChatInputApplicationCommandData } from "discord.js";
-import { type Command } from "../../typings/index.js";
-
+import { type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import { type Command, type CommandOptions } from "../../typings/index.js";
 
-export const options = {
+export const options: Partial<CommandOptions> = {
 	private: true
 };
 
