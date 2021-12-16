@@ -1,9 +1,8 @@
-import { type InstanceData, type InstanceIdResult } from "../typings/index.js";
 import { type Client } from "discord.js";
-
-import { Instance } from "../modules/index.js";
-import InfoLogger from "../logger/InfoLogger.js";
 import { REGEXP } from "../constants.js";
+import InfoLogger from "../logger/InfoLogger.js";
+import { Instance } from "../modules/index.js";
+import { type InstanceData, type InstanceIdResult } from "../typings/index.js";
 import Postgres from "./src/postgres.js";
 
 export default class InstanceManager extends Postgres {

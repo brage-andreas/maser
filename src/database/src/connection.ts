@@ -1,5 +1,5 @@
-import type { ExistsResult, PgResponses } from "../../typings/index.js";
 import postgres from "pg-promise";
+import type { ExistsResult, PgResponses } from "../../typings/index.js";
 
 // This will error with "Error: connect ECONNREFUSED 127.0.0.1:5432"
 // if you don't have postgres installed

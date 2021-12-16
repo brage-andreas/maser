@@ -7,10 +7,10 @@ import {
 	type ChatInputApplicationCommandData,
 	type GuildMember
 } from "discord.js";
-import { type Command } from "../../typings/index.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { defaultEmbedOptions } from "../../constants.js";
 import { ButtonManager } from "../../modules/index.js";
+import { type Command } from "../../typings/index.js";
 
 const sizeChoices = [16, 32, 64, 128, 256, 512, 1024, 2048, 4096].map((size) => {
 	return {

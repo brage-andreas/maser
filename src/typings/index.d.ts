@@ -1,8 +1,8 @@
 import type {
-	Client,
 	ChatInputApplicationCommandData,
-	ContextMenuInteraction,
+	Client,
 	CommandInteraction,
+	ContextMenuInteraction,
 	MessageEmbed,
 	NewsChannel,
 	TextChannel

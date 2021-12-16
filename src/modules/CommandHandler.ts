@@ -1,21 +1,20 @@
+import { REST } from "@discordjs/rest";
+import { Routes } from "discord-api-types/v9";
 import {
-	type CommandInteraction,
 	type ApplicationCommandChannelOptionData,
 	type ApplicationCommandChoicesData,
 	type ApplicationCommandData,
 	type ApplicationCommandNonOptionsData,
 	type ApplicationCommandOptionData,
 	type ApplicationCommandSubCommandData,
-	type ApplicationCommandSubGroupData
+	type ApplicationCommandSubGroupData,
+	type CommandInteraction
 } from "discord.js";
-import { type Command, type CommandModule } from "../typings/index.js";
-
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums.js";
-import { ErrorLogger, InfoLogger } from "../logger/index.js";
 import { readdirSync } from "fs";
-import { Routes } from "discord-api-types/v9";
 import { REGEXP } from "../constants.js";
-import { REST } from "@discordjs/rest";
+import { ErrorLogger, InfoLogger } from "../logger/index.js";
+import { type Command, type CommandModule } from "../typings/index.js";
 
 const COMMAND_DIR = new URL("../commands", import.meta.url);
 

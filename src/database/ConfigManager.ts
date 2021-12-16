@@ -1,6 +1,5 @@
-import { type AllowedConfigTextChannels, type ConfigColumns, type ConfigResult } from "../typings/index.js";
 import { type Client, type Role } from "discord.js";
-
+import { type AllowedConfigTextChannels, type ConfigColumns, type ConfigResult } from "../typings/index.js";
 import Postgres from "./src/postgres.js";
 
 export default class ConfigManager extends Postgres {

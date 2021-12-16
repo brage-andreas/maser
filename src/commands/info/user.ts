@@ -1,13 +1,12 @@
 import {
 	MessageEmbed,
-	type CommandInteraction,
 	type ChatInputApplicationCommandData,
+	type CommandInteraction,
 	type GuildMember
 } from "discord.js";
-import { type Command } from "../../typings/index.js";
-
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { defaultEmbedOptions, USER_FLAGS } from "../../constants.js";
+import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 
 const data: ChatInputApplicationCommandData = {

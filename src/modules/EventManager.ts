@@ -1,8 +1,7 @@
-import type { Event } from "../typings/index.js";
-
-import { EventLogger } from "../logger/index.js";
-import { readdirSync } from "fs";
 import { Client } from "discord.js";
+import { readdirSync } from "fs";
+import { EventLogger } from "../logger/index.js";
+import type { Event } from "../typings/index.js";
 
 const EVENT_DIR = new URL("../events", import.meta.url);
 

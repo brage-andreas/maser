@@ -1,8 +1,7 @@
 import "discord.js";
-
-import type { CommandHandler, EventManager, CommandManager } from "../modules/index.js";
-import type { InfoLogger, CommandLogger } from "../logger/index.js";
-import type { EMOJIS, COLORS } from "../constants.js";
+import type { COLORS, EMOJIS } from "../constants.js";
+import type { CommandLogger, InfoLogger } from "../logger/index.js";
+import type { CommandHandler, CommandManager, EventManager } from "../modules/index.js";
 
 declare module "discord.js" {
 	interface Client {

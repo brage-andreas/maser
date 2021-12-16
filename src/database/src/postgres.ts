@@ -1,8 +1,7 @@
-import { type ExistsResult, type PostgresOptions } from "../../typings/index.js";
 import { type Client } from "discord.js";
-
-import PostgresConnection from "./connection.js";
 import { REGEXP } from "../../constants.js";
+import { type ExistsResult, type PostgresOptions } from "../../typings/index.js";
+import PostgresConnection from "./connection.js";
 
 export default abstract class Postgres extends PostgresConnection {
 	public client: Client<true>;

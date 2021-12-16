@@ -1,19 +1,18 @@
 import Discord, {
+	MessageAttachment,
+	MessageButton,
 	MessageEmbed,
-	type CommandInteraction,
 	type ChatInputApplicationCommandData,
+	type CommandInteraction,
 	type Message
 } from "discord.js";
-import { CommandOptions, type EvalOutput } from "../../typings/index.js";
-import { type Command } from "../../typings/index.js";
-
-import { MessageAttachment, MessageButton } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import ms from "ms";
+import { performance } from "perf_hooks";
 import { defaultEmbedOptions, REGEXP } from "../../constants.js";
 import { ButtonManager } from "../../modules/index.js";
-import { performance } from "perf_hooks";
+import { CommandOptions, type Command, type EvalOutput } from "../../typings/index.js";
 import Util from "../../utils/index.js";
-import ms from "ms";
 
 const options: Partial<CommandOptions> = {
 	logLevel: 2,

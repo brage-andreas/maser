@@ -1,5 +1,5 @@
-import { CommandHandler } from "../../modules/index.js";
 import dotenv from "dotenv";
+import { CommandHandler } from "../../modules/index.js";
 dotenv.config();
 
 const clientId = process.env.CLIENT_ID;
