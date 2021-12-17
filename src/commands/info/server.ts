@@ -15,7 +15,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const getRoles = (guild: Guild) => {
 		const roles = guild.roles.cache;
 		// should never be 0 (@everyone), but just in case
-		if (!roles.size || roles.size === 1) return null;
+		if (roles.size <= 2) return null;
 
 		const sortedRoles = roles.sort((a, b) => b.position - a.position);
 		// slice to remove @everyone
@@ -24,7 +24,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 		const roleMentions = parsedRoles.slice(0, 3).join(", ");
 		const excess = parsedRoles.length - 3;
 
-		return excess > 0 ? roleMentions + `, and ${excess} more` : roleMentions;
+		return 0 < excess ? roleMentions + `, and ${excess} more` : roleMentions;
 	};
 
 	const getEmojisAndStickers = (guild: Guild) => {
