@@ -35,7 +35,7 @@ export default async function logs(data: ConfigCommandData) {
 		case "set": {
 			const res = intr.options.getChannel("channel") ?? intr.options.getRole("role");
 
-			const value = res?.id ?? "null";
+			const value = res?.id ?? "NULL";
 			await config.set(value);
 
 			const updatedValueStr = res
