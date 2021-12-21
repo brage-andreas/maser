@@ -49,7 +49,8 @@ const data: ChatInputApplicationCommandData = {
 				{
 					name: "reference-id",
 					description: "The instance to reference's ID",
-					type: ApplicationCommandOptionTypes.INTEGER
+					type: ApplicationCommandOptionTypes.STRING,
+					autocomplete: true
 				},
 				{
 					name: "target",
@@ -77,7 +78,7 @@ const data: ChatInputApplicationCommandData = {
 				{
 					name: "instance-id",
 					description: "The ID of the instance to edit",
-					type: ApplicationCommandOptionTypes.INTEGER,
+					type: ApplicationCommandOptionTypes.STRING,
 					autocomplete: true,
 					required: true
 				},
@@ -94,7 +95,8 @@ const data: ChatInputApplicationCommandData = {
 				{
 					name: "reference-id",
 					description: "The instance to reference's ID",
-					type: ApplicationCommandOptionTypes.INTEGER
+					type: ApplicationCommandOptionTypes.STRING,
+					autocomplete: true
 				},
 				{
 					name: "target",
@@ -122,7 +124,7 @@ const data: ChatInputApplicationCommandData = {
 				{
 					name: "instance",
 					description: "The ID of the instance to show",
-					type: ApplicationCommandOptionTypes.INTEGER,
+					type: ApplicationCommandOptionTypes.STRING,
 					autocomplete: true,
 					required: true
 				}
@@ -136,7 +138,7 @@ const data: ChatInputApplicationCommandData = {
 				{
 					name: "instance",
 					description: "The ID of the instance to delete",
-					type: ApplicationCommandOptionTypes.INTEGER,
+					type: ApplicationCommandOptionTypes.STRING,
 					autocomplete: true,
 					required: true
 				}
@@ -153,31 +155,56 @@ async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteract
 	await instances.initialise();
 
 	if (intr.isAutocomplete()) {
-		const getData = async (focused?: number) => {
-			focused ??= 1;
-			const offset = [1, 2, 3].includes(focused) ? 0 : focused - 3;
+		const getData = async (focusedRaw?: number) => {
+			// doesn't infer type right whilst just using param
+			const focused = focusedRaw ?? (await instances.getLatestId()) ?? 1;
+
+			// ensures offset will never be under 0
+			const offset = focused <= 3 ? 0 : focused - 3;
 			const data = await instances.getInstanceDataWithinRange(offset);
 
-			return data?.map((data) => {
-				const tagStr = data.targetTag ? `on ${data.targetTag}` : "";
-				return {
-					name: `#${data.instanceId} - ${InstanceTypes[data.type]} ${tagStr}`,
-					value: data.instanceId
-				};
-			});
+			const getName = (data: InstanceData) => {
+				const id = data.instanceId;
+				const emoji = id === focused ? "✨" : id > focused ? "🔸" : "🔹";
+
+				let str = `${emoji} #${id} - ${InstanceTypes[data.type]}`;
+				if (data.targetTag) str += ` on ${data.targetTag}`;
+
+				return str;
+			};
+
+			return data
+				?.sort((a, b) => {
+					// Makes the focused value always be atop
+					if (a.instanceId === focused) return -1;
+					if (b.instanceId === focused) return 1;
+
+					// high -> low
+					return b.instanceId - a.instanceId;
+				})
+				.map((data) => ({
+					name: getName(data),
+					value: `${data.instanceId}`
+				}));
 		};
 
-		const emptyResponse = { name: "Whoa so empty—there are no instances", value: 0 };
+		const emptyResponse = { name: "😴 Whoa so empty—there are no instances", value: "0" };
 		const focused = Number(intr.options.getFocused()) || undefined;
 
-		const response = (await getData(focused)) ?? (await getData()) ?? [emptyResponse];
+		const response = (await getData(focused)) ?? [emptyResponse];
 
 		intr.respond(response);
 		return;
 	}
 
+	const getIdOptionValue = (option: string) => {
+		let value = intr.options.getString(option)?.replaceAll(/\D*/g, "");
+		if (!value) return null;
+		return parseInt(value) || null;
+	};
+
 	if (sub === "create") {
-		const reference = intr.options.getInteger("reference-id");
+		const reference = getIdOptionValue("reference-id");
 		const duration = intr.options.getString("duration");
 		const executor = intr.options.getUser("executor", true);
 		const reason = intr.options.getString("reason");
@@ -207,7 +234,13 @@ async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteract
 
 		intr.logger.log(`Manually created new instance of type ${InstanceTypes[type] ?? "Unknown"}`);
 	} else if (sub === "show") {
-		const instanceId = intr.options.getInteger("instance", true);
+		const instanceId = getIdOptionValue("instance");
+
+		if (!instanceId) {
+			intr.editReply(`${emXMark} Provided ID is invalid: ${instanceId}`);
+			return;
+		}
+
 		const instance = await instances.getInstance(instanceId);
 
 		if (!instance) {
@@ -221,15 +254,21 @@ async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteract
 
 		intr.logger.log(`Viewed instance #${instanceId}`);
 	} else if (sub === "edit") {
-		const referenceId = intr.options.getInteger("reference-id");
-		const instanceId = intr.options.getInteger("instance-id", true);
+		const referenceId = getIdOptionValue("reference-id");
+		const instanceId = getIdOptionValue("instance-id");
 		const duration = intr.options.getString("duration");
 		const executor = intr.options.getUser("executor");
 		const reason = intr.options.getString("reason");
 		const target = intr.options.getUser("target");
 		const time = intr.options.getString("time");
 
+		if (!instanceId) {
+			intr.editReply(`${emXMark} Provided ID is invalid: ${instanceId}`);
+			return;
+		}
+
 		const oldInstance = await instances.getInstance(instanceId);
+
 		if (!oldInstance) {
 			intr.editReply(`${emXMark} Instance #${instanceId} was not found`);
 			return;
