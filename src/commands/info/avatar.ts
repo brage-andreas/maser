@@ -142,7 +142,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 		collector.on("end", () => {
 			embed.setFooter("");
-			msg.edit({ embeds: [embed], components: [] });
+			msg.edit({ embeds: [embed], components: [] }).catch(() => {});
 		});
 	}
 
