@@ -1,3 +1,4 @@
+import { type Guild, type GuildMember } from "discord.js";
 import { MAX_EMBED_DESCRIPTION_LEN } from "../constants.js";
 
 export default class Util extends null {
@@ -96,5 +97,26 @@ export default class Util extends null {
 		}
 
 		return string;
+	}
+
+	/**
+	 * Gives you a string of the three highest roles with a mention of any excess.
+	 */
+	public static parseRoles(memberOrGuild: Guild | GuildMember): string;
+	public static parseRoles(memberOrGuild: Guild | GuildMember | undefined | null): string | null;
+	public static parseRoles(memberOrGuild: undefined | null): null;
+	public static parseRoles(memberOrGuild: Guild | GuildMember | undefined | null): string | null {
+		if (!memberOrGuild) return null;
+
+		const roles = memberOrGuild.roles.cache;
+		if (roles.size <= 1) return "None";
+
+		const sortedRoles = roles.sort((a, b) => b.position - a.position);
+		const parsedRoles = sortedRoles.map((role) => role.toString()).slice(0, -1); // removes @everyone
+
+		const roleMentions = parsedRoles.slice(0, 3).join(", ");
+		const excess = parsedRoles.length - 3;
+
+		return 0 < excess ? roleMentions + `, and ${excess} more` : roleMentions;
 	}
 }

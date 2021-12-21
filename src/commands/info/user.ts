@@ -1,9 +1,4 @@
-import {
-	MessageEmbed,
-	type ChatInputApplicationCommandData,
-	type CommandInteraction,
-	type GuildMember
-} from "discord.js";
+import { MessageEmbed, type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { defaultEmbedOptions, USER_FLAGS } from "../../constants.js";
 import { type Command } from "../../typings/index.js";
@@ -22,25 +17,10 @@ const data: ChatInputApplicationCommandData = {
 };
 
 async function execute(intr: CommandInteraction<"cached">) {
-	const userOptionIsProvided = !!intr.options.getUser("user");
-	const user = userOptionIsProvided ? intr.options.getUser("user", true) : intr.user;
+	const userOptionIsProvided = !!intr.options.get("user")?.value;
+
 	const member = userOptionIsProvided ? intr.options.getMember("user") : intr.member;
-
-	const getRoles = (member: GuildMember | null) => {
-		if (!member) return null;
-
-		const roles = member.roles.cache;
-		if (roles.size === 1) return null;
-
-		const sortedRoles = roles.sort((a, b) => b.position - a.position);
-		const parsedRoles = sortedRoles.map((role) => role.toString()).slice(0, -1); // removes @everyone
-
-		const fourRoles = parsedRoles.slice(0, 4).join(", ");
-		const excess = parsedRoles.length - 4;
-		const excessStr = excess > 0 ? `, and ${excess} more` : "";
-
-		return fourRoles + excessStr;
-	};
+	const user = userOptionIsProvided ? intr.options.getUser("user", true) : intr.user;
 
 	const parseFlags = (flagArray: string[]) => {
 		const flags = flagArray.join(", ");
@@ -48,7 +28,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 	};
 
 	const getColor = (hex: `#${string}` | undefined) => {
-		const green = intr.client.colors.green;
+		const { green } = intr.client.colors;
 		if (!hex) return green;
 		const empty = hex === "#000000" || hex.toLowerCase() === "#ffffff";
 		return empty ? green : hex;
@@ -58,33 +38,33 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const created = Util.date(user.createdTimestamp);
 	const avatar = (member ?? user).displayAvatarURL({ size: 2048, dynamic: true });
 	const flags = rawFlags.map((flag) => USER_FLAGS[flag] ?? flag);
-	const bot = user.bot;
-	const tag = user.tag;
-	const id = user.id;
+	const { bot, tag, id } = user;
 
 	const premium = !!member?.premiumSince;
 	const joined = member?.joinedTimestamp ? Util.date(member.joinedTimestamp) : null;
 	const color = getColor(member?.displayHexColor);
 	const owner = !!member && member.id === member?.guild.ownerId;
-	const roles = getRoles(member);
+	const roles = Util.parseRoles(member);
 	const name = member?.displayName ?? user.tag;
 
 	const userEmbed = new MessageEmbed(defaultEmbedOptions(intr)).setColor(color).setThumbnail(avatar).setTitle(name);
 
 	if (member) userEmbed.addField("Tag", tag);
-	userEmbed.addField("ID", id);
+
+	userEmbed
+		.addField("ID", id)
+		.addField("Bot", bot ? "Yes" : "No", true)
+		.addField("Avatar", `[Link](${avatar})`)
+		.addField("Badges", flags.length ? parseFlags(flags) : "No badges")
+		.addField("Created", created, true);
 
 	if (member) {
 		userEmbed
 			.addField("Roles", roles ?? "No roles")
-			.addField("Bot", bot ? "Yes" : "No", true)
 			.addField("Boosting", premium ? "Yes" : "No", true)
-			.addField("Avatar", `[Link](${avatar})`)
 			.addField("Color", member.displayHexColor);
 	}
 
-	userEmbed.addField("Badges", flags.length ? parseFlags(flags) : "No badges");
-	if (created) userEmbed.addField("Created", created, true);
 	if (joined) userEmbed.addField("Joined", joined, true);
 	if (owner) userEmbed.setDescription("👑 Server owner");
 

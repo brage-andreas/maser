@@ -1,4 +1,4 @@
-import { MessageEmbed, Role, type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
+import { MessageEmbed, type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { defaultEmbedOptions } from "../../constants.js";
 import { type Command } from "../../typings/index.js";
@@ -21,13 +21,9 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const applyS = (string: string, size: number) => (size !== 1 ? string + "s" : string);
 	const { guild } = intr;
 
-	const { emBug, emURL } = intr.client.systemEmojis;
+	const { emURL } = intr.client.systemEmojis;
 
 	const role = intr.options.getRole("role", true);
-	if (!(role instanceof Role)) {
-		intr.editReply(`${emBug} Something went wrong with getting the role`);
-		return;
-	}
 
 	const getColor = (hex: `#${string}` | undefined) => {
 		const { green, black, white } = intr.client.colors;

@@ -12,21 +12,6 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const applyS = (string: string, size: number) => (size !== 1 ? string + "s" : string);
 	const { guild } = intr;
 
-	const getRoles = (guild: Guild) => {
-		const roles = guild.roles.cache;
-		// should never be 0 (@everyone), but just in case
-		if (roles.size <= 2) return null;
-
-		const sortedRoles = roles.sort((a, b) => b.position - a.position);
-		// slice to remove @everyone
-		const parsedRoles = sortedRoles.map((role) => role.toString()).slice(0, -1);
-
-		const roleMentions = parsedRoles.slice(0, 3).join(", ");
-		const excess = parsedRoles.length - 3;
-
-		return 0 < excess ? roleMentions + `, and ${excess} more` : roleMentions;
-	};
-
 	const getEmojisAndStickers = (guild: Guild) => {
 		const total = guild.emojis.cache.size;
 		const sticker = guild.stickers.cache.size;
@@ -54,7 +39,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const boosters = guild.premiumSubscriptionCount;
 	const created = Util.date(guild.createdAt);
 	const vanity = guild.vanityURLCode;
-	const roles = getRoles(guild);
+	const roles = Util.parseRoles(guild);
 	const icon = guild.iconURL({ size: 2048, dynamic: true }) ?? "";
 	const tier = BOOST_LEVELS[guild.premiumTier];
 
@@ -71,7 +56,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 	if (partnered && !verified) guildEmbed.setDescription(`A Discord partner ${vanityStr}`);
 	if (verified) guildEmbed.setDescription(`A verified server ${vanityStr}`);
-	if (roles) guildEmbed.addField("Roles", roles);
+	guildEmbed.addField("Roles", roles);
 
 	guildEmbed
 		.addField("Created", created)

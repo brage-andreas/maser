@@ -3,8 +3,7 @@ import Discord, {
 	MessageButton,
 	MessageEmbed,
 	type ChatInputApplicationCommandData,
-	type CommandInteraction,
-	type Message
+	type CommandInteraction
 } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import ms from "ms";
@@ -141,7 +140,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 		buttonManager.setRows(outputButton, codeButton).setUser(intr.user);
 
-		const msg = (await intr.editReply({ embeds, components: buttonManager.rows })) as Message;
+		const msg = await intr.editReply({ embeds, components: buttonManager.rows });
 		const collector = buttonManager.setMessage(msg).createCollector();
 
 		collector.on("collect", (interaction) => {

@@ -1,4 +1,5 @@
 import {
+	ButtonInteraction,
 	MessageActionRow,
 	MessageButton,
 	MessageComponentInteraction,
@@ -10,9 +11,6 @@ import {
 } from "discord.js";
 import ms from "ms";
 
-type Filter = CollectorFilter<[MessageComponentInteraction]>;
-type ButtonCollector = InteractionCollector<MessageComponentInteraction>;
-
 // Not everything here is tested
 // prone to bugs
 // so don't copy/paste without testing yourself
@@ -23,14 +21,14 @@ const MAX_ROW_LEN = 5;
  * Manages buttons for the client.
  */
 export default class ButtonManager {
-	public message: Message | null;
+	public message: Message<true> | null;
 	public rows: MessageActionRow[];
 	public user: User | null;
 
 	/**
 	 * Creates a button manager.
 	 */
-	constructor(options?: { message?: Message; author?: User }) {
+	constructor(options?: { message?: Message<true>; author?: User }) {
 		const { message, author } = options ?? {};
 
 		this.message = message ?? null;
@@ -63,7 +61,7 @@ export default class ButtonManager {
 	/**
 	 * Sets or removes the message. Used by the collector.
 	 */
-	public setMessage(message: Message | null): this {
+	public setMessage(message: Message<true> | null): this {
 		this.message = message;
 		return this;
 	}
@@ -79,7 +77,11 @@ export default class ButtonManager {
 	/**
 	 * Creates and returns a button collector.
 	 */
-	public createCollector(options?: { filter?: Filter; time?: string; authorOnly?: boolean }): ButtonCollector {
+	public createCollector(options?: {
+		filter?: CollectorFilter<[ButtonInteraction]>;
+		time?: string;
+		authorOnly?: boolean;
+	}): InteractionCollector<ButtonInteraction<"cached">> {
 		let { filter, time, authorOnly } = options ?? {};
 
 		authorOnly ??= true;
@@ -89,7 +91,7 @@ export default class ButtonManager {
 		if (!this.message) throw new Error("A message must be set to the button manager");
 
 		const milliseconds = time ? ms(time) : undefined;
-		return this.message.createMessageComponentCollector({ filter, time: milliseconds });
+		return this.message.createMessageComponentCollector({ filter, time: milliseconds, componentType: "BUTTON" });
 	}
 
 	/**
@@ -130,7 +132,7 @@ export default class ButtonManager {
 	 */
 	private _parseButtons(buttons: MessageButton[] | MessageButton[][]): MessageButton[][] {
 		if (buttons.some((buttonOrRow) => Array.isArray(buttonOrRow))) {
-			return buttons.map((comp) => (Array.isArray(comp) ? comp : [comp]));
+			return buttons.map((button) => (Array.isArray(button) ? button : [button]));
 		} else {
 			return [buttons as MessageButton[]];
 		}
@@ -141,12 +143,9 @@ export default class ButtonManager {
 	 */
 	private _toggleButtons(customIds: string[], disable: boolean) {
 		this.rows = this.rows.map((row) => {
-			row.components = row.components.map((button) => {
-				if (button.customId && customIds.includes(button.customId)) {
-					button = button.setDisabled(disable);
-				}
-				return button;
-			});
+			row.components = row.components
+				.filter((button) => button.customId && customIds.includes(button.customId))
+				.map((button) => button.setDisabled(disable));
 			return row;
 		});
 	}
@@ -235,7 +234,7 @@ export class ConfirmationButtons extends ButtonManager {
 		});
 	}
 
-	private async _updateOrEditReply(content: string, components: MessageActionRow[]): Promise<Message> {
+	private async _updateOrEditReply(content: string, components: MessageActionRow[]): Promise<Message<true>> {
 		if (!this.interaction) throw new Error("Interaction must be set to the ConfirmationButtons");
 
 		const medium = this.interaction;
@@ -245,6 +244,6 @@ export class ConfirmationButtons extends ButtonManager {
 			? medium.update({ content, components, fetchReply: true })
 			: medium.editReply({ content, components });
 
-		return msg as Promise<Message>;
+		return msg;
 	}
 }
