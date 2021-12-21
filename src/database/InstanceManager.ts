@@ -76,7 +76,19 @@ export default class InstanceManager extends Postgres {
 		return this._createInstance(data);
 	}
 
-	public async getInstanceDataWithinRange(offset: number, limit: number = 25): Promise<InstanceData[] | null> {
+	public async getLatestId(): Promise<number | null> {
+		const query = `
+			SELECT "${this.idKey}"
+			FROM ${this.schema}."${this.table}"
+			ORDER BY "${this.idKey}" DESC
+			LIMIT 1
+		`;
+
+		const res = await this.oneOrNone<InstanceData>(query);
+		return res?.instanceId ?? null;
+	}
+
+	public async getInstanceDataWithinRange(offset: number, limit: number = 5): Promise<InstanceData[] | null> {
 		if (!this.initialised) await this.initialise();
 
 		if (offset < 0) offset = 0;
