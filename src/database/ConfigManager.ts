@@ -67,4 +67,20 @@ export default class ConfigManager extends Postgres {
 
 		return this.one<ConfigResult>(query);
 	}
+
+	public async getAllValues(): Promise<ConfigResult> {
+		if (!this.idValue) throw new Error("Guild id must be set to the ConfigManager");
+		await this.still([this.idKey], [this.idValue]);
+
+		const query = `
+            SELECT *
+            FROM ${this.schema}."${this.table}"
+            WHERE "guildId" = ${this.idValue}
+        `;
+
+		const res = await this.one<ConfigResult>(query);
+		delete res.guildId;
+
+		return res;
+	}
 }
