@@ -42,7 +42,7 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-async function execute(intr: CommandInteraction) {
+async function execute(intr: CommandInteraction<"cached">) {
 	const type = intr.options.getSubcommand(true);
 	const clear = intr.options.getBoolean("clear") ?? false;
 	const guildId = intr.options.getString("guild") ?? intr.guildId;
