@@ -9,22 +9,24 @@ export default async function logs(data: ConfigCommandData) {
 	switch (method) {
 		case "view": {
 			const channel = await config.getChannel();
-			const role = await config.getRole();
+			// const role = await config.getRole();
 
 			let response = `${emFileGreen} Config for **${intr.guild.name}** (${intr.guildId})\n\n• **${option}**: `;
 
 			if (channel) response += channel.toString();
-			else if (role) response += role.toString();
+			// else if (role) response += role.toString();
 			else response += "Not set";
 
 			intr.editReply(response);
 
-			intr.logger.log(`Used method VIEW on option ${option.value}: ${(channel ?? role)?.id ?? "Not set"}`);
+			intr.logger.log(
+				`Used method VIEW on option ${option.value}: ${/*(channel?? role)?.id*/ channel?.id ?? "No value"}`
+			);
 			break;
 		}
 
 		case "set": {
-			const res = intr.options.getChannel("channel") ?? intr.options.getRole("role");
+			const res = intr.options.getChannel("channel"); /* ?? intr.options.getRole("role"); */
 
 			const old = await config.getAllValues();
 
@@ -40,9 +42,9 @@ export default async function logs(data: ConfigCommandData) {
 
 				const channel = intr.guild.channels.cache.get(value)?.toString() ?? null;
 				const guild = intr.client.guilds.cache.get(value)?.name ?? null;
-				const role = intr.guild.roles.cache.get(value)?.toString() ?? null;
+				// const role = intr.guild.roles.cache.get(value)?.toString() ?? null;
 
-				const mention = channel ?? guild ?? role;
+				const mention = channel ?? guild; /* ?? role; */
 
 				if (key === option.value) {
 					let valueString = `\n• **${keyStr}**: `;

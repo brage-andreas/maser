@@ -32,12 +32,6 @@ const data: ChatInputApplicationCommandData = {
 			options: CONFIG_OPTIONS.CHANNEL
 		},
 		{
-			name: "muted-role",
-			description: "Options for this server's muted role",
-			type: ApplicationCommandOptionTypes.SUB_COMMAND_GROUP,
-			options: CONFIG_OPTIONS.ROLE
-		},
-		{
 			name: "view-config",
 			description: "Sends the full config",
 			type: ApplicationCommandOptionTypes.SUB_COMMAND

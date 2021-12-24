@@ -1,4 +1,4 @@
-import { type Client, type Role } from "discord.js";
+import { type Client } from "discord.js";
 import { type AllowedConfigTextChannels, type ConfigColumns, type ConfigResult } from "../typings/index.js";
 import Postgres from "./src/postgres.js";
 
@@ -32,7 +32,7 @@ export default class ConfigManager extends Postgres {
 		return channel ?? null;
 	}
 
-	public async getRole(): Promise<Role | null> {
+	/* public async getRole(): Promise<Role | null> {
 		if (!this.idValue) throw new Error("Guild id must be set to the ConfigManager");
 		if (!this.key) throw new Error("Key must be set to the ConfigManager");
 
@@ -45,7 +45,7 @@ export default class ConfigManager extends Postgres {
 		if (!guild) return null;
 
 		return guild.roles.cache.get(id) ?? null;
-	}
+	}*/
 
 	public async set(value: string, key?: ConfigColumns): Promise<void> {
 		if (!key && !this.key) throw new Error("Key must be set or provided to the ConfigManager");

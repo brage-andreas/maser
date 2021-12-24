@@ -113,7 +113,6 @@ export const CONFIG_RESULT_KEYS = {
 	memberLogChannel: "Member log channel",
 	botLogChannel: "Bot log channel",
 	modLogChannel: "Mod log channel",
-	mutedRole: "Muted role",
 	guildId: "Guild"
 };
 
@@ -129,10 +128,6 @@ export const CONFIG_COMMAND_KEYS: Record<string, { string: string; value: Config
 	"mod-log": {
 		string: "Mod log channel",
 		value: "modLogChannel"
-	},
-	"muted-role": {
-		string: "Muted role",
-		value: "mutedRole"
 	}
 };
 
@@ -157,7 +152,7 @@ const CONFIG_CHANNEL_OPTIONS: ApplicationCommandSubCommandData[] = [
 	}
 ];
 
-const CONFIG_ROLE_OPTIONS: ApplicationCommandSubCommandData[] = [
+/* const CONFIG_ROLE_OPTIONS: ApplicationCommandSubCommandData[] = [
 	{
 		name: "view",
 		description: "Sends the option's value",
@@ -175,11 +170,11 @@ const CONFIG_ROLE_OPTIONS: ApplicationCommandSubCommandData[] = [
 			}
 		]
 	}
-];
+]; */
 
 export const CONFIG_OPTIONS = {
-	CHANNEL: CONFIG_CHANNEL_OPTIONS,
-	ROLE: CONFIG_ROLE_OPTIONS
+	CHANNEL: CONFIG_CHANNEL_OPTIONS
+	// ROLE: CONFIG_ROLE_OPTIONS
 };
 
 export enum InstanceTypes {

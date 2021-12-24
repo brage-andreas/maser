@@ -13,7 +13,7 @@ import type ConfigManager from "../database/ConfigManager.js";
 /* * * * * * */
 
 export type AllowedConfigTextChannels = TextChannel | NewsChannel;
-export type ConfigColumns = "guildId" | "botLogChannel" | "modLogChannel" | "memberLogChannel" | "mutedRole";
+export type ConfigColumns = "guildId" | "botLogChannel" | "modLogChannel" | "memberLogChannel";
 export type PgResponses = ConfigResult | ExistsResult | InstanceData | InstanceIdResult;
 
 export interface CommandModule {
@@ -65,7 +65,6 @@ export interface ConfigResult {
 	memberLogChannel?: string | null;
 	botLogChannel?: string | null;
 	modLogChannel?: string | null;
-	mutedRole?: string | null;
 }
 
 export interface ExistsResult {
