@@ -1,4 +1,11 @@
-import { CommandInteraction, Guild, MessageEmbed, TextBasedChannels, User } from "discord.js";
+import {
+	AutocompleteInteraction,
+	CommandInteraction,
+	Guild,
+	GuildTextBasedChannel,
+	MessageEmbed,
+	User
+} from "discord.js";
 import { COLORS, defaultEmbedOptions, LoggerTypes } from "../constants.js";
 import ConfigManager from "../database/ConfigManager.js";
 import Util from "../utils/index.js";
@@ -6,10 +13,10 @@ import BaseLogger from "./BaseLogger.js";
 import { gray } from "./LoggerColors.js";
 
 export default class CommandLogger extends BaseLogger {
-	public interaction: CommandInteraction<"cached"> | null;
+	public interaction: CommandInteraction<"cached"> | AutocompleteInteraction<"cached"> | null;
 	public name: string | null;
 
-	constructor(intr?: CommandInteraction<"cached">) {
+	constructor(intr?: CommandInteraction<"cached"> | AutocompleteInteraction<"cached">) {
 		super();
 
 		this.interaction = intr ?? null;
@@ -18,7 +25,7 @@ export default class CommandLogger extends BaseLogger {
 		this.traceValues.setUser(intr?.user ?? null);
 		this.traceValues.setGuild(intr?.guild ?? null);
 
-		if (intr?.channel && intr.channel.type !== "DM") {
+		if (intr?.channel) {
 			this.traceValues.setChannel(intr.channel);
 		}
 	}
@@ -44,8 +51,8 @@ export default class CommandLogger extends BaseLogger {
 		return this;
 	}
 
-	public setChannel(channel: TextBasedChannels | null) {
-		if (!channel || channel.type !== "DM") {
+	public setChannel(channel: GuildTextBasedChannel | null) {
+		if (!channel) {
 			this.traceValues.setChannel(channel);
 		}
 
@@ -60,7 +67,7 @@ export default class CommandLogger extends BaseLogger {
 	public setAll(options: {
 		user?: User | null;
 		guild?: Guild | null;
-		channel?: TextBasedChannels | null;
+		channel?: GuildTextBasedChannel | null;
 		name?: string | null;
 	}) {
 		const { user, guild, channel, name } = options;

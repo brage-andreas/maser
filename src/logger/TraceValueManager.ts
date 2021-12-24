@@ -1,4 +1,4 @@
-import type { Guild, TextBasedChannels, User } from "discord.js";
+import type { Guild, GuildTextBasedChannel, User } from "discord.js";
 
 interface Cache {
 	channel: string | null;
@@ -29,10 +29,8 @@ export default class TraceValueManager {
 		return !!this._cache.channel || !!this._cache.guild || !!this._cache.userId;
 	}
 
-	public setChannel(channel: TextBasedChannels | null) {
-		if (!channel || channel.type !== "DM") {
-			this._cache.channel = channel?.name ?? null;
-		}
+	public setChannel(channel: GuildTextBasedChannel | null) {
+		this._cache.channel = channel?.name ?? null;
 	}
 
 	public setGuild(guild: Guild | null) {
