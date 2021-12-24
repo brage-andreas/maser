@@ -1,52 +1,70 @@
-import { MessageEmbed, type Role } from "discord.js";
-import { defaultEmbedOptions } from "../../constants.js";
-import { type AllowedConfigTextChannels, type ConfigCommandData } from "../../typings/index.js";
+import { CONFIG_RESULT_KEYS } from "../../constants.js";
+import { ConfigColumns, type ConfigCommandData } from "../../typings/index.js";
 
 export default async function logs(data: ConfigCommandData) {
 	const { config, intr, method, option } = data;
 
-	const { emEmptyFile, emAt, emFileGreen, emChannel } = intr.client.systemEmojis;
+	const { emFileGreen } = intr.client.systemEmojis;
 
 	switch (method) {
 		case "view": {
 			const channel = await config.getChannel();
 			const role = await config.getRole();
 
-			const getValueStr = (value: Role | AllowedConfigTextChannels, emoji: string) => {
-				return `${emoji}Value: ${value} (${value.id})`;
-			};
+			let response = `${emFileGreen} Config for **${intr.guild.name}** (${intr.guildId})\n\n• **${option}**: `;
 
-			const valueStr = channel
-				? getValueStr(channel, emChannel)
-				: role
-				? getValueStr(role, emAt)
-				: `${emEmptyFile} Not set`;
+			if (channel) response += channel.toString();
+			else if (role) response += role.toString();
+			else response += "Not set";
 
-			const viewOptionEmbed = new MessageEmbed(defaultEmbedOptions(intr)).addField(option, valueStr);
+			intr.editReply(response);
 
-			intr.editReply({ embeds: [viewOptionEmbed] });
-
-			intr.logger.log(
-				`Used method VIEW on option ${option.toUpperCase()}:\n  ${(channel ?? role)?.id ?? "Not set"}`
-			);
+			intr.logger.log(`Used method VIEW on option ${option.value}: ${(channel ?? role)?.id ?? "Not set"}`);
 			break;
 		}
 
 		case "set": {
 			const res = intr.options.getChannel("channel") ?? intr.options.getRole("role");
 
+			const old = await config.getAllValues();
+
 			const value = res?.id ?? "NULL";
 			await config.set(value);
 
-			const updatedValueStr = res
-				? `${emFileGreen} New value: ${res} (${res.id})`
-				: `${emEmptyFile} Removed value`;
+			old[option.value] = res?.id;
 
-			const viewOptionEmbed = new MessageEmbed(defaultEmbedOptions(intr)).addField(option, updatedValueStr);
+			let response = `${emFileGreen} Updated config for **${intr.guild.name}** (${intr.guildId})\n`;
 
-			intr.editReply({ embeds: [viewOptionEmbed] });
+			for (let [key, value] of Object.entries(old)) {
+				const keyStr = CONFIG_RESULT_KEYS[key as ConfigColumns];
 
-			intr.logger.log(`Used method SET on option ${option.toUpperCase()}:\n  ${value}`);
+				const channel = intr.guild.channels.cache.get(value)?.toString() ?? null;
+				const guild = intr.client.guilds.cache.get(value)?.name ?? null;
+				const role = intr.guild.roles.cache.get(value)?.toString() ?? null;
+
+				const mention = channel ?? guild ?? role;
+
+				if (key === option.value) {
+					let valueString = `\n• **${keyStr}**: `;
+
+					if (mention && res) {
+						valueString += `${mention} (${res.id}) **(updated)**`;
+					} else if (res) {
+						valueString += `Couldn't find anything with ID: ${value} **(updated)**`;
+					} else {
+						valueString += "Not set **(updated)**";
+					}
+
+					response += valueString;
+				} else {
+					const valueString = mention ? `${mention} (${value})` : `Couldn't find anything with ID: ${value}`;
+					response += `\n• **${keyStr}**: ${value ? valueString : "Not set"}`;
+				}
+			}
+
+			intr.editReply(response);
+
+			intr.logger.log(`Used method SET on option ${option.value}: ${value}`);
 			break;
 		}
 	}
