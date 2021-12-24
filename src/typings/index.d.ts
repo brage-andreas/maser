@@ -1,8 +1,8 @@
 import type {
+	AutocompleteInteraction,
 	ChatInputApplicationCommandData,
 	Client,
 	CommandInteraction,
-	ContextMenuInteraction,
 	MessageEmbed,
 	NewsChannel,
 	TextChannel
@@ -21,7 +21,7 @@ export interface CommandModule {
 }
 
 export interface Command {
-	execute: (interaction: CommandInteraction<"cached"> | ContextMenuInteraction<"cached">) => Promise<void> | void;
+	execute: (interaction: CommandInteraction<"cached"> | AutocompleteInteraction<"cached">) => Promise<void> | void;
 	data: ChatInputApplicationCommandData;
 	options: CommandOptions;
 }
@@ -40,7 +40,10 @@ export interface Event {
 export interface ConfigCommandData {
 	config: ConfigManager;
 	method: string;
-	option: string;
+	option: {
+		string: string;
+		value: ConfigColumns;
+	};
 	intr: CommandInteraction<"cached">;
 }
 
@@ -58,7 +61,7 @@ export interface PostgresOptions {
 }
 
 export interface ConfigResult {
-	guildId: string;
+	guildId?: string;
 	memberLogChannel?: string | null;
 	botLogChannel?: string | null;
 	modLogChannel?: string | null;
