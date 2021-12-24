@@ -11,8 +11,7 @@ postgres
 		│   ├── guildId
 		│   ├── memberLogChannel
 		│   ├── botLogChannel
-		│   ├── modLogChannel
-		│   └── mutedRole
+		│   └── modLogChannel
 		└── instances-[guild id]
 			├── istanceId
 			├── guildId
@@ -55,7 +54,6 @@ maser
 | `memberLogChannel` | `bigint` |
 | `botLogChannel`    | `bigint` |
 | `modLogChannel`    | `bigint` |
-| `mutedRole`        | `bigint` |
 
 **instances-[guild id]**
 | Column        | Type      |
