@@ -1,7 +1,11 @@
+<sub>
+I have not spent much time and effort with this database setup.
+I advise you not to copy this, but to create your own instead, since this quite frankly sucks.
+</sub>
+
+<br />
+
 # PostgreSQL layout
-<sub>I'm not sure about the instances, to be honest.
-It has two IDs, which screams primary key, but that doesn't really make it any more elegant.
-Hit me up for any suggestions :D</sub>
 
 ```
 postgres
