@@ -1,8 +1,16 @@
-import type { ApplicationCommandSubCommandData, CommandInteraction, MessageEmbedOptions } from "discord.js";
+import type {
+	ApplicationCommandSubCommandData,
+	AutocompleteInteraction,
+	CommandInteraction,
+	MessageEmbedOptions,
+	UserFlagsString
+} from "discord.js";
 import { Intents } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import { ConfigColumns } from "./typings/index.js";
 
 export const MAX_EMBED_DESCRIPTION_LEN = 4096;
+export const MAX_AUDIT_REASON_LEN = 512;
 
 export const INTENTS = [
 	Intents.FLAGS.GUILD_MEMBERS, //
@@ -70,10 +78,11 @@ export const COLORS = {
 	red: "#FF5733"
 } as const;
 
-export const USER_FLAGS = {
+export const USER_FLAGS: Record<UserFlagsString, string> = {
 	EARLY_VERIFIED_BOT_DEVELOPER: "early developer",
 	DISCORD_CERTIFIED_MODERATOR: "certified mod",
 	PARTNERED_SERVER_OWNER: "partnered",
+	BOT_HTTP_INTERACTIONS: "slash-only bot",
 	BUGHUNTER_LEVEL_1: "bughunter",
 	BUGHUNTER_LEVEL_2: "bughunter²",
 	DISCORD_EMPLOYEE: "discord employee",
@@ -106,6 +115,25 @@ export const CONFIG_RESULT_KEYS = {
 	modLogChannel: "Mod log channel",
 	mutedRole: "Muted role",
 	guildId: "Guild"
+};
+
+export const CONFIG_COMMAND_KEYS: Record<string, { string: string; value: ConfigColumns }> = {
+	"member-log": {
+		string: "Member log channel",
+		value: "memberLogChannel"
+	},
+	"bot-log": {
+		string: "Bot log channel",
+		value: "botLogChannel"
+	},
+	"mod-log": {
+		string: "Mod log channel",
+		value: "modLogChannel"
+	},
+	"muted-role": {
+		string: "Muted role",
+		value: "mutedRole"
+	}
 };
 
 const CONFIG_CHANNEL_OPTIONS: ApplicationCommandSubCommandData[] = [
@@ -163,7 +191,9 @@ export enum InstanceTypes {
 	Unban = 5
 }
 
-export function defaultEmbedOptions(intr?: CommandInteraction<"cached">): MessageEmbedOptions {
+export function defaultEmbedOptions(
+	intr?: CommandInteraction<"cached"> | AutocompleteInteraction<"cached">
+): MessageEmbedOptions {
 	const options: MessageEmbedOptions = { color: COLORS.green };
 
 	if (intr) {

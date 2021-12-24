@@ -100,6 +100,23 @@ export default class Util extends null {
 	}
 
 	/**
+	 * Appends a prefix and suffix to a string with a max length to cut the input by.
+	 */
+	public static appendPrefixAndSuffix(
+		input: string,
+		maxLen: number,
+		options?: { prefix?: string; suffix?: string }
+	): string {
+		const prefix = options?.prefix ?? "";
+		const suffix = options?.suffix ?? "";
+
+		// -2 for the spaces
+		// if there is no suffix, it will be one less than max
+		const lenToGo = maxLen - prefix.length - suffix.length - 2;
+		return `${prefix} ${input.slice(0, lenToGo)} ${suffix}`.trim();
+	}
+
+	/**
 	 * Gives you a string of the three highest roles with a mention of any excess.
 	 */
 	public static parseRoles(memberOrGuild: Guild | GuildMember): string;

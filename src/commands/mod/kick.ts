@@ -1,8 +1,9 @@
 import { type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
-import { InstanceTypes } from "../../constants.js";
+import { InstanceTypes, MAX_AUDIT_REASON_LEN } from "../../constants.js";
 import InstanceManager from "../../database/InstanceManager.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
+import Util from "../../utils/index.js";
 import { REASON, USER } from "./noread.methods.js";
 
 const options: Partial<CommandOptions> = {
@@ -51,11 +52,10 @@ async function execute(intr: CommandInteraction<"cached">) {
 		return;
 	}
 
-	let reasonStr = `${reason ? `${reason} | ` : ""}By ${intr.user.tag} (${intr.user.id})`;
-	if (reasonStr.length > 512) {
-		const base = ` | By ${intr.user.tag} (${intr.user.id})`;
-		reasonStr = `${reason!.slice(512 - base.length - 3)}...${base}`;
-	}
+	const auditLogSuffix = `| By ${intr.user.tag} ${intr.user.id}`;
+	const auditLogReason = reason
+		? Util.appendPrefixAndSuffix(reason, MAX_AUDIT_REASON_LEN, { suffix: auditLogSuffix })
+		: `Kick by ${intr.user.tag} ${intr.user.id}`;
 
 	const info =
 		`• **Reason**: ${reason ?? "No reason provided"}\n` +
@@ -72,7 +72,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 		.start({ noReply: true })
 		.then(() => {
 			target
-				.kick(reasonStr)
+				.kick(auditLogReason)
 				.then(async () => {
 					const instances = await new InstanceManager(intr.client, intr.guildId).initialise();
 					const instance = await instances.createInstance({
