@@ -5,12 +5,14 @@
 	"main": "dist/index.js",
 	"type": "module",
 	"scripts": {
-		"prestart": "tsc",
-		"prebuild": "tsc",
-		"preclear": "tsc",
-		"start": "node .",
-		"build": "node dist/scripts/commands/build.js",
-		"clear": "node dist/scripts/commands/clear.js"
+		"prebuild": "npx rimraf dist",
+		"build": "tsc",
+		"prebuildCmds": "npm run build",
+		"preclearCmds": "npm run build",
+		"buildCmds": "node scripts/commands/build.js",
+		"clearCmds": "node scripts/commands/clear.js",
+		"prestart": "npm run build",
+		"start": "node ."
 	},
 	"repository": {
 		"type": "git",
