@@ -28,30 +28,30 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const duration = intr.options.getInteger("duration") ?? DURATIONS.THREE_HRS;
 	const expiration = Date.now() + duration;
 
-	const { emError, emUserLock, emSuccess, emCrown, emXMark, emCheckMark } = intr.client.systemEmojis;
+	const emojis = intr.client.maserEmojis;
 
 	if (!intr.guild.me?.permissions.has("MODERATE_MEMBERS")) {
-		intr.editReply(`${emUserLock} I do not have the "Time out members" permission`);
+		intr.editReply(`${emojis.cross} I do not have the "Time out members" permission`);
 		return;
 	}
 
 	if (!target) {
-		intr.editReply(`${emXMark} The user to target was not found in this server`);
+		intr.editReply(`${emojis.userFrown} The user to target was not found in this server`);
 		return;
 	}
 
 	if (target.id === intr.user.id) {
-		intr.editReply(`${emError} You cannot do this action on yourself`);
+		intr.editReply(`${emojis.cross} You cannot do this action on yourself`);
 		return;
 	}
 
 	if (target.id === intr.client.user.id) {
-		intr.editReply(`${emError} I cannot do this action on myself`);
+		intr.editReply(`${emojis.cross} I cannot do this action on myself`);
 		return;
 	}
 
 	if (target.id === intr.guild.ownerId) {
-		intr.editReply(`${emCrown} The user to target is the owner of this server`);
+		intr.editReply(`${emojis.crown} The user to target is the owner of this server`);
 		return;
 	}
 
@@ -62,9 +62,8 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 	const query = `Are you sure you want to **time out ${target.user.tag}** (${target.id})?\n\n${info}`;
 
-	const collector = new ConfirmationButtons({ author: intr.user })
+	const collector = new ConfirmationButtons({ authorId: intr.user.id }) //
 		.setInteraction(intr)
-		.setUser(intr.user)
 		.setQuery(query);
 
 	const auditLogSuffix = `| By ${intr.user.tag} ${intr.user.id}`;
@@ -94,7 +93,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 					intr.editReply({
 						content:
-							`${emSuccess} Successfully **timed out ${target.user.tag}** (${target.id}) ` +
+							`${emojis.user} Successfully **timed out ${target.user.tag}** (${target.id}) ` +
 							`in instance **#${instance.id}**\n\n${info}`,
 						components: []
 					});
@@ -106,13 +105,13 @@ async function execute(intr: CommandInteraction<"cached">) {
 				})
 				.catch(() => {
 					intr.editReply({
-						content: `${emError} I failed to time out ${target.user.tag} (${target.id})\n\n${info}`,
+						content: `${emojis.cross} I failed to time out ${target.user.tag} (${target.id})\n\n${info}`,
 						components: []
 					});
 				});
 		})
 		.catch(() => {
-			intr.editReply({ content: `${emCheckMark} Gotcha. Command cancelled`, components: [] });
+			intr.editReply({ content: `${emojis.check} Gotcha. Command cancelled`, components: [] });
 		});
 }
 

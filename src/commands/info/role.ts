@@ -21,7 +21,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const applyS = (string: string, size: number) => (size !== 1 ? string + "s" : string);
 	const { guild } = intr;
 
-	const { emURL } = intr.client.systemEmojis;
+	const emojis = intr.client.maserEmojis;
 
 	const role = intr.options.getRole("role", true);
 
@@ -36,7 +36,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 	await guild.members.fetch();
 
-	const icon = role.iconURL() ? `[${emURL} Link](${role.iconURL()})` : role.unicodeEmoji ?? "None";
+	const icon = role.iconURL() ? `${emojis.url} [Link](${role.iconURL()})` : role.unicodeEmoji ?? "None";
 	const { integrationId, botId, premiumSubscriberRole: boostRole } = role.tags ?? {};
 
 	const isEveryone = role.id === guild.id;

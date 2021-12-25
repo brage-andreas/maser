@@ -40,7 +40,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const member = intr.options.getMember("user");
 	const size = (intr.options.getInteger("size") ?? 2048) as AllowedImageSize;
 
-	const { emXMark } = intr.client.systemEmojis;
+	const emojis = intr.client.maserEmojis;
 
 	const user = await intr.client.users.fetch(userId, { force: true });
 
@@ -53,7 +53,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 				: userId === intr.client.user!.id
 				? "I do"
 				: `${user.tag} (${user} ${user.id}) does`;
-		intr.editReply(`${emXMark} ${userStr} not have a banner`);
+		intr.editReply(`${emojis.cross} ${userStr} not have a banner`);
 		return;
 	}
 

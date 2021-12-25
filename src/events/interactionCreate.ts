@@ -6,7 +6,7 @@ export async function execute(client: Client<true>, intr: CommandInteraction | A
 	if (intr.member instanceof GuildMember && intr.member.partial) await intr.member.fetch();
 	if ((!intr.isCommand() && !intr.isAutocomplete()) || !intr.inCachedGuild()) return;
 
-	const { emIdRed: emId, emWIP } = client.systemEmojis;
+	const emojis = client.maserEmojis;
 	const isNotOwner = intr.user.id !== client.application.owner?.id;
 
 	intr.commandOptions = new CommandManager(intr);
@@ -18,12 +18,12 @@ export async function execute(client: Client<true>, intr: CommandInteraction | A
 	if (intr.isAutocomplete()) return commandOptions.execute();
 
 	if (commandOptions.isWIP && isNotOwner) {
-		await intr.reply({ content: `${emWIP} This command is work-in-progress`, ephemeral: true });
+		await intr.reply({ content: `${emojis.construction} This command is work-in-progress`, ephemeral: true });
 		return;
 	}
 
 	if (commandOptions.isPrivate && isNotOwner) {
-		await intr.reply({ content: `${emId} This command is private`, ephemeral: true });
+		await intr.reply({ content: `${emojis.locked} This command is private`, ephemeral: true });
 		return;
 	}
 

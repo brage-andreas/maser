@@ -43,12 +43,12 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const rawOption = intr.options.getSubcommandGroup(false);
 
 	const config = new ConfigManager(intr.client, intr.guild.id);
-	const { emFileGreen } = intr.client.systemEmojis;
+	const emojis = intr.client.maserEmojis;
 
 	if (method === "view-config") {
 		const res = await config.getAllValues();
 
-		let response = `${emFileGreen} Config for **${intr.guild.name}** (${intr.guildId})\n`;
+		let response = `${emojis.file} Config for **${intr.guild.name}** (${intr.guildId})\n`;
 
 		for (let [key, value] of Object.entries(res)) {
 			key = CONFIG_COLUMN_STRINGS[key];
@@ -79,7 +79,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 			// const role = await config.getRole();
 
 			const optionStr = CONFIG_COLUMN_STRINGS[option];
-			let response = `${emFileGreen} Config for **${intr.guild.name}** (${intr.guildId})\n\n• **${optionStr}**: `;
+			let response = `${emojis.file} Config for **${intr.guild.name}** (${intr.guildId})\n\n• **${optionStr}**: `;
 
 			if (channel) response += channel.toString();
 			// else if (role) response += role.toString();
@@ -103,7 +103,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 			old[option] = res?.id;
 
-			let response = `${emFileGreen} Updated config for **${intr.guild.name}** (${intr.guildId})\n`;
+			let response = `${emojis.file} Updated config for **${intr.guild.name}** (${intr.guildId})\n`;
 
 			for (let [key, value] of Object.entries(old)) {
 				const keyStr = CONFIG_COLUMN_STRINGS[key];

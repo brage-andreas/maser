@@ -15,7 +15,7 @@ const client = new Client<true>({
 });
 
 client.commandHandler = new CommandHandler();
-client.systemEmojis = EMOJIS;
+client.maserEmojis = EMOJIS;
 client.events = new EventManager(client);
 client.logger = new InfoLogger();
 client.colors = COLORS;

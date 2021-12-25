@@ -21,35 +21,35 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const target = intr.options.getMember("user");
 	const reason = intr.options.getString("reason");
 
-	const { emXMark, emUserLock, emError, emCrown, emSuccess, emCheckMark } = intr.client.systemEmojis;
+	const emojis = intr.client.maserEmojis;
 
 	if (!target) {
-		intr.editReply(`${emXMark} The user to target was not found in this server`);
+		intr.editReply(`${emojis.userFrown} The user to target was not found in this server`);
 		return;
 	}
 
 	if (!intr.guild.me?.permissions.has("KICK_MEMBERS")) {
-		intr.editReply(`${emUserLock} I don't have permissions to kick users`);
+		intr.editReply(`${emojis.cross} I don't have permissions to kick users`);
 		return;
 	}
 
 	if (target.id === intr.user.id) {
-		intr.editReply(`${emError} You cannot do this action on yourself`);
+		intr.editReply(`${emojis.cross} You cannot do this action on yourself`);
 		return;
 	}
 
 	if (target.id === intr.client.user.id) {
-		intr.editReply(`${emError} I cannot do this action on myself`);
+		intr.editReply(`${emojis.cross} I cannot do this action on myself`);
 		return;
 	}
 
 	if (target.id === intr.guild.ownerId) {
-		intr.editReply(`${emCrown} The user to target is the owner of this server`);
+		intr.editReply(`${emojis.crown} The user to target is the owner of this server`);
 		return;
 	}
 
 	if (target.permissions.has("KICK_MEMBERS")) {
-		intr.editReply(`${emXMark} The user to target cannot be kicked`);
+		intr.editReply(`${emojis.cross} The user to target cannot be kicked`);
 		return;
 	}
 
@@ -64,9 +64,8 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 	const query = `Are you sure you want to **kick ${target.user.tag}** (${target.id})?\n\n${info}`;
 
-	const collector = new ConfirmationButtons({ author: intr.user })
+	const collector = new ConfirmationButtons({ authorId: intr.user.id }) //
 		.setInteraction(intr)
-		.setUser(intr.user)
 		.setQuery(query);
 
 	collector
@@ -93,20 +92,20 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 					intr.editReply({
 						content:
-							`${emSuccess} Successfully **kicked ${target.user.tag}** (${target.id})` +
+							`${emojis.user} Successfully **kicked ${target.user.tag}** (${target.id})` +
 							`in case **#${instance.id}**\n\n${info}`,
 						components: []
 					});
 				})
 				.catch(() => {
 					intr.editReply({
-						content: `${emError} Failed to kick ${target.user.tag} (${target.id})\n\n${info}`,
+						content: `${emojis.cross} Failed to kick ${target.user.tag} (${target.id})\n\n${info}`,
 						components: []
 					});
 				});
 		})
 		.catch(() => {
-			intr.editReply({ content: `${emCheckMark} Gotcha. Command cancelled`, components: [] });
+			intr.editReply({ content: `${emojis.check} Gotcha. Command cancelled`, components: [] });
 		});
 }
 

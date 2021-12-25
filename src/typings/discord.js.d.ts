@@ -6,7 +6,7 @@ import type { CommandHandler, CommandManager, EventManager } from "../modules/in
 declare module "discord.js" {
 	interface Client {
 		commandHandler: CommandHandler;
-		systemEmojis: typeof EMOJIS;
+		maserEmojis: typeof EMOJIS;
 		colors: typeof COLORS;
 		events: EventManager;
 		logger: InfoLogger;

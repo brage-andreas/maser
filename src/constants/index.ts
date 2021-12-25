@@ -44,28 +44,24 @@ export const REGEXP = {
 	ID: /^\d{17,19}$/
 } as const;
 
-// Source of emojis are located in root/resources/icons
+// Source of emojis are located in /icons
 export const EMOJIS = {
-	emUserRemoved: "<:user_removed:903948599048667216>",
-	emEmptyFile: "<:empty_file:903948597790388244>",
-	emFileGreen: "<:file:903948597832318986>",
-	emCheckMark: "<:check_mark:903948598155309096>",
-	emUserLock: "<:user_lock:903948598448893972>",
-	emUnlocked: "<:unlocked:903948598532767775>",
-	emFileRed: "<:file:903948598348222465>",
-	emIdGreen: "<:id:903948599136763904>",
-	emChannel: "<:channel:903948598306291712>",
-	emSuccess: "<:success:903948598834782249>",
-	emLocked: "<:locked:903948598318874655>",
-	emError: "<:exclamation:903948598562144296>",
-	emIdRed: "<:id:903948598427930654>",
-	emXMark: "<:x_mark:903948598302093332>",
-	emCrown: "<:crown:903948598834782250>",
-	emInput: "<:input:903948598356623360>",
-	emBug: "<:bug:903948597182218321>",
-	emURL: "<:url:903948599556186112>",
-	emWIP: "<:wip:903948598453076018>",
-	emAt: "<:at:903948597551329300>"
+	construction: "<:maser_construction:924421206004867132>",
+	thumbsDown: "<:maser_thumbs_down:924421205954543638>",
+	userFrown: "<:maser_person_frown:924421206126505984>",
+	sparkles: "<:maser_sparkles:924421206143295517>",
+	thumbsUp: "<:maser_thumbs_up:924421205908394005>",
+	warning: "<:maser_warning:924421206105546822>",
+	locked: "<:maser_lock:924421206046814208>",
+	check: "<:maser_check:924421206122328114>",
+	cross: "<:maser_cross:924421206017474630>",
+	crown: "<:maser_crown:924421206055202826>",
+	phone: "<:maser_phone:924421206126526494>",
+	user: "<:maser_person:924421206004867133>",
+	file: "<:maser_file:924421206055194706>",
+	bug: "<:maser_bug:924421206021644308>",
+	url: "<:maser_clip:924421206055194705>",
+	id: "<:maser_credit_card:924421206046834718>"
 } as const;
 
 export const COLORS = {

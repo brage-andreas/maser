@@ -151,7 +151,7 @@ const data: ChatInputApplicationCommandData = {
 async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteraction<"cached">) {
 	const sub = intr.options.getSubcommand();
 
-	const { emXMark, emError } = intr.client.systemEmojis;
+	const emojis = intr.client.maserEmojis;
 	const instances = new InstanceManager(intr.client, intr.guildId);
 	await instances.initialise();
 
@@ -238,14 +238,14 @@ async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteract
 		const instanceId = getIdOptionValue("instance");
 
 		if (!instanceId) {
-			intr.editReply(`${emXMark} Provided ID is invalid: ${instanceId}`);
+			intr.editReply(`${emojis.cross} Provided ID is invalid: ${instanceId}`);
 			return;
 		}
 
 		const instance = await instances.getInstance(instanceId);
 
 		if (!instance) {
-			intr.editReply(`${emXMark} Instance #${instanceId} was not found`);
+			intr.editReply(`${emojis.cross} Instance #${instanceId} was not found`);
 			return;
 		}
 
@@ -264,14 +264,14 @@ async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteract
 		const time = intr.options.getString("time");
 
 		if (!instanceId) {
-			intr.editReply(`${emXMark} Provided ID is invalid: ${instanceId}`);
+			intr.editReply(`${emojis.cross} Provided ID is invalid: ${instanceId}`);
 			return;
 		}
 
 		const oldInstance = await instances.getInstance(instanceId);
 
 		if (!oldInstance) {
-			intr.editReply(`${emXMark} Instance #${instanceId} was not found`);
+			intr.editReply(`${emojis.cross} Instance #${instanceId} was not found`);
 			return;
 		}
 
@@ -301,7 +301,7 @@ async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteract
 		const newInstance = await instances.editInstance(instanceId, data);
 
 		if (!newInstance) {
-			intr.editReply(`${emError} Something went wrong with editing instance #${instanceId}`);
+			intr.editReply(`${emojis.warning} Something went wrong with editing instance #${instanceId}`);
 			return;
 		}
 

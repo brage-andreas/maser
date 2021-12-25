@@ -106,10 +106,10 @@ async function execute(intr: CommandInteraction<"cached">) {
 		.setCustomId("member")
 		.setLabel("Guild avatar")
 		.setStyle("SECONDARY")
-		.setEmoji(intr.client.systemEmojis.emCrown);
+		.setEmoji(intr.client.maserEmojis.crown);
 
 	if (hasGuildAvatar) {
-		buttonManager.setRows(outputButton, codeButton).setUser(intr.user);
+		buttonManager.setRows(outputButton, codeButton);
 		embed.setFooter("Buttons last for 30 seconds");
 	}
 
@@ -119,13 +119,20 @@ async function execute(intr: CommandInteraction<"cached">) {
 		const collector = buttonManager.setMessage(msg).createCollector({ time: "30s" });
 
 		collector.on("collect", async (interaction) => {
+			if (interaction.user.id !== intr.user.id) {
+				intr.reply({
+					content: `${intr.client.maserEmojis.thumbsDown} This button is not for you`,
+					ephemeral: true
+				});
+				return;
+			}
+
 			await interaction.deferUpdate();
 
 			if (interaction.customId === "user") {
 				embed.setImage(user.displayAvatarURL({ dynamic: true, size }));
 
-				buttonManager.disable("user");
-				buttonManager.enable("member");
+				buttonManager.disable("user").enable("member");
 
 				await interaction.editReply({ embeds: [embed], components: buttonManager.rows });
 			}
@@ -133,8 +140,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 			else if (interaction.customId === "member") {
 				embed.setImage(member.displayAvatarURL({ dynamic: true, size }));
 
-				buttonManager.disable("member");
-				buttonManager.enable("user");
+				buttonManager.disable("member").enable("user");
 
 				await interaction.editReply({ embeds: [embed], components: buttonManager.rows });
 			}

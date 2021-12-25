@@ -40,8 +40,6 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const code = intr.options.getString("code", true);
 	const reply = intr.options.getBoolean("reply") ?? true;
 
-	const { emError, emSuccess, emInput } = intr.client.systemEmojis;
-
 	const stringify = (value: any): string => {
 		const replacer = (_: string, val: any) => {
 			if (typeof val === "function" || val == null) return `${value}`;
@@ -62,8 +60,6 @@ async function execute(intr: CommandInteraction<"cached">) {
 		const client = intr.client;
 		Discord; // "ReferenceError: Discord is not defined" if not here
 
-		const { emError, emSuccess, emInput } = client.systemEmojis;
-
 		try {
 			const start = performance.now();
 			const result = await eval(`(async () => {\n${code}\n})()`);
@@ -77,8 +73,8 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 			const stringedOutput = stringify(result).replaceAll(new RegExp(REGEXP.TOKEN, "g"), "[REDACTED]");
 
-			const parsedInput = parse(code, `${emInput} **Input**`);
-			const parsedOutput = parse(stringedOutput, `${emSuccess} **Output**`);
+			const parsedInput = parse(code, `**Input**`);
+			const parsedOutput = parse(stringedOutput, `**Output**`);
 
 			const successInputEmbed = new MessageEmbed(defaultEmbedOptions(intr)).setDescription(
 				parsedInput ?? "No input"
@@ -99,8 +95,8 @@ async function execute(intr: CommandInteraction<"cached">) {
 			const error = err as Error;
 			const msg = error.stack ?? error.toString();
 
-			const parsedInput = parse(code, `${emInput} **Input**`);
-			const parsedError = parse(msg, `${emError} **Error**`, null);
+			const parsedInput = parse(code, ` **Input**`);
+			const parsedError = parse(msg, ` **Error**`, null);
 
 			const errorInputEmbed = new MessageEmbed(defaultEmbedOptions(intr))
 				.setColor(client.colors.red)
@@ -130,20 +126,28 @@ async function execute(intr: CommandInteraction<"cached">) {
 			.setLabel(`Full ${type}`)
 			.setCustomId("output")
 			.setStyle("SECONDARY")
-			.setEmoji((type === "error" ? emError : emSuccess) ?? "📤");
+			.setEmoji("📤");
 
 		const codeButton = new MessageButton() //
 			.setLabel("Full input")
 			.setCustomId("code")
 			.setStyle("SECONDARY")
-			.setEmoji(emInput ?? "📥");
+			.setEmoji("📥");
 
-		buttonManager.setRows(outputButton, codeButton).setUser(intr.user);
+		buttonManager.setRows(outputButton, codeButton);
 
 		const msg = await intr.editReply({ embeds, components: buttonManager.rows });
 		const collector = buttonManager.setMessage(msg).createCollector();
 
 		collector.on("collect", (interaction) => {
+			if (interaction.user.id !== intr.user.id) {
+				intr.reply({
+					content: `${intr.client.maserEmojis.thumbsDown} This button is not for you`,
+					ephemeral: true
+				});
+				return;
+			}
+
 			if (interaction.customId === "output") {
 				const attachment = new MessageAttachment(Buffer.from(output), `${type}.txt`);
 
