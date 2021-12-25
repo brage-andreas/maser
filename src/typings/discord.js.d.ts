@@ -1,5 +1,5 @@
 import "discord.js";
-import type { COLORS, EMOJIS } from "../constants.js";
+import type { COLORS, EMOJIS } from "../constants/index.js";
 import type { CommandLogger, InfoLogger } from "../logger/index.js";
 import type { CommandHandler, CommandManager, EventManager } from "../modules/index.js";
 

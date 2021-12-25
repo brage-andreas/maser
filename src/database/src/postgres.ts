@@ -1,6 +1,6 @@
 import { type Client } from "discord.js";
-import { REGEXP } from "../../constants.js";
-import { type ExistsResult, type PostgresOptions } from "../../typings/index.js";
+import { REGEXP } from "../../constants/index.js";
+import { PostgresOptions, PostresExists } from "../../typings/database.js";
 import PostgresConnection from "./connection.js";
 
 export default abstract class Postgres extends PostgresConnection {
@@ -41,7 +41,7 @@ export default abstract class Postgres extends PostgresConnection {
 			)
 		`;
 
-		const res = await this.one<ExistsResult>(query);
+		const res = await this.one<PostresExists>(query);
 		return res ? res.exists : false;
 	}
 
