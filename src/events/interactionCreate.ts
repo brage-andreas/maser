@@ -1,8 +1,9 @@
-import { type AutocompleteInteraction, type Client, type CommandInteraction } from "discord.js";
+import { GuildMember, type AutocompleteInteraction, type Client, type CommandInteraction } from "discord.js";
 import { CommandLogger } from "../logger/index.js";
 import { CommandManager } from "../modules/index.js";
 
 export async function execute(client: Client<true>, intr: CommandInteraction | AutocompleteInteraction) {
+	if (intr.member instanceof GuildMember && intr.member.partial) await intr.member.fetch();
 	if ((!intr.isCommand() && !intr.isAutocomplete()) || !intr.inCachedGuild()) return;
 
 	const { emIdRed: emId, emWIP } = client.systemEmojis;

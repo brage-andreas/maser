@@ -1,12 +1,22 @@
-import type { AutocompleteInteraction, CommandInteraction, MessageEmbedOptions, UserFlagsString } from "discord.js";
-import { Intents } from "discord.js";
+import {
+	type AutocompleteInteraction,
+	type CommandInteraction,
+	type IntentsString,
+	type MessageEmbedOptions,
+	type PartialTypes,
+	type UserFlagsString
+} from "discord.js";
 
 export const MAX_EMBED_DESCRIPTION_LEN = 4096;
 export const MAX_AUDIT_REASON_LEN = 512;
 
-export const INTENTS = [
-	Intents.FLAGS.GUILD_MEMBERS, //
-	Intents.FLAGS.GUILDS
+export const INTENTS: IntentsString[] = [
+	"GUILD_MEMBERS", //
+	"GUILDS"
+];
+
+export const PARTIALS: PartialTypes[] = [
+	"GUILD_MEMBER" //
 ];
 
 export const DURATIONS = {
@@ -87,19 +97,19 @@ export const USER_FLAGS: Record<UserFlagsString, string> = {
 	TEAM_USER: "team user"
 };
 
-export enum LoggerTypes {
-	Command,
-	Error,
-	Event,
-	Info
-}
-
 export const BOOST_LEVELS = {
 	TIER_3: "boost level 3",
 	TIER_2: "boost level 2",
 	TIER_1: "boost level 1",
 	NONE: "no boost level"
 };
+
+export enum LoggerTypes {
+	Command,
+	Error,
+	Event,
+	Info
+}
 
 export function defaultEmbedOptions(
 	intr?: CommandInteraction<"cached"> | AutocompleteInteraction<"cached">

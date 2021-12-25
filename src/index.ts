@@ -1,6 +1,6 @@
 import { Client } from "discord.js";
 import dotenv from "dotenv";
-import { COLORS, EMOJIS, INTENTS } from "./constants/index.js";
+import { COLORS, EMOJIS, INTENTS, PARTIALS } from "./constants/index.js";
 import { InfoLogger } from "./logger/index.js";
 import { CommandHandler, EventManager } from "./modules/index.js";
 dotenv.config();
@@ -10,6 +10,7 @@ process.stdout.write("\x1Bc");
 
 const client = new Client<true>({
 	allowedMentions: { repliedUser: false, parse: [] },
+	partials: PARTIALS,
 	intents: INTENTS
 });
 
