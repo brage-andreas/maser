@@ -40,7 +40,7 @@ const data: ChatInputApplicationCommandData = {
 
 async function execute(intr: CommandInteraction<"cached">) {
 	const method = intr.options.getSubcommand();
-	let option = intr.options.getSubcommandGroup(false);
+	const rawOption = intr.options.getSubcommandGroup(false);
 
 	const config = new ConfigManager(intr.client, intr.guild.id);
 	const { emFileGreen } = intr.client.systemEmojis;
@@ -68,15 +68,18 @@ async function execute(intr: CommandInteraction<"cached">) {
 		intr.logger.log("Sent full config");
 	}
 
+	const option = CONFIG_COMMAND_TO_COLUMN[rawOption ?? ""];
 	if (!option) return; // should be unnecessary, but TS yells at me
-	option = CONFIG_COMMAND_TO_COLUMN[option];
+
+	config.setKey(option);
 
 	switch (method) {
 		case "view": {
 			const channel = await config.getChannel();
 			// const role = await config.getRole();
 
-			let response = `${emFileGreen} Config for **${intr.guild.name}** (${intr.guildId})\n\n• **${option}**: `;
+			const optionStr = CONFIG_COLUMN_STRINGS[option];
+			let response = `${emFileGreen} Config for **${intr.guild.name}** (${intr.guildId})\n\n• **${optionStr}**: `;
 
 			if (channel) response += channel.toString();
 			// else if (role) response += role.toString();
@@ -98,7 +101,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 			const value = res?.id ?? "NULL";
 			await config.set(value);
 
-			(old as any)[option] = res?.id;
+			old[option] = res?.id;
 
 			let response = `${emFileGreen} Updated config for **${intr.guild.name}** (${intr.guildId})\n`;
 
