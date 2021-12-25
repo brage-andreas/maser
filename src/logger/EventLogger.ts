@@ -1,4 +1,4 @@
-import { Client, MessageEmbed, type Guild, type GuildMember } from "discord.js";
+import { Client, MessageEmbed, PartialGuildMember, type Guild, type GuildMember } from "discord.js";
 import { LoggerTypes } from "../constants/index.js";
 import ConfigManager from "../database/ConfigManager.js";
 import Util from "../utils/index.js";
@@ -33,7 +33,7 @@ export default class EventLogger extends BaseLogger {
 		return this;
 	}
 
-	public async memberLog(member: GuildMember, joined: boolean) {
+	public async memberLog(member: GuildMember | PartialGuildMember, joined: boolean) {
 		const config = new ConfigManager(this.client, member.guild.id, "memberLogChannel");
 
 		const channel = await config.getChannel();
