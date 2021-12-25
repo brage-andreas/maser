@@ -78,7 +78,7 @@ export default class ButtonManager {
 	 * Creates and returns a button collector.
 	 */
 	public createCollector(options?: {
-		filter?: CollectorFilter<[ButtonInteraction]>;
+		filter?: CollectorFilter<[ButtonInteraction<"cached">]>;
 		time?: string;
 		authorOnly?: boolean;
 	}): InteractionCollector<ButtonInteraction<"cached">> {

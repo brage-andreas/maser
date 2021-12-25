@@ -1,5 +1,5 @@
 import { type Guild, type GuildMember } from "discord.js";
-import { MAX_EMBED_DESCRIPTION_LEN } from "../constants.js";
+import { MAX_EMBED_DESCRIPTION_LEN } from "../constants/index.js";
 
 export default class Util extends null {
 	/**

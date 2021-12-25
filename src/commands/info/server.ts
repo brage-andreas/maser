@@ -1,5 +1,5 @@
 import { MessageEmbed, type ChatInputApplicationCommandData, type CommandInteraction, type Guild } from "discord.js";
-import { BOOST_LEVELS, defaultEmbedOptions } from "../../constants.js";
+import { BOOST_LEVELS, defaultEmbedOptions } from "../../constants/index.js";
 import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 

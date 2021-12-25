@@ -5,7 +5,7 @@ import {
 	type CommandInteraction
 } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { defaultEmbedOptions } from "../../constants.js";
+import { defaultEmbedOptions } from "../../constants/index.js";
 import { type Command } from "../../typings/index.js";
 
 const sizeChoices = [16, 32, 64, 128, 256, 300, 512, 600, 1024, 2048, 4096].map((size) => {

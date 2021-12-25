@@ -8,7 +8,7 @@ import {
 	type GuildMember
 } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { defaultEmbedOptions } from "../../constants.js";
+import { defaultEmbedOptions } from "../../constants/index.js";
 import { ButtonManager } from "../../modules/index.js";
 import { type Command } from "../../typings/index.js";
 

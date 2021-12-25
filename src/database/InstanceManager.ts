@@ -1,8 +1,8 @@
 import { type Client } from "discord.js";
-import { REGEXP } from "../constants.js";
+import { REGEXP } from "../constants/index.js";
 import InfoLogger from "../logger/InfoLogger.js";
 import { Instance } from "../modules/index.js";
-import { type InstanceData, type InstanceIdResult } from "../typings/index.js";
+import { InstanceData } from "../typings/database.js";
 import Postgres from "./src/postgres.js";
 
 export default class InstanceManager extends Postgres {
@@ -182,7 +182,7 @@ export default class InstanceManager extends Postgres {
 			) AS _ ORDER BY "${this.idKey}" ASC;
 		`;
 
-		const res = await this.oneOrNone<InstanceIdResult>(query);
+		const res = await this.oneOrNone<InstanceData>(query);
 		return (res?.instanceId ?? 0) + 1;
 	}
 

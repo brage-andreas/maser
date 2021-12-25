@@ -12,7 +12,7 @@ import {
 } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums.js";
 import { readdirSync } from "fs";
-import { REGEXP } from "../constants.js";
+import { REGEXP } from "../constants/index.js";
 import { ErrorLogger, InfoLogger } from "../logger/index.js";
 import { type Command, type CommandModule } from "../typings/index.js";
 

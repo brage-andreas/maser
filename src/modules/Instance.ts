@@ -1,9 +1,9 @@
 import { MessageEmbed, type Client, type Message } from "discord.js";
 import ms from "ms";
-import { InstanceTypes } from "../constants.js";
+import { InstanceTypes } from "../constants/database.js";
 import ConfigManager from "../database/ConfigManager.js";
 import InstanceManager from "../database/InstanceManager.js";
-import { type InstanceData } from "../typings/index.js";
+import { InstanceData } from "../typings/database.js";
 
 export default class Instance {
 	public readonly client: Client;

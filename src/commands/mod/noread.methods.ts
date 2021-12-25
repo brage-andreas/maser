@@ -2,7 +2,7 @@
 
 import { ApplicationCommandOptionData } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { DURATIONS } from "../../constants.js";
+import { DURATIONS } from "../../constants/index.js";
 
 export const USER = (required?: true): ApplicationCommandOptionData => ({
 	name: "user",

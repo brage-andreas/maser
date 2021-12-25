@@ -8,7 +8,7 @@ import Discord, {
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import ms from "ms";
 import { performance } from "perf_hooks";
-import { defaultEmbedOptions, REGEXP } from "../../constants.js";
+import { defaultEmbedOptions, REGEXP } from "../../constants/index.js";
 import { ButtonManager } from "../../modules/index.js";
 import { CommandOptions, type Command, type EvalOutput } from "../../typings/index.js";
 import Util from "../../utils/index.js";

@@ -1,6 +1,6 @@
 import { Client } from "discord.js";
 import dotenv from "dotenv";
-import { COLORS, EMOJIS, INTENTS } from "./constants.js";
+import { COLORS, EMOJIS, INTENTS } from "./constants/index.js";
 import { InfoLogger } from "./logger/index.js";
 import { CommandHandler, EventManager } from "./modules/index.js";
 dotenv.config();

@@ -6,7 +6,7 @@ import {
 	MessageEmbed,
 	User
 } from "discord.js";
-import { COLORS, defaultEmbedOptions, LoggerTypes } from "../constants.js";
+import { COLORS, defaultEmbedOptions, LoggerTypes } from "../constants/index.js";
 import ConfigManager from "../database/ConfigManager.js";
 import Util from "../utils/index.js";
 import BaseLogger from "./BaseLogger.js";

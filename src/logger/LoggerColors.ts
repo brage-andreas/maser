@@ -1,4 +1,4 @@
-import { LoggerTypes } from "../constants.js";
+import { LoggerTypes } from "../constants/index.js";
 
 const colors: Record<string, string> = {
 	yellow: "\x1b[93m",

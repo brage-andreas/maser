@@ -1,6 +1,7 @@
 import { type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
 import ms from "ms";
-import { DURATIONS, InstanceTypes, MAX_AUDIT_REASON_LEN } from "../../constants.js";
+import { InstanceTypes } from "../../constants/database.js";
+import { DURATIONS, MAX_AUDIT_REASON_LEN } from "../../constants/index.js";
 import InstanceManager from "../../database/InstanceManager.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";

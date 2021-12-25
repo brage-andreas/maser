@@ -1,13 +1,5 @@
-import type {
-	ApplicationCommandSubCommandData,
-	AutocompleteInteraction,
-	CommandInteraction,
-	MessageEmbedOptions,
-	UserFlagsString
-} from "discord.js";
+import type { AutocompleteInteraction, CommandInteraction, MessageEmbedOptions, UserFlagsString } from "discord.js";
 import { Intents } from "discord.js";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { ConfigColumns } from "./typings/index.js";
 
 export const MAX_EMBED_DESCRIPTION_LEN = 4096;
 export const MAX_AUDIT_REASON_LEN = 512;
@@ -108,83 +100,6 @@ export const BOOST_LEVELS = {
 	TIER_1: "boost level 1",
 	NONE: "no boost level"
 };
-
-export const CONFIG_RESULT_KEYS = {
-	memberLogChannel: "Member log channel",
-	botLogChannel: "Bot log channel",
-	modLogChannel: "Mod log channel",
-	guildId: "Guild"
-};
-
-export const CONFIG_COMMAND_KEYS: Record<string, { string: string; value: ConfigColumns }> = {
-	"member-log": {
-		string: "Member log channel",
-		value: "memberLogChannel"
-	},
-	"bot-log": {
-		string: "Bot log channel",
-		value: "botLogChannel"
-	},
-	"mod-log": {
-		string: "Mod log channel",
-		value: "modLogChannel"
-	}
-};
-
-const CONFIG_CHANNEL_OPTIONS: ApplicationCommandSubCommandData[] = [
-	{
-		name: "view",
-		description: "Sends the option's value",
-		type: ApplicationCommandOptionTypes.SUB_COMMAND
-	},
-	{
-		name: "set",
-		description: "Sets a new value for the option",
-		type: ApplicationCommandOptionTypes.SUB_COMMAND,
-		options: [
-			{
-				name: "channel",
-				description: "The new channel to set to. Omitting this option will remove its value",
-				channelTypes: ["GUILD_TEXT", "GUILD_NEWS"],
-				type: ApplicationCommandOptionTypes.CHANNEL
-			}
-		]
-	}
-];
-
-/* const CONFIG_ROLE_OPTIONS: ApplicationCommandSubCommandData[] = [
-	{
-		name: "view",
-		description: "Sends the option's value",
-		type: ApplicationCommandOptionTypes.SUB_COMMAND
-	},
-	{
-		name: "set",
-		description: "Sets a new value for the option",
-		type: ApplicationCommandOptionTypes.SUB_COMMAND,
-		options: [
-			{
-				name: "role",
-				description: "The new role to set to. Omitting this option will remove its value",
-				type: ApplicationCommandOptionTypes.ROLE
-			}
-		]
-	}
-]; */
-
-export const CONFIG_OPTIONS = {
-	CHANNEL: CONFIG_CHANNEL_OPTIONS
-	// ROLE: CONFIG_ROLE_OPTIONS
-};
-
-export enum InstanceTypes {
-	Ban = 0,
-	Kick = 1,
-	Softban = 2,
-	Mute = 3,
-	Warn = 4,
-	Unban = 5
-}
 
 export function defaultEmbedOptions(
 	intr?: CommandInteraction<"cached"> | AutocompleteInteraction<"cached">

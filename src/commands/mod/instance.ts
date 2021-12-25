@@ -5,9 +5,10 @@ import {
 } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import ms from "ms";
-import { InstanceTypes } from "../../constants.js";
+import { InstanceTypes } from "../../constants/database.js";
 import InstanceManager from "../../database/InstanceManager.js";
-import { type Command, type CommandOptions, type InstanceData } from "../../typings/index.js";
+import { InstanceData } from "../../typings/database.js";
+import { type Command, type CommandOptions } from "../../typings/index.js";
 
 const options: Partial<CommandOptions> = {
 	private: true
