@@ -10,7 +10,7 @@
 ## How to deploy commands
 1. Fill `CLIENT_ID` and/or `GUILD_ID` keys in `.env` file.
 	If no `GUILD_ID` is present, it will deploy commands globally.
-2. Run `npm run build` or `npm run clear`
+2. Run `npm run buildCmds` or `npm run clearCmds`
 
 The `/build` command can do this from inside Discord, which you can use once you have deployed it.
 
