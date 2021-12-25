@@ -6,14 +6,11 @@ import {
 	type CollectorFilter,
 	type CommandInteraction,
 	type InteractionCollector,
-	type Message,
-	type User
+	type Message
 } from "discord.js";
 import ms from "ms";
 
 // Not everything here is tested
-// prone to bugs
-// so don't copy/paste without testing yourself
 
 const MAX_ROW_LEN = 5;
 
@@ -23,16 +20,12 @@ const MAX_ROW_LEN = 5;
 export default class ButtonManager {
 	public message: Message<true> | null;
 	public rows: MessageActionRow[];
-	public user: User | null;
 
 	/**
 	 * Creates a button manager.
 	 */
-	constructor(options?: { message?: Message<true>; author?: User }) {
-		const { message, author } = options ?? {};
-
+	constructor(message?: Message<true>) {
 		this.message = message ?? null;
-		this.user = author ?? null;
 		this.rows = [];
 	}
 
@@ -67,27 +60,15 @@ export default class ButtonManager {
 	}
 
 	/**
-	 * Sets or removes the user. Used by the collector.
-	 */
-	public setUser(user: User | null): this {
-		this.user = user;
-		return this;
-	}
-
-	/**
 	 * Creates and returns a button collector.
 	 */
 	public createCollector(options?: {
 		filter?: CollectorFilter<[ButtonInteraction<"cached">]>;
 		time?: string;
-		authorOnly?: boolean;
 	}): InteractionCollector<ButtonInteraction<"cached">> {
-		let { filter, time, authorOnly } = options ?? {};
+		let { filter, time } = options ?? {};
+		filter ??= () => true;
 
-		authorOnly ??= true;
-		filter ??= authorOnly ? (intr) => intr.user.id === this.user?.id : () => true;
-
-		if (authorOnly && !this.user) throw new Error("A user must be set to the button manager");
 		if (!this.message) throw new Error("A message must be set to the button manager");
 
 		const milliseconds = time ? ms(time) : undefined;
@@ -143,9 +124,13 @@ export default class ButtonManager {
 	 */
 	private _toggleButtons(customIds: string[], disable: boolean) {
 		this.rows = this.rows.map((row) => {
-			row.components = row.components
-				.filter((button) => button.customId && customIds.includes(button.customId))
-				.map((button) => button.setDisabled(disable));
+			row.components = row.components.map((button) => {
+				if (button.customId && customIds.includes(button.customId)) {
+					button.setDisabled(disable);
+				}
+
+				return button;
+			});
 			return row;
 		});
 	}
@@ -153,19 +138,22 @@ export default class ButtonManager {
 
 export class ConfirmationButtons extends ButtonManager {
 	public interaction: CommandInteraction<"cached"> | MessageComponentInteraction<"cached"> | null;
+	public authorOnly: boolean;
 	public yesMessage: string | null;
 	public noMessage: string | null;
+	public authorId: string | null;
 	public query: string | null;
 	public time: string | null;
 
-	constructor(options?: { query?: string; author?: User; time?: string }) {
-		super(options);
+	constructor(options?: { query?: string; authorId?: string; time?: string }) {
+		super();
 
 		this.interaction = null;
+		this.authorOnly = !!options?.authorId;
 		this.yesMessage = null;
 		this.noMessage = null;
+		this.authorId = options?.authorId ?? null;
 		this.query = null;
-
 		this.time = options?.time ?? "30s";
 
 		const yesButton = new MessageButton().setLabel("Yes").setStyle("SUCCESS").setCustomId("yes");
@@ -201,9 +189,6 @@ export class ConfirmationButtons extends ButtonManager {
 		return new Promise<void>(async (resolve, reject) => {
 			if (!this.interaction) throw new Error("Interaction must be set to the ConfirmationButtons");
 
-			const medium = this.interaction;
-			if (!this.user) this.user = medium.user;
-
 			const onYes = options?.onYes ?? this.yesMessage ?? "Done!";
 			const onNo = options?.onNo ?? this.noMessage ?? "Cancelled";
 
@@ -216,6 +201,14 @@ export class ConfirmationButtons extends ButtonManager {
 			const collector = this.createCollector({ time: "30s" });
 
 			collector.on("collect", (intr) => {
+				if (this.authorOnly && intr.user.id !== this.authorId) {
+					intr.reply({
+						content: `${intr.client.maserEmojis.thumbsDown} This button is not for you`,
+						ephemeral: true
+					});
+					return;
+				}
+
 				if (intr.customId === "yes") {
 					if (!options?.noReply) this._updateOrEditReply(onYes, []);
 					resolve();
