@@ -139,22 +139,23 @@ async function execute(intr: CommandInteraction<"cached">) {
 		const msg = await intr.editReply({ embeds, components: buttonManager.rows });
 		const collector = buttonManager.setMessage(msg).createCollector();
 
-		collector.on("collect", (interaction) => {
+		collector.on("collect", async (interaction) => {
 			if (interaction.user.id !== intr.user.id) {
-				intr.reply({
+				interaction.reply({
 					content: `${intr.client.maserEmojis.thumbsDown} This button is not for you`,
 					ephemeral: true
 				});
 				return;
 			}
 
+			await interaction.deferUpdate();
+
 			if (interaction.customId === "output") {
 				const attachment = new MessageAttachment(Buffer.from(output), `${type}.txt`);
 
-				interaction.followUp({ files: [attachment] });
-
 				buttonManager.disable("output");
-				interaction.update({ components: buttonManager.rows });
+				await interaction.editReply({ components: buttonManager.rows });
+				await interaction.followUp({ files: [attachment] });
 
 				intr.logger.log(`Sent output as an attachment:\n${Util.indent(output)}`);
 			}
@@ -162,13 +163,17 @@ async function execute(intr: CommandInteraction<"cached">) {
 			else if (interaction.customId === "code") {
 				const attachment = new MessageAttachment(Buffer.from(code), "code.txt");
 
-				interaction.followUp({ files: [attachment] });
-
 				buttonManager.disable("code");
-				interaction.update({ components: buttonManager.rows });
+				await interaction.editReply({ components: buttonManager.rows });
+				await interaction.followUp({ files: [attachment] });
 
 				intr.logger.log(`Sent code as an attachment:\n${Util.indent(code)}`);
 			}
+		});
+
+		collector.on("end", () => {
+			buttonManager.disable("output", "code");
+			intr.editReply({ components: buttonManager.rows }).catch(() => {});
 		});
 	}
 

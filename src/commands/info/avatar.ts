@@ -120,7 +120,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 		collector.on("collect", async (interaction) => {
 			if (interaction.user.id !== intr.user.id) {
-				intr.reply({
+				interaction.reply({
 					content: `${intr.client.maserEmojis.thumbsDown} This button is not for you`,
 					ephemeral: true
 				});
