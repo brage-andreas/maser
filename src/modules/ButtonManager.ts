@@ -67,11 +67,10 @@ export default class ButtonManager {
 		time?: string;
 	}): InteractionCollector<ButtonInteraction<"cached">> {
 		let { filter, time } = options ?? {};
-		filter ??= () => true;
 
 		if (!this.message) throw new Error("A message must be set to the button manager");
 
-		const milliseconds = time ? ms(time) : undefined;
+		const milliseconds = ms(time ?? "30s");
 		return this.message.createMessageComponentCollector({ filter, time: milliseconds, componentType: "BUTTON" });
 	}
 
