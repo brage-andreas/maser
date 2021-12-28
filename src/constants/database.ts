@@ -77,7 +77,8 @@ export enum InstanceTypes {
 	Ban = 0,
 	Kick = 1,
 	Softban = 2,
-	Mute = 3,
+	Timeout = 3,
 	Warn = 4,
-	Unban = 5
+	Unban = 5,
+	Untimeout = 6
 }

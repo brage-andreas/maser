@@ -35,11 +35,12 @@ export default class Instance {
 		const { colors } = this.client;
 		const { type } = this.data;
 
+		if (type === InstanceTypes.Untimeout) return colors.green;
 		if (type === InstanceTypes.Softban) return colors.orange;
+		if (type === InstanceTypes.Timeout) return colors.black;
 		if (type === InstanceTypes.Unban) return colors.green;
 		if (type === InstanceTypes.Kick) return colors.yellow;
 		if (type === InstanceTypes.Warn) return colors.blue;
-		if (type === InstanceTypes.Mute) return colors.black;
 		if (type === InstanceTypes.Ban) return colors.red;
 		return colors.invisible;
 	}
@@ -60,7 +61,7 @@ export default class Instance {
 			case InstanceTypes.Warn:
 				return "Warn";
 
-			case InstanceTypes.Mute:
+			case InstanceTypes.Timeout:
 				return "Mute";
 
 			case InstanceTypes.Ban:
