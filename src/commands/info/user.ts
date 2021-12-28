@@ -17,7 +17,8 @@ const data: ChatInputApplicationCommandData = {
 };
 
 async function execute(intr: CommandInteraction<"cached">) {
-	const userOptionIsProvided = Boolean(intr.options.get("user")?.value);	const member = userOptionIsProvided ? intr.options.getMember("user") : intr.member;
+	const userOptionIsProvided = Boolean(intr.options.get("user")?.value);
+	const member = userOptionIsProvided ? intr.options.getMember("user") : intr.member;
 	const user = userOptionIsProvided ? intr.options.getUser("user", true) : intr.user;
 
 	const parseFlags = (flagArray: string[]) => {
@@ -39,12 +40,14 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const created = Util.date(user.createdTimestamp);
 	const avatar = (member ?? user).displayAvatarURL({ size: 2048, dynamic: true });
 	const flags = rawFlags.map((flag) => USER_FLAGS[flag] ?? flag);
-	const { bot, tag, id } = user;	const premium = Boolean(member?.premiumSince);
+	const { bot, tag, id } = user;
+	const premium = Boolean(member?.premiumSince);
 	const joined = member?.joinedTimestamp ? Util.date(member.joinedTimestamp) : null;
 	const color = getColor(member?.displayHexColor);
-	const owner = Boolean(member) && member.id === member?.guild.ownerId;
+	const owner = Boolean(member) && member!.id === member?.guild.ownerId;
 	const roles = Util.parseRoles(member);
-	const name = member?.displayName ?? user.tag;	const userEmbed = new MessageEmbed(defaultEmbedOptions(intr)).setColor(color).setThumbnail(avatar).setTitle(name);
+	const name = member?.displayName ?? user.tag;
+	const userEmbed = new MessageEmbed(defaultEmbedOptions(intr)).setColor(color).setThumbnail(avatar).setTitle(name);
 
 	if (member) userEmbed.addField("Tag", tag);
 
@@ -55,12 +58,11 @@ async function execute(intr: CommandInteraction<"cached">) {
 		.addField("Badges", flags.length ? parseFlags(flags) : "No badges")
 		.addField("Created", created, true);
 
-	if (member) 
+	if (member)
 		userEmbed
 			.addField("Roles", roles ?? "No roles")
 			.addField("Boosting", premium ? "Yes" : "No", true)
 			.addField("Color", member.displayHexColor);
-	
 
 	if (joined) userEmbed.addField("Joined", joined, true);
 
