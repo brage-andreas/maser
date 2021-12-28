@@ -6,8 +6,9 @@ const data: ChatInputApplicationCommandData = {
 	description: "Check if the bot is running"
 };
 
-async function execute(intr: CommandInteraction<"cached">) {
+function execute(intr: CommandInteraction<"cached">) {
 	intr.editReply("piong");
+
 	intr.logger.log("Pinged");
 }
 

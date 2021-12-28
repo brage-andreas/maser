@@ -7,7 +7,7 @@ import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import ms from "ms";
 import { InstanceTypes } from "../../constants/database.js";
 import InstanceManager from "../../database/InstanceManager.js";
-import { InstanceData } from "../../typings/database.js";
+import type { InstanceData } from "../../typings/database.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 
 const options: Partial<CommandOptions> = {
@@ -17,7 +17,7 @@ const options: Partial<CommandOptions> = {
 // stupid enum shenanigans
 const TYPE_CHOICES = Object.entries(InstanceTypes)
 	.filter(([, value]) => typeof value === "number")
-	.map(([key, value]) => ({ name: key, value: value }));
+	.map(([key, value]) => ({ name: key, value }));
 // { name: "Ban", value: 0 } etc.
 
 const data: ChatInputApplicationCommandData = {
@@ -61,12 +61,12 @@ const data: ChatInputApplicationCommandData = {
 				{
 					name: "time",
 					description:
-						'The time since this instance. Accepts relative times (e.g. "5 min"). Default is current time',
+						"The time since this instance. Accepts relative times (e.g. \"5 min\"). Default is current time",
 					type: ApplicationCommandOptionTypes.STRING
 				},
 				{
 					name: "duration",
-					description: 'The duration of this instance. Accepts timestamps and relative times (e.g. "5min")',
+					description: "The duration of this instance. Accepts timestamps and relative times (e.g. \"5min\")",
 					type: ApplicationCommandOptionTypes.STRING
 				}
 			]
@@ -107,12 +107,12 @@ const data: ChatInputApplicationCommandData = {
 				{
 					name: "time",
 					description:
-						'The time since this instance. Accepts relative times ("5 min"). Default is current time',
+						"The time since this instance. Accepts relative times (\"5 min\"). Default is current time",
 					type: ApplicationCommandOptionTypes.STRING
 				},
 				{
 					name: "duration",
-					description: 'The duration of this instance. Accepts timestamps and relative times ("5min")',
+					description: "The duration of this instance. Accepts timestamps and relative times (\"5min\")",
 					type: ApplicationCommandOptionTypes.STRING
 				}
 			]
@@ -148,27 +148,23 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteraction<"cached">) {
-	const sub = intr.options.getSubcommand();
-
-	const emojis = intr.client.maserEmojis;
+async function execute(intr: AutocompleteInteraction<"cached"> | CommandInteraction<"cached">) {
+	const sub = intr.options.getSubcommand();	const emojis = intr.client.maserEmojis;
 	const instances = new InstanceManager(intr.client, intr.guildId);
+
 	await instances.initialise();
 
 	if (intr.isAutocomplete()) {
 		const getData = async (focusedRaw?: number) => {
 			// doesn't infer type right whilst just using param
-			const focused = focusedRaw ?? (await instances.getLatestId()) ?? 1;
-
-			// ensures offset will never be under 0
+			const focused = focusedRaw ?? (await instances.getLatestId()) ?? 1;			// ensures offset will never be under 0
 			const offset = focused <= 3 ? 0 : focused - 3;
 			const data = await instances.getInstanceDataWithinRange(offset);
 
 			const getName = (data: InstanceData) => {
 				const id = data.instanceId;
-				const emoji = id === focused ? "✨" : id > focused ? "🔸" : "🔹";
+				const emoji = id === focused ? "✨" : id > focused ? "🔸" : "🔹";				let str = `${emoji} #${id} - ${InstanceTypes[data.type]}`;
 
-				let str = `${emoji} #${id} - ${InstanceTypes[data.type]}`;
 				if (data.targetTag) str += ` on ${data.targetTag}`;
 
 				return str;
@@ -178,6 +174,7 @@ async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteract
 				?.sort((a, b) => {
 					// Makes the focused value always be atop
 					if (a.instanceId === focused) return -1;
+
 					if (b.instanceId === focused) return 1;
 
 					// high -> low
@@ -190,17 +187,18 @@ async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteract
 		};
 
 		const emptyResponse = { name: "😴 Whoa so empty—there are no instances", value: "0" };
-		const focused = Number(intr.options.getFocused()) || undefined;
-
-		const response = (await getData(focused)) ?? [emptyResponse];
+		const focused = Number(intr.options.getFocused()) || undefined;		const response = (await getData(focused)) ?? [emptyResponse];
 
 		intr.respond(response);
+
 		return;
 	}
 
 	const getIdOptionValue = (option: string) => {
-		let value = intr.options.getString(option)?.replaceAll(/\D*/g, "");
+		const value = intr.options.getString(option)?.replaceAll(/\D*/g, "");
+
 		if (!value) return null;
+
 		return parseInt(value) || null;
 	};
 
@@ -224,11 +222,12 @@ async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteract
 			guildId: intr.guildId,
 			edited: false,
 			reason: reason ?? undefined,
-			type: type,
+			type,
 			url: undefined
 		};
 
 		const instance = await instances.createInstance(data);
+
 		await instance.getReference();
 
 		intr.editReply({ embeds: [instance.toEmbed()] });
@@ -239,6 +238,7 @@ async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteract
 
 		if (!instanceId) {
 			intr.editReply(`${emojis.cross} Provided ID is invalid: ${instanceId}`);
+
 			return;
 		}
 
@@ -246,6 +246,7 @@ async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteract
 
 		if (!instance) {
 			intr.editReply(`${emojis.cross} Instance #${instanceId} was not found`);
+
 			return;
 		}
 
@@ -265,6 +266,7 @@ async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteract
 
 		if (!instanceId) {
 			intr.editReply(`${emojis.cross} Provided ID is invalid: ${instanceId}`);
+
 			return;
 		}
 
@@ -272,36 +274,44 @@ async function execute(intr: CommandInteraction<"cached"> | AutocompleteInteract
 
 		if (!oldInstance) {
 			intr.editReply(`${emojis.cross} Instance #${instanceId} was not found`);
+
 			return;
 		}
 
 		const oldData = oldInstance.data;
-		let newData: Partial<InstanceData> = {};
+		const newData: Partial<InstanceData> = {};
 
 		if (executor) {
 			newData.executorTag = executor.tag;
+
 			newData.executorId = executor.id;
 		}
 
 		if (target) {
 			newData.targetTag = target.tag;
+
 			newData.targetId = target.id;
 		}
 
 		if (referenceId) newData.referenceId = referenceId;
+
 		if (duration) newData.duration = ms(duration);
+
 		if (reason) newData.reason = reason;
+
 		if (time) newData.timestamp = Date.now() - ms(time);
 
 		const data = Object.assign({}, oldData, newData); // merges the objects
 
 		data.timestamp = Date.now();
+
 		data.edited = true;
 
 		const newInstance = await instances.editInstance(instanceId, data);
 
 		if (!newInstance) {
 			intr.editReply(`${emojis.warning} Something went wrong with editing instance #${instanceId}`);
+
 			return;
 		}
 

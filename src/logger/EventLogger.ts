@@ -1,22 +1,19 @@
-import { Client, MessageEmbed, PartialGuildMember, type Guild, type GuildMember } from "discord.js";
+import { MessageEmbed, type Client, type Guild, type GuildMember, type PartialGuildMember } from "discord.js";
 import { LoggerTypes } from "../constants/index.js";
 import ConfigManager from "../database/ConfigManager.js";
 import Util from "../utils/index.js";
 import BaseLogger from "./BaseLogger.js";
 
 export default class EventLogger extends BaseLogger {
-	client: Client;
-	event: string | null;
-	guild: Guild | null;
+	public readonly client: Client;
+	public event: string | null;
 
-	constructor(client: Client, guild?: Guild) {
+	public constructor(client: Client) {
 		super();
 
 		this.client = client;
-		this.event = null;
-		this.guild = guild ?? null;
 
-		this.traceValues.setGuild(guild ?? null);
+		this.event = null;
 	}
 
 	public log(...messages: string[]) {
@@ -25,35 +22,31 @@ export default class EventLogger extends BaseLogger {
 
 	public setEvent(event: string | null) {
 		this.event = event;
+
 		return this;
 	}
 
 	public setGuild(guild: Guild | null) {
 		this.traceValues.setGuild(guild);
+
 		return this;
 	}
 
 	public async memberLog(member: GuildMember | PartialGuildMember, joined: boolean) {
 		const config = new ConfigManager(this.client, member.guild.id, "memberLogChannel");
-
 		const channel = await config.getChannel();
+
 		if (!channel) return;
 
-		const getDate = (date: Date | undefined | null) => {
-			return date ? Util.date(date) : "Date not found";
-		};
-
+		const getDate = (date: Date | null | undefined) => (date ? Util.date(date) : "Date not found");
 		const user = member.user ?? (await this.client.users.fetch(member.id).catch(() => null));
-
 		const color = this.client.colors[joined ? "green" : "red"];
 		const footer = joined ? "User joined" : "User left";
-
 		const joinedAtStr = member.joinedAt ? `\nJoined: ${getDate(member.joinedAt)}` : "";
 
 		const descriptionStr =
 			`User: ${member} (${member.id})\n` + //
-			`Account made: ${getDate(user.createdAt)}` +
-			joinedAtStr;
+			`Account made: ${getDate(user.createdAt)}${joinedAtStr}`;
 
 		const embed = new MessageEmbed()
 			.setAuthor({
@@ -64,6 +57,6 @@ export default class EventLogger extends BaseLogger {
 			.setFooter(footer)
 			.setDescription(descriptionStr);
 
-		channel.send({ embeds: [embed] }).catch(() => {});
+		channel.send({ embeds: [embed] }).catch(() => null);
 	}
 }

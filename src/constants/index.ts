@@ -109,13 +109,14 @@ export enum LoggerTypes {
 }
 
 export function defaultEmbedOptions(
-	intr?: CommandInteraction<"cached"> | AutocompleteInteraction<"cached">
+	intr?: AutocompleteInteraction<"cached"> | CommandInteraction<"cached">
 ): MessageEmbedOptions {
 	const options: MessageEmbedOptions = { color: COLORS.green };
 
 	if (intr) {
 		const iconURL = intr.member.displayAvatarURL();
 		const name = `${intr.user.tag} (${intr.user.id})`;
+
 		options.author = { iconURL, name };
 	}
 

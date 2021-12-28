@@ -1,8 +1,8 @@
 import {
-	ButtonInteraction,
 	MessageActionRow,
 	MessageButton,
 	MessageComponentInteraction,
+	type ButtonInteraction,
 	type CollectorFilter,
 	type CommandInteraction,
 	type InteractionCollector,
@@ -24,8 +24,9 @@ export default class ButtonManager {
 	/**
 	 * Creates a button manager.
 	 */
-	constructor(message?: Message<true>) {
+	public constructor(message?: Message<true>) {
 		this.message = message ?? null;
+
 		this.rows = [];
 	}
 
@@ -56,6 +57,7 @@ export default class ButtonManager {
 	 */
 	public setMessage(message: Message<true> | null): this {
 		this.message = message;
+
 		return this;
 	}
 
@@ -66,11 +68,12 @@ export default class ButtonManager {
 		filter?: CollectorFilter<[ButtonInteraction<"cached">]>;
 		time?: string;
 	}): InteractionCollector<ButtonInteraction<"cached">> {
-		let { filter, time } = options ?? {};
+		const { filter, time } = options ?? {};
 
 		if (!this.message) throw new Error("A message must be set to the button manager");
 
 		const milliseconds = ms(time ?? "30s");
+
 		return this.message.createMessageComponentCollector({ filter, time: milliseconds, componentType: "BUTTON" });
 	}
 
@@ -79,6 +82,7 @@ export default class ButtonManager {
 	 */
 	public disable(...customIds: string[]): this {
 		this._toggleButtons(customIds, true);
+
 		return this;
 	}
 
@@ -87,6 +91,7 @@ export default class ButtonManager {
 	 */
 	public enable(...customIds: string[]): this {
 		this._toggleButtons(customIds, false);
+
 		return this;
 	}
 
@@ -96,11 +101,11 @@ export default class ButtonManager {
 	public chunkButtons(buttons: MessageButton[] | MessageButton[][], amount = 5, rows = 5): MessageButton[][] {
 		const parsedButtonsArray = this._parseButtons(buttons);
 		const cutParsedButtonsArray = parsedButtonsArray.slice(0, rows);
-
 		const chunk: MessageButton[][] = [];
 
 		cutParsedButtonsArray.forEach((buttonArray) => {
 			const buttons = buttonArray.slice(0, amount);
+
 			chunk.push(buttons);
 		});
 
@@ -111,11 +116,10 @@ export default class ButtonManager {
 	 * Parses buttons by nesting them appropriately.
 	 */
 	private _parseButtons(buttons: MessageButton[] | MessageButton[][]): MessageButton[][] {
-		if (buttons.some((buttonOrRow) => Array.isArray(buttonOrRow))) {
+		if (buttons.some((buttonOrRow) => Array.isArray(buttonOrRow)))
 			return buttons.map((button) => (Array.isArray(button) ? button : [button]));
-		} else {
-			return [buttons as MessageButton[]];
-		}
+
+		return [buttons as MessageButton[]];
 	}
 
 	/**
@@ -124,12 +128,11 @@ export default class ButtonManager {
 	private _toggleButtons(customIds: string[], disable: boolean) {
 		this.rows = this.rows.map((row) => {
 			row.components = row.components.map((button) => {
-				if (button.customId && customIds.includes(button.customId)) {
-					button.setDisabled(disable);
-				}
+				if (button.customId && customIds.includes(button.customId)) button.setDisabled(disable);
 
 				return button;
 			});
+
 			return row;
 		});
 	}
@@ -144,21 +147,27 @@ export class ConfirmationButtons extends ButtonManager {
 	public query: string | null;
 	public time: string | null;
 
-	constructor(options?: { query?: string; authorId?: string; time?: string }) {
+	public constructor(options?: { query?: string; authorId?: string; time?: string }) {
 		super();
 
 		this.interaction = null;
-		this.authorOnly = !!options?.authorId;
+
+		this.authorOnly = Boolean(options?.authorId);
+
 		this.yesMessage = null;
+
 		this.noMessage = null;
+
 		this.authorId = options?.authorId ?? null;
+
 		this.query = null;
+
 		this.time = options?.time ?? "30s";
 
 		const yesButton = new MessageButton().setLabel("Yes").setStyle("SUCCESS").setCustomId("yes");
 		const noButton = new MessageButton().setLabel("No").setStyle("DANGER").setCustomId("no");
-
 		const row = new MessageActionRow().addComponents(yesButton, noButton);
+
 		this.rows = [row];
 	}
 
@@ -166,62 +175,70 @@ export class ConfirmationButtons extends ButtonManager {
 		interaction: CommandInteraction<"cached"> | MessageComponentInteraction<"cached"> | null
 	): this {
 		this.interaction = interaction;
+
 		return this;
 	}
 
 	public setQuery(query: string | null): this {
 		this.query = query;
+
 		return this;
 	}
 
 	public setYesMessage(message: string | null): this {
 		this.yesMessage = message;
+
 		return this;
 	}
 
 	public setNoMessage(message: string | null): this {
 		this.noMessage = message;
+
 		return this;
 	}
 
 	public async start(options?: { noReply?: boolean; query?: string; onYes?: string; onNo?: string }): Promise<void> {
-		return new Promise<void>(async (resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			if (!this.interaction) throw new Error("Interaction must be set to the ConfirmationButtons");
 
 			const onYes = options?.onYes ?? this.yesMessage ?? "Done!";
 			const onNo = options?.onNo ?? this.noMessage ?? "Cancelled";
-
 			const content = options?.query ?? this.query ?? "Are you sure?";
 			const components = this.rows;
 
-			const msg = await this._updateOrEditReply(content, components);
-			this.setMessage(msg);
+			this._updateOrEditReply(content, components).then((msg) => {
+				this.setMessage(msg);
 
-			const collector = this.createCollector({ time: "30s" });
+				const collector = this.createCollector({ time: "30s" });
 
-			collector.on("collect", (intr) => {
-				if (this.authorOnly && intr.user.id !== this.authorId) {
-					intr.reply({
-						content: `${intr.client.maserEmojis.thumbsDown} This button is not for you`,
-						ephemeral: true
-					});
-					return;
-				}
+				collector.on("collect", (intr) => {
+					if (this.authorOnly && intr.user.id !== this.authorId) {
+						intr.reply({
+							content: `${intr.client.maserEmojis.thumbsDown} This button is not for you`,
+							ephemeral: true
+						});
 
-				if (intr.customId === "yes") {
-					if (!options?.noReply) this._updateOrEditReply(onYes, []);
-					resolve();
-				} else {
-					if (!options?.noReply) this._updateOrEditReply(onNo, []);
+						return;
+					}
+
+					if (intr.customId === "yes") {
+						if (!options?.noReply) this._updateOrEditReply(onYes, []);
+
+						resolve();
+					} else {
+						if (!options?.noReply) this._updateOrEditReply(onNo, []);
+
+						reject();
+					}
+
+					collector.stop("collect");
+				});
+
+				collector.on("end", (_, reason) => {
+					if (reason !== "collect") this._updateOrEditReply("Cancelled by timeout", []);
+
 					reject();
-				}
-
-				collector.stop("collect");
-			});
-
-			collector.on("end", (_, reason) => {
-				if (reason !== "collect") this._updateOrEditReply("Cancelled by timeout", []);
-				reject();
+				});
 			});
 		});
 	}

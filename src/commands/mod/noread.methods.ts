@@ -1,6 +1,6 @@
 // This is not a command
 
-import { ApplicationCommandOptionData } from "discord.js";
+import type { ApplicationCommandOptionData } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { DURATIONS } from "../../constants/index.js";
 

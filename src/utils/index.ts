@@ -9,11 +9,13 @@ export default class Util extends null {
 	public static parse(string: string | null | undefined, width = 0): string | null {
 		if (!string) return null;
 
-		width = Math.ceil(width);
-		if (width < 0 || width > 16) return null;
+		const parsedWidth = Math.ceil(width);
 
-		const space = " ".repeat(width);
-		return space + string.replace(/[\r\n]/g, "\n" + space);
+		if (parsedWidth < 0 || parsedWidth > 16) return null;
+
+		const space = " ".repeat(parsedWidth);
+
+		return space + string.replace(/[\r\n]/g, `\n${space}`);
 	}
 
 	/**
@@ -24,6 +26,7 @@ export default class Util extends null {
 		if (!string) return null;
 
 		const arr = typeof string === "string" ? string.split("\n") : string;
+
 		return arr.map((line) => sep.repeat(width) + line).join("\n");
 	}
 
@@ -32,6 +35,7 @@ export default class Util extends null {
 	 */
 	public static log(string: string | null | undefined): void {
 		if (!string) return;
+
 		console.log(Util.parse(string));
 	}
 
@@ -58,9 +62,9 @@ export default class Util extends null {
 	/**
 	 * Turns any given timestamp or date into a markdown timestamp.
 	 */
-	public static date(time: number | Date, style = "R"): string {
-		if (time instanceof Date) time = time.getTime();
-		const seconds = Math.ceil(time / 1000);
+	public static date(time: Date | number, style = "R"): string {
+		const timestamp = time instanceof Date ? time.getTime() : time;
+		const seconds = Math.ceil(timestamp / 1000);
 
 		return `<t:${seconds}:${style}>`;
 	}
@@ -84,16 +88,17 @@ export default class Util extends null {
 		const suffix = options?.suffix ?? "";
 		const lang = options?.lang ?? "";
 
-		const createString = (input?: string) => {
-			return `${prefix}\n` + `\`\`\`${lang}\n` + (input ?? "") + `\n\`\`\`\n` + suffix;
-		};
+		// eslint-disable-next-line padding-line-between-statements
+		const createString = (input?: string) => `${prefix}\n\`\`\`${lang}\n${input ?? ""}\n\`\`\`\n${suffix}`;
 
+		// eslint-disable-next-line padding-line-between-statements
 		const lenWithoutInput = createString().length;
 		let string = createString(input);
 
 		if (string.length > maxLen) {
 			const lenLeftForInput = maxLen - lenWithoutInput;
-			string = createString(input.slice(0, lenLeftForInput - 3) + "...");
+
+			string = createString(`${input.slice(0, lenLeftForInput - 3)}...`);
 		}
 
 		return string;
@@ -109,10 +114,10 @@ export default class Util extends null {
 	): string {
 		const prefix = options?.prefix ?? "";
 		const suffix = options?.suffix ?? "";
-
 		// -2 for the spaces
 		// if there is no suffix, it will be one less than max
 		const lenToGo = maxLen - prefix.length - suffix.length - 2;
+
 		return `${prefix} ${input.slice(0, lenToGo)} ${suffix}`.trim();
 	}
 
@@ -120,20 +125,20 @@ export default class Util extends null {
 	 * Gives you a string of the three highest roles with a mention of any excess.
 	 */
 	public static parseRoles(memberOrGuild: Guild | GuildMember): string;
-	public static parseRoles(memberOrGuild: Guild | GuildMember | undefined | null): string | null;
-	public static parseRoles(memberOrGuild: undefined | null): null;
-	public static parseRoles(memberOrGuild: Guild | GuildMember | undefined | null): string | null {
+	public static parseRoles(memberOrGuild: Guild | GuildMember | null | undefined): string | null;
+	public static parseRoles(memberOrGuild: null | undefined): null;
+	public static parseRoles(memberOrGuild: Guild | GuildMember | null | undefined): string | null {
 		if (!memberOrGuild) return null;
 
 		const roles = memberOrGuild.roles.cache;
+
 		if (roles.size <= 1) return "None";
 
 		const sortedRoles = roles.sort((a, b) => b.position - a.position);
 		const parsedRoles = sortedRoles.map((role) => role.toString()).slice(0, -1); // removes @everyone
-
 		const roleMentions = parsedRoles.slice(0, 3).join(", ");
 		const excess = parsedRoles.length - 3;
 
-		return 0 < excess ? roleMentions + `, and ${excess} more` : roleMentions;
+		return 0 < excess ? `${roleMentions}, and ${excess} more` : roleMentions;
 	}
 }

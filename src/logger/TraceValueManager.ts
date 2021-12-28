@@ -18,15 +18,18 @@ export default class TraceValueManager {
 		this._cache = newCache;
 	}
 
-	public has(key: "USER" | "GUILD" | "CHANNEL") {
-		if (key === "CHANNEL") return !!this._cache.channel;
-		if (key === "GUILD") return !!this._cache.guild;
-		if (key === "USER") return !!this._cache.userId;
+	public has(key: "CHANNEL" | "GUILD" | "USER") {
+		if (key === "CHANNEL") return Boolean(this._cache.channel);
+
+		if (key === "GUILD") return Boolean(this._cache.guild);
+
+		if (key === "USER") return Boolean(this._cache.userId);
+
 		return false;
 	}
 
 	public any() {
-		return !!this._cache.channel || !!this._cache.guild || !!this._cache.userId;
+		return Boolean(this._cache.channel) || Boolean(this._cache.guild) || Boolean(this._cache.userId);
 	}
 
 	public setChannel(channel: GuildTextBasedChannel | null) {
@@ -39,6 +42,7 @@ export default class TraceValueManager {
 
 	public setUser(user: User | null) {
 		this._cache.userId = user?.id ?? null;
+
 		this._cache.user = user?.tag ?? null;
 	}
 

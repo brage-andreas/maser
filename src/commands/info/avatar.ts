@@ -1,10 +1,10 @@
 import {
-	AllowedImageSize,
-	CommandInteraction,
 	MessageButton,
 	MessageEmbed,
 	User,
+	type AllowedImageSize,
 	type ChatInputApplicationCommandData,
+	type CommandInteraction,
 	type GuildMember
 } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
@@ -12,12 +12,10 @@ import { defaultEmbedOptions } from "../../constants/index.js";
 import { ButtonManager } from "../../modules/index.js";
 import { type Command } from "../../typings/index.js";
 
-const sizeChoices = [16, 32, 64, 128, 256, 512, 1024, 2048, 4096].map((size) => {
-	return {
-		name: `${size}px`,
-		value: size
-	};
-});
+const sizeChoices = [16, 32, 64, 128, 256, 512, 1024, 2048, 4096].map((size) => ({
+	name: `${size}px`,
+	value: size
+}));
 
 const data: ChatInputApplicationCommandData = {
 	name: "avatar",
@@ -47,46 +45,43 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const memberOptionValue = intr.options.getMember("user");
 	const userOptionValue = intr.options.getUser("user");
 	const size = (intr.options.getInteger("size") ?? 2048) as AllowedImageSize;
-
 	const member = userOptionValue ? memberOptionValue : intr.member;
 	const user = userOptionValue ?? intr.user;
+	const hasGuildAvatar = Boolean(member?.avatar);
 
-	const hasGuildAvatar = !!member?.avatar;
-
-	const getURL = (target: User | GuildMember, format: string) => {
+	const getURL = (target: GuildMember | User, format: string) => {
 		const { discriminator } = target instanceof User ? target : target.user;
 		const defaultBase = `https://cdn.discordapp.com/embed/avatars/${Number(discriminator) % 5}`;
 		const customBase = `https://cdn.discordapp.com/avatars/${target.id}/${target.avatar}`;
+
 		return target.avatar ? `${customBase}.${format}?size=${size}` : `${defaultBase}.${format}`;
 	};
 
-	const getAvatarLinks = (target: User | GuildMember, altText: string) => {
-		const arr = ["png", "jpg", "webp"].map((format) => {
-			return `[${format}](${getURL(user, format)} "${altText.replace("{format}", format)}")`;
-		});
+	const getAvatarLinks = (target: GuildMember | User, altText: string) => {
+		const arr = ["png", "jpg", "webp"].map(
+			(format) => `[${format}](${getURL(user, format)} "${altText.replace("{format}", format)}")`
+		);
 
-		if (target.displayAvatarURL({ dynamic: true }).endsWith(".gif")) {
+		if (target.displayAvatarURL({ dynamic: true }).endsWith(".gif"))
 			arr.splice(0, 0, `[${"gif"}](${getURL(user, "gif")} "${altText.replace("{format}", "gif")}")`);
-		}
 
 		return arr;
 	};
 
 	// default avatars can only be png
 	const userAvatarLinks = user.avatar
-		? getAvatarLinks(user, `Avatar in {format} format`)
+		? getAvatarLinks(user, "Avatar in {format} format")
 		: [`[png](${getURL(user, "png")} "Avatar in png format")`];
-	const guildAvatarLinks = member ? getAvatarLinks(member, `Guild avatar in {format} format`) : null;
+
+	const guildAvatarLinks = member ? getAvatarLinks(member, "Guild avatar in {format} format") : null;
 
 	const avatar = includeGuildAvatar
 		? (member ?? user).displayAvatarURL({ dynamic: true, size })
 		: user.displayAvatarURL({ dynamic: true, size });
 
-	const description =
-		`**User**: ${user}\n` +
-		(user.avatar ? `**Size**: ${size} px\n\n` : "\n") +
-		(hasGuildAvatar ? `**Guild avatar**: ${guildAvatarLinks!.join(", ")}\n` : "") +
-		`**Avatar**: ${userAvatarLinks.join(", ")}`;
+	const description = `**User**: ${user}\n${user.avatar ? `**Size**: ${size} px\n\n` : "\n"}${
+		hasGuildAvatar ? `**Guild avatar**: ${guildAvatarLinks!.join(", ")}\n` : ""
+	}**Avatar**: ${userAvatarLinks.join(", ")}`;
 
 	const embed = new MessageEmbed(defaultEmbedOptions(intr))
 		.setTitle("Avatar")
@@ -94,6 +89,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 		.setImage(avatar);
 
 	const buttonManager = new ButtonManager();
+
 	const outputButton = new MessageButton()
 		.setDisabled(!includeGuildAvatar)
 		.setCustomId("user")
@@ -110,6 +106,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 	if (hasGuildAvatar) {
 		buttonManager.setRows(outputButton, codeButton);
+
 		embed.setFooter("Buttons last for 30 seconds");
 	}
 
@@ -124,6 +121,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 					content: `${intr.client.maserEmojis.thumbsDown} This button is not for you`,
 					ephemeral: true
 				});
+
 				return;
 			}
 
@@ -138,7 +136,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 			}
 			//
 			else if (interaction.customId === "member") {
-				embed.setImage(member.displayAvatarURL({ dynamic: true, size }));
+				embed.setImage((member ?? user).displayAvatarURL({ dynamic: true, size }));
 
 				buttonManager.disable("member").enable("user");
 
@@ -148,7 +146,8 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 		collector.on("end", () => {
 			embed.setFooter("");
-			msg.edit({ embeds: [embed], components: [] }).catch(() => {});
+
+			msg.edit({ embeds: [embed], components: [] }).catch(() => null);
 		});
 	}
 

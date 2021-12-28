@@ -9,28 +9,28 @@ import type {
 /**/
 
 export interface CommandModule {
-	getCommand: () => Partial<Command>;
+	getCommand(): Partial<Command>;
 }
 
 export interface Command {
-	execute: (interaction: CommandInteraction<"cached"> | AutocompleteInteraction<"cached">) => Promise<void> | void;
 	options: CommandOptions;
 	data: ChatInputApplicationCommandData;
+	execute(interaction: AutocompleteInteraction<"cached"> | CommandInteraction<"cached">): Promise<void> | void;
 }
 
 export interface CommandOptions {
 	defaultHide: boolean;
-	logLevel: 2 | 1 | 0;
+	logLevel: 0 | 1 | 2;
 	private: boolean;
 	wip: boolean;
 }
 
 export interface Event {
-	execute: (client: Client, ...args: unknown[]) => Promise<void> | void;
+	execute(client: Client, ...args: unknown[]): Promise<void> | void;
 }
 
 export interface EvalOutput {
 	embeds: MessageEmbed[];
 	output: string;
-	type: "output" | "error";
+	type: "error" | "output";
 }

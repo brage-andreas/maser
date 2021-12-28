@@ -1,6 +1,6 @@
 import { type Client, type Guild } from "discord.js";
 
-export async function execute(client: Client<true>, guild: Guild) {
+export function execute(client: Client<true>, guild: Guild) {
 	client.events.logger
 		.setEvent("guild create")
 		.log(

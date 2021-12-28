@@ -1,4 +1,4 @@
-import { LoggerTypes } from "../constants/index.js";
+import type { LoggerTypes } from "../constants/index.js";
 import Util from "../utils/index.js";
 import { getColor, gray, yellow } from "./LoggerColors.js";
 import TraceValueManager from "./TraceValueManager.js";
@@ -12,7 +12,7 @@ export default abstract class BaseLogger {
 	/**
 	 * Creates a logger.
 	 */
-	constructor() {
+	public constructor() {
 		this.traceValues = new TraceValueManager();
 	}
 
@@ -23,13 +23,16 @@ export default abstract class BaseLogger {
 	 */
 	protected print(type: LoggerTypes, name: string, ...messages: string[]): void {
 		this._printBase(type, name);
+
 		this._printTrace();
 
 		process.stdout.write("\n");
 
 		const msgs = this.parse(...messages);
-		if (msgs && msgs.length) {
+
+		if (msgs?.length) {
 			msgs.forEach((message) => console.log(message));
+
 			process.stdout.write("\n");
 		}
 	}
@@ -56,8 +59,8 @@ export default abstract class BaseLogger {
 		const colorFn = getColor(type);
 		const timeStr = gray(Util.now());
 		const nameStr = colorFn(`[${name.toUpperCase()}]`);
-
 		const message = Util.parse(`${nameStr} ${timeStr}`) as string;
+
 		process.stdout.write(message);
 	}
 
@@ -72,21 +75,13 @@ export default abstract class BaseLogger {
 
 		process.stdout.write(gray(" > "));
 
-		if (this.traceValues.has("USER")) {
-			if (cache.user) {
-				messages.push(`${yellow(cache.user)} ${gray(`(u: ${cache.userId})`)}`);
-			} else {
-				messages.push(`u: ${yellow(cache.userId!)}`);
-			}
-		}
+		if (this.traceValues.has("USER"))
+			if (cache.user) messages.push(`${yellow(cache.user)} ${gray(`(u: ${cache.userId})`)}`);
+			else messages.push(`u: ${yellow(cache.userId!)}`);
 
-		if (this.traceValues.has("CHANNEL")) {
-			messages.push(`${gray("in")} #${cache.channel}`);
-		}
+		if (this.traceValues.has("CHANNEL")) messages.push(`${gray("in")} #${cache.channel}`);
 
-		if (this.traceValues.has("GUILD")) {
-			messages.push(`${gray("in")} ${cache.guild}`);
-		}
+		if (this.traceValues.has("GUILD")) messages.push(`${gray("in")} ${cache.guild}`);
 
 		process.stdout.write(messages.join(" "));
 	}

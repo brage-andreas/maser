@@ -8,12 +8,10 @@ import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { defaultEmbedOptions } from "../../constants/index.js";
 import { type Command } from "../../typings/index.js";
 
-const sizeChoices = [16, 32, 64, 128, 256, 300, 512, 600, 1024, 2048, 4096].map((size) => {
-	return {
+const sizeChoices = [16, 32, 64, 128, 256, 300, 512, 600, 1024, 2048, 4096].map((size) => ({
 		name: `${size}px`,
 		value: size
-	};
-});
+	}));
 
 const data: ChatInputApplicationCommandData = {
 	name: "banner",
@@ -33,45 +31,35 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-type ImageFormats = "webp" | "png" | "jpg";
+type ImageFormats = "jpg" | "png" | "webp";
 
 async function execute(intr: CommandInteraction<"cached">) {
 	const userId = (intr.options.get("user")?.value as string | undefined) ?? intr.user.id;
 	const member = intr.options.getMember("user");
-	const size = (intr.options.getInteger("size") ?? 2048) as AllowedImageSize;
-
-	const emojis = intr.client.maserEmojis;
-
-	const user = await intr.client.users.fetch(userId, { force: true });
-
-	const baseURL = user.bannerURL();
+	const size = (intr.options.getInteger("size") ?? 2048) as AllowedImageSize;	const emojis = intr.client.maserEmojis;	const user = await intr.client.users.fetch(userId, { force: true });	const baseURL = user.bannerURL();
 
 	if (!baseURL) {
 		const userStr =
 			userId === intr.user.id
 				? "You do"
-				: userId === intr.client.user!.id
-				? "I do"
-				: `${user.tag} (${user} ${user.id}) does`;
+				: userId === intr.client.user.id
+					? "I do"
+					: `${user.tag} (${user} ${user.id}) does`;
+
 		intr.editReply(`${emojis.cross} ${userStr} not have a banner`);
+
 		return;
 	}
 
-	const base = baseURL.split(".").slice(0, -1).join(".");
-
-	const getURL = (format: ImageFormats) => `${base}.${format}?size=${size}`;
-
-	const webp = getURL("webp");
+	const base = baseURL.split(".").slice(0, -1).join(".");	const getURL = (format: ImageFormats) => `${base}.${format}?size=${size}`;	const webp = getURL("webp");
 	const png = getURL("png");
 	const jpg = getURL("jpg");
-	const dynamic = user.bannerURL({ size, dynamic: true })!;
-
-	const name = member?.displayName ?? user.username;
-	const nameStr = name.endsWith("s") || name.endsWith("z") ? `${name}' banner` : `${name}'s banner`;
-
-	const bannerLinks: string[] = [];
+	const dynamic = user.bannerURL({ size, dynamic: true })!;	const name = member?.displayName ?? user.username;
+	const nameStr = name.endsWith("s") || name.endsWith("z") ? `${name}' banner` : `${name}'s banner`;	const bannerLinks: string[] = [];
 	const isGIF = dynamic.endsWith(`.gif?size=${size}`);
+
 	if (isGIF) bannerLinks.push(`[gif](${dynamic})`);
+
 	bannerLinks.push(`[png](${png}), [jpg](${jpg}), [webp](${webp})`);
 
 	const description =

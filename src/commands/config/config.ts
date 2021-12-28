@@ -41,26 +41,22 @@ const data: ChatInputApplicationCommandData = {
 async function execute(intr: CommandInteraction<"cached">) {
 	const method = intr.options.getSubcommand();
 	const rawOption = intr.options.getSubcommandGroup(false);
-
 	const config = new ConfigManager(intr.client, intr.guild.id);
 	const emojis = intr.client.maserEmojis;
 
 	if (method === "view-config") {
 		const res = await config.getAllValues();
-
 		let response = `${emojis.file} Config for **${intr.guild.name}** (${intr.guildId})\n`;
 
-		for (let [key, value] of Object.entries(res)) {
-			key = CONFIG_COLUMN_STRINGS[key];
-
+		for (const [key, value] of Object.entries(res)) {
+			const keyStr = CONFIG_COLUMN_STRINGS[key];
 			const channel = intr.guild.channels.cache.get(value)?.toString() ?? null;
 			const guild = intr.client.guilds.cache.get(value)?.name ?? null;
 			const role = intr.guild.roles.cache.get(value)?.toString() ?? null;
-
 			const mention = channel ?? guild ?? role;
 			const mentionString = mention ? `${mention} (${value})` : `Couldn't find anything with ID: ${value}`;
 
-			response += `\n• **${key}**: ${value ? mentionString : "Not set"}`;
+			response += `\n• **${keyStr}**: ${value ? mentionString : "Not set"}`;
 		}
 
 		intr.editReply(response);
@@ -69,6 +65,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 	}
 
 	const option = CONFIG_COMMAND_TO_COLUMN[rawOption ?? ""];
+
 	if (!option) return; // should be unnecessary, but TS yells at me
 
 	config.setKey(option);
@@ -77,7 +74,6 @@ async function execute(intr: CommandInteraction<"cached">) {
 		case "view": {
 			const channel = await config.getChannel();
 			// const role = await config.getRole();
-
 			const optionStr = CONFIG_COLUMN_STRINGS[option];
 			let response = `${emojis.file} Config for **${intr.guild.name}** (${intr.guildId})\n\n• **${optionStr}**: `;
 
@@ -90,44 +86,39 @@ async function execute(intr: CommandInteraction<"cached">) {
 			intr.logger.log(
 				`Used method VIEW on option ${option}: ${/*(channel?? role)?.id*/ channel?.id ?? "No value"}`
 			);
+
 			break;
 		}
 
 		case "set": {
 			const res = intr.options.getChannel("channel"); /* ?? intr.options.getRole("role"); */
-
 			const old = await config.getAllValues();
-
 			const value = res?.id ?? "NULL";
+
 			await config.set(value);
 
 			old[option] = res?.id;
 
 			let response = `${emojis.file} Updated config for **${intr.guild.name}** (${intr.guildId})\n`;
 
-			for (let [key, value] of Object.entries(old)) {
+			for (const [key, value] of Object.entries(old)) {
 				const keyStr = CONFIG_COLUMN_STRINGS[key];
-
 				const channel = intr.guild.channels.cache.get(value)?.toString() ?? null;
 				const guild = intr.client.guilds.cache.get(value)?.name ?? null;
 				// const role = intr.guild.roles.cache.get(value)?.toString() ?? null;
-
 				const mention = channel ?? guild; /* ?? role; */
 
 				if (key === option) {
 					let valueString = `\n• **${keyStr}**: `;
 
-					if (mention && res) {
-						valueString += `${mention} (${res.id}) **(updated)**`;
-					} else if (res) {
-						valueString += `Couldn't find anything with ID: ${value} **(updated)**`;
-					} else {
-						valueString += "Not set **(updated)**";
-					}
+					if (mention && res) valueString += `${mention} (${res.id}) **(updated)**`;
+					else if (res) valueString += `Couldn't find anything with ID: ${value} **(updated)**`;
+					else valueString += "Not set **(updated)**";
 
 					response += valueString;
 				} else {
 					const valueString = mention ? `${mention} (${value})` : `Couldn't find anything with ID: ${value}`;
+
 					response += `\n• **${keyStr}**: ${value ? valueString : "Not set"}`;
 				}
 			}
@@ -135,6 +126,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 			intr.editReply(response);
 
 			intr.logger.log(`Used method SET on option ${option}: ${value}`);
+
 			break;
 		}
 	}

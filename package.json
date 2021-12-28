@@ -5,14 +5,17 @@
 	"main": "dist/index.js",
 	"type": "module",
 	"scripts": {
-		"prebuild": "npx rimraf dist",
-		"build": "tsc",
-		"prebuildCmds": "npm run build",
 		"preclearCmds": "npm run build",
-		"buildCmds": "node scripts/commands/build.js",
+		"prebuildCmds": "npm run build",
 		"clearCmds": "node scripts/commands/clear.js",
+		"buildCmds": "node scripts/commands/build.js",
+		"lint:fix": "eslint src --ext .ts --fix",
+		"prebuild": "npx rimraf dist",
 		"prestart": "npm run build",
-		"start": "node ."
+		"format": "prettier --write \"**/*.+(js|ts|json)\"",
+		"build": "tsc",
+		"start": "node .",
+		"lint": "eslint src --ext .ts"
 	},
 	"repository": {
 		"type": "git",
@@ -34,7 +37,12 @@
 	},
 	"devDependencies": {
 		"@types/ms": "^0.7.31",
+		"@typescript-eslint/eslint-plugin": "^5.8.1",
+		"@typescript-eslint/parser": "^5.8.1",
 		"discord-api-types": "^0.22.0",
+		"eslint": "^8.5.0",
+		"eslint-config-prettier": "^8.3.0",
+		"eslint-plugin-prettier": "^4.0.0",
 		"prettier": "^2.5.1",
 		"typescript": "^4.5.2"
 	}

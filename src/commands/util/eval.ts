@@ -10,7 +10,7 @@ import ms from "ms";
 import { performance } from "perf_hooks";
 import { defaultEmbedOptions, REGEXP } from "../../constants/index.js";
 import { ButtonManager } from "../../modules/index.js";
-import { CommandOptions, type Command, type EvalOutput } from "../../typings/index.js";
+import { type Command, type CommandOptions, type EvalOutput } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 
 const options: Partial<CommandOptions> = {
@@ -40,41 +40,42 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const code = intr.options.getString("code", true);
 	const reply = intr.options.getBoolean("reply") ?? true;
 
-	const stringify = (value: any): string => {
-		const replacer = (_: string, val: any) => {
+	const stringify = (value: unknown): string => {
+		const replacer = (_: string, val: unknown) => {
 			if (typeof val === "function" || val == null) return `${value}`;
+
 			if (typeof val === "bigint") return `${val}n`;
+
 			return val;
 		};
 
 		const string = JSON.stringify(value, replacer, 2) ?? "Something went wrong with stringifying the content";
+
 		return string.replace('"void"', "void");
 	};
 
 	const parse = (string: string, prefix: string, embedStyle?: string | null) => {
 		if (!string.length) return null;
+
 		return Util.mergeForCodeblock(string, { prefix, lang: embedStyle === undefined ? "js" : null });
 	};
 
 	const evaluate = async () => {
 		const client = intr.client;
+
 		Discord; // "ReferenceError: Discord is not defined" if not here
 
 		try {
 			const start = performance.now();
 			const result = await eval(`(async () => {\n${code}\n})()`);
 			const end = performance.now();
-
 			const type = typeof result;
 			const constructor = result != null ? (result.constructor.name as string) : "Nullish";
-
 			const time = Number((end - start).toFixed(3));
 			const timeTaken = ms(time, { long: true }).replace(".", ",");
-
 			const stringedOutput = stringify(result).replaceAll(new RegExp(REGEXP.TOKEN, "g"), "[REDACTED]");
-
-			const parsedInput = parse(code, `**Input**`);
-			const parsedOutput = parse(stringedOutput, `**Output**`);
+			const parsedInput = parse(code, "**Input**");
+			const parsedOutput = parse(stringedOutput, "**Output**");
 
 			const successInputEmbed = new MessageEmbed(defaultEmbedOptions(intr)).setDescription(
 				parsedInput ?? "No input"
@@ -91,12 +92,11 @@ async function execute(intr: CommandInteraction<"cached">) {
 			};
 
 			return output;
-		} catch (err) {
+		} catch (err: unknown) {
 			const error = err as Error;
 			const msg = error.stack ?? error.toString();
-
-			const parsedInput = parse(code, ` **Input**`);
-			const parsedError = parse(msg, ` **Error**`, null);
+			const parsedInput = parse(code, " **Input**");
+			const parsedError = parse(msg, " **Error**", null);
 
 			const errorInputEmbed = new MessageEmbed(defaultEmbedOptions(intr))
 				.setColor(client.colors.red)
@@ -145,6 +145,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 					content: `${intr.client.maserEmojis.thumbsDown} This button is not for you`,
 					ephemeral: true
 				});
+
 				return;
 			}
 
@@ -154,7 +155,9 @@ async function execute(intr: CommandInteraction<"cached">) {
 				const attachment = new MessageAttachment(Buffer.from(output), `${type}.txt`);
 
 				buttonManager.disable("output");
+
 				await interaction.editReply({ components: buttonManager.rows });
+
 				await interaction.followUp({ files: [attachment] });
 
 				intr.logger.log(`Sent output as an attachment:\n${Util.indent(output)}`);
@@ -164,7 +167,9 @@ async function execute(intr: CommandInteraction<"cached">) {
 				const attachment = new MessageAttachment(Buffer.from(code), "code.txt");
 
 				buttonManager.disable("code");
+
 				await interaction.editReply({ components: buttonManager.rows });
+
 				await interaction.followUp({ files: [attachment] });
 
 				intr.logger.log(`Sent code as an attachment:\n${Util.indent(code)}`);
@@ -173,7 +178,8 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 		collector.on("end", () => {
 			buttonManager.disable("output", "code");
-			intr.editReply({ components: buttonManager.rows }).catch(() => {});
+
+			intr.editReply({ components: buttonManager.rows }).catch(() => null);
 		});
 	}
 

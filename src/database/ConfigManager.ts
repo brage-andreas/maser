@@ -1,11 +1,11 @@
 import { type Client } from "discord.js";
-import { ConfigChannelTypes, ConfigData, ConfigTableColumns } from "../typings/database.js";
+import type { ConfigChannelTypes, ConfigData, ConfigTableColumns } from "../typings/database.js";
 import Postgres from "./src/postgres.js";
 
 export default class ConfigManager extends Postgres {
 	public key: ConfigTableColumns | null;
 
-	constructor(client: Client<true>, guildId: string, key?: ConfigTableColumns | null) {
+	public constructor(client: Client<true>, guildId: string, key?: ConfigTableColumns | null) {
 		super(client, { schema: "guilds", table: "configs", idKey: "guildId", idValue: guildId });
 
 		this.key = key ?? null;
@@ -13,22 +13,25 @@ export default class ConfigManager extends Postgres {
 
 	public setKey(key: ConfigTableColumns): this {
 		this.key = key;
+
 		return this;
 	}
 
 	public async getChannel(): Promise<ConfigChannelTypes | null> {
 		if (!this.idValue) throw new Error("Guild id must be set to the ConfigManager");
+
 		if (!this.key) throw new Error("Key must be set to the ConfigManager");
 
-		const id = await this.getAll().then((result) => {
-			return result?.[this.key!] ?? null;
-		});
+		const id = await this.getAll().then((result) => result?.[this.key!] ?? null);
+
 		if (!id) return null;
 
 		const guild = this.client.guilds.cache.get(this.idValue);
+
 		if (!guild) return null;
 
 		const channel = guild.channels.cache.get(id) as ConfigChannelTypes | undefined;
+
 		return channel ?? null;
 	}
 
@@ -57,6 +60,7 @@ export default class ConfigManager extends Postgres {
 
 	public async getAll(): Promise<ConfigData> {
 		if (!this.idValue) throw new Error("Guild id must be set to the ConfigManager");
+
 		await this.still([this.idKey], [this.idValue]);
 
 		const query = `
@@ -70,6 +74,7 @@ export default class ConfigManager extends Postgres {
 
 	public async getAllValues(): Promise<ConfigData> {
 		if (!this.idValue) throw new Error("Guild id must be set to the ConfigManager");
+
 		await this.still([this.idKey], [this.idValue]);
 
 		const query = `
@@ -79,6 +84,7 @@ export default class ConfigManager extends Postgres {
         `;
 
 		const res = await this.one<ConfigData>(query);
+
 		delete res.guildId;
 
 		return res;

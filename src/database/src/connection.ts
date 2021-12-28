@@ -1,5 +1,5 @@
 import postgres from "pg-promise";
-import { PostgresResponses, PostresExists } from "../../typings/database.js";
+import type { PostgresResponses, PostresExists } from "../../typings/database.js";
 
 // This will error with "Error: connect ECONNREFUSED 127.0.0.1:5432"
 // if you don't have postgres installed
@@ -23,6 +23,7 @@ export default class PostgresConnection {
 
 	public async manyOrNone<T extends Exclude<PostgresResponses, PostresExists>>(query: string): Promise<T[] | null> {
 		const res = await this.connection.manyOrNone<T>(query);
+
 		return res.length ? res : null;
 	}
 }

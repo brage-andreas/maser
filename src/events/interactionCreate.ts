@@ -2,14 +2,16 @@ import { GuildMember, type AutocompleteInteraction, type Client, type CommandInt
 import { CommandLogger } from "../logger/index.js";
 import { CommandManager } from "../modules/index.js";
 
-export async function execute(client: Client<true>, intr: CommandInteraction | AutocompleteInteraction) {
+export async function execute(client: Client<true>, intr: AutocompleteInteraction | CommandInteraction) {
 	if (intr.member instanceof GuildMember && intr.member.partial) await intr.member.fetch();
+
 	if ((!intr.isCommand() && !intr.isAutocomplete()) || !intr.inCachedGuild()) return;
 
 	const emojis = client.maserEmojis;
 	const isNotOwner = intr.user.id !== client.application.owner?.id;
 
 	intr.commandOptions = new CommandManager(intr);
+
 	intr.logger = new CommandLogger(intr);
 
 	const commandData = client.commandHandler.getData(intr.commandName);
@@ -19,11 +21,13 @@ export async function execute(client: Client<true>, intr: CommandInteraction | A
 
 	if (commandOptions.isWIP && isNotOwner) {
 		await intr.reply({ content: `${emojis.construction} This command is work-in-progress`, ephemeral: true });
+
 		return;
 	}
 
 	if (commandOptions.isPrivate && isNotOwner) {
 		await intr.reply({ content: `${emojis.locked} This command is private`, ephemeral: true });
+
 		return;
 	}
 

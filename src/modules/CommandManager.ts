@@ -1,25 +1,17 @@
-import { AutocompleteInteraction, type CommandInteraction } from "discord.js";
+import { type AutocompleteInteraction, type CommandInteraction } from "discord.js";
 import { type Command } from "../typings/index.js";
 
 export default class CommandManager {
-	public interaction: CommandInteraction<"cached"> | AutocompleteInteraction<"cached"> | null;
+	public interaction: AutocompleteInteraction<"cached"> | CommandInteraction<"cached"> | null;
 	public command: Readonly<Command> | null;
 
-	constructor(
-		interaction?: CommandInteraction<"cached"> | AutocompleteInteraction<"cached"> | null,
+	public constructor(
+		interaction?: AutocompleteInteraction<"cached"> | CommandInteraction<"cached"> | null,
 		data?: Command | null
 	) {
 		this.interaction = interaction ?? null;
-		this.command = data ?? null;
-	}
 
-	public setCommand(
-		interaction: CommandInteraction<"cached"> | AutocompleteInteraction<"cached"> | null,
-		data: Command | null
-	): this {
-		this.interaction = interaction;
-		this.command = data;
-		return this;
+		this.command = data ?? null;
 	}
 
 	/**
@@ -27,6 +19,7 @@ export default class CommandManager {
 	 */
 	public get isPrivate(): boolean {
 		this.checkCommand();
+
 		return this.command!.options.private;
 	}
 
@@ -35,6 +28,7 @@ export default class CommandManager {
 	 */
 	public get isWIP(): boolean {
 		this.checkCommand();
+
 		return this.command!.options.wip;
 	}
 
@@ -49,8 +43,9 @@ export default class CommandManager {
 	 *
 	 * 0 - Nothing
 	 */
-	public get logLevel(): 2 | 1 | 0 {
+	public get logLevel(): 0 | 1 | 2 {
 		this.checkCommand();
+
 		return this.command!.options.logLevel;
 	}
 
@@ -59,10 +54,22 @@ export default class CommandManager {
 	 */
 	public get hide(): boolean {
 		this.checkCommand();
+
 		const standard = this.command!.options.defaultHide;
 		const option = this.interaction!.options.getBoolean("hide");
 
 		return option ?? standard;
+	}
+
+	public setCommand(
+		interaction: AutocompleteInteraction<"cached"> | CommandInteraction<"cached"> | null,
+		data: Command | null
+	): this {
+		this.interaction = interaction;
+
+		this.command = data;
+
+		return this;
 	}
 
 	/**
@@ -70,6 +77,7 @@ export default class CommandManager {
 	 */
 	public execute(): void {
 		this.checkCommand();
+
 		this.command!.execute(this.interaction!);
 	}
 
@@ -78,6 +86,7 @@ export default class CommandManager {
 	 */
 	private checkCommand(): void {
 		if (!this.command) throw new Error("commandData must be set to the CommandManager");
+
 		if (!this.interaction) throw new Error("command must be set to the CommandManager");
 	}
 }

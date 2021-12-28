@@ -1,6 +1,6 @@
 import { type Client } from "discord.js";
 import { REGEXP } from "../../constants/index.js";
-import { PostgresOptions, PostresExists } from "../../typings/database.js";
+import type { PostgresOptions, PostresExists } from "../../typings/database.js";
 import PostgresConnection from "./connection.js";
 
 export default abstract class Postgres extends PostgresConnection {
@@ -11,25 +11,25 @@ export default abstract class Postgres extends PostgresConnection {
 	protected idKey: string;
 	protected table: string;
 
-	constructor(client: Client<true>, options: PostgresOptions) {
+	public constructor(client: Client<true>, options: PostgresOptions) {
 		super();
 
-		if (!REGEXP.ID.test(options.idValue)) {
+		if (!REGEXP.ID.test(options.idValue))
 			throw new TypeError(`Provided argument for idValue is not a valid ID (reading: "${options.idValue}")"`);
-		}
 
 		this.client = client;
+
 		this.idValue = options.idValue;
 
 		this.schema = options?.schema ?? null;
+
 		this.table = options?.table ?? null;
+
 		this.idKey = options.idKey;
 	}
 
-	protected async still(columns: string[], values: any[]): Promise<void> {
-		if (!(await this.existsRow())) {
-			await this.createRow(columns, values);
-		}
+	protected async still(columns: string[], values: unknown[]): Promise<void> {
+		if (!(await this.existsRow())) await this.createRow(columns, values);
 	}
 
 	protected async existsRow(): Promise<boolean> {
@@ -42,16 +42,20 @@ export default abstract class Postgres extends PostgresConnection {
 		`;
 
 		const res = await this.one<PostresExists>(query);
+
 		return res ? res.exists : false;
 	}
 
-	protected createRow(columns: string[], values: any[]): Promise<void> {
-		columns = columns.map((e) => `"${e}"`);
-		values = values.map((e) => (typeof e === "string" && e !== "NULL" ? `'${e}'` : `${e ?? "NULL"}`));
+	protected createRow(columns: string[], values: unknown[]): Promise<void> {
+		const formattedColumns = columns.map((e) => `"${e}"`);
+
+		const formattedValues = values.map((e) =>
+			typeof e === "string" && e !== "NULL" ? `'${e}'` : `${e ?? "NULL"}`
+		);
 
 		const query = `
-            INSERT INTO ${this.schema}."${this.table}" (\n${columns.join(", ")}\n)
-            VALUES (\n${values.join(", ")}\n)
+            INSERT INTO ${this.schema}."${this.table}" (\n${formattedColumns.join(", ")}\n)
+            VALUES (\n${formattedValues.join(", ")}\n)
             ON CONFLICT DO NOTHING;
         `;
 
@@ -60,7 +64,7 @@ export default abstract class Postgres extends PostgresConnection {
 
 	protected async updateRow(
 		columns: string[],
-		newValues: (string | number | boolean | null)[],
+		newValues: (boolean | number | string | null)[],
 		whereQuery?: string
 	): Promise<void> {
 		const data = columns.map(

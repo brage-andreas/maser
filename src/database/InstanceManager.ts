@@ -2,13 +2,13 @@ import { type Client } from "discord.js";
 import { REGEXP } from "../constants/index.js";
 import InfoLogger from "../logger/InfoLogger.js";
 import { Instance } from "../modules/index.js";
-import { InstanceData } from "../typings/database.js";
+import type { InstanceData } from "../typings/database.js";
 import Postgres from "./src/postgres.js";
 
 export default class InstanceManager extends Postgres {
 	private initialised = false;
 
-	constructor(client: Client<true>, guildId: string) {
+	public constructor(client: Client<true>, guildId: string) {
 		super(client, { schema: "guilds", table: `instances-${guildId}`, idKey: "instanceId", idValue: guildId });
 	}
 
@@ -37,42 +37,47 @@ export default class InstanceManager extends Postgres {
         `;
 
 		await this.none(query);
+
 		this.initialised = true;
 
 		return this;
 	}
 
-	public async createInstance(data: Partial<InstanceData>, logToChannel: boolean = false): Promise<Instance> {
+	public async createInstance(data: Partial<InstanceData>, logToChannel = false): Promise<Instance> {
 		if (!this.initialised) await this.initialise();
 
 		const patchedData = await this.patch(data);
-
 		const columnNames = Object.keys(patchedData);
 		const values = Object.values(patchedData);
 
 		await this.createRow(columnNames, values);
+
 		const instance = await this.getInstance(patchedData.instanceId);
+
 		if (!instance) throw new Error("Something really went wrong");
 
 		const guild = this.client.guilds.cache.get(patchedData.guildId)?.name ?? "unknown name";
+
 		new InfoLogger().log(
 			`Created new instance with id: ${patchedData.instanceId}`,
 			`in guild: "${guild}" (${patchedData.guildId})`,
-			`of type: "${instance!.type.toLowerCase()}" (${patchedData.type})`
+			`of type: "${instance.type.toLowerCase()}" (${patchedData.type})`
 		);
 
 		if (logToChannel) {
 			const message = await instance.channelLog();
+
 			if (message) this.setURL(patchedData.instanceId, message.url);
 		}
 
 		return instance;
 	}
 
-	public async getInstance(instanceId: string | number): Promise<Instance | null> {
+	public async getInstance(instanceId: number | string): Promise<Instance | null> {
 		if (!this.initialised) await this.initialise();
 
 		const data = await this.getData(instanceId);
+
 		return this._createInstance(data);
 	}
 
@@ -85,32 +90,34 @@ export default class InstanceManager extends Postgres {
 		`;
 
 		const res = await this.oneOrNone<InstanceData>(query);
+
 		return res?.instanceId ?? null;
 	}
 
-	public async getInstanceDataWithinRange(offset: number, limit: number = 5): Promise<InstanceData[] | null> {
+	public async getInstanceDataWithinRange(offset: number, limit = 5): Promise<InstanceData[] | null> {
 		if (!this.initialised) await this.initialise();
 
-		if (offset < 0) offset = 0;
-		if (limit < 1) limit = 1;
+		const validatedOffset = Math.ceil(offset) < 0 ? 0 : Math.ceil(offset);
+		const validatedLimit = Math.ceil(limit) < 1 ? 1 : Math.ceil(limit);
 
 		const query = `
 			SELECT *
 			FROM ${this.schema}."${this.table}"
-			LIMIT ${limit} OFFSET ${offset}
+			LIMIT ${validatedLimit} OFFSET ${validatedOffset}
 		`;
 
 		return await this.manyOrNone<InstanceData>(query);
 	}
 
-	public async editInstance(instanceId: string | number, data: Partial<InstanceData>): Promise<Instance | null> {
+	public async editInstance(
+		instanceId: number | string,
+		partialData: Partial<InstanceData>
+	): Promise<Instance | null> {
 		if (!this.initialised) await this.initialise();
 
-		try {
-			data = await this.patch(data);
-		} catch {
-			return null;
-		}
+		const data = await this.patch(partialData).catch(() => null);
+
+		if (!data) return null;
 
 		data.edited = true;
 
@@ -122,12 +129,13 @@ export default class InstanceManager extends Postgres {
 		return await this.getInstance(instanceId);
 	}
 
-	public async setURL(instanceId: string | number, url: string) {
+	public async setURL(instanceId: number | string, url: string) {
 		await this.updateRow(["url"], [url], `"instanceId"=${instanceId}`);
+
 		return this;
 	}
 
-	private async getData(instanceId: string | number): Promise<InstanceData | null> {
+	private async getData(instanceId: number | string): Promise<InstanceData | null> {
 		if (!this.initialised) await this.initialise();
 
 		const query = `
@@ -144,6 +152,7 @@ export default class InstanceManager extends Postgres {
 
 		// bigints turn to strings via pg-promise
 		data.timestamp = Number(data.timestamp);
+
 		data.duration = data.duration ? Number(data.duration) : null;
 
 		return new Instance(this.client, data);
@@ -151,19 +160,27 @@ export default class InstanceManager extends Postgres {
 
 	private async patch(data: Partial<InstanceData>) {
 		data.timestamp ??= Date.now();
+
 		data.guildId ??= this.idValue ?? undefined;
+
 		data.edited ??= false;
 
 		this.test("executorTag", data.executorTag);
+
 		this.test("executorId", data.executorId, { id: true });
+
 		this.test("targetTag", data.targetTag, { required: false });
+
 		this.test("targetId", data.targetId, { id: true, required: false });
+
 		this.test("guildId", data.guildId, { id: true });
+
 		this.test("type", data.type);
 
 		data.instanceId ??= await this.getId();
+
 		Object.entries(data).forEach(([key]) => {
-			// @ts-expect-error
+			// @ts-expect-error "expression of type 'string' can't be used to index type 'Partial<InstanceData>'""
 			data[key] ??= "NULL";
 		});
 
@@ -183,30 +200,30 @@ export default class InstanceManager extends Postgres {
 		`;
 
 		const res = await this.oneOrNone<InstanceData>(query);
+
 		return (res?.instanceId ?? 0) + 1;
 	}
 
 	private test(column: string, value: string | null | undefined, opt?: { id?: true; required?: boolean }): void;
 	private test(
 		column: string,
-		value: string | number | null | undefined,
+		value: number | string | null | undefined,
 		opt?: { id?: boolean; required?: boolean }
 	): void;
 	private test(
 		column: string,
-		value: string | number | null | undefined,
+		value: number | string | null | undefined,
 		opt: { id?: boolean; required?: boolean } = { id: false, required: true }
 	): void {
 		opt.required ??= true;
+
 		opt.id ??= false;
 
-		if (value === undefined) {
+		if (value === undefined)
 			if (opt.required) throw new Error(`An argument for "${column}" must be provided`);
 			else return;
-		}
 
-		if (opt.id && !REGEXP.ID.test(value as string)) {
+		if (opt.id && !REGEXP.ID.test(value as string))
 			throw new Error(`A valid argument for "${column}" must be provided (reading: ${value})`);
-		}
 	}
 }

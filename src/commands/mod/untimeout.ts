@@ -20,30 +20,33 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-async function execute(intr: CommandInteraction<"cached">) {
+function execute(intr: CommandInteraction<"cached">) {
 	const target = intr.options.getMember("user");
 	const reason = intr.options.getString("reason");
 	const expiration = target?.communicationDisabledUntilTimestamp;
-
 	const emojis = intr.client.maserEmojis;
 
 	if (!intr.guild.me?.permissions.has("MODERATE_MEMBERS")) {
 		intr.editReply(`${emojis.cross} I do not have the "Time out members" permission`);
+
 		return;
 	}
 
 	if (!target) {
 		intr.editReply(`${emojis.userFrown} The user to target was not found in this server`);
+
 		return;
 	}
 
 	if (!expiration) {
 		intr.editReply(`${emojis.cross} The user to target is not in a time-out`);
+
 		return;
 	}
 
 	if (target.id === intr.guild.ownerId) {
 		intr.editReply(`${emojis.crown} The user to target is the owner of this server`);
+
 		return;
 	}
 
@@ -59,6 +62,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 		.setQuery(query);
 
 	const auditLogSuffix = `| By ${intr.user.tag} ${intr.user.id}`;
+
 	const auditLogReason = reason
 		? Util.appendPrefixAndSuffix(reason, MAX_AUDIT_REASON_LEN, { suffix: auditLogSuffix })
 		: `By ${intr.user.tag} ${intr.user.id}`;
@@ -70,6 +74,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 				.disableCommunicationUntil(null, auditLogReason)
 				.then(async () => {
 					const instances = await new InstanceManager(intr.client, intr.guildId).initialise();
+
 					const instance = await instances.createInstance(
 						{
 							executorTag: intr.user.tag,

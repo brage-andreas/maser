@@ -42,7 +42,7 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-async function execute(intr: CommandInteraction<"cached">) {
+function execute(intr: CommandInteraction<"cached">) {
 	const type = intr.options.getSubcommand(true);
 	const clear = intr.options.getBoolean("clear") ?? false;
 	const guildId = intr.options.getString("guild") ?? intr.guildId;
@@ -50,24 +50,25 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 	if (type === "guild") {
 		const guild = intr.client.guilds.cache.get(guildId);
+
 		if (!guild) {
 			intr.editReply("I couldn't find the guild");
+
 			return;
 		}
 
-		if (clear) {
-			intr.client.commandHandler.clear(clientId, guildId);
-		} else {
-			intr.client.commandHandler.put(clientId, guildId);
-		}
+		if (clear) intr.client.commandHandler.clear(clientId, guildId);
+		else intr.client.commandHandler.put(clientId, guildId);
 
 		intr.editReply(`${clear ? "Cleared" : "Put"} commands in guild: ${guild.name} (${guild.id})`);
+
 		intr.logger.log(`${clear ? "Cleared" : "Put"} commands in guild: ${guild.name} (${guild.id})`);
 	} else {
 		if (clear) intr.client.commandHandler.clear(clientId);
 		else intr.client.commandHandler.put(clientId);
 
 		intr.editReply(`${clear ? "Cleared" : "Put"} global commands`);
+
 		intr.logger.log(`${clear ? "Cleared" : "Put"} global commands`);
 	}
 }

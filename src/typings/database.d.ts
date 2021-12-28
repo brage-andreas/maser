@@ -1,5 +1,5 @@
-import { NewsChannel, TextChannel } from "discord.js";
-import { InstanceTypes } from "../constants/database.js";
+import type { NewsChannel, TextChannel } from "discord.js";
+import type { InstanceTypes } from "../constants/database.js";
 
 /*
    --------
@@ -14,7 +14,7 @@ export interface PostgresOptions {
 	table: string;
 }
 
-export type PostgresResponses = PostresExists | ConfigData | InstanceData;
+export type PostgresResponses = ConfigData | InstanceData | PostresExists;
 
 export interface PostresExists {
 	exists: boolean;
@@ -26,8 +26,8 @@ export interface PostresExists {
    ---------
 */
 
-export type ConfigTableColumns = "guildId" | "memberLogChannel" | "botLogChannel" | "modLogChannel";
-export type ConfigChannelTypes = TextChannel | NewsChannel;
+export type ConfigTableColumns = "botLogChannel" | "guildId" | "memberLogChannel" | "modLogChannel";
+export type ConfigChannelTypes = NewsChannel | TextChannel;
 
 export interface ConfigData {
 	guildId?: string;

@@ -15,6 +15,7 @@ const validate = (color: string) => Object.keys(colors).includes(color);
 
 export const wrap = (text: string, color: string) => {
 	if (!validate(color.toLowerCase())) throw new TypeError(`Color must be a pre-defined color: ${color}`);
+
 	return colors[color.toLowerCase()] + text + RESET;
 };
 
@@ -28,8 +29,12 @@ export const red = (text: string) => wrap(text, "red");
 
 export const getColor = (type: LoggerTypes) => {
 	if (type === LoggerTypes.Command) return green;
+
 	if (type === LoggerTypes.Error) return red;
+
 	if (type === LoggerTypes.Event) return blue;
+
 	if (type === LoggerTypes.Info) return yellow;
+
 	return black;
 };

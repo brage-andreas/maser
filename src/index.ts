@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { COLORS, EMOJIS, INTENTS, PARTIALS } from "./constants/index.js";
 import { InfoLogger } from "./logger/index.js";
 import { CommandHandler, EventManager } from "./modules/index.js";
+
 dotenv.config();
 
 // clears console -- console.clear() does not fully clear it
@@ -15,12 +16,17 @@ const client = new Client<true>({
 });
 
 client.commandHandler = new CommandHandler();
+
 client.maserEmojis = EMOJIS;
+
 client.events = new EventManager(client);
+
 client.logger = new InfoLogger();
+
 client.colors = COLORS;
 
 await client.commandHandler.init();
+
 await client.events.init();
 
 client.login(process.env.BOT_TOKEN);

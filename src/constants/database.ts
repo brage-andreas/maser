@@ -1,6 +1,6 @@
-import { ApplicationCommandSubCommandData } from "discord.js";
+import type { ApplicationCommandSubCommandData } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { ConfigTableColumns } from "../typings/database.js";
+import type { ConfigTableColumns } from "../typings/database.js";
 
 /*
    --------

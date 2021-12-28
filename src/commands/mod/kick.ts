@@ -17,43 +17,49 @@ const data: ChatInputApplicationCommandData = {
 	options: [USER(true), REASON("kick")]
 };
 
-async function execute(intr: CommandInteraction<"cached">) {
+function execute(intr: CommandInteraction<"cached">) {
 	const target = intr.options.getMember("user");
 	const reason = intr.options.getString("reason");
-
 	const emojis = intr.client.maserEmojis;
 
 	if (!target) {
 		intr.editReply(`${emojis.userFrown} The user to target was not found in this server`);
+
 		return;
 	}
 
 	if (!intr.guild.me?.permissions.has("KICK_MEMBERS")) {
 		intr.editReply(`${emojis.cross} I don't have permissions to kick users`);
+
 		return;
 	}
 
 	if (target.id === intr.user.id) {
 		intr.editReply(`${emojis.cross} You cannot do this action on yourself`);
+
 		return;
 	}
 
 	if (target.id === intr.client.user.id) {
 		intr.editReply(`${emojis.cross} I cannot do this action on myself`);
+
 		return;
 	}
 
 	if (target.id === intr.guild.ownerId) {
 		intr.editReply(`${emojis.crown} The user to target is the owner of this server`);
+
 		return;
 	}
 
 	if (target.permissions.has("KICK_MEMBERS")) {
 		intr.editReply(`${emojis.cross} The user to target cannot be kicked`);
+
 		return;
 	}
 
 	const auditLogSuffix = `| By ${intr.user.tag} ${intr.user.id}`;
+
 	const auditLogReason = reason
 		? Util.appendPrefixAndSuffix(reason, MAX_AUDIT_REASON_LEN, { suffix: auditLogSuffix })
 		: `Kick by ${intr.user.tag} ${intr.user.id}`;
@@ -75,6 +81,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 				.kick(auditLogReason)
 				.then(async () => {
 					const instances = await new InstanceManager(intr.client, intr.guildId).initialise();
+
 					const instance = await instances.createInstance({
 						executorTag: intr.user.tag,
 						executorId: intr.user.id,
