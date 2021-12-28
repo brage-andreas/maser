@@ -31,6 +31,7 @@ export const DURATION = (action: string, required?: true): ApplicationCommandOpt
 		{ name: "6 hours", value: DURATIONS.SIX_HRS },
 		{ name: "12 hours", value: DURATIONS.TWELVE_HRS },
 		{ name: "1 day", value: DURATIONS.ONE_DAY },
-		{ name: "3 days", value: DURATIONS.THREE_DAYS }
+		{ name: "3 days", value: DURATIONS.THREE_DAYS },
+		{ name: "7 days", value: DURATIONS.THREE_DAYS }
 	]
 });
