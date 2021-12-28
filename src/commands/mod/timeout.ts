@@ -13,7 +13,7 @@ const options: Partial<CommandOptions> = {
 };
 
 const data: ChatInputApplicationCommandData = {
-	name: "time-out",
+	name: "timeout",
 	description: "Time out a user for a given time",
 	options: [
 		USER(true), //
@@ -55,6 +55,11 @@ async function execute(intr: CommandInteraction<"cached">) {
 		return;
 	}
 
+	if (Date.now() < (target.communicationDisabledUntilTimestamp ?? 0)) {
+		intr.editReply(`${emojis.cross} The user to target is already in a time-out`);
+		return;
+	}
+
 	const info =
 		`• **Reason**: ${reason ?? "No reason provided"}\n` +
 		`• **Duration**: ${ms(duration, { long: true })} (Expiration ${Util.date(expiration)})\n` +
@@ -69,13 +74,13 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const auditLogSuffix = `| By ${intr.user.tag} ${intr.user.id}`;
 	const auditLogReason = reason
 		? Util.appendPrefixAndSuffix(reason, MAX_AUDIT_REASON_LEN, { suffix: auditLogSuffix })
-		: `Time-out by ${intr.user.tag} ${intr.user.id}`;
+		: `By ${intr.user.tag} ${intr.user.id}`;
 
 	collector
 		.start({ noReply: true })
 		.then(() => {
 			target
-				.timeout(duration, auditLogReason)
+				.disableCommunicationUntil(Date.now() + duration, auditLogReason)
 				.then(async () => {
 					const instances = await new InstanceManager(intr.client, intr.guildId).initialise();
 					const instance = await instances.createInstance(
@@ -86,7 +91,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 							targetId: target.id,
 							duration,
 							reason: reason ?? undefined,
-							type: InstanceTypes.Mute
+							type: InstanceTypes.Timeout
 						},
 						true
 					);
