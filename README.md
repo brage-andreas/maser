@@ -34,23 +34,21 @@ import { type Command } from "../../typings/index.js";
 
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 
-const options: 
-
 const data: ChatInputApplicationCommandData = {
-	name: "command",
+	name: "useful-command",
 	description: "A very useful command",
 	options: [
 		{
-			name: "input",
-			description: "Write your heart out!",
-			type: ApplicationCommandOptionTypes.STRING,
-			required: true
+			name: "string-option",
+			description: "A string option",
+			type: ApplicationCommandOptionTypes.STRING
 		}
 	]
 };
 
 async function execute(intr: CommandInteraction<"cached">) {
-	intr.reply("")
+	// ...
+	
 	intr.logger.log("Command used");
 }
 
