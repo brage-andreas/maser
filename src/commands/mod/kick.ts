@@ -52,8 +52,8 @@ function execute(intr: CommandInteraction<"cached">) {
 		return;
 	}
 
-	if (target.permissions.has("KICK_MEMBERS")) {
-		intr.editReply(`${emojis.cross} The user to target cannot be kicked`);
+	if (!target.kickable) {
+		intr.editReply(`${emojis.cross} I cannot kick the user to target`);
 
 		return;
 	}
@@ -62,7 +62,7 @@ function execute(intr: CommandInteraction<"cached">) {
 
 	const auditLogReason = reason
 		? Util.appendPrefixAndSuffix(reason, MAX_AUDIT_REASON_LEN, { suffix: auditLogSuffix })
-		: `Kick by ${intr.user.tag} ${intr.user.id}`;
+		: `By ${intr.user.tag} ${intr.user.id}`;
 
 	const info =
 		`• **Reason**: ${reason ?? "No reason provided"}\n` +

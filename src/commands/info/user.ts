@@ -1,6 +1,6 @@
-import { MessageEmbed, type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
+import { type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { defaultEmbedOptions, USER_FLAGS } from "../../constants/index.js";
+import { newDefaultEmbed, USER_FLAGS } from "../../constants/index.js";
 import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 
@@ -39,15 +39,12 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const rawFlags = (await user.fetchFlags()).toArray();
 	const created = Util.date(user.createdTimestamp);
 	const avatar = (member ?? user).displayAvatarURL({ size: 2048, dynamic: true });
-	const flags = rawFlags.map((flag) => USER_FLAGS[flag] ?? flag);
-	const { bot, tag, id } = user;
-	const premium = Boolean(member?.premiumSince);
+	const flags = rawFlags.map((flag) => USER_FLAGS[flag] ?? flag);	const { bot, tag, id } = user;	const premium = Boolean(member?.premiumSince);
 	const joined = member?.joinedTimestamp ? Util.date(member.joinedTimestamp) : null;
 	const color = getColor(member?.displayHexColor);
 	const owner = Boolean(member) && member!.id === member?.guild.ownerId;
 	const roles = Util.parseRoles(member);
-	const name = member?.displayName ?? user.tag;
-	const userEmbed = new MessageEmbed(defaultEmbedOptions(intr)).setColor(color).setThumbnail(avatar).setTitle(name);
+	const name = member?.displayName ?? user.tag;	const userEmbed = newDefaultEmbed(intr).setColor(color).setThumbnail(avatar).setTitle(name);
 
 	if (member) userEmbed.addField("Tag", tag);
 

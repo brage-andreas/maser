@@ -1,6 +1,6 @@
-import { MessageEmbed, type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
+import { type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { defaultEmbedOptions } from "../../constants/index.js";
+import { newDefaultEmbed } from "../../constants/index.js";
 import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 
@@ -45,7 +45,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 		? "I cannot get an accurate number"
 		: `${role.members.size} ${applyS("member", role.members.size)}`;
 
-	const roleEmbed = new MessageEmbed(defaultEmbedOptions(intr))
+	const roleEmbed = newDefaultEmbed(intr)
 		.setColor(getColor(role.hexColor))
 		.setTitle(role.name)
 		.addField("Created", Util.date(role.createdTimestamp))

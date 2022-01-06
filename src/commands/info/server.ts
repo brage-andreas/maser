@@ -1,5 +1,5 @@
-import { MessageEmbed, type ChatInputApplicationCommandData, type CommandInteraction, type Guild } from "discord.js";
-import { BOOST_LEVELS, defaultEmbedOptions } from "../../constants/index.js";
+import { type ChatInputApplicationCommandData, type CommandInteraction, type Guild } from "discord.js";
+import { BOOST_LEVELS, newDefaultEmbed } from "../../constants/index.js";
 import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 
@@ -32,21 +32,16 @@ function execute(intr: CommandInteraction<"cached">) {
 	const _channels = guild.channels.cache;
 	const voiceChannels = _channels.filter((ch) => ch.isVoice()).size;
 	const textChannels = _channels.filter((ch) => ch.isText() && !ch.isThread()).size;
-	const channels = _channels.size;
-	const { partnered, verified, name } = guild;
-	const boosters = guild.premiumSubscriptionCount;
+	const channels = _channels.size;	const { partnered, verified, name } = guild;	const vanity = guild.vanityURLCode;
+	const vanityStr = vanity ? `with vanity \`${vanity}\`` : "";	const boosters = guild.premiumSubscriptionCount;
 	const created = Util.date(guild.createdAt);
-	const vanity = guild.vanityURLCode;
 	const roles = Util.parseRoles(guild);
 	const icon = guild.iconURL({ size: 2048, dynamic: true }) ?? "";
-	const tier = BOOST_LEVELS[guild.premiumTier];
-	const vanityStr = vanity ? `with vanity \`${vanity}\`` : "";
-	const totalChs = `**${channels}** ${applyS("channel", channels)}`;
+	const tier = BOOST_LEVELS[guild.premiumTier];	const totalChs = `**${channels}** ${applyS("channel", channels)}`;
 	const textChs = `${textChannels} text ${applyS("channel", textChannels)}`;
 	const voiceChs = `${voiceChannels} voice ${applyS("channel", voiceChannels)}`;
-	const channelsStr = `${totalChs} in total\n${textChs} and ${voiceChs}`;
-	const emojisAndStickerStr = getEmojisAndStickers(guild);
-	const guildEmbed = new MessageEmbed(defaultEmbedOptions(intr)).setThumbnail(icon).setTitle(name);
+	const channelsStr = `${totalChs} in total\n${textChs} and ${voiceChs}`;	const emojisAndStickerStr = getEmojisAndStickers(guild);
+	const guildEmbed = newDefaultEmbed(intr).setThumbnail(icon).setTitle(name);
 
 	if (partnered && !verified) guildEmbed.setDescription(`A Discord partner ${vanityStr}`);
 

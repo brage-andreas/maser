@@ -1,4 +1,5 @@
 import {
+	MessageEmbed,
 	type AutocompleteInteraction,
 	type CommandInteraction,
 	type IntentsString,
@@ -62,6 +63,7 @@ export const EMOJIS = {
 	file: "<:maser_file:924421206055194706>",
 	bug: "<:maser_bug:924421206021644308>",
 	url: "<:maser_clip:924421206055194705>",
+	ufo: "<:ms_aliens:923324940789379112>",
 	id: "<:maser_credit_card:924421206046834718>"
 } as const;
 
@@ -108,9 +110,9 @@ export enum LoggerTypes {
 	Info
 }
 
-export function defaultEmbedOptions(
-	intr?: AutocompleteInteraction<"cached"> | CommandInteraction<"cached">
-): MessageEmbedOptions {
+export function newDefaultEmbed(
+	intr?: AutocompleteInteraction<"cached"> | CommandInteraction<"cached"> | null | undefined
+): MessageEmbed {
 	const options: MessageEmbedOptions = { color: COLORS.green };
 
 	if (intr) {
@@ -120,5 +122,5 @@ export function defaultEmbedOptions(
 		options.author = { iconURL, name };
 	}
 
-	return options;
+	return new MessageEmbed(options);
 }

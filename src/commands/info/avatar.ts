@@ -1,6 +1,5 @@
 import {
 	MessageButton,
-	MessageEmbed,
 	User,
 	type AllowedImageSize,
 	type ChatInputApplicationCommandData,
@@ -8,7 +7,7 @@ import {
 	type GuildMember
 } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import { defaultEmbedOptions } from "../../constants/index.js";
+import { newDefaultEmbed } from "../../constants/index.js";
 import { ButtonManager } from "../../modules/index.js";
 import { type Command } from "../../typings/index.js";
 
@@ -44,8 +43,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const includeGuildAvatar = intr.options.getBoolean("guild-avatar") ?? true;
 	const memberOptionValue = intr.options.getMember("user");
 	const userOptionValue = intr.options.getUser("user");
-	const size = (intr.options.getInteger("size") ?? 2048) as AllowedImageSize;
-	const member = userOptionValue ? memberOptionValue : intr.member;
+	const size = (intr.options.getInteger("size") ?? 2048) as AllowedImageSize;	const member = userOptionValue ? memberOptionValue : intr.member;
 	const user = userOptionValue ?? intr.user;
 	const hasGuildAvatar = Boolean(member?.avatar);
 
@@ -83,11 +81,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 		hasGuildAvatar ? `**Guild avatar**: ${guildAvatarLinks!.join(", ")}\n` : ""
 	}**Avatar**: ${userAvatarLinks.join(", ")}`;
 
-	const embed = new MessageEmbed(defaultEmbedOptions(intr))
-		.setTitle("Avatar")
-		.setDescription(description)
-		.setImage(avatar);
-
+	const embed = newDefaultEmbed(intr).setTitle("Avatar").setDescription(description).setImage(avatar);
 	const buttonManager = new ButtonManager();
 
 	const outputButton = new MessageButton()

@@ -1,14 +1,13 @@
 import Discord, {
 	MessageAttachment,
 	MessageButton,
-	MessageEmbed,
 	type ChatInputApplicationCommandData,
 	type CommandInteraction
 } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import ms from "ms";
 import { performance } from "perf_hooks";
-import { defaultEmbedOptions, REGEXP } from "../../constants/index.js";
+import { newDefaultEmbed, REGEXP } from "../../constants/index.js";
 import { ButtonManager } from "../../modules/index.js";
 import { type Command, type CommandOptions, type EvalOutput } from "../../typings/index.js";
 import Util from "../../utils/index.js";
@@ -75,13 +74,9 @@ async function execute(intr: CommandInteraction<"cached">) {
 			const timeTaken = ms(time, { long: true }).replace(".", ",");
 			const stringedOutput = stringify(result).replaceAll(new RegExp(REGEXP.TOKEN, "g"), "[REDACTED]");
 			const parsedInput = parse(code, "**Input**");
-			const parsedOutput = parse(stringedOutput, "**Output**");
+			const parsedOutput = parse(stringedOutput, "**Output**");			const successInputEmbed = newDefaultEmbed(intr).setDescription(parsedInput ?? "No input");
 
-			const successInputEmbed = new MessageEmbed(defaultEmbedOptions(intr)).setDescription(
-				parsedInput ?? "No input"
-			);
-
-			const successOutputEmbed = new MessageEmbed(defaultEmbedOptions(intr))
+			const successOutputEmbed = newDefaultEmbed(intr)
 				.setDescription(parsedOutput ?? "No output")
 				.setFooter(`${timeTaken} • ${type} (${constructor})`);
 
@@ -98,11 +93,11 @@ async function execute(intr: CommandInteraction<"cached">) {
 			const parsedInput = parse(code, " **Input**");
 			const parsedError = parse(msg, " **Error**", null);
 
-			const errorInputEmbed = new MessageEmbed(defaultEmbedOptions(intr))
+			const errorInputEmbed = newDefaultEmbed(intr)
 				.setColor(client.colors.red)
 				.setDescription(parsedInput ?? "No input");
 
-			const errorOutputEmbed = new MessageEmbed(defaultEmbedOptions(intr))
+			const errorOutputEmbed = newDefaultEmbed(intr)
 				.setColor(client.colors.red)
 				.setDescription(parsedError ?? "No error")
 				.setFooter("Evaluation failed");

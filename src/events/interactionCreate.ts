@@ -1,11 +1,19 @@
-import { GuildMember, type AutocompleteInteraction, type Client, type CommandInteraction } from "discord.js";
+import { type Client, type Interaction } from "discord.js";
 import { CommandLogger } from "../logger/index.js";
 import { CommandManager } from "../modules/index.js";
 
-export async function execute(client: Client<true>, intr: AutocompleteInteraction | CommandInteraction) {
-	if (intr.member instanceof GuildMember && intr.member.partial) await intr.member.fetch();
+export async function execute(client: Client<true>, intr: Interaction) {
+	if (!intr.guildId) {
+		if (!intr.isCommand()) return;
+
+		intr.reply(`${intr.client.maserEmojis.ufo} My commands are only accessible inside servers!`);
+
+		return;
+	}
 
 	if ((!intr.isCommand() && !intr.isAutocomplete()) || !intr.inCachedGuild()) return;
+
+	if (intr.member.partial) await intr.member.fetch();
 
 	const emojis = client.maserEmojis;
 	const isNotOwner = intr.user.id !== client.application.owner?.id;

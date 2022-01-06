@@ -1,12 +1,12 @@
 import {
-	MessageEmbed,
 	type AutocompleteInteraction,
 	type CommandInteraction,
 	type Guild,
 	type GuildTextBasedChannel,
+	type MessageEmbed,
 	type User
 } from "discord.js";
-import { COLORS, defaultEmbedOptions, LoggerTypes } from "../constants/index.js";
+import { COLORS, LoggerTypes, newDefaultEmbed } from "../constants/index.js";
 import ConfigManager from "../database/ConfigManager.js";
 import Util from "../utils/index.js";
 import BaseLogger from "./BaseLogger.js";
@@ -95,10 +95,7 @@ export default class CommandLogger extends BaseLogger {
 
 		const createEmbed = (description: string, index = 0, total = 1) => {
 			const { user } = this.interaction!;
-
-			const embed = new MessageEmbed(defaultEmbedOptions(this.interaction!))
-				.setColor(COLORS.invisible)
-				.setDescription(description);
+			const embed = newDefaultEmbed(this.interaction).setColor(COLORS.invisible).setDescription(description);
 
 			if (index === 0) embed.setAuthor(`${user.tag} (${user.id})`);
 
