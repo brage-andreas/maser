@@ -39,34 +39,35 @@ const data: ChatInputApplicationCommandData = {
 };
 
 async function execute(intr: CommandInteraction<"cached">) {
-	const method = intr.options.getSubcommand();
 	const rawOption = intr.options.getSubcommandGroup(false);
+	const method = intr.options.getSubcommand();
 	const config = new ConfigManager(intr.client, intr.guild.id);
 	const emojis = intr.client.maserEmojis;
 
 	if (method === "view-config") {
 		const res = await config.getAllValues();
-		let response = `${emojis.file} Config for **${intr.guild.name}** (${intr.guildId})\n`;
+		const response = [`Config for **${intr.guild.name}** (${intr.guildId})\n`];
 
-		for (const [key, value] of Object.entries(res)) {
+		Object.entries(res).forEach(([key, value]) => {
+			if (key === "id") return;
+
 			const keyStr = CONFIG_COLUMN_STRINGS[key];
 			const channel = intr.guild.channels.cache.get(value)?.toString() ?? null;
-			const guild = intr.client.guilds.cache.get(value)?.name ?? null;
-			const role = intr.guild.roles.cache.get(value)?.toString() ?? null;
-			const mention = channel ?? guild ?? role;
-			const mentionString = mention ? `${mention} (${value})` : `Couldn't find anything with ID: ${value}`;
+			// const role = intr.guild.roles.cache.get(value)?.toString() ?? null;
+			const mention = channel; //?? role;
 
-			response += `\n• **${keyStr}**: ${value ? mentionString : "Not set"}`;
-		}
+			// eslint-disable-next-line padding-line-between-statements
+			const mentionString = mention ? `${mention} (${value})` : `Couldn't find anything with ID of \`${value}\``;
 
-		intr.editReply(response);
+			response.push(`• **${keyStr}**: ${value ? mentionString : "*Not set*"}`);
+		});
+
+		intr.editReply(response.join("\n"));
 
 		intr.logger.log("Sent full config");
 	}
 
 	const option = CONFIG_COMMAND_TO_COLUMN[rawOption ?? ""];
-
-	if (!option) return; // should be unnecessary, but TS yells at me
 
 	config.setKey(option);
 
@@ -75,7 +76,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 			const channel = await config.getChannel();
 			// const role = await config.getRole();
 			const optionStr = CONFIG_COLUMN_STRINGS[option];
-			let response = `${emojis.file} Config for **${intr.guild.name}** (${intr.guildId})\n\n• **${optionStr}**: `;
+			let response = `Config for **${intr.guild.name}** (${intr.guildId})\n\n• **${optionStr}**: `;
 
 			if (channel) response += channel.toString();
 			// else if (role) response += role.toString();
@@ -99,7 +100,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 			old[option] = res?.id;
 
-			let response = `${emojis.file} Updated config for **${intr.guild.name}** (${intr.guildId})\n`;
+			let response = `${emojis.check} Updated config for **${intr.guild.name}** (${intr.guildId})\n`;
 
 			for (const [key, value] of Object.entries(old)) {
 				const keyStr = CONFIG_COLUMN_STRINGS[key];
