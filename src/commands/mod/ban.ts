@@ -1,4 +1,5 @@
 import { type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { InstanceTypes } from "../../constants/database.js";
 import { MAX_AUDIT_REASON_LEN } from "../../constants/index.js";
 import InstanceManager from "../../database/InstanceManager.js";
@@ -20,7 +21,7 @@ const data: ChatInputApplicationCommandData = {
 		{
 			name: "days",
 			description: "How many days to prune user's messages. Default is 1 day.",
-			type: "INTEGER",
+			type: ApplicationCommandOptionTypes.INTEGER,
 			choices: [
 				{ name: "1 day (default)", value: 1 },
 				{ name: "No prune", value: 0 },
@@ -42,7 +43,7 @@ function execute(intr: CommandInteraction<"cached">) {
 	const emojis = intr.client.maserEmojis;
 
 	if (!target) {
-		intr.editReply(`${emojis.userFrown} The user to target was not found in this server`);
+		intr.editReply(`${emojis.cross} The user to target was not found in this server`);
 
 		return;
 	}
@@ -66,7 +67,7 @@ function execute(intr: CommandInteraction<"cached">) {
 	}
 
 	if (target.id === intr.guild.ownerId) {
-		intr.editReply(`${emojis.crown} The user to target is the owner of this server`);
+		intr.editReply(`${emojis.cross} The user to target is the owner of this server`);
 
 		return;
 	}
@@ -87,9 +88,9 @@ function execute(intr: CommandInteraction<"cached">) {
 		`• **Reason**: ${reason ?? "No reason provided"}\n` +
 		`• **Target**: ${target.user.tag} (${target} ${target.id})`;
 
-	const query = `Are you sure you want to **ban ${target.user.tag}** (${target.id})?\n\n${info}`;
+	const query = `${emojis.warning} Are you sure you want to ban **${target.user.tag}** (${target.id})?\n\n${info}`;
 
-	const collector = new ConfirmationButtons({ authorId: intr.user.id }) //
+	const collector = new ConfirmationButtons({ authorId: intr.user.id, inverted: true }) //
 		.setInteraction(intr)
 		.setQuery(query);
 
@@ -118,7 +119,7 @@ function execute(intr: CommandInteraction<"cached">) {
 
 					intr.editReply({
 						content:
-							`${emojis.user} Successfully **banned ${target.user.tag}** (${target.id})` +
+							`${emojis.check} Successfully **banned ${target.user.tag}** (${target.id})` +
 							`in case **#${instance.id}**\n\n${info}`,
 						components: []
 					});

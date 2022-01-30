@@ -46,27 +46,6 @@ export const REGEXP = {
 	ID: /^\d{17,19}$/
 } as const;
 
-// Source of emojis are located in /icons
-export const EMOJIS = {
-	construction: "<:maser_construction:924421206004867132>",
-	thumbsDown: "<:maser_thumbs_down:924421205954543638>",
-	userFrown: "<:maser_person_frown:924421206126505984>",
-	sparkles: "<:maser_sparkles:924421206143295517>",
-	thumbsUp: "<:maser_thumbs_up:924421205908394005>",
-	warning: "<:maser_warning:924421206105546822>",
-	locked: "<:maser_lock:924421206046814208>",
-	check: "<:maser_check:924421206122328114>",
-	cross: "<:maser_cross:924421206017474630>",
-	crown: "<:maser_crown:924421206055202826>",
-	phone: "<:maser_phone:924421206126526494>",
-	user: "<:maser_person:924421206004867133>",
-	file: "<:maser_file:924421206055194706>",
-	bug: "<:maser_bug:924421206021644308>",
-	url: "<:maser_clip:924421206055194705>",
-	ufo: "<:ms_aliens:923324940789379112>",
-	id: "<:maser_credit_card:924421206046834718>"
-} as const;
-
 export const COLORS = {
 	invisible: "#2F3136",
 	blurple: "#5865F2",

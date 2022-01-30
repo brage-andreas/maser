@@ -33,29 +33,29 @@ function execute(intr: CommandInteraction<"cached">) {
 	}
 
 	if (!target) {
-		intr.editReply(`${emojis.userFrown} The user to target was not found in this server`);
+		intr.editReply(`${emojis.cross} The user to target was not found in this server`);
 
 		return;
 	}
 
 	if (!expiration) {
-		intr.editReply(`${emojis.cross} The user to target is not in a time-out`);
+		intr.editReply(`${emojis.cross} The user to target is not in a timeout`);
 
 		return;
 	}
 
 	if (target.id === intr.guild.ownerId) {
-		intr.editReply(`${emojis.crown} The user to target is the owner of this server`);
+		intr.editReply(`${emojis.cross} The user to target is the owner of this server`);
 
 		return;
 	}
 
 	const info =
 		`• **Reason**: ${reason ?? "No reason provided"}\n` +
-		`• **Expiration**: ${Util.date(expiration)})\n` +
+		`• **Expiration**: ${Util.date(expiration)}\n` +
 		`• **Target**: ${target.user.tag} (${target} ${target.id})`;
 
-	const query = `Are you sure you want to **remove the time out** on **${target.user.tag}** (${target.id})?\n\n${info}`;
+	const query = `${emojis.warning} Are you sure you want to untimeout **${target.user.tag}** (${target.id})?\n\n${info}`;
 
 	const collector = new ConfirmationButtons({ authorId: intr.user.id }) //
 		.setInteraction(intr)
@@ -89,7 +89,7 @@ function execute(intr: CommandInteraction<"cached">) {
 
 					intr.editReply({
 						content:
-							`${emojis.user} Successfully **removed time-out** on **${target.user.tag}** (${target.id}) ` +
+							`${emojis.check} Successfully **removed timeout** on **${target.user.tag}** (${target.id}) ` +
 							`in instance **#${instance.id}**\n\n${info}`,
 						components: []
 					});
@@ -99,7 +99,7 @@ function execute(intr: CommandInteraction<"cached">) {
 				.catch(() => {
 					intr.editReply({
 						content:
-							`${emojis.cross} I failed to remove time out ` +
+							`${emojis.cross} I failed to remove timeout ` +
 							`of ${target.user.tag} (${target.id})\n\n${info}`,
 						components: []
 					});

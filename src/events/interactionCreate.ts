@@ -6,7 +6,7 @@ export async function execute(client: Client<true>, intr: Interaction) {
 	if (!intr.guildId) {
 		if (!intr.isCommand()) return;
 
-		intr.reply(`${intr.client.maserEmojis.ufo} My commands are only accessible inside servers!`);
+		intr.reply(`${intr.client.maserEmojis.lock} My commands are only accessible inside servers!`);
 
 		return;
 	}
@@ -28,13 +28,13 @@ export async function execute(client: Client<true>, intr: Interaction) {
 	if (intr.isAutocomplete()) return commandOptions.execute();
 
 	if (commandOptions.isWIP && isNotOwner) {
-		await intr.reply({ content: `${emojis.construction} This command is work-in-progress`, ephemeral: true });
+		await intr.reply({ content: `${emojis.wip} This command is work-in-progress`, ephemeral: true });
 
 		return;
 	}
 
 	if (commandOptions.isPrivate && isNotOwner) {
-		await intr.reply({ content: `${emojis.locked} This command is private`, ephemeral: true });
+		await intr.reply({ content: `${emojis.lock} This command is private`, ephemeral: true });
 
 		return;
 	}

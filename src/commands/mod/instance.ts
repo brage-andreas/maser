@@ -61,12 +61,12 @@ const data: ChatInputApplicationCommandData = {
 				{
 					name: "time",
 					description:
-						"The time since this instance. Accepts relative times (e.g. \"5 min\"). Default is current time",
+						'The time since this instance. Accepts relative times (e.g. "5 min"). Default is current time',
 					type: ApplicationCommandOptionTypes.STRING
 				},
 				{
 					name: "duration",
-					description: "The duration of this instance. Accepts timestamps and relative times (e.g. \"5min\")",
+					description: 'The duration of this instance. Accepts timestamps and relative times (e.g. "5min")',
 					type: ApplicationCommandOptionTypes.STRING
 				}
 			]
@@ -107,12 +107,12 @@ const data: ChatInputApplicationCommandData = {
 				{
 					name: "time",
 					description:
-						"The time since this instance. Accepts relative times (\"5 min\"). Default is current time",
+						'The time since this instance. Accepts relative times ("5 min"). Default is current time',
 					type: ApplicationCommandOptionTypes.STRING
 				},
 				{
 					name: "duration",
-					description: "The duration of this instance. Accepts timestamps and relative times (\"5min\")",
+					description: 'The duration of this instance. Accepts timestamps and relative times ("5min")',
 					type: ApplicationCommandOptionTypes.STRING
 				}
 			]
@@ -149,7 +149,8 @@ const data: ChatInputApplicationCommandData = {
 };
 
 async function execute(intr: AutocompleteInteraction<"cached"> | CommandInteraction<"cached">) {
-	const sub = intr.options.getSubcommand();	const emojis = intr.client.maserEmojis;
+	const sub = intr.options.getSubcommand();
+	const emojis = intr.client.maserEmojis;
 	const instances = new InstanceManager(intr.client, intr.guildId);
 
 	await instances.initialise();
@@ -157,13 +158,15 @@ async function execute(intr: AutocompleteInteraction<"cached"> | CommandInteract
 	if (intr.isAutocomplete()) {
 		const getData = async (focusedRaw?: number) => {
 			// doesn't infer type right whilst just using param
-			const focused = focusedRaw ?? (await instances.getLatestId()) ?? 1;			// ensures offset will never be under 0
+			const focused = focusedRaw ?? (await instances.getLatestId()) ?? 1;
+			// ensures offset will never be under 0
 			const offset = focused <= 3 ? 0 : focused - 3;
 			const data = await instances.getInstanceDataWithinRange(offset);
 
 			const getName = (data: InstanceData) => {
 				const id = data.instanceId;
-				const emoji = id === focused ? "✨" : id > focused ? "🔸" : "🔹";				let str = `${emoji} #${id} - ${InstanceTypes[data.type]}`;
+				const emoji = id === focused ? "✨" : id > focused ? "🔸" : "🔹";
+				let str = `${emoji} #${id} - ${InstanceTypes[data.type]}`;
 
 				if (data.targetTag) str += ` on ${data.targetTag}`;
 
@@ -187,7 +190,8 @@ async function execute(intr: AutocompleteInteraction<"cached"> | CommandInteract
 		};
 
 		const emptyResponse = { name: "😴 Whoa so empty—there are no instances", value: "0" };
-		const focused = Number(intr.options.getFocused()) || undefined;		const response = (await getData(focused)) ?? [emptyResponse];
+		const focused = Number(intr.options.getFocused()) || undefined;
+		const response = (await getData(focused)) ?? [emptyResponse];
 
 		intr.respond(response);
 
@@ -310,14 +314,17 @@ async function execute(intr: AutocompleteInteraction<"cached"> | CommandInteract
 		const newInstance = await instances.editInstance(instanceId, data);
 
 		if (!newInstance) {
-			intr.editReply(`${emojis.warning} Something went wrong with editing instance #${instanceId}`);
+			intr.editReply(`${emojis.cross} Something went wrong with editing instance #${instanceId}`);
 
 			return;
 		}
 
 		await newInstance.getReference();
 
-		intr.editReply({ embeds: [newInstance.toEmbed()] });
+		intr.editReply({
+			content: `${emojis.check} Successfully edited instance #${instanceId}`,
+			embeds: [newInstance.toEmbed()]
+		});
 
 		intr.logger.log(`Manually edited instance #${instanceId}`);
 	}

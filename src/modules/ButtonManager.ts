@@ -143,11 +143,12 @@ export class ConfirmationButtons extends ButtonManager {
 	public authorOnly: boolean;
 	public yesMessage: string | null;
 	public noMessage: string | null;
+	public inverted: boolean | null;
 	public authorId: string | null;
 	public query: string | null;
 	public time: string | null;
 
-	public constructor(options?: { query?: string; authorId?: string; time?: string }) {
+	public constructor(options?: { query?: string; authorId?: string; time?: string; inverted?: boolean }) {
 		super();
 
 		this.interaction = null;
@@ -158,14 +159,24 @@ export class ConfirmationButtons extends ButtonManager {
 
 		this.noMessage = null;
 
+		this.inverted = options?.inverted ?? null;
+
 		this.authorId = options?.authorId ?? null;
 
 		this.query = null;
 
 		this.time = options?.time ?? "30s";
 
-		const yesButton = new MessageButton().setLabel("Yes").setStyle("SUCCESS").setCustomId("yes");
-		const noButton = new MessageButton().setLabel("No").setStyle("DANGER").setCustomId("no");
+		const yesButton = new MessageButton()
+			.setLabel("Yes")
+			.setStyle(this.inverted ? "DANGER" : "SUCCESS")
+			.setCustomId("yes");
+
+		const noButton = new MessageButton()
+			.setLabel("No")
+			.setStyle(this.inverted ? "SECONDARY" : "DANGER")
+			.setCustomId("no");
+
 		const row = new MessageActionRow().addComponents(yesButton, noButton);
 
 		this.rows = [row];
@@ -214,7 +225,7 @@ export class ConfirmationButtons extends ButtonManager {
 				collector.on("collect", (intr) => {
 					if (this.authorOnly && intr.user.id !== this.authorId) {
 						intr.reply({
-							content: `${intr.client.maserEmojis.thumbsDown} This button is not for you`,
+							content: `${intr.client.maserEmojis.cross} This button is not for you`,
 							ephemeral: true
 						});
 

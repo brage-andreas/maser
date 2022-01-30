@@ -36,7 +36,7 @@ function execute(intr: CommandInteraction<"cached">) {
 	}
 
 	if (!target) {
-		intr.editReply(`${emojis.userFrown} The user to target was not found in this server`);
+		intr.editReply(`${emojis.cross} The user to target was not found in this server`);
 
 		return;
 	}
@@ -54,7 +54,7 @@ function execute(intr: CommandInteraction<"cached">) {
 	}
 
 	if (target.id === intr.guild.ownerId) {
-		intr.editReply(`${emojis.crown} The user to target is the owner of this server`);
+		intr.editReply(`${emojis.cross} The user to target is the owner of this server`);
 
 		return;
 	}
@@ -70,9 +70,9 @@ function execute(intr: CommandInteraction<"cached">) {
 		`• **Duration**: ${ms(duration, { long: true })} (Expiration ${Util.date(expiration)})\n` +
 		`• **Target**: ${target.user.tag} (${target} ${target.id})`;
 
-	const query = `Are you sure you want to **time out ${target.user.tag}** (${target.id})?\n\n${info}`;
+	const query = `${emojis.warning} Are you sure you want to timeout **${target.user.tag}** (${target.id})?\n\n${info}`;
 
-	const collector = new ConfirmationButtons({ authorId: intr.user.id }) //
+	const collector = new ConfirmationButtons({ authorId: intr.user.id, inverted: true }) //
 		.setInteraction(intr)
 		.setQuery(query);
 
@@ -105,7 +105,7 @@ function execute(intr: CommandInteraction<"cached">) {
 
 					intr.editReply({
 						content:
-							`${emojis.user} Successfully **timed out ${target.user.tag}** (${target.id}) ` +
+							`${emojis.check} Successfully **timed out ${target.user.tag}** (${target.id}) ` +
 							`in instance **#${instance.id}**\n\n${info}`,
 						components: []
 					});

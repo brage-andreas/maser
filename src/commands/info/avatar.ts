@@ -43,7 +43,8 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const includeGuildAvatar = intr.options.getBoolean("guild-avatar") ?? true;
 	const memberOptionValue = intr.options.getMember("user");
 	const userOptionValue = intr.options.getUser("user");
-	const size = (intr.options.getInteger("size") ?? 2048) as AllowedImageSize;	const member = userOptionValue ? memberOptionValue : intr.member;
+	const size = (intr.options.getInteger("size") ?? 2048) as AllowedImageSize;
+	const member = userOptionValue ? memberOptionValue : intr.member;
 	const user = userOptionValue ?? intr.user;
 	const hasGuildAvatar = Boolean(member?.avatar);
 
@@ -96,7 +97,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 		.setCustomId("member")
 		.setLabel("Guild avatar")
 		.setStyle("SECONDARY")
-		.setEmoji(intr.client.maserEmojis.crown);
+		.setEmoji("😗");
 
 	if (hasGuildAvatar) {
 		buttonManager.setRows(outputButton, codeButton);
@@ -112,7 +113,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 		collector.on("collect", async (interaction) => {
 			if (interaction.user.id !== intr.user.id) {
 				interaction.reply({
-					content: `${intr.client.maserEmojis.thumbsDown} This button is not for you`,
+					content: `${intr.client.maserEmojis.cross} This button is not for you`,
 					ephemeral: true
 				});
 

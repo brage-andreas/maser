@@ -74,7 +74,8 @@ async function execute(intr: CommandInteraction<"cached">) {
 			const timeTaken = ms(time, { long: true }).replace(".", ",");
 			const stringedOutput = stringify(result).replaceAll(new RegExp(REGEXP.TOKEN, "g"), "[REDACTED]");
 			const parsedInput = parse(code, "**Input**");
-			const parsedOutput = parse(stringedOutput, "**Output**");			const successInputEmbed = newDefaultEmbed(intr).setDescription(parsedInput ?? "No input");
+			const parsedOutput = parse(stringedOutput, "**Output**");
+			const successInputEmbed = newDefaultEmbed(intr).setDescription(parsedInput ?? "No input");
 
 			const successOutputEmbed = newDefaultEmbed(intr)
 				.setDescription(parsedOutput ?? "No output")
@@ -137,7 +138,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 		collector.on("collect", async (interaction) => {
 			if (interaction.user.id !== intr.user.id) {
 				interaction.reply({
-					content: `${intr.client.maserEmojis.thumbsDown} This button is not for you`,
+					content: `${intr.client.maserEmojis.cross} This button is not for you`,
 					ephemeral: true
 				});
 

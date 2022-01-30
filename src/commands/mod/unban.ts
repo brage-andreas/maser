@@ -23,25 +23,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const emojis = intr.client.maserEmojis;
 
 	if (!intr.guild.me?.permissions.has("BAN_MEMBERS")) {
-		intr.editReply(`${emojis.cross} I don't have permissions to ban users`);
-
-		return;
-	}
-
-	if (target.id === intr.user.id) {
-		intr.editReply(`${emojis.cross} You cannot do this action on yourself`);
-
-		return;
-	}
-
-	if (target.id === intr.client.user.id) {
-		intr.editReply(`${emojis.cross} I cannot do this action on myself`);
-
-		return;
-	}
-
-	if (target.id === intr.guild.ownerId) {
-		intr.editReply(`${emojis.crown} The user to target is the owner of this server`);
+		intr.editReply(`${emojis.cross} I don't have permissions to unban users`);
 
 		return;
 	}
@@ -60,10 +42,11 @@ async function execute(intr: CommandInteraction<"cached">) {
 		? Util.appendPrefixAndSuffix(reason, MAX_AUDIT_REASON_LEN, { suffix: auditLogSuffix })
 		: `By ${intr.user.tag} ${intr.user.id}`;
 
-	const info =
-		`• **Reason**: ${reason ?? "No reason provided"}\n• **Target**: ${target.tag} (${target} ${target.id})`;
+	const info = `• **Reason**: ${reason ?? "No reason provided"}\n• **Target**: ${target.tag} (${target} ${
+		target.id
+	})`;
 
-	const query = `Are you sure you want to **unban ${target.tag}** (${target.id})?\n\n${info}`;
+	const query = `${emojis.warning} Are you sure you want to unban **${target.tag}** (${target.id})?\n\n${info}`;
 
 	const collector = new ConfirmationButtons({ authorId: intr.user.id }) //
 		.setInteraction(intr)
@@ -94,7 +77,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 					intr.editReply({
 						content:
-							`${emojis.user} Successfully **unbanned ${target.tag}** (${target.id})` +
+							`${emojis.check} Successfully **unbanned ${target.tag}** (${target.id})` +
 							`in case **#${instance.id}**\n\n${info}`,
 						components: []
 					});

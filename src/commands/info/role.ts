@@ -20,7 +20,6 @@ const data: ChatInputApplicationCommandData = {
 async function execute(intr: CommandInteraction<"cached">) {
 	const applyS = (string: string, size: number) => (size !== 1 ? `${string}s` : string);
 	const { guild } = intr;
-	const emojis = intr.client.maserEmojis;
 	const role = intr.options.getRole("role", true);
 
 	const getColor = (hex: `#${string}` | undefined) => {
@@ -35,14 +34,15 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 	await guild.members.fetch();
 
-	const icon = role.iconURL() ? `${emojis.url} [Link](${role.iconURL()})` : role.unicodeEmoji ?? "None";
+	const icon = role.iconURL() ? `[Link to icon](${role.iconURL()})` : role.unicodeEmoji ?? "None";
 	const { integrationId, botId, premiumSubscriberRole: boostRole } = role.tags ?? {};
 	const isEveryone = role.id === guild.id;
 	const { bitfield } = isEveryone ? role.permissions : role.permissions.remove(guild.roles.everyone.permissions);
+	// You can only fetch 1000 members at a time.
 	const tooBig = guild.memberCount > 1000;
 
 	const memberCount = tooBig
-		? "I cannot get an accurate number"
+		? `${role.members.size} ${applyS("member", role.members.size)} (might not be accurate)`
 		: `${role.members.size} ${applyS("member", role.members.size)}`;
 
 	const roleEmbed = newDefaultEmbed(intr)
