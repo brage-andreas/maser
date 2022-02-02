@@ -1,5 +1,4 @@
-import type { ApplicationCommandSubCommandData } from "discord.js";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import { ApplicationCommandOptionType, ChannelType, type ApplicationCommandSubCommandData } from "discord.js";
 import type { ConfigTableColumns } from "../typings/database.js";
 
 /*
@@ -25,18 +24,18 @@ const CONFIG_COMMAND_CHANNEL_OPTIONS: ApplicationCommandSubCommandData[] = [
 	{
 		name: "view",
 		description: "Sends the option's value",
-		type: ApplicationCommandOptionTypes.SUB_COMMAND
+		type: ApplicationCommandOptionType.Subcommand
 	},
 	{
 		name: "set",
 		description: "Sets a new value for the option",
-		type: ApplicationCommandOptionTypes.SUB_COMMAND,
+		type: ApplicationCommandOptionType.Subcommand,
 		options: [
 			{
 				name: "channel",
 				description: "The new channel to set to. Omitting this option will remove its value",
-				channelTypes: ["GUILD_TEXT", "GUILD_NEWS"],
-				type: ApplicationCommandOptionTypes.CHANNEL
+				channelTypes: [ChannelType.GuildText, ChannelType.GuildNews],
+				type: ApplicationCommandOptionType.Channel
 			}
 		]
 	}
@@ -46,17 +45,17 @@ const CONFIG_COMMAND_CHANNEL_OPTIONS: ApplicationCommandSubCommandData[] = [
 	{
 		name: "view",
 		description: "Sends the option's value",
-		type: ApplicationCommandOptionTypes.SUB_COMMAND
+		type: ApplicationCommandOptionType.Subcommand
 	},
 	{
 		name: "set",
 		description: "Sets a new value for the option",
-		type: ApplicationCommandOptionTypes.SUB_COMMAND,
+		type: ApplicationCommandOptionType.Subcommand,
 		options: [
 			{
 				name: "role",
 				description: "The new role to set to. Omitting this option will remove its value",
-				type: ApplicationCommandOptionTypes.ROLE
+				type: ApplicationCommandOptionType.Role
 			}
 		]
 	}

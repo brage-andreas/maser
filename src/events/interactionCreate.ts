@@ -6,12 +6,15 @@ export async function execute(client: Client<true>, intr: Interaction) {
 	if (!intr.guildId) {
 		if (!intr.isCommand()) return;
 
-		intr.reply(`${intr.client.maserEmojis.lock} My commands are only accessible inside servers!`);
+		intr.reply({
+			content: `${intr.client.maserEmojis.lock} My commands are only accessible inside servers!`,
+			ephemeral: true
+		});
 
 		return;
 	}
 
-	if ((!intr.isCommand() && !intr.isAutocomplete()) || !intr.inCachedGuild()) return;
+	if ((!intr.isChatInputCommand() && !intr.isAutocomplete()) || !intr.inCachedGuild()) return;
 
 	if (intr.member.partial) await intr.member.fetch();
 

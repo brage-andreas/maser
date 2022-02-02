@@ -1,5 +1,9 @@
-import { type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import {
+	ApplicationCommandOptionType,
+	PermissionsBitField,
+	type ChatInputApplicationCommandData,
+	type ChatInputCommandInteraction
+} from "discord.js";
 import { InstanceTypes } from "../../constants/database.js";
 import { MAX_AUDIT_REASON_LEN } from "../../constants/index.js";
 import InstanceManager from "../../database/InstanceManager.js";
@@ -21,7 +25,7 @@ const data: ChatInputApplicationCommandData = {
 		{
 			name: "days",
 			description: "How many days to prune user's messages. Default is 1 day.",
-			type: ApplicationCommandOptionTypes.INTEGER,
+			type: ApplicationCommandOptionType.Integer,
 			choices: [
 				{ name: "1 day (default)", value: 1 },
 				{ name: "No prune", value: 0 },
@@ -36,7 +40,7 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-function execute(intr: CommandInteraction<"cached">) {
+function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const target = intr.options.getMember("user");
 	const reason = intr.options.getString("reason");
 	const days = intr.options.getInteger("days") ?? 1;
@@ -48,7 +52,7 @@ function execute(intr: CommandInteraction<"cached">) {
 		return;
 	}
 
-	if (!intr.guild.me?.permissions.has("BAN_MEMBERS")) {
+	if (!intr.guild.me?.permissions.has(PermissionsBitField.Flags.BanMembers)) {
 		intr.editReply(`${emojis.cross} I don't have permissions to ban users`);
 
 		return;

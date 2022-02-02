@@ -1,11 +1,12 @@
 import {
-	MessageActionRow,
-	MessageButton,
+	ActionRow,
+	ButtonComponent,
+	ButtonStyle,
+	ComponentType,
 	MessageComponentInteraction,
 	type ButtonInteraction,
 	type CollectorFilter,
 	type CommandInteraction,
-	type InteractionCollector,
 	type Message
 } from "discord.js";
 import ms from "ms";
@@ -19,7 +20,7 @@ const MAX_ROW_LEN = 5;
  */
 export default class ButtonManager {
 	public message: Message<true> | null;
-	public rows: MessageActionRow[];
+	public rows: ActionRow<ButtonComponent>[];
 
 	/**
 	 * Creates a button manager.
@@ -33,21 +34,19 @@ export default class ButtonManager {
 	/**
 	 * Replaces the manager's current rows with new ones from given buttons.
 	 */
-	public setRows(...buttons: MessageButton[] | MessageButton[][]): this {
+	public setRows(...buttons: ButtonComponent[] | ButtonComponent[][]): this {
 		if (!buttons.length) return this;
 
 		const components = this.chunkButtons(buttons);
 		const amountOfRows = Math.ceil(components.length / MAX_ROW_LEN);
 		const length = amountOfRows <= MAX_ROW_LEN ? amountOfRows : MAX_ROW_LEN;
 
-		this.rows = Array(length)
-			.fill(new MessageActionRow())
-			.map((row, i) => {
-				const start = i * MAX_ROW_LEN;
-				const end = i * MAX_ROW_LEN + MAX_ROW_LEN;
+		this.rows = Array.from({ length }, () => new ActionRow<ButtonComponent>()).map((row, i) => {
+			const start = i * MAX_ROW_LEN;
+			const end = i * MAX_ROW_LEN + MAX_ROW_LEN;
 
-				return row.addComponents(...components.slice(start, end));
-			});
+			return row.addComponents(...components.slice(start, end));
+		});
 
 		return this;
 	}
@@ -64,17 +63,18 @@ export default class ButtonManager {
 	/**
 	 * Creates and returns a button collector.
 	 */
-	public createCollector(options?: {
-		filter?: CollectorFilter<[ButtonInteraction<"cached">]>;
-		time?: string;
-	}): InteractionCollector<ButtonInteraction<"cached">> {
+	public createCollector(options?: { filter?: CollectorFilter<[ButtonInteraction<"cached">]>; time?: string }) {
 		const { filter, time } = options ?? {};
 
 		if (!this.message) throw new Error("A message must be set to the button manager");
 
 		const milliseconds = ms(time ?? "30s");
 
-		return this.message.createMessageComponentCollector({ filter, time: milliseconds, componentType: "BUTTON" });
+		return this.message.createMessageComponentCollector({
+			componentType: ComponentType.Button,
+			time: milliseconds,
+			filter
+		});
 	}
 
 	/**
@@ -98,15 +98,15 @@ export default class ButtonManager {
 	/**
 	 * Chunks the buttons into arrays with a set size and total length
 	 */
-	public chunkButtons(buttons: MessageButton[] | MessageButton[][], amount = 5, rows = 5): MessageButton[][] {
+	public chunkButtons(buttons: ButtonComponent[] | ButtonComponent[][], amount = 5, rows = 5): ButtonComponent[] {
 		const parsedButtonsArray = this._parseButtons(buttons);
 		const cutParsedButtonsArray = parsedButtonsArray.slice(0, rows);
-		const chunk: MessageButton[][] = [];
+		const chunk: ButtonComponent[] = [];
 
 		cutParsedButtonsArray.forEach((buttonArray) => {
 			const buttons = buttonArray.slice(0, amount);
 
-			chunk.push(buttons);
+			chunk.push(...buttons);
 		});
 
 		return chunk;
@@ -115,11 +115,11 @@ export default class ButtonManager {
 	/**
 	 * Parses buttons by nesting them appropriately.
 	 */
-	private _parseButtons(buttons: MessageButton[] | MessageButton[][]): MessageButton[][] {
+	private _parseButtons(buttons: ButtonComponent[] | ButtonComponent[][]): ButtonComponent[][] {
 		if (buttons.some((buttonOrRow) => Array.isArray(buttonOrRow)))
 			return buttons.map((button) => (Array.isArray(button) ? button : [button]));
 
-		return [buttons as MessageButton[]];
+		return [buttons as ButtonComponent[]];
 	}
 
 	/**
@@ -127,11 +127,13 @@ export default class ButtonManager {
 	 */
 	private _toggleButtons(customIds: string[], disable: boolean) {
 		this.rows = this.rows.map((row) => {
-			row.components = row.components.map((button) => {
-				if (button.customId && customIds.includes(button.customId)) button.setDisabled(disable);
+			row.setComponents(
+				row.components.map((button) => {
+					if (button.custom_id && customIds.includes(button.custom_id)) button.setDisabled(disable);
 
-				return button;
-			});
+					return button;
+				})
+			);
 
 			return row;
 		});
@@ -167,17 +169,17 @@ export class ConfirmationButtons extends ButtonManager {
 
 		this.time = options?.time ?? "30s";
 
-		const yesButton = new MessageButton()
+		const yesButton = new ButtonComponent()
 			.setLabel("Yes")
-			.setStyle(this.inverted ? "DANGER" : "SUCCESS")
+			.setStyle(this.inverted ? ButtonStyle.Danger : ButtonStyle.Success)
 			.setCustomId("yes");
 
-		const noButton = new MessageButton()
+		const noButton = new ButtonComponent()
 			.setLabel("No")
-			.setStyle(this.inverted ? "SECONDARY" : "DANGER")
+			.setStyle(this.inverted ? ButtonStyle.Secondary : ButtonStyle.Secondary)
 			.setCustomId("no");
 
-		const row = new MessageActionRow().addComponents(yesButton, noButton);
+		const row = new ActionRow<ButtonComponent>().addComponents(yesButton, noButton);
 
 		this.rows = [row];
 	}
@@ -254,7 +256,10 @@ export class ConfirmationButtons extends ButtonManager {
 		});
 	}
 
-	private async _updateOrEditReply(content: string, components: MessageActionRow[]): Promise<Message<true>> {
+	private async _updateOrEditReply(
+		content: string,
+		components: ActionRow<ButtonComponent>[]
+	): Promise<Message<true>> {
 		if (!this.interaction) throw new Error("Interaction must be set to the ConfirmationButtons");
 
 		const medium = this.interaction;

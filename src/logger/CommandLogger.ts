@@ -1,9 +1,9 @@
 import {
 	type AutocompleteInteraction,
 	type CommandInteraction,
+	type Embed,
 	type Guild,
 	type GuildTextBasedChannel,
-	type MessageEmbed,
 	type User
 } from "discord.js";
 import { COLORS, LoggerTypes, newDefaultEmbed } from "../constants/index.js";
@@ -97,9 +97,9 @@ export default class CommandLogger extends BaseLogger {
 			const { user } = this.interaction!;
 			const embed = newDefaultEmbed(this.interaction).setColor(COLORS.invisible).setDescription(description);
 
-			if (index === 0) embed.setAuthor(`${user.tag} (${user.id})`);
+			if (index === 0) embed.setAuthor({ name: `${user.tag} (${user.id})` });
 
-			if (total > 1) embed.setFooter(`${index + 1}/${total}`);
+			if (total > 1) embed.setFooter({ text: `${index + 1}/${total}` });
 
 			return embed;
 		};
@@ -112,7 +112,7 @@ export default class CommandLogger extends BaseLogger {
 			if (!channel) return;
 
 			const commandStr = `\`${this.interaction.toString()}\`\n`;
-			let embeds: MessageEmbed[] = [];
+			let embeds: Embed[] = [];
 
 			if (logLevel === 2)
 				embeds = messages.map((msg, i) => {

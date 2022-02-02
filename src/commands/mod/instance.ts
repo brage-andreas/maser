@@ -1,9 +1,9 @@
 import {
+	ApplicationCommandOptionType,
 	type AutocompleteInteraction,
 	type ChatInputApplicationCommandData,
-	type CommandInteraction
+	type ChatInputCommandInteraction
 } from "discord.js";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import ms from "ms";
 import { InstanceTypes } from "../../constants/database.js";
 import InstanceManager from "../../database/InstanceManager.js";
@@ -27,105 +27,105 @@ const data: ChatInputApplicationCommandData = {
 		{
 			name: "create",
 			description: "Manually create an instance",
-			type: ApplicationCommandOptionTypes.SUB_COMMAND,
+			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: "executor",
 					description: "The executor of this instance",
-					type: ApplicationCommandOptionTypes.USER,
+					type: ApplicationCommandOptionType.User,
 					required: true
 				},
 				{
 					name: "type",
 					description: "The type of instance",
-					type: ApplicationCommandOptionTypes.INTEGER,
+					type: ApplicationCommandOptionType.Integer,
 					choices: TYPE_CHOICES,
 					required: true
 				},
 				{
 					name: "reason",
 					description: "The reason for this instance",
-					type: ApplicationCommandOptionTypes.STRING
+					type: ApplicationCommandOptionType.String
 				},
 				{
 					name: "reference-id",
 					description: "The instance to reference's ID",
-					type: ApplicationCommandOptionTypes.STRING,
+					type: ApplicationCommandOptionType.String,
 					autocomplete: true
 				},
 				{
 					name: "target",
 					description: "The target of this instance",
-					type: ApplicationCommandOptionTypes.USER
+					type: ApplicationCommandOptionType.User
 				},
 				{
 					name: "time",
 					description:
 						'The time since this instance. Accepts relative times (e.g. "5 min"). Default is current time',
-					type: ApplicationCommandOptionTypes.STRING
+					type: ApplicationCommandOptionType.String
 				},
 				{
 					name: "duration",
 					description: 'The duration of this instance. Accepts timestamps and relative times (e.g. "5min")',
-					type: ApplicationCommandOptionTypes.STRING
+					type: ApplicationCommandOptionType.String
 				}
 			]
 		},
 		{
 			name: "edit",
 			description: "Edit an instance",
-			type: ApplicationCommandOptionTypes.SUB_COMMAND,
+			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: "instance-id",
 					description: "The ID of the instance to edit",
-					type: ApplicationCommandOptionTypes.STRING,
+					type: ApplicationCommandOptionType.String,
 					autocomplete: true,
 					required: true
 				},
 				{
 					name: "executor",
 					description: "The executor of this instance",
-					type: ApplicationCommandOptionTypes.USER
+					type: ApplicationCommandOptionType.User
 				},
 				{
 					name: "reason",
 					description: "The reason for this instance",
-					type: ApplicationCommandOptionTypes.STRING
+					type: ApplicationCommandOptionType.String
 				},
 				{
 					name: "reference-id",
 					description: "The instance to reference's ID",
-					type: ApplicationCommandOptionTypes.STRING,
+					type: ApplicationCommandOptionType.String,
 					autocomplete: true
 				},
 				{
 					name: "target",
 					description: "The target of this instance",
-					type: ApplicationCommandOptionTypes.USER
+					type: ApplicationCommandOptionType.User
 				},
 				{
 					name: "time",
 					description:
 						'The time since this instance. Accepts relative times ("5 min"). Default is current time',
-					type: ApplicationCommandOptionTypes.STRING
+					type: ApplicationCommandOptionType.String
 				},
 				{
 					name: "duration",
 					description: 'The duration of this instance. Accepts timestamps and relative times ("5min")',
-					type: ApplicationCommandOptionTypes.STRING
+					type: ApplicationCommandOptionType.String
 				}
 			]
 		},
 		{
 			name: "show",
 			description: "Show an instance",
-			type: ApplicationCommandOptionTypes.SUB_COMMAND,
+			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: "instance",
 					description: "The ID of the instance to show",
-					type: ApplicationCommandOptionTypes.STRING,
+					type: ApplicationCommandOptionType.String,
 					autocomplete: true,
 					required: true
 				}
@@ -134,12 +134,12 @@ const data: ChatInputApplicationCommandData = {
 		{
 			name: "delete",
 			description: "Delete an instance",
-			type: ApplicationCommandOptionTypes.SUB_COMMAND,
+			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: "instance",
 					description: "The ID of the instance to delete",
-					type: ApplicationCommandOptionTypes.STRING,
+					type: ApplicationCommandOptionType.String,
 					autocomplete: true,
 					required: true
 				}
@@ -148,7 +148,7 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-async function execute(intr: AutocompleteInteraction<"cached"> | CommandInteraction<"cached">) {
+async function execute(intr: AutocompleteInteraction<"cached"> | ChatInputCommandInteraction<"cached">) {
 	const sub = intr.options.getSubcommand();
 	const emojis = intr.client.maserEmojis;
 	const instances = new InstanceManager(intr.client, intr.guildId);

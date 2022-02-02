@@ -1,4 +1,8 @@
-import { type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
+import {
+	PermissionsBitField,
+	type ChatInputApplicationCommandData,
+	type ChatInputCommandInteraction
+} from "discord.js";
 import ms from "ms";
 import { InstanceTypes } from "../../constants/database.js";
 import { DURATIONS, MAX_AUDIT_REASON_LEN } from "../../constants/index.js";
@@ -22,14 +26,14 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-function execute(intr: CommandInteraction<"cached">) {
+function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const target = intr.options.getMember("user");
 	const reason = intr.options.getString("reason");
 	const duration = intr.options.getInteger("duration") ?? DURATIONS.THREE_HRS;
 	const expiration = Date.now() + duration;
 	const emojis = intr.client.maserEmojis;
 
-	if (!intr.guild.me?.permissions.has("MODERATE_MEMBERS")) {
+	if (!intr.guild.me?.permissions.has(PermissionsBitField.Flags.ModerateMembers)) {
 		intr.editReply(`${emojis.cross} I do not have the "Time out members" permission`);
 
 		return;

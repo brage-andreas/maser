@@ -1,4 +1,4 @@
-import { type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
+import { type ChatInputApplicationCommandData, type ChatInputCommandInteraction } from "discord.js";
 import { type Command } from "../../typings/index.js";
 
 const data: ChatInputApplicationCommandData = {
@@ -6,7 +6,7 @@ const data: ChatInputApplicationCommandData = {
 	description: "Check if the bot is running"
 };
 
-function execute(intr: CommandInteraction<"cached">) {
+function execute(intr: ChatInputCommandInteraction<"cached">) {
 	intr.editReply("piong");
 
 	intr.logger.log("Pinged");

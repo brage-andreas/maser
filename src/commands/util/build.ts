@@ -1,5 +1,8 @@
-import { type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import {
+	ApplicationCommandOptionType,
+	type ChatInputApplicationCommandData,
+	type ChatInputCommandInteraction
+} from "discord.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 
 export const options: Partial<CommandOptions> = {
@@ -13,36 +16,36 @@ const data: ChatInputApplicationCommandData = {
 		{
 			name: "global",
 			description: "Build global commands",
-			type: ApplicationCommandOptionTypes.SUB_COMMAND,
+			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: "clear",
 					description: "Clear commands instead of building",
-					type: ApplicationCommandOptionTypes.BOOLEAN
+					type: ApplicationCommandOptionType.Boolean
 				}
 			]
 		},
 		{
 			name: "guild",
 			description: "Build guild commands",
-			type: ApplicationCommandOptionTypes.SUB_COMMAND,
+			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: "guild",
 					description: "A specific guild to build to",
-					type: ApplicationCommandOptionTypes.STRING
+					type: ApplicationCommandOptionType.String
 				},
 				{
 					name: "clear",
 					description: "Clear commands instead of building",
-					type: ApplicationCommandOptionTypes.BOOLEAN
+					type: ApplicationCommandOptionType.Boolean
 				}
 			]
 		}
 	]
 };
 
-function execute(intr: CommandInteraction<"cached">) {
+function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const type = intr.options.getSubcommand(true);
 	const clear = intr.options.getBoolean("clear") ?? false;
 	const guildId = intr.options.getString("guild") ?? intr.guildId;

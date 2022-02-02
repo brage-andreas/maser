@@ -1,4 +1,4 @@
-import { MessageEmbed, type Client, type Guild, type GuildMember, type PartialGuildMember } from "discord.js";
+import { Embed, type Client, type Guild, type GuildMember, type PartialGuildMember } from "discord.js";
 import { LoggerTypes } from "../constants/index.js";
 import ConfigManager from "../database/ConfigManager.js";
 import Util from "../utils/index.js";
@@ -48,13 +48,13 @@ export default class EventLogger extends BaseLogger {
 			`User: ${member} (${member.id})\n` + //
 			`Account made: ${getDate(user.createdAt)}${joinedAtStr}`;
 
-		const embed = new MessageEmbed()
+		const embed = new Embed()
 			.setAuthor({
 				name: `${user?.tag ?? "User not found"} (${member.id})`,
 				iconURL: (member ?? user)?.displayAvatarURL()
 			})
 			.setColor(color)
-			.setFooter(footer)
+			.setFooter({ text: footer })
 			.setDescription(descriptionStr);
 
 		channel.send({ embeds: [embed] }).catch(() => null);

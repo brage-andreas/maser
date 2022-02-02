@@ -1,12 +1,11 @@
 import {
-	MessageEmbed,
-	type AllowedImageSize,
+	ApplicationCommandOptionType,
+	Embed,
 	type ChatInputApplicationCommandData,
-	type CommandInteraction
+	type ChatInputCommandInteraction
 } from "discord.js";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { newDefaultEmbed } from "../../constants/index.js";
-import { type Command } from "../../typings/index.js";
+import { type Command, type ImageSizes } from "../../typings/index.js";
 
 const sizeChoices = [16, 32, 64, 128, 256, 300, 512, 600, 1024, 2048, 4096].map((size) => ({
 	name: `${size}px`,
@@ -20,12 +19,12 @@ const data: ChatInputApplicationCommandData = {
 		{
 			name: "user",
 			description: "The user to target. Default is you",
-			type: ApplicationCommandOptionTypes.USER
+			type: ApplicationCommandOptionType.User
 		},
 		{
 			name: "size",
 			description: "Size of the banner. Default is 2048px",
-			type: ApplicationCommandOptionTypes.INTEGER,
+			type: ApplicationCommandOptionType.Integer,
 			choices: sizeChoices
 		}
 	]
@@ -33,10 +32,10 @@ const data: ChatInputApplicationCommandData = {
 
 type ImageFormats = "jpg" | "png" | "webp";
 
-async function execute(intr: CommandInteraction<"cached">) {
+async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const userId = (intr.options.get("user")?.value as string | undefined) ?? intr.user.id;
 	const member = intr.options.getMember("user");
-	const size = (intr.options.getInteger("size") ?? 2048) as AllowedImageSize;
+	const size = (intr.options.getInteger("size") ?? 2048) as ImageSizes;
 	const emojis = intr.client.maserEmojis;
 	const user = await intr.client.users.fetch(userId, { force: true });
 	const baseURL = user.bannerURL();
@@ -55,10 +54,12 @@ async function execute(intr: CommandInteraction<"cached">) {
 	}
 
 	const base = baseURL.split(".").slice(0, -1).join(".");
-	const getURL = (format: ImageFormats) => `${base}.${format}?size=${size}`;	const webp = getURL("webp");
+	const getURL = (format: ImageFormats) => `${base}.${format}?size=${size}`;
+	const webp = getURL("webp");
 	const png = getURL("png");
 	const jpg = getURL("jpg");
-	const dynamic = user.bannerURL({ size, dynamic: true })!;	const name = member?.displayName ?? user.username;
+	const dynamic = user.bannerURL({ size })!;
+	const name = member?.displayName ?? user.username;
 	const nameStr = name.endsWith("s") || name.endsWith("z") ? `${name}' banner` : `${name}'s banner`;
 	const bannerLinks: string[] = [];
 	const isGIF = dynamic.endsWith(`.gif?size=${size}`);
@@ -72,10 +73,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 		`**Size**: ${size} px\n\n` +
 		`**Banner**: ${bannerLinks.join(", ")}`;
 
-	const embed = new MessageEmbed(newDefaultEmbed(intr))
-		.setDescription(description)
-		.setTitle(nameStr)
-		.setImage(dynamic);
+	const embed = new Embed(newDefaultEmbed(intr)).setDescription(description).setTitle(nameStr).setImage(dynamic);
 
 	intr.editReply({ embeds: [embed] });
 

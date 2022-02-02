@@ -1,5 +1,5 @@
 import { REST } from "@discordjs/rest";
-import { Routes } from "discord-api-types/v9";
+import { ApplicationCommandOptionType, Routes } from "discord-api-types/v9";
 import {
 	type ApplicationCommandChannelOptionData,
 	type ApplicationCommandChoicesData,
@@ -8,17 +8,16 @@ import {
 	type ApplicationCommandOptionData,
 	type ApplicationCommandSubCommandData,
 	type ApplicationCommandSubGroupData,
-	type CommandInteraction
+	type ChatInputCommandInteraction
 } from "discord.js";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums.js";
 import { readdirSync } from "fs";
 import { REGEXP } from "../constants/index.js";
 import { ErrorLogger, InfoLogger } from "../logger/index.js";
 import { type Command, type CommandModule } from "../typings/index.js";
 
 const COMMAND_DIR = new URL("../commands", import.meta.url);
-const SUBGROUP_TYPE = ApplicationCommandOptionTypes.SUB_COMMAND_GROUP;
-const SUB_TYPE = ApplicationCommandOptionTypes.SUB_COMMAND;
+const SUBGROUP_TYPE = ApplicationCommandOptionType.SubcommandGroup;
+const SUB_TYPE = ApplicationCommandOptionType.Subcommand;
 
 type SubInGroupOption =
 	| ApplicationCommandChannelOptionData
@@ -73,7 +72,7 @@ export default class CommandHandler {
 	/**
 	 * Gets the default hide option of this command.
 	 */
-	public getDefaultHide(intr: CommandInteraction<"cached"> | string): boolean {
+	public getDefaultHide(intr: ChatInputCommandInteraction<"cached"> | string): boolean {
 		if (typeof intr !== "string") {
 			const commandOption = intr.options.getBoolean("hide");
 			const standard = this._get(intr.commandName).options.defaultHide;
@@ -159,7 +158,7 @@ export default class CommandHandler {
 			const hideOption = {
 				name: "hide",
 				description: `Hide the response. Default is ${hide}`,
-				type: ApplicationCommandOptionTypes.BOOLEAN
+				type: ApplicationCommandOptionType.Boolean
 			} as T;
 
 			options.push(hideOption);

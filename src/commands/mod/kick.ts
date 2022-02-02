@@ -1,4 +1,8 @@
-import { type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
+import {
+	PermissionsBitField,
+	type ChatInputApplicationCommandData,
+	type ChatInputCommandInteraction
+} from "discord.js";
 import { InstanceTypes } from "../../constants/database.js";
 import { MAX_AUDIT_REASON_LEN } from "../../constants/index.js";
 import InstanceManager from "../../database/InstanceManager.js";
@@ -17,7 +21,7 @@ const data: ChatInputApplicationCommandData = {
 	options: [USER(true), REASON("kick")]
 };
 
-function execute(intr: CommandInteraction<"cached">) {
+function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const target = intr.options.getMember("user");
 	const reason = intr.options.getString("reason");
 	const emojis = intr.client.maserEmojis;
@@ -28,7 +32,7 @@ function execute(intr: CommandInteraction<"cached">) {
 		return;
 	}
 
-	if (!intr.guild.me?.permissions.has("KICK_MEMBERS")) {
+	if (!intr.guild.me?.permissions.has(PermissionsBitField.Flags.KickMembers)) {
 		intr.editReply(`${emojis.cross} I don't have permissions to kick users`);
 
 		return;

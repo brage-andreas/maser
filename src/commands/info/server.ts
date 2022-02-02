@@ -1,5 +1,5 @@
 import { type ChatInputApplicationCommandData, type CommandInteraction, type Guild } from "discord.js";
-import { BOOST_LEVELS, newDefaultEmbed } from "../../constants/index.js";
+import { newDefaultEmbed } from "../../constants/index.js";
 import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 
@@ -32,32 +32,38 @@ function execute(intr: CommandInteraction<"cached">) {
 	const _channels = guild.channels.cache;
 	const voiceChannels = _channels.filter((ch) => ch.isVoice()).size;
 	const textChannels = _channels.filter((ch) => ch.isText() && !ch.isThread()).size;
-	const channels = _channels.size;	const { partnered, verified, name } = guild;	const vanity = guild.vanityURLCode;
-	const vanityStr = vanity ? `with vanity \`${vanity}\`` : "";	const boosters = guild.premiumSubscriptionCount;
+	const channels = _channels.size;
+	const { partnered, verified, name } = guild;
+	const vanity = guild.vanityURLCode;
+	const vanityStr = vanity ? `with vanity \`${vanity}\`` : "";
+	const boosters = guild.premiumSubscriptionCount;
 	const created = Util.date(guild.createdAt);
 	const roles = Util.parseRoles(guild);
-	const icon = guild.iconURL({ size: 2048, dynamic: true }) ?? "";
-	const tier = BOOST_LEVELS[guild.premiumTier];	const totalChs = `**${channels}** ${applyS("channel", channels)}`;
+	const icon = guild.iconURL({ size: 2048 }) ?? "";
+	const tier = guild.premiumTier;
+	const totalChs = `**${channels}** ${applyS("channel", channels)}`;
 	const textChs = `${textChannels} text ${applyS("channel", textChannels)}`;
 	const voiceChs = `${voiceChannels} voice ${applyS("channel", voiceChannels)}`;
-	const channelsStr = `${totalChs} in total\n${textChs} and ${voiceChs}`;	const emojisAndStickerStr = getEmojisAndStickers(guild);
+	const channelsStr = `${totalChs} in total\n${textChs} and ${voiceChs}`;
+	const emojisAndStickerStr = getEmojisAndStickers(guild);
 	const guildEmbed = newDefaultEmbed(intr).setThumbnail(icon).setTitle(name);
 
 	if (partnered && !verified) guildEmbed.setDescription(`A Discord partner ${vanityStr}`);
 
 	if (verified) guildEmbed.setDescription(`A verified server ${vanityStr}`);
 
-	guildEmbed.addField("Roles", roles);
+	guildEmbed.addField({ name: "Roles", value: roles });
 
-	guildEmbed
-		.addField("Created", created)
-		.addField("Members", `**${guild.memberCount}** ${applyS("member", guild.memberCount)}`)
-		.addField("Channels", channelsStr)
-		.addField("Emojis", emojisAndStickerStr)
-		.addField(
-			"Boosting",
-			boosters ? `Server has ${tier} with **${boosters}** ${applyS("boost", boosters)}` : "No boosts"
-		);
+	guildEmbed.addFields(
+		{ name: "Created", value: created },
+		{ name: "Members", value: `**${guild.memberCount}** ${applyS("member", guild.memberCount)}` },
+		{ name: "Channels", value: channelsStr },
+		{ name: "Emojis", value: emojisAndStickerStr },
+		{
+			name: "Boosting",
+			value: boosters ? `Server has ${tier} with **${boosters}** ${applyS("boost", boosters)}` : "No boosts"
+		}
+	);
 
 	intr.editReply({ embeds: [guildEmbed] });
 

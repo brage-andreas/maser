@@ -1,4 +1,4 @@
-import { MessageEmbed, type Client, type Message } from "discord.js";
+import { Embed, type Client, type Message } from "discord.js";
 import ms from "ms";
 import { InstanceTypes } from "../constants/database.js";
 import ConfigManager from "../database/ConfigManager.js";
@@ -38,7 +38,7 @@ export default class Instance {
 		this.id = data.instanceId;
 	}
 
-	public get hexColor(): `#${string}` {
+	public get hexColor(): number {
 		const { colors } = this.client;
 		const { type } = this.data;
 
@@ -130,10 +130,10 @@ export default class Instance {
 		return this.reference;
 	}
 
-	public toEmbed(): MessageEmbed {
-		const instanceEmbed = new MessageEmbed()
-			.setAuthor(`${this.executor.tag} (${this.executor.id})`)
-			.setFooter(`#${this.id} ${this.edited ? "• Edited" : ""}`)
+	public toEmbed(): Embed {
+		const instanceEmbed = new Embed()
+			.setAuthor({ name: `${this.executor.tag} (${this.executor.id})` })
+			.setFooter({ text: `#${this.id} ${this.edited ? "• Edited" : ""}` })
 			.setTimestamp(this.timestamp)
 			.setColor(this.hexColor);
 
@@ -155,7 +155,7 @@ export default class Instance {
 
 			const str = validReference
 				? `[Instance #${this.reference!.id}](${this.reference!.data.url})`
-				: `#${this.referenceId}`;
+				: `Instance #${this.referenceId}`;
 
 			description.push(`**Reference**: ${str}`);
 		}

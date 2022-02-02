@@ -1,12 +1,12 @@
-import { type AutocompleteInteraction, type CommandInteraction } from "discord.js";
+import { type AutocompleteInteraction, type ChatInputCommandInteraction } from "discord.js";
 import { type Command } from "../typings/index.js";
 
 export default class CommandManager {
-	public interaction: AutocompleteInteraction<"cached"> | CommandInteraction<"cached"> | null;
+	public interaction: AutocompleteInteraction<"cached"> | ChatInputCommandInteraction<"cached"> | null;
 	public command: Readonly<Command> | null;
 
 	public constructor(
-		interaction?: AutocompleteInteraction<"cached"> | CommandInteraction<"cached"> | null,
+		interaction?: AutocompleteInteraction<"cached"> | ChatInputCommandInteraction<"cached"> | null,
 		data?: Command | null
 	) {
 		this.interaction = interaction ?? null;
@@ -62,7 +62,7 @@ export default class CommandManager {
 	}
 
 	public setCommand(
-		interaction: AutocompleteInteraction<"cached"> | CommandInteraction<"cached"> | null,
+		interaction: AutocompleteInteraction<"cached"> | ChatInputCommandInteraction<"cached"> | null,
 		data: Command | null
 	): this {
 		this.interaction = interaction;

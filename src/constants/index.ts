@@ -1,23 +1,23 @@
+import { type APIEmbed, type GatewayIntentBits } from "discord-api-types";
 import {
-	MessageEmbed,
+	Embed,
+	IntentsBitField,
+	Partials,
 	type AutocompleteInteraction,
 	type CommandInteraction,
-	type IntentsString,
-	type MessageEmbedOptions,
-	type PartialTypes,
 	type UserFlagsString
 } from "discord.js";
 
 export const MAX_EMBED_DESCRIPTION_LEN = 4096;
 export const MAX_AUDIT_REASON_LEN = 512;
 
-export const INTENTS: IntentsString[] = [
-	"GUILD_MEMBERS", //
-	"GUILDS"
+export const INTENTS: GatewayIntentBits[] = [
+	IntentsBitField.Flags.GuildMembers, //
+	IntentsBitField.Flags.Guilds
 ];
 
-export const PARTIALS: PartialTypes[] = [
-	"GUILD_MEMBER" //
+export const PARTIALS: Partials[] = [
+	Partials.GuildMember //
 ];
 
 export const DURATIONS = {
@@ -47,32 +47,66 @@ export const REGEXP = {
 } as const;
 
 export const COLORS = {
-	invisible: "#2F3136",
-	blurple: "#5865F2",
-	orange: "#FF8741",
-	yellow: "#FFC152",
-	black: "#000000",
-	green: "#5AD658",
-	white: "#FFFFFF",
-	blue: "#5591FF",
-	red: "#FF5733"
+	invisible: 0x2f3136,
+	blurple: 0x5865f2,
+	orange: 0xff8741,
+	yellow: 0xffc152,
+	black: 0x000000,
+	green: 0x5ad658,
+	white: 0xffffff,
+	blue: 0x5591ff,
+	red: 0xff5733
 } as const;
 
+/*
+  * None
+ None = 0,
+  * Discord Employee
+ Staff = 1,
+  * Partnered Server Owner
+ Partner = 2,
+  * HypeSquad Events Coordinator
+ Hypesquad = 4,
+  * Bug Hunter Level 1
+ BugHunterLevel1 = 8,
+  * House Bravery Member
+ HypeSquadOnlineHouse1 = 64,
+  * House Brilliance Member
+ HypeSquadOnlineHouse2 = 128,
+  * House Balance Member
+ HypeSquadOnlineHouse3 = 256,
+  * Early Nitro Supporter
+ PremiumEarlySupporter = 512,
+  * User is a [team](https://discord.com/developers/docs/topics/teams)
+ TeamPseudoUser = 1024,
+  * Bug Hunter Level 2
+ BugHunterLevel2 = 16384,
+  * Verified Bot
+ VerifiedBot = 65536,
+  * Early Verified Bot Developer
+ VerifiedDeveloper = 131072,
+  * Discord Certified Moderator
+ CertifiedModerator = 262144,
+  * Bot uses only [HTTP interactions](https://discord.com/developers/docs/interactions/receiving-and-responding#receiving-an-interaction) and is shown in the online member list
+ BotHTTPInteractions = 524288
+*/
+
 export const USER_FLAGS: Record<UserFlagsString, string> = {
-	EARLY_VERIFIED_BOT_DEVELOPER: "early developer",
-	DISCORD_CERTIFIED_MODERATOR: "certified mod",
-	PARTNERED_SERVER_OWNER: "partnered",
-	BOT_HTTP_INTERACTIONS: "slash-only bot",
-	BUGHUNTER_LEVEL_1: "bughunter",
-	BUGHUNTER_LEVEL_2: "bughunter²",
-	DISCORD_EMPLOYEE: "discord employee",
-	HYPESQUAD_EVENTS: "hypesquad events",
-	HOUSE_BRILLIANCE: "brilliance",
-	EARLY_SUPPORTER: "early supporter",
-	HOUSE_BRAVERY: "bravery",
-	HOUSE_BALANCE: "balance",
-	VERIFIED_BOT: "verified bot",
-	TEAM_USER: "team user"
+	HypeSquadOnlineHouse3: "balance",
+	HypeSquadOnlineHouse2: "brilliance",
+	HypeSquadOnlineHouse1: "bravery",
+	PremiumEarlySupporter: "early nitro supporter",
+	BotHTTPInteractions: "",
+	CertifiedModerator: "",
+	VerifiedDeveloper: "",
+	BugHunterLevel2: "",
+	BugHunterLevel1: "",
+	TeamPseudoUser: "",
+	VerifiedBot: "",
+	Hypesquad: "",
+	Partner: "",
+	Staff: "",
+	None: ""
 };
 
 export const BOOST_LEVELS = {
@@ -91,15 +125,15 @@ export enum LoggerTypes {
 
 export function newDefaultEmbed(
 	intr?: AutocompleteInteraction<"cached"> | CommandInteraction<"cached"> | null | undefined
-): MessageEmbed {
-	const options: MessageEmbedOptions = { color: COLORS.green };
+): Embed {
+	const options: APIEmbed = { color: COLORS.green };
 
 	if (intr) {
 		const iconURL = intr.member.displayAvatarURL();
 		const name = `${intr.user.tag} (${intr.user.id})`;
 
-		options.author = { iconURL, name };
+		options.author = { icon_url: iconURL, name };
 	}
 
-	return new MessageEmbed(options);
+	return new Embed(options);
 }

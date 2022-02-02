@@ -1,5 +1,8 @@
-import { type ChatInputApplicationCommandData, type CommandInteraction } from "discord.js";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
+import {
+	ApplicationCommandOptionType,
+	type ChatInputApplicationCommandData,
+	type ChatInputCommandInteraction
+} from "discord.js";
 import { CONFIG_COLUMN_STRINGS, CONFIG_COMMAND_OPTIONS, CONFIG_COMMAND_TO_COLUMN } from "../../constants/database.js";
 import ConfigManager from "../../database/ConfigManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
@@ -15,30 +18,30 @@ const data: ChatInputApplicationCommandData = {
 		{
 			name: "bot-log",
 			description: "Options for this server's bot log channel",
-			type: ApplicationCommandOptionTypes.SUB_COMMAND_GROUP,
+			type: ApplicationCommandOptionType.SubcommandGroup,
 			options: CONFIG_COMMAND_OPTIONS.CHANNEL
 		},
 		{
 			name: "member-log",
 			description: "Options for this server's member log channel",
-			type: ApplicationCommandOptionTypes.SUB_COMMAND_GROUP,
+			type: ApplicationCommandOptionType.SubcommandGroup,
 			options: CONFIG_COMMAND_OPTIONS.CHANNEL
 		},
 		{
 			name: "mod-log",
 			description: "Options for this server's mod log channel",
-			type: ApplicationCommandOptionTypes.SUB_COMMAND_GROUP,
+			type: ApplicationCommandOptionType.SubcommandGroup,
 			options: CONFIG_COMMAND_OPTIONS.CHANNEL
 		},
 		{
 			name: "view-config",
 			description: "Sends the full config",
-			type: ApplicationCommandOptionTypes.SUB_COMMAND
+			type: ApplicationCommandOptionType.Subcommand
 		}
 	]
 };
 
-async function execute(intr: CommandInteraction<"cached">) {
+async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const rawOption = intr.options.getSubcommandGroup(false);
 	const method = intr.options.getSubcommand();
 	const config = new ConfigManager(intr.client, intr.guild.id);

@@ -1,10 +1,11 @@
 import Discord, {
+	ApplicationCommandOptionType,
+	ButtonComponent,
+	ButtonStyle,
 	MessageAttachment,
-	MessageButton,
 	type ChatInputApplicationCommandData,
-	type CommandInteraction
+	type ChatInputCommandInteraction
 } from "discord.js";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import ms from "ms";
 import { performance } from "perf_hooks";
 import { newDefaultEmbed, REGEXP } from "../../constants/index.js";
@@ -24,18 +25,18 @@ const data: ChatInputApplicationCommandData = {
 		{
 			name: "code",
 			description: "The code to run",
-			type: ApplicationCommandOptionTypes.STRING,
+			type: ApplicationCommandOptionType.String,
 			required: true
 		},
 		{
 			name: "reply",
 			description: "Reply to the command. Default is true",
-			type: ApplicationCommandOptionTypes.BOOLEAN
+			type: ApplicationCommandOptionType.Boolean
 		}
 	]
 };
 
-async function execute(intr: CommandInteraction<"cached">) {
+async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const code = intr.options.getString("code", true);
 	const reply = intr.options.getBoolean("reply") ?? true;
 
@@ -79,7 +80,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 			const successOutputEmbed = newDefaultEmbed(intr)
 				.setDescription(parsedOutput ?? "No output")
-				.setFooter(`${timeTaken} • ${type} (${constructor})`);
+				.setFooter({ text: `${timeTaken} • ${type} (${constructor})` });
 
 			const output: EvalOutput = {
 				embeds: [successInputEmbed, successOutputEmbed],
@@ -101,7 +102,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 			const errorOutputEmbed = newDefaultEmbed(intr)
 				.setColor(client.colors.red)
 				.setDescription(parsedError ?? "No error")
-				.setFooter("Evaluation failed");
+				.setFooter({ text: "Evaluation failed" });
 
 			const output: EvalOutput = {
 				embeds: [errorInputEmbed, errorOutputEmbed],
@@ -118,17 +119,17 @@ async function execute(intr: CommandInteraction<"cached">) {
 	if (reply) {
 		const buttonManager = new ButtonManager();
 
-		const outputButton = new MessageButton() //
+		const outputButton = new ButtonComponent() //
 			.setLabel(`Full ${type}`)
 			.setCustomId("output")
-			.setStyle("SECONDARY")
-			.setEmoji("📤");
+			.setStyle(ButtonStyle.Secondary)
+			.setEmoji({ name: "📤" });
 
-		const codeButton = new MessageButton() //
+		const codeButton = new ButtonComponent() //
 			.setLabel("Full input")
 			.setCustomId("code")
-			.setStyle("SECONDARY")
-			.setEmoji("📥");
+			.setStyle(ButtonStyle.Secondary)
+			.setEmoji({ name: "📥" });
 
 		buttonManager.setRows(outputButton, codeButton);
 

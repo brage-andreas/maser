@@ -3,10 +3,12 @@ import type {
 	ChatInputApplicationCommandData,
 	Client,
 	CommandInteraction,
-	MessageEmbed
+	Embed
 } from "discord.js";
 
 /**/
+
+export type ImageSizes = 16 | 32 | 64 | 128 | 256 | 512 | 1024 | 2048 | 4096;
 
 export interface CommandModule {
 	getCommand(): Partial<Command>;
@@ -30,7 +32,7 @@ export interface Event {
 }
 
 export interface EvalOutput {
-	embeds: MessageEmbed[];
+	embeds: Embed[];
 	output: string;
 	type: "error" | "output";
 }
