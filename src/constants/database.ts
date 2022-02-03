@@ -67,12 +67,12 @@ export const CONFIG_COMMAND_OPTIONS = {
 };
 
 /*
-   ----------
-    INSTANCE
-   ----------
+   -------
+    CASES
+   -------
 */
 
-export enum InstanceTypes {
+export enum CaseTypes {
 	Ban = 0,
 	Kick = 1,
 	Softban = 2,

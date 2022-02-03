@@ -1,5 +1,5 @@
 import type { NewsChannel, TextChannel } from "discord.js";
-import type { InstanceTypes } from "../constants/database.js";
+import type { CaseTypes } from "../constants/database.js";
 
 /*
    --------
@@ -14,7 +14,7 @@ export interface PostgresOptions {
 	table: string;
 }
 
-export type PostgresResponses = ConfigData | InstanceData | PostresExists;
+export type PostgresResponses = CaseData | ConfigData | PostresExists;
 
 export interface PostresExists {
 	exists: boolean;
@@ -37,13 +37,13 @@ export interface ConfigData {
 }
 
 /*
-   ----------
-    INSTANCE
-   ----------
+   ------
+    CASE
+   ------
 */
 
-export interface InstanceData {
-	instanceId: number;
+export interface CaseData {
+	caseId: number;
 	guildId: string;
 	referenceId: number | null;
 	executorTag: string;
@@ -54,10 +54,10 @@ export interface InstanceData {
 	duration: number | null;
 	edited: boolean;
 	reason: string | null;
-	type: InstanceTypes;
+	type: CaseTypes;
 	url: string | null;
 }
 
-export interface InstanceIdResult {
+export interface CaseIdResult {
 	instanceId: number;
 }

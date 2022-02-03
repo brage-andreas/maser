@@ -4,9 +4,9 @@ import {
 	type ChatInputApplicationCommandData,
 	type ChatInputCommandInteraction
 } from "discord.js";
-import { InstanceTypes } from "../../constants/database.js";
+import { CaseTypes } from "../../constants/database.js";
 import { MAX_AUDIT_REASON_LEN } from "../../constants/index.js";
-import InstanceManager from "../../database/InstanceManager.js";
+import CaseManager from "../../database/CaseManager.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 import Util from "../../utils/index.js";
@@ -104,15 +104,15 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 			target
 				.ban({ reason: auditLogReason, days })
 				.then(async () => {
-					const instances = await new InstanceManager(intr.client, intr.guildId).initialise();
+					const cases = await new CaseManager(intr.client, intr.guildId).initialise();
 
-					const instance = await instances.createInstance({
+					const case_ = await cases.createCase({
 						executorTag: intr.user.tag,
 						executorId: intr.user.id,
 						targetTag: target.user.tag,
 						targetId: target.id,
 						reason: reason ?? undefined,
-						type: InstanceTypes.Ban
+						type: CaseTypes.Ban
 					});
 
 					intr.logger.log(
@@ -124,7 +124,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 					intr.editReply({
 						content:
 							`${emojis.check} Successfully **banned ${target.user.tag}** (${target.id})` +
-							`in case **#${instance.id}**\n\n${info}`,
+							`in case **#${case_.id}**\n\n${info}`,
 						components: []
 					});
 				})

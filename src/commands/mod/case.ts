@@ -5,9 +5,9 @@ import {
 	type ChatInputCommandInteraction
 } from "discord.js";
 import ms from "ms";
-import { InstanceTypes } from "../../constants/database.js";
-import InstanceManager from "../../database/InstanceManager.js";
-import type { InstanceData } from "../../typings/database.js";
+import { CaseTypes } from "../../constants/database.js";
+import CaseManager from "../../database/CaseManager.js";
+import { type CaseData } from "../../typings/database.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 
 const options: Partial<CommandOptions> = {
@@ -15,116 +15,114 @@ const options: Partial<CommandOptions> = {
 };
 
 // stupid enum shenanigans
-const TYPE_CHOICES = Object.entries(InstanceTypes)
+const TYPE_CHOICES = Object.entries(CaseTypes)
 	.filter(([, value]) => typeof value === "number")
 	.map(([key, value]) => ({ name: key, value }));
 // { name: "Ban", value: 0 } etc.
 
 const data: ChatInputApplicationCommandData = {
-	name: "instance",
-	description: "Manages this server's instances",
+	name: "case",
+	description: "Manages this server's cases",
 	options: [
 		{
 			name: "create",
-			description: "Manually create an instance",
+			description: "Manually create a case",
 			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: "executor",
-					description: "The executor of this instance",
+					description: "The executor of this case",
 					type: ApplicationCommandOptionType.User,
 					required: true
 				},
 				{
 					name: "type",
-					description: "The type of instance",
+					description: "The type of case",
 					type: ApplicationCommandOptionType.Integer,
 					choices: TYPE_CHOICES,
 					required: true
 				},
 				{
 					name: "reason",
-					description: "The reason for this instance",
+					description: "The reason for this case",
 					type: ApplicationCommandOptionType.String
 				},
 				{
 					name: "reference-id",
-					description: "The instance to reference's ID",
+					description: "The reference ID for this case",
 					type: ApplicationCommandOptionType.String,
 					autocomplete: true
 				},
 				{
 					name: "target",
-					description: "The target of this instance",
+					description: "The target of this case",
 					type: ApplicationCommandOptionType.User
 				},
 				{
 					name: "time",
-					description:
-						'The time since this instance. Accepts relative times (e.g. "5 min"). Default is current time',
+					description: 'The time since this case (e.g. "5min"). Default is current time',
 					type: ApplicationCommandOptionType.String
 				},
 				{
 					name: "duration",
-					description: 'The duration of this instance. Accepts timestamps and relative times (e.g. "5min")',
+					description: 'The duration of this case (e.g. "5min")',
 					type: ApplicationCommandOptionType.String
 				}
 			]
 		},
 		{
 			name: "edit",
-			description: "Edit an instance",
+			description: "Edit a case",
 			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
-					name: "instance-id",
-					description: "The ID of the instance to edit",
+					name: "case-id",
+					description: "The ID of the case to edit",
 					type: ApplicationCommandOptionType.String,
 					autocomplete: true,
 					required: true
 				},
 				{
 					name: "executor",
-					description: "The executor of this instance",
+					description: "The executor of this case",
 					type: ApplicationCommandOptionType.User
 				},
 				{
 					name: "reason",
-					description: "The reason for this instance",
+					description: "The reason for this case",
 					type: ApplicationCommandOptionType.String
 				},
 				{
 					name: "reference-id",
-					description: "The instance to reference's ID",
+					description: "The case to reference's ID",
 					type: ApplicationCommandOptionType.String,
 					autocomplete: true
 				},
 				{
 					name: "target",
-					description: "The target of this instance",
+					description: "The target of this case",
 					type: ApplicationCommandOptionType.User
 				},
 				{
 					name: "time",
-					description:
-						'The time since this instance. Accepts relative times ("5 min"). Default is current time',
+					description: 'The time since this case. Accepts relative times ("5 min"). Default is current time',
 					type: ApplicationCommandOptionType.String
 				},
 				{
 					name: "duration",
-					description: 'The duration of this instance. Accepts timestamps and relative times ("5min")',
+					description: 'The duration of this case. Accepts timestamps and relative times ("5min")',
 					type: ApplicationCommandOptionType.String
 				}
 			]
 		},
 		{
 			name: "show",
-			description: "Show an instance",
+			description: "Show a case",
 			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
-					name: "instance",
-					description: "The ID of the instance to show",
+					name: "case",
+					description: "The ID of the case to show",
 					type: ApplicationCommandOptionType.String,
 					autocomplete: true,
 					required: true
@@ -133,12 +131,12 @@ const data: ChatInputApplicationCommandData = {
 		},
 		{
 			name: "delete",
-			description: "Delete an instance",
+			description: "Delete a case",
 			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
-					name: "instance",
-					description: "The ID of the instance to delete",
+					name: "case",
+					description: "The ID of the case to delete",
 					type: ApplicationCommandOptionType.String,
 					autocomplete: true,
 					required: true
@@ -151,22 +149,21 @@ const data: ChatInputApplicationCommandData = {
 async function execute(intr: AutocompleteInteraction<"cached"> | ChatInputCommandInteraction<"cached">) {
 	const sub = intr.options.getSubcommand();
 	const emojis = intr.client.maserEmojis;
-	const instances = new InstanceManager(intr.client, intr.guildId);
+	const cases = new CaseManager(intr.client, intr.guildId);
 
-	await instances.initialise();
+	await cases.initialise();
 
 	if (intr.isAutocomplete()) {
 		const getData = async (focusedRaw?: number) => {
-			// doesn't infer type right whilst just using param
-			const focused = focusedRaw ?? (await instances.getLatestId()) ?? 1;
-			// ensures offset will never be under 0
-			const offset = focused <= 3 ? 0 : focused - 3;
-			const data = await instances.getInstanceDataWithinRange(offset);
+			const focused = focusedRaw ?? (await cases.getLatestId()) ?? 1;
+			// ensures offset will never be under 1
+			const offset = focused <= 3 ? 1 : focused - 2;
+			const data = await cases.getCaseDataWithinRange(offset);
 
-			const getName = (data: InstanceData) => {
-				const id = data.instanceId;
+			const getName = (data: CaseData) => {
+				const id = data.caseId;
 				const emoji = id === focused ? "✨" : id > focused ? "🔸" : "🔹";
-				let str = `${emoji} #${id} - ${InstanceTypes[data.type]}`;
+				let str = `${emoji} #${id} - ${CaseTypes[data.type]}`;
 
 				if (data.targetTag) str += ` on ${data.targetTag}`;
 
@@ -176,20 +173,20 @@ async function execute(intr: AutocompleteInteraction<"cached"> | ChatInputComman
 			return data
 				?.sort((a, b) => {
 					// Makes the focused value always be atop
-					if (a.instanceId === focused) return -1;
+					if (a.caseId === focused) return -1;
 
-					if (b.instanceId === focused) return 1;
+					if (b.caseId === focused) return 1;
 
 					// high -> low
-					return b.instanceId - a.instanceId;
+					return b.caseId - a.caseId;
 				})
 				.map((data) => ({
 					name: getName(data),
-					value: `${data.instanceId}`
+					value: `${data.caseId}`
 				}));
 		};
 
-		const emptyResponse = { name: "😴 Whoa so empty—there are no instances", value: "0" };
+		const emptyResponse = { name: "😴 Whoa so empty — There are no cases", value: "0" };
 		const focused = Number(intr.options.getFocused()) || undefined;
 		const response = (await getData(focused)) ?? [emptyResponse];
 
@@ -215,7 +212,7 @@ async function execute(intr: AutocompleteInteraction<"cached"> | ChatInputComman
 		const type = intr.options.getInteger("type", true);
 		const time = intr.options.getString("time");
 
-		const data: Partial<InstanceData> = {
+		const data: Partial<CaseData> = {
 			referenceId: reference ?? undefined,
 			executorTag: executor.tag,
 			executorId: executor.id,
@@ -230,60 +227,60 @@ async function execute(intr: AutocompleteInteraction<"cached"> | ChatInputComman
 			url: undefined
 		};
 
-		const instance = await instances.createInstance(data);
+		const case_ = await cases.createCase(data, true);
 
-		await instance.getReference();
+		await case_.getReference();
 
-		intr.editReply({ embeds: [instance.toEmbed()] });
+		intr.editReply({ embeds: [case_.toEmbed()] });
 
-		intr.logger.log(`Manually created new instance of type ${InstanceTypes[type] ?? "Unknown"}`);
+		intr.logger.log(`Manually created new case of type ${CaseTypes[type] ?? "Unknown"}`);
 	} else if (sub === "show") {
-		const instanceId = getIdOptionValue("instance");
+		const caseId = getIdOptionValue("case");
 
-		if (!instanceId) {
-			intr.editReply(`${emojis.cross} Provided ID is invalid: ${instanceId}`);
-
-			return;
-		}
-
-		const instance = await instances.getInstance(instanceId);
-
-		if (!instance) {
-			intr.editReply(`${emojis.cross} Instance #${instanceId} was not found`);
+		if (!caseId) {
+			intr.editReply(`${emojis.cross} Provided ID is invalid: ${caseId}`);
 
 			return;
 		}
 
-		await instance.getReference();
+		const case_ = await cases.getCase(caseId);
 
-		intr.editReply({ embeds: [instance.toEmbed()] });
+		if (!case_) {
+			intr.editReply(`${emojis.cross} case #${caseId} was not found`);
 
-		intr.logger.log(`Viewed instance #${instanceId}`);
+			return;
+		}
+
+		await case_.getReference();
+
+		intr.editReply({ embeds: [case_.toEmbed()] });
+
+		intr.logger.log(`Viewed case #${caseId}`);
 	} else if (sub === "edit") {
 		const referenceId = getIdOptionValue("reference-id");
-		const instanceId = getIdOptionValue("instance-id");
+		const caseId = getIdOptionValue("case-id");
 		const duration = intr.options.getString("duration");
 		const executor = intr.options.getUser("executor");
 		const reason = intr.options.getString("reason");
 		const target = intr.options.getUser("target");
 		const time = intr.options.getString("time");
 
-		if (!instanceId) {
-			intr.editReply(`${emojis.cross} Provided ID is invalid: ${instanceId}`);
+		if (!caseId) {
+			intr.editReply(`${emojis.cross} Provided ID is invalid: ${caseId}`);
 
 			return;
 		}
 
-		const oldInstance = await instances.getInstance(instanceId);
+		const oldcase = await cases.getCase(caseId);
 
-		if (!oldInstance) {
-			intr.editReply(`${emojis.cross} Instance #${instanceId} was not found`);
+		if (!oldcase) {
+			intr.editReply(`${emojis.cross} case #${caseId} was not found`);
 
 			return;
 		}
 
-		const oldData = oldInstance.data;
-		const newData: Partial<InstanceData> = {};
+		const oldData = oldcase.data;
+		const newData: Partial<CaseData> = {};
 
 		if (executor) {
 			newData.executorTag = executor.tag;
@@ -311,22 +308,47 @@ async function execute(intr: AutocompleteInteraction<"cached"> | ChatInputComman
 
 		data.edited = true;
 
-		const newInstance = await instances.editInstance(instanceId, data);
+		const newcase = await cases.editCase(caseId, data);
 
-		if (!newInstance) {
-			intr.editReply(`${emojis.cross} Something went wrong with editing instance #${instanceId}`);
+		if (!newcase) {
+			intr.editReply(`${emojis.cross} Something went wrong with editing case #${caseId}`);
 
 			return;
 		}
 
-		await newInstance.getReference();
+		await newcase.getReference();
 
 		intr.editReply({
-			content: `${emojis.check} Successfully edited instance #${instanceId}`,
-			embeds: [newInstance.toEmbed()]
+			content: `${emojis.check} Successfully edited case #${caseId}`,
+			embeds: [newcase.toEmbed()]
 		});
 
-		intr.logger.log(`Manually edited instance #${instanceId}`);
+		intr.logger.log(`Manually edited case #${caseId}`);
+	} else if (sub === "delete") {
+		const caseId = getIdOptionValue("case");
+
+		if (!caseId) {
+			intr.editReply(`${emojis.cross} Provided ID is invalid: ${caseId}`);
+
+			return;
+		}
+
+		const case_ = await cases.getCase(caseId);
+
+		if (!case_) {
+			intr.editReply(`${emojis.cross} case #${caseId} was not found`);
+
+			return;
+		}
+
+		await cases.deleteCase(caseId);
+
+		intr.editReply({
+			content: `${emojis.check} Successfully deleted case #${caseId}`,
+			embeds: [case_.toEmbed()]
+		});
+
+		intr.logger.log(`Deleted case #${caseId}`);
 	}
 }
 

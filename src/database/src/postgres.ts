@@ -46,7 +46,7 @@ export default abstract class Postgres extends PostgresConnection {
 		return res ? res.exists : false;
 	}
 
-	protected createRow(columns: string[], values: unknown[]): Promise<void> {
+	protected async createRow(columns: string[], values: unknown[]): Promise<void> {
 		const formattedColumns = columns.map((e) => `"${e}"`);
 
 		const formattedValues = values.map((e) =>
@@ -59,7 +59,7 @@ export default abstract class Postgres extends PostgresConnection {
             ON CONFLICT DO NOTHING;
         `;
 
-		return this.none(query);
+		return await this.none(query);
 	}
 
 	protected async updateRow(
@@ -77,6 +77,15 @@ export default abstract class Postgres extends PostgresConnection {
 			WHERE ${whereQuery ?? `"${this.idKey}"=${this.idValue}`}
         `;
 
-		return this.none(query);
+		return await this.none(query);
+	}
+
+	protected async deleteRow(whereQuery: string): Promise<void> {
+		const query = `
+			DELETE FROM ${this.schema}."${this.table}"
+			WHERE ${whereQuery};
+        `;
+
+		return await this.none(query);
 	}
 }

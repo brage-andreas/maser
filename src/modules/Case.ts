@@ -1,14 +1,14 @@
 import { Embed, type Client, type Message } from "discord.js";
 import ms from "ms";
-import { InstanceTypes } from "../constants/database.js";
+import { CaseTypes } from "../constants/database.js";
+import CaseManager from "../database/CaseManager.js";
 import ConfigManager from "../database/ConfigManager.js";
-import InstanceManager from "../database/InstanceManager.js";
-import { type InstanceData } from "../typings/database.js";
+import { type CaseData } from "../typings/database.js";
 
-export default class Instance {
+export default class Case {
 	public readonly client: Client;
-	public readonly data: InstanceData;
-	public reference: Instance | null;
+	public readonly data: CaseData;
+	public reference: Case | null;
 
 	// Data shorthands
 	public readonly referenceId: number | null;
@@ -18,7 +18,7 @@ export default class Instance {
 	public readonly reason: string | null;
 	public readonly id: number;
 
-	public constructor(client: Client, data: InstanceData) {
+	public constructor(client: Client, data: CaseData) {
 		this.reference = null;
 
 		this.client = client;
@@ -35,7 +35,7 @@ export default class Instance {
 
 		this.reason = data.reason;
 
-		this.id = data.instanceId;
+		this.id = data.caseId;
 	}
 
 	public get hexColor(): number {
@@ -43,25 +43,25 @@ export default class Instance {
 		const { type } = this.data;
 
 		switch (type) {
-			case InstanceTypes.Untimeout:
+			case CaseTypes.Untimeout:
 				return colors.green;
 
-			case InstanceTypes.Softban:
+			case CaseTypes.Softban:
 				return colors.orange;
 
-			case InstanceTypes.Timeout:
+			case CaseTypes.Timeout:
 				return colors.black;
 
-			case InstanceTypes.Unban:
+			case CaseTypes.Unban:
 				return colors.green;
 
-			case InstanceTypes.Kick:
+			case CaseTypes.Kick:
 				return colors.yellow;
 
-			case InstanceTypes.Warn:
+			case CaseTypes.Warn:
 				return colors.blue;
 
-			case InstanceTypes.Ban:
+			case CaseTypes.Ban:
 				return colors.red;
 
 			default:
@@ -73,22 +73,22 @@ export default class Instance {
 		const { type } = this.data;
 
 		switch (type) {
-			case InstanceTypes.Softban:
+			case CaseTypes.Softban:
 				return "Softban";
 
-			case InstanceTypes.Unban:
+			case CaseTypes.Unban:
 				return "Unban";
 
-			case InstanceTypes.Kick:
+			case CaseTypes.Kick:
 				return "Kick";
 
-			case InstanceTypes.Warn:
+			case CaseTypes.Warn:
 				return "Warn";
 
-			case InstanceTypes.Timeout:
+			case CaseTypes.Timeout:
 				return "Mute";
 
-			case InstanceTypes.Ban:
+			case CaseTypes.Ban:
 				return "Ban";
 
 			default:
@@ -120,18 +120,18 @@ export default class Instance {
 		return this.data.url;
 	}
 
-	public async getReference(): Promise<Instance | null> {
+	public async getReference(): Promise<Case | null> {
 		if (!this.data.referenceId) return null;
 
-		const manager = new InstanceManager(this.client, this.data.guildId);
+		const manager = new CaseManager(this.client, this.data.guildId);
 
-		this.reference = await manager.getInstance(this.data.referenceId);
+		this.reference = await manager.getCase(this.data.referenceId);
 
 		return this.reference;
 	}
 
 	public toEmbed(): Embed {
-		const instanceEmbed = new Embed()
+		const caseEmbed = new Embed()
 			.setAuthor({ name: `${this.executor.tag} (${this.executor.id})` })
 			.setFooter({ text: `#${this.id} ${this.edited ? "• Edited" : ""}` })
 			.setTimestamp(this.timestamp)
@@ -143,7 +143,7 @@ export default class Instance {
 			const targetTag = this.target.tag ?? "Name unavailable";
 			const targetId = this.target.id ?? "ID unavailable";
 
-			description.push(`**Target**: ${targetTag} (${targetId})`);
+			description.push(`**Target**: \`${targetTag}\` (${targetId})`);
 		}
 
 		if (this.reason) description.push(`**Reason**: ${this.reason}`);
@@ -154,13 +154,13 @@ export default class Instance {
 			const validReference = Boolean(this.reference) && Boolean(this.reference!.data.url);
 
 			const str = validReference
-				? `[Instance #${this.reference!.id}](${this.reference!.data.url})`
-				: `Instance #${this.referenceId}`;
+				? `[Case #${this.reference!.id}](${this.reference!.data.url})`
+				: `Case #${this.referenceId}`;
 
 			description.push(`**Reference**: ${str}`);
 		}
 
-		return instanceEmbed.setDescription(description.join("\n"));
+		return caseEmbed.setDescription(description.join("\n"));
 	}
 
 	public async channelLog(): Promise<Message | null> {
