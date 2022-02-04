@@ -220,13 +220,13 @@ export default class CommandHandler {
 		}
 
 		if (!REGEXP.ID.test(clientId)) {
-			errorLogger.log(`Client id is faulty: ${clientId}`);
+			errorLogger.log(`Client ID is faulty: ${clientId}`);
 
 			return false;
 		}
 
 		if (guildId && !REGEXP.ID.test(guildId)) {
-			errorLogger.log(`Guild id is faulty: ${guildId}`);
+			errorLogger.log(`Guild ID is faulty: ${guildId}`);
 
 			return false;
 		}

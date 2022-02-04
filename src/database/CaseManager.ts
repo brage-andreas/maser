@@ -13,13 +13,14 @@ export default class CaseManager extends Postgres {
 	}
 
 	public async initialise(): Promise<this> {
-		if (!this.idValue) throw new Error("Guild id must be set");
+		if (!this.idValue) throw new Error("Guild ID must be set");
 
 		const query = `
             CREATE TABLE IF NOT EXISTS guilds."cases-${this.idValue}"
             (
                 "caseId" integer NOT NULL,
 				"guildId" bigint NOT NULL,
+				"executorAvatar" text,
 				"referenceId" integer,
 				"executorTag" text NOT NULL,
 				"executorId" bigint NOT NULL,
@@ -59,7 +60,7 @@ export default class CaseManager extends Postgres {
 		const guild = this.client.guilds.cache.get(patchedData.guildId)?.name ?? "unknown name";
 
 		new InfoLogger().log(
-			`Created new case with id: ${patchedData.caseId}`,
+			`Created new case with ID: ${patchedData.caseId}`,
 			`in guild: "${guild}" (${patchedData.guildId})`,
 			`of type: "${case_.type.toLowerCase()}" (${patchedData.type})`
 		);
@@ -88,7 +89,7 @@ export default class CaseManager extends Postgres {
 		const guild = this.client.guilds.cache.get(case_.guildId)?.name ?? "unknown name";
 
 		new InfoLogger().log(
-			`Deleted case with id: ${caseId}`,
+			`Deleted case with ID: ${caseId}`,
 			`in guild: "${guild}" (${case_.guildId})`,
 			`of type: "${case_.type.toLowerCase()}" (${case_.type})`
 		);

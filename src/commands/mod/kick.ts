@@ -87,6 +87,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 					const cases = await new CaseManager(intr.client, intr.guildId).initialise();
 
 					const case_ = await cases.createCase({
+						executorAvatar: intr.member.displayAvatarURL(),
 						executorTag: intr.user.tag,
 						executorId: intr.user.id,
 						targetTag: target.user.tag,

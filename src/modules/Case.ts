@@ -104,6 +104,7 @@ export default class Case {
 
 	public get executor() {
 		return {
+			avatar: this.data.executorAvatar ?? undefined,
 			tag: this.data.executorTag,
 			id: this.data.executorId
 		};
@@ -132,7 +133,7 @@ export default class Case {
 
 	public toEmbed(): Embed {
 		const caseEmbed = new Embed()
-			.setAuthor({ name: `${this.executor.tag} (${this.executor.id})` })
+			.setAuthor({ name: `${this.executor.tag} (${this.executor.id})`, iconURL: this.executor.avatar })
 			.setFooter({ text: `#${this.id} ${this.edited ? "• Edited" : ""}` })
 			.setTimestamp(this.timestamp)
 			.setColor(this.hexColor);

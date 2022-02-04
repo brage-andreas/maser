@@ -34,7 +34,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const emojis = intr.client.maserEmojis;
 
 	if (!intr.guild.me?.permissions.has(PermissionsBitField.Flags.ModerateMembers)) {
-		intr.editReply(`${emojis.cross} I do not have the "Time out members" permission`);
+		intr.editReply(`${emojis.cross} I don't have permissions to timeout users`);
 
 		return;
 	}
@@ -96,6 +96,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 					const case_ = await cases.createCase(
 						{
+							executorAvatar: intr.member.displayAvatarURL(),
 							executorTag: intr.user.tag,
 							executorId: intr.user.id,
 							targetTag: target.user.tag,
@@ -110,7 +111,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 					intr.editReply({
 						content:
 							`${emojis.check} Successfully **timed out ${target.user.tag}** (${target.id}) ` +
-							`in instance **#${case_.id}**\n\n${info}`,
+							`in case **#${case_.id}**\n\n${info}`,
 						components: []
 					});
 

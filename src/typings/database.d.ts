@@ -45,6 +45,7 @@ export interface ConfigData {
 export interface CaseData {
 	caseId: number;
 	guildId: string;
+	executorAvatar: string | null;
 	referenceId: number | null;
 	executorTag: string;
 	executorId: string;
@@ -59,5 +60,5 @@ export interface CaseData {
 }
 
 export interface CaseIdResult {
-	instanceId: number;
+	caseId: number;
 }

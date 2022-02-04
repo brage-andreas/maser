@@ -156,16 +156,16 @@ async function execute(intr: AutocompleteInteraction<"cached"> | ChatInputComman
 	if (intr.isAutocomplete()) {
 		const getData = async (focusedRaw?: number) => {
 			const focused = focusedRaw ?? (await cases.getLatestId()) ?? 1;
-			// ensures offset will never be under 1
-			const offset = focused <= 3 ? 1 : focused - 2;
+			// ensures offset will never be under 0
+			const offset = focused <= 3 ? 0 : focused - 3;
 			const data = await cases.getCaseDataWithinRange(offset);
 
 			const getName = (data: CaseData) => {
 				const id = data.caseId;
 				const emoji = id === focused ? "✨" : id > focused ? "🔸" : "🔹";
-				let str = `${emoji} #${id} - ${CaseTypes[data.type]}`;
+				let str = `${emoji} #${id} ${CaseTypes[data.type]}`;
 
-				if (data.targetTag) str += ` on ${data.targetTag}`;
+				if (data.targetTag) str += ` - ${data.targetTag}`;
 
 				return str;
 			};
@@ -204,6 +204,7 @@ async function execute(intr: AutocompleteInteraction<"cached"> | ChatInputComman
 	};
 
 	if (sub === "create") {
+		const executorMember = intr.options.getMember("executor");
 		const reference = getIdOptionValue("reference-id");
 		const duration = intr.options.getString("duration");
 		const executor = intr.options.getUser("executor", true);
@@ -213,6 +214,7 @@ async function execute(intr: AutocompleteInteraction<"cached"> | ChatInputComman
 		const time = intr.options.getString("time");
 
 		const data: Partial<CaseData> = {
+			executorAvatar: (executorMember ?? executor).displayAvatarURL(),
 			referenceId: reference ?? undefined,
 			executorTag: executor.tag,
 			executorId: executor.id,
