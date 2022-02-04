@@ -16,7 +16,7 @@ postgres
 		│   ├── memberLogChannel
 		│   ├── botLogChannel
 		│   └── modLogChannel
-		└── instances-[guild id]
+		└── cases-[guild id]
 			├── istanceId
 			├── guildId
 			├── referenceId
@@ -48,7 +48,7 @@ maser
 maser
 └── guilds
 	├── configs
-	└── instances-[guild id]
+	└── cases-[guild id]
 ```
 
 **configs**
@@ -59,10 +59,10 @@ maser
 | `botLogChannel`    | `bigint` |
 | `modLogChannel`    | `bigint` |
 
-**instances-[guild id]**
+**cases-[guild id]**
 | Column        | Type      |
 | ------------- | --------- |
-| `instanceId`  | `integer` |
+| `caseId`  | `integer` |
 | `guildId`     | `bigint`  |
 | `referenceId` | `integer` |
 | `executorTag` | `text`    |
