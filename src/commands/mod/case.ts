@@ -76,7 +76,7 @@ const data: ChatInputApplicationCommandData = {
 			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
-					name: "case-id",
+					name: "case",
 					description: "The ID of the case to edit",
 					type: ApplicationCommandOptionType.String,
 					autocomplete: true,
