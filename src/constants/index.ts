@@ -58,55 +58,22 @@ export const COLORS = {
 	red: 0xff5733
 } as const;
 
-/*
-  * None
- None = 0,
-  * Discord Employee
- Staff = 1,
-  * Partnered Server Owner
- Partner = 2,
-  * HypeSquad Events Coordinator
- Hypesquad = 4,
-  * Bug Hunter Level 1
- BugHunterLevel1 = 8,
-  * House Bravery Member
- HypeSquadOnlineHouse1 = 64,
-  * House Brilliance Member
- HypeSquadOnlineHouse2 = 128,
-  * House Balance Member
- HypeSquadOnlineHouse3 = 256,
-  * Early Nitro Supporter
- PremiumEarlySupporter = 512,
-  * User is a [team](https://discord.com/developers/docs/topics/teams)
- TeamPseudoUser = 1024,
-  * Bug Hunter Level 2
- BugHunterLevel2 = 16384,
-  * Verified Bot
- VerifiedBot = 65536,
-  * Early Verified Bot Developer
- VerifiedDeveloper = 131072,
-  * Discord Certified Moderator
- CertifiedModerator = 262144,
-  * Bot uses only [HTTP interactions](https://discord.com/developers/docs/interactions/receiving-and-responding#receiving-an-interaction) and is shown in the online member list
- BotHTTPInteractions = 524288
-*/
-
-export const USER_FLAGS: Record<UserFlagsString, string> = {
-	HypeSquadOnlineHouse3: "balance",
-	HypeSquadOnlineHouse2: "brilliance",
-	HypeSquadOnlineHouse1: "bravery",
-	PremiumEarlySupporter: "early nitro supporter",
-	BotHTTPInteractions: "",
-	CertifiedModerator: "",
-	VerifiedDeveloper: "",
-	BugHunterLevel2: "",
-	BugHunterLevel1: "",
-	TeamPseudoUser: "",
-	VerifiedBot: "",
-	Hypesquad: "",
-	Partner: "",
-	Staff: "",
-	None: ""
+export const USER_FLAGS_STRINGS: Record<UserFlagsString, string> = {
+	None: "None",
+	Staff: "<:discord_staff:938523381983236106> Discord staff",
+	Partner: "<:discord_partner:938523382020964452> Partner",
+	Hypesquad: "<:discord_hypesquad:938523382004203550> Hypesquad",
+	BugHunterLevel1: "<:discord_bughunter_1:938523381756751924> Bughunter",
+	HypeSquadOnlineHouse1: "<:discord_bravery:938523381995798558> Bravery",
+	HypeSquadOnlineHouse2: "<:discord_brilliance:938523381626728510> Brilliance",
+	HypeSquadOnlineHouse3: "<:discord_balance:938523381710602241> Balance",
+	PremiumEarlySupporter: "<:discord_early_nitro:938523382029369394> Early Nitro",
+	TeamPseudoUser: "Team user",
+	BugHunterLevel2: "<:discord_bughunter_2:938523382104879144> Bughunter but better",
+	VerifiedBot: "Verified bot",
+	VerifiedDeveloper: "<:discord_early_developer:938523382083895316> Early verified dev",
+	CertifiedModerator: "<:discord_certified_mod:938523382083895318> Certified mod",
+	BotHTTPInteractions: "HTTP-only bot"
 };
 
 export const BOOST_LEVELS = {

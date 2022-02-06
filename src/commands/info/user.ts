@@ -3,7 +3,7 @@ import {
 	type ChatInputApplicationCommandData,
 	type CommandInteraction
 } from "discord.js";
-import { newDefaultEmbed, USER_FLAGS } from "../../constants/index.js";
+import { newDefaultEmbed, USER_FLAGS_STRINGS } from "../../constants/index.js";
 import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 
@@ -25,7 +25,9 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const user = userOptionIsProvided ? intr.options.getUser("user", true) : intr.user;
 
 	const parseFlags = (flagArray: string[]) => {
-		const flags = flagArray.join(", ");
+		flagArray.shift();
+
+		const flags = `• ${flagArray.join("\n• ")}`;
 
 		return flags.charAt(0).toUpperCase() + flags.slice(1);
 	};
@@ -42,7 +44,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const rawFlags = (await user.fetchFlags()).toArray();
 	const created = Util.date(user.createdTimestamp);
 	const avatar = (member ?? user).displayAvatarURL({ size: 2048 });
-	const flags = rawFlags.map((flag) => USER_FLAGS[flag] ?? flag);
+	const flags = rawFlags.map((flag) => USER_FLAGS_STRINGS[flag] ?? flag);
 	const { bot, tag, id } = user;
 	const premium = Boolean(member?.premiumSince);
 	const joined = member?.joinedTimestamp ? Util.date(member.joinedTimestamp) : null;
@@ -58,7 +60,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 		{ name: "ID", value: id },
 		{ name: "Bot", value: bot ? "Yes" : "No" },
 		{ name: "Avatar", value: `[Link](${avatar})` },
-		{ name: "Badges", value: flags.length ? parseFlags(flags) : "No badges" },
+		{ name: "Badges", value: flags.length > 1 ? parseFlags(flags) : "None" },
 		{ name: "Created", value: created }
 	);
 
