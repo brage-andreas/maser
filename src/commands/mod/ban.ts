@@ -27,8 +27,8 @@ const data: ChatInputApplicationCommandData = {
 			description: "How many days to prune user's messages. Default is 1 day.",
 			type: ApplicationCommandOptionType.Integer,
 			choices: [
-				{ name: "1 day (default)", value: 1 },
 				{ name: "No prune", value: 0 },
+				{ name: "1 day (default)", value: 1 },
 				{ name: "2 days", value: 2 },
 				{ name: "3 days", value: 3 },
 				{ name: "4 days", value: 4 },
@@ -41,16 +41,11 @@ const data: ChatInputApplicationCommandData = {
 };
 
 function execute(intr: ChatInputCommandInteraction<"cached">) {
-	const target = intr.options.getMember("user");
+	const targetMember = intr.options.getMember("user");
+	const target = intr.options.getUser("user", true);
 	const reason = intr.options.getString("reason");
 	const days = intr.options.getInteger("days") ?? 1;
 	const emojis = intr.client.maserEmojis;
-
-	if (!target) {
-		intr.editReply(`${emojis.cross} The user to target was not found in this server`);
-
-		return;
-	}
 
 	if (!intr.guild.me?.permissions.has(PermissionsBitField.Flags.BanMembers)) {
 		intr.editReply(`${emojis.cross} I don't have permissions to ban users`);
@@ -76,7 +71,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 		return;
 	}
 
-	if (!target.bannable) {
+	if (targetMember && !targetMember.bannable) {
 		intr.editReply(`${emojis.cross} I cannot ban the user to target`);
 
 		return;
@@ -89,10 +84,11 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 		: `By ${intr.user.tag} ${intr.user.id}`;
 
 	const info =
+		`• **Target**: ${target.tag} (${target} ${target.id})\n` +
 		`• **Reason**: ${reason ?? "No reason provided"}\n` +
-		`• **Target**: ${target.user.tag} (${target} ${target.id})`;
+		`• **Days pruned**: ${days ? `${days} days` : "No pruning"}`;
 
-	const query = `${emojis.warning} Are you sure you want to ban **${target.user.tag}** (${target.id})?\n\n${info}`;
+	const query = `${emojis.warning} Are you sure you want to ban **${target.tag}** (${target.id})?\n\n${info}`;
 
 	const collector = new ConfirmationButtons({ authorId: intr.user.id, inverted: true }) //
 		.setInteraction(intr)
@@ -101,37 +97,38 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	collector
 		.start({ noReply: true })
 		.then(() => {
-			target
-				.ban({ reason: auditLogReason, days })
+			intr.guild.members
+				.ban(target, { reason: auditLogReason, days })
 				.then(async () => {
 					const cases = await new CaseManager(intr.client, intr.guildId).initialise();
 
-					const case_ = await cases.createCase({
-						executorAvatar: intr.member.displayAvatarURL(),
-						executorTag: intr.user.tag,
-						executorId: intr.user.id,
-						targetTag: target.user.tag,
-						targetId: target.id,
-						reason: reason ?? undefined,
-						type: CaseTypes.Ban
-					});
+					const case_ = await cases.createCase(
+						{
+							executorAvatar: intr.member.displayAvatarURL(),
+							executorTag: intr.user.tag,
+							executorId: intr.user.id,
+							targetTag: target.tag,
+							targetId: target.id,
+							reason: reason ?? undefined,
+							type: CaseTypes.Ban
+						},
+						true
+					);
 
 					intr.logger.log(
-						`Banned ${target.user.tag} (${target.id}) ${
-							reason ? `with reason: "${reason}"` : "with no reason"
-						}`
+						`Banned ${target.tag} (${target.id}) ${reason ? `with reason: "${reason}"` : "with no reason"}`
 					);
 
 					intr.editReply({
 						content:
-							`${emojis.check} Successfully **banned ${target.user.tag}** (${target.id})` +
+							`${emojis.check} Successfully **banned ${target.tag}** (${target.id}) ` +
 							`in case **#${case_.id}**\n\n${info}`,
 						components: []
 					});
 				})
 				.catch(() => {
 					intr.editReply({
-						content: `${emojis.cross} Failed to ban ${target.user.tag} (${target.id})\n\n${info}`,
+						content: `${emojis.cross} Failed to ban ${target.tag} (${target.id})\n\n${info}`,
 						components: []
 					});
 				});
