@@ -51,7 +51,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 		`${intr.client.maserEmojis.check} Done! [Click here to open](https://discord.com/invite/${invite.code})`
 	);
 
-	// intr.logger.log(`Created invite to #${intr.member.voice.channel?.name ?? "unknown name"}`);
+	intr.logger.log(`Created invite to #${intr.member.voice.channel?.name ?? "unknown name"}`);
 }
 
 export const getCommand = () => ({ options, data, execute } as Partial<Command>);
