@@ -86,15 +86,18 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 				.then(async () => {
 					const cases = await new CaseManager(intr.client, intr.guildId).initialise();
 
-					const case_ = await cases.createCase({
-						executorAvatar: intr.member.displayAvatarURL(),
-						executorTag: intr.user.tag,
-						executorId: intr.user.id,
-						targetTag: target.user.tag,
-						targetId: target.id,
-						reason: reason ?? undefined,
-						type: CaseTypes.Kick
-					});
+					const case_ = await cases.createCase(
+						{
+							executorAvatar: intr.member.displayAvatarURL(),
+							executorTag: intr.user.tag,
+							executorId: intr.user.id,
+							targetTag: target.user.tag,
+							targetId: target.id,
+							reason: reason ?? undefined,
+							type: CaseTypes.Kick
+						},
+						true
+					);
 
 					intr.logger.log(
 						`Kicked ${target.user.tag} (${target.id}) ${

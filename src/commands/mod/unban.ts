@@ -64,15 +64,18 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 				.then(async () => {
 					const cases = await new CaseManager(intr.client, intr.guildId).initialise();
 
-					const case_ = await cases.createCase({
-						executorAvatar: intr.member.displayAvatarURL(),
-						executorTag: intr.user.tag,
-						executorId: intr.user.id,
-						targetTag: target.tag,
-						targetId: target.id,
-						reason: reason ?? undefined,
-						type: CaseTypes.Unban
-					});
+					const case_ = await cases.createCase(
+						{
+							executorAvatar: intr.member.displayAvatarURL(),
+							executorTag: intr.user.tag,
+							executorId: intr.user.id,
+							targetTag: target.tag,
+							targetId: target.id,
+							reason: reason ?? undefined,
+							type: CaseTypes.Unban
+						},
+						true
+					);
 
 					intr.logger.log(
 						`Unbanned ${target.tag} (${target.id}) ${

@@ -39,12 +39,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const { integrationId, botId, premiumSubscriberRole: boostRole } = role.tags ?? {};
 	const isEveryone = role.id === guild.id;
 	const { bitfield } = isEveryone ? role.permissions : role.permissions.remove(guild.roles.everyone.permissions);
-	// You can only fetch 1000 members at a time.
-	const tooBig = guild.memberCount > 1000;
-
-	const memberCount = tooBig
-		? `${role.members.size} ${applyS("member", role.members.size)} (might not be accurate)`
-		: `${role.members.size} ${applyS("member", role.members.size)}`;
+	const memberCount = `${role.members.size} ${applyS("member", role.members.size)}`;
 
 	const roleEmbed = newDefaultEmbed(intr)
 		.setColor(getColor(role.color))
