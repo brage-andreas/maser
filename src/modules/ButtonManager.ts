@@ -128,8 +128,8 @@ export default class ButtonManager {
 	private _toggleButtons(customIds: string[], disable: boolean) {
 		this.rows = this.rows.map((row) => {
 			row.setComponents(
-				row.components.map((button) => {
-					if (button.custom_id && customIds.includes(button.custom_id)) button.setDisabled(disable);
+				...row.components.map((button) => {
+					if (button.customId && customIds.includes(button.customId)) button.setDisabled(disable);
 
 					return button;
 				})
@@ -141,11 +141,11 @@ export default class ButtonManager {
 }
 
 export class ConfirmationButtons extends ButtonManager {
+	public invertedColors: boolean | null;
 	public interaction: CommandInteraction<"cached"> | MessageComponentInteraction<"cached"> | null;
 	public authorOnly: boolean;
 	public yesMessage: string | null;
 	public noMessage: string | null;
-	public inverted: boolean | null;
 	public authorId: string | null;
 	public query: string | null;
 	public time: string | null;
@@ -161,7 +161,7 @@ export class ConfirmationButtons extends ButtonManager {
 
 		this.noMessage = null;
 
-		this.inverted = options?.inverted ?? null;
+		this.invertedColors = options?.inverted ?? null;
 
 		this.authorId = options?.authorId ?? null;
 
@@ -171,12 +171,12 @@ export class ConfirmationButtons extends ButtonManager {
 
 		const yesButton = new ButtonComponent()
 			.setLabel("Yes")
-			.setStyle(this.inverted ? ButtonStyle.Danger : ButtonStyle.Success)
+			.setStyle(this.invertedColors ? ButtonStyle.Danger : ButtonStyle.Success)
 			.setCustomId("yes");
 
 		const noButton = new ButtonComponent()
 			.setLabel("No")
-			.setStyle(this.inverted ? ButtonStyle.Secondary : ButtonStyle.Secondary)
+			.setStyle(this.invertedColors ? ButtonStyle.Secondary : ButtonStyle.Secondary)
 			.setCustomId("no");
 
 		const row = new ActionRow<ButtonComponent>().addComponents(yesButton, noButton);

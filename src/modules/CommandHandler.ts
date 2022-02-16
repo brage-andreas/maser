@@ -1,10 +1,9 @@
 import { REST } from "@discordjs/rest";
-import { ApplicationCommandOptionType, Routes } from "discord-api-types/v9";
+import { Routes } from "discord-api-types/v9";
 import {
-	type ApplicationCommandChannelOptionData,
-	type ApplicationCommandChoicesData,
+	ApplicationCommandOptionType,
 	type ApplicationCommandData,
-	type ApplicationCommandNonOptionsData,
+	type ApplicationCommandOption,
 	type ApplicationCommandOptionData,
 	type ApplicationCommandSubCommandData,
 	type ApplicationCommandSubGroupData,
@@ -16,15 +15,6 @@ import { ErrorLogger, InfoLogger } from "../logger/index.js";
 import { type Command, type CommandModule } from "../typings/index.js";
 
 const COMMAND_DIR = new URL("../commands", import.meta.url);
-const SUBGROUP_TYPE = ApplicationCommandOptionType.SubcommandGroup;
-const SUB_TYPE = ApplicationCommandOptionType.Subcommand;
-
-type SubInGroupOption =
-	| ApplicationCommandChannelOptionData
-	| ApplicationCommandChoicesData
-	| ApplicationCommandNonOptionsData;
-
-type SubOption = ApplicationCommandOptionData;
 
 /**
  * Manages commands for the client.
@@ -151,15 +141,15 @@ export default class CommandHandler {
 	/**
 	 * Adds a "hide" option to the given option array, if none present.
 	 */
-	private _addHideOption<T extends SubInGroupOption | SubOption>(options: T[], name: string): T[] {
+	private _addHideOption(options: ApplicationCommandOptionData[], name: string): ApplicationCommandOptionData[] {
 		if (!options.some((option) => option.name === "hide")) {
 			const hide = this.getDefaultHide(name);
 
-			const hideOption = {
+			const hideOption: ApplicationCommandOption = {
 				name: "hide",
 				description: `Hide the response. Default is ${hide}`,
-				type: ApplicationCommandOptionType.Boolean
-			} as T;
+				type: 5 // ApplicationCommandOptionType.Boolean
+			};
 
 			options.push(hideOption);
 		}
@@ -179,20 +169,22 @@ export default class CommandHandler {
 			cmd.data.options ??= [];
 
 			const subcommandGroups = cmd.data.options.filter(
-				(option) => option.type === SUBGROUP_TYPE
+				(option) => option.type === ApplicationCommandOptionType.SubcommandGroup
 			) as ApplicationCommandSubGroupData[];
 
 			const subcommands = cmd.data.options.filter(
-				(option) => option.type === SUB_TYPE
+				(option) => option.type === ApplicationCommandOptionType.Subcommand
 			) as ApplicationCommandSubCommandData[];
 
 			subcommandGroups.forEach((subgroup) => {
 				subgroup.options?.forEach((subcommand) => {
+					// @ts-expect-error TODO: fix this mess
 					subcommand.options = this._addHideOption(subcommand.options ?? [], cmd.data.name);
 				});
 			});
 
 			subcommands.forEach((sub) => {
+				// @ts-expect-error TODO: fix this mess
 				sub.options = this._addHideOption(sub.options ?? [], cmd.data.name);
 			});
 
