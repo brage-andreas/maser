@@ -1,4 +1,4 @@
-import { type APIEmbed, type GatewayIntentBits } from "discord-api-types";
+import { type APIEmbed, type GatewayIntentBits } from "discord-api-types/v9";
 import {
 	Embed,
 	IntentsBitField,
@@ -59,7 +59,6 @@ export const COLORS = {
 } as const;
 
 export const USER_FLAGS_STRINGS: Record<UserFlagsString, string> = {
-	None: "None",
 	Staff: "<:discord_staff:938523381983236106> Discord staff",
 	Partner: "<:discord_partner:938523382020964452> Partner",
 	Hypesquad: "<:discord_hypesquad:938523382004203550> Hypesquad",
@@ -73,7 +72,8 @@ export const USER_FLAGS_STRINGS: Record<UserFlagsString, string> = {
 	VerifiedBot: "Verified bot",
 	VerifiedDeveloper: "<:discord_early_developer:938523382083895316> Early verified dev",
 	CertifiedModerator: "<:discord_certified_mod:938523382083895318> Certified mod",
-	BotHTTPInteractions: "HTTP-only bot"
+	BotHTTPInteractions: "HTTP-only bot",
+	Spammer: "⚠️ Spammer"
 };
 
 export const BOOST_LEVELS = {

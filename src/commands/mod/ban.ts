@@ -98,7 +98,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 		.start({ noReply: true })
 		.then(() => {
 			intr.guild.members
-				.ban(target, { reason: auditLogReason, days })
+				.ban(target, { reason: auditLogReason, deleteMessageDays: days })
 				.then(async () => {
 					const cases = await new CaseManager(intr.client, intr.guildId).initialise();
 
