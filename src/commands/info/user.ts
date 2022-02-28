@@ -1,3 +1,4 @@
+/* eslint-disable padding-line-between-statements */
 import {
 	ApplicationCommandOptionType,
 	type ChatInputApplicationCommandData,
@@ -42,22 +43,29 @@ async function execute(intr: CommandInteraction<"cached">) {
 	};
 
 	const rawFlags = (await user.fetchFlags()).toArray();
-	const created = Util.date(user.createdTimestamp);
-	const avatar = (member ?? user).displayAvatarURL({ size: 2048 });
 	const flags = rawFlags.map((flag) => USER_FLAGS_STRINGS[flag] ?? flag);
-	const { bot, tag, id } = user;
-	const premium = Boolean(member?.premiumSince);
-	const joined = member?.joinedTimestamp ? Util.date(member.joinedTimestamp) : null;
-	const color = getColor(member?.displayColor);
+
+	const premium = Boolean(member?.premiumSinceTimestamp);
 	const owner = Boolean(member) && member!.id === member?.guild.ownerId;
+
+	const avatar = (member ?? user).displayAvatarURL({ size: 2048 });
+
+	const joined = member?.joinedTimestamp ? Util.date(member.joinedTimestamp) : null;
+
+	const color = getColor(member?.displayColor);
+
+	const created = Util.date(user.createdTimestamp);
 	const roles = Util.parseRoles(member);
-	const name = member?.displayName ?? user.tag;
+
+	const { bot, tag, id } = user;
+
+	const name = member?.displayName ?? tag;
+
 	const userEmbed = newDefaultEmbed(intr).setColor(color).setThumbnail(avatar).setTitle(name);
 
-	if (member) userEmbed.addField({ name: "Tag", value: tag });
-
 	userEmbed.addFields(
-		{ name: "ID", value: id },
+		{ name: "Tag", value: tag },
+		{ name: "ID", value: `\`${id}\`` },
 		{ name: "Bot", value: bot ? "Yes" : "No" },
 		{ name: "Avatar", value: `[Link](${avatar})` },
 		{ name: "Badges", value: flags.length > 1 ? parseFlags(flags) : "None" },

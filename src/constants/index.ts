@@ -77,11 +77,11 @@ export const USER_FLAGS_STRINGS: Record<UserFlagsString, string> = {
 };
 
 export const BOOST_LEVELS = {
-	TIER_3: "boost level 3",
-	TIER_2: "boost level 2",
-	TIER_1: "boost level 1",
-	NONE: "no boost level"
-};
+	3: "boost level 3",
+	2: "boost level 2",
+	1: "boost level 1",
+	0: "no boost level"
+} as const;
 
 export enum LoggerTypes {
 	Command,

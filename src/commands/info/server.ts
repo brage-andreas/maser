@@ -1,5 +1,6 @@
+/* eslint-disable padding-line-between-statements */
 import { type ChatInputApplicationCommandData, type CommandInteraction, type Guild } from "discord.js";
-import { newDefaultEmbed } from "../../constants/index.js";
+import { BOOST_LEVELS, newDefaultEmbed } from "../../constants/index.js";
 import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 
@@ -13,48 +14,59 @@ function execute(intr: CommandInteraction<"cached">) {
 	const { guild } = intr;
 
 	const getEmojisAndStickers = (guild: Guild) => {
-		const total = guild.emojis.cache.size;
-		const sticker = guild.stickers.cache.size;
-		const standard = guild.emojis.cache.filter((em) => em.animated === false).size;
-		const animated = guild.emojis.cache.filter((em) => em.animated === true).size;
-		const totalStr = `${total ? `**${total}**` : "No"} ${applyS("emoji", total)}`;
-		const stickerStr = `${sticker || "no"} ${applyS("sticker", sticker)}`;
-		const standardStr = `${standard || "no"} ${applyS("emoji", standard)}`;
-		const animatedStr = `${animated || "no"} animated ${applyS("emoji", animated)}`;
+		const emojiAmount = guild.emojis.cache.size;
+		const stickerAmount = guild.stickers.cache.size;
 
-		const str = total
-			? `${totalStr} in total\n${standardStr}, ${animatedStr}, and ${stickerStr}`
-			: `${totalStr} and ${stickerStr}`;
+		const standardEmojisAmount = guild.emojis.cache.filter((em) => em.animated === false).size;
+		const animatedEmojisAmount = guild.emojis.cache.filter((em) => em.animated === true).size;
+
+		const emojiAmountStr = `${emojiAmount ? `**${emojiAmount}**` : "No"} ${applyS("emoji", emojiAmount)}`;
+		const stickerAmountStr = `${stickerAmount || "no"} ${applyS("sticker", stickerAmount)}`;
+
+		const standardEmojiAmountStr = `${standardEmojisAmount || "no"} normal ${applyS(
+			"emoji",
+			standardEmojisAmount
+		)}`;
+
+		const animatedEmojiAmountStr = `${animatedEmojisAmount || "no"} animated ${applyS(
+			"emoji",
+			animatedEmojisAmount
+		)}`;
+
+		const str = emojiAmount
+			? `${emojiAmountStr} in total\n${standardEmojiAmountStr}, ${animatedEmojiAmountStr}, and ${stickerAmountStr}`
+			: `${emojiAmountStr} and ${stickerAmountStr}`;
 
 		return str;
 	};
 
-	const _channels = guild.channels.cache;
-	const voiceChannels = _channels.filter((ch) => ch.isVoice()).size;
-	const textChannels = _channels.filter((ch) => ch.isText() && !ch.isThread()).size;
-	const channels = _channels.size;
-	const { partnered, verified, name } = guild;
-	const vanity = guild.vanityURLCode;
+	const voiceChannels = guild.channels.cache.filter((ch) => ch.isVoice()).size;
+	const textChannels = guild.channels.cache.filter((ch) => ch.isText() && !ch.isThread()).size;
+	const channels = guild.channels.cache.size;
+
+	const { partnered, verified, name, vanityURLCode: vanity, premiumSubscriptionCount: boosters } = guild;
+
 	const vanityStr = vanity ? `with vanity \`${vanity}\`` : "";
-	const boosters = guild.premiumSubscriptionCount;
 	const created = Util.date(guild.createdAt);
 	const roles = Util.parseRoles(guild);
 	const icon = guild.iconURL({ size: 2048 }) ?? "";
-	const tier = guild.premiumTier;
+	const tier = BOOST_LEVELS[guild.premiumTier];
+
 	const totalChs = `**${channels}** ${applyS("channel", channels)}`;
 	const textChs = `${textChannels} text ${applyS("channel", textChannels)}`;
 	const voiceChs = `${voiceChannels} voice ${applyS("channel", voiceChannels)}`;
 	const channelsStr = `${totalChs} in total\n${textChs} and ${voiceChs}`;
+
 	const emojisAndStickerStr = getEmojisAndStickers(guild);
 	const guildEmbed = newDefaultEmbed(intr).setThumbnail(icon).setTitle(name);
 
-	if (partnered && !verified) guildEmbed.setDescription(`A Discord partner ${vanityStr}`);
-
-	if (verified) guildEmbed.setDescription(`A verified server ${vanityStr}`);
-
-	guildEmbed.addField({ name: "Roles", value: roles });
+	if (verified || partnered)
+		if (verified && !partnered) guildEmbed.setDescription(`A verified server ${vanityStr}`);
+		else if (partnered && !verified) guildEmbed.setDescription(`A partnered server ${vanityStr}`);
+		else guildEmbed.setDescription(`A verified and partnered server ${vanityStr}`);
 
 	guildEmbed.addFields(
+		{ name: "Roles", value: roles },
 		{ name: "Created", value: created },
 		{ name: "Members", value: `**${guild.memberCount}** ${applyS("member", guild.memberCount)}` },
 		{ name: "Channels", value: channelsStr },
