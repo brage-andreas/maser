@@ -320,6 +320,8 @@ async function execute(intr: AutocompleteInteraction<"cached"> | ChatInputComman
 
 		await newcase.getReference();
 
+		await newcase.updateLogMessage();
+
 		intr.editReply({
 			content: `${emojis.check} Successfully edited case #${caseId}`,
 			embeds: [newcase.toEmbed()]
@@ -344,6 +346,10 @@ async function execute(intr: AutocompleteInteraction<"cached"> | ChatInputComman
 		}
 
 		await cases.deleteCase(caseId);
+
+		case_.deleted = true;
+
+		await case_.updateLogMessage();
 
 		intr.editReply({
 			content: `${emojis.check} Successfully deleted case #${caseId}`,

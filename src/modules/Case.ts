@@ -1,6 +1,7 @@
-import { Embed, type Client, type Message } from "discord.js";
+import { Embed, type Client, type Message, type MessageEditOptions } from "discord.js";
 import ms from "ms";
 import { CaseTypes } from "../constants/database.js";
+import { REGEXP } from "../constants/index.js";
 import CaseManager from "../database/CaseManager.js";
 import ConfigManager from "../database/ConfigManager.js";
 import { type CaseData } from "../typings/database.js";
@@ -9,6 +10,7 @@ export default class Case {
 	public readonly client: Client;
 	public readonly data: CaseData;
 	public reference: Case | null;
+	public deleted = false;
 
 	// Data shorthands
 	public readonly referenceId: number | null;
@@ -134,7 +136,7 @@ export default class Case {
 	public toEmbed(): Embed {
 		const caseEmbed = new Embed()
 			.setAuthor({ name: `${this.executor.tag} (${this.executor.id})`, iconURL: this.executor.avatar })
-			.setFooter({ text: `#${this.id} ${this.edited ? "• Edited" : ""}` })
+			.setFooter({ text: this.deleted ? "Case deleted" : `#${this.id} ${this.edited ? "• Edited" : ""}` })
 			.setTimestamp(this.timestamp)
 			.setColor(this.hexColor);
 
@@ -171,5 +173,23 @@ export default class Case {
 		if (!channel) return null;
 
 		return await channel.send({ embeds: [this.toEmbed()] }).catch(() => null);
+	}
+
+	public async updateLogMessage(data?: MessageEditOptions): Promise<boolean> {
+		if (!this.messageURL) return false;
+
+		// "discord.com/channels/<guild id>/<channel id>/<message id>"
+		const [guildId, channelId, messageId] = [...this.messageURL.matchAll(REGEXP.ID)].map((e) => e[0]);
+		const guild = this.client.guilds.cache.get(guildId);
+		const channel = guild?.channels.cache.get(channelId);
+
+		if (!channel?.isTextBased()) return false;
+
+		const msg = await channel.messages.fetch(messageId);
+
+		return await msg
+			.edit(data ?? { embeds: [this.toEmbed()] })
+			.then(() => true)
+			.catch(() => false);
 	}
 }
