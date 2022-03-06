@@ -1,4 +1,5 @@
-import { Embed, type Client, type Message, type MessageEditOptions } from "discord.js";
+import { type APIEmbed } from "discord-api-types/v9";
+import { type Client, type Message, type MessageEditOptions } from "discord.js";
 import ms from "ms";
 import { CaseTypes } from "../constants/database.js";
 import { REGEXP } from "../constants/index.js";
@@ -133,12 +134,13 @@ export default class Case {
 		return this.reference;
 	}
 
-	public toEmbed(): Embed {
-		const caseEmbed = new Embed()
-			.setAuthor({ name: `${this.executor.tag} (${this.executor.id})`, iconURL: this.executor.avatar })
-			.setFooter({ text: this.deleted ? "Case deleted" : `#${this.id} ${this.edited ? "• Edited" : ""}` })
-			.setTimestamp(this.timestamp)
-			.setColor(this.hexColor);
+	public toEmbed(): APIEmbed {
+		const caseEmbed: APIEmbed = {
+			author: { name: `${this.executor.tag} (${this.executor.id})`, icon_url: this.executor.avatar },
+			footer: { text: this.deleted ? "Case deleted" : `#${this.id} ${this.edited ? "• Edited" : ""}` },
+			timestamp: this.timestamp.toString(),
+			color: this.hexColor
+		};
 
 		const description = [`**Type**: ${this.type}`];
 
@@ -163,7 +165,9 @@ export default class Case {
 			description.push(`**Reference**: ${str}`);
 		}
 
-		return caseEmbed.setDescription(description.join("\n"));
+		caseEmbed.description = description.join("\n");
+
+		return caseEmbed;
 	}
 
 	public async channelLog(): Promise<Message | null> {

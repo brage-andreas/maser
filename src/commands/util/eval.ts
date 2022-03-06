@@ -1,3 +1,4 @@
+import { type APIEmbed } from "discord-api-types/v9";
 import Discord, {
 	ApplicationCommandOptionType,
 	ButtonComponent,
@@ -8,7 +9,7 @@ import Discord, {
 } from "discord.js";
 import ms from "ms";
 import { performance } from "perf_hooks";
-import { newDefaultEmbed, REGEXP } from "../../constants/index.js";
+import { defaultEmbed, REGEXP } from "../../constants/index.js";
 import { ButtonManager } from "../../modules/index.js";
 import { type Command, type CommandOptions, type EvalOutput } from "../../typings/index.js";
 import Util from "../../utils/index.js";
@@ -69,18 +70,25 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 			const start = performance.now();
 			const result = await eval(`(async () => {\n${code}\n})()`);
 			const end = performance.now();
+			//
 			const type = typeof result;
 			const constructor = result != null ? (result.constructor.name as string) : "Nullish";
+			//
 			const time = Number((end - start).toFixed(3));
 			const timeTaken = ms(time, { long: true }).replace(".", ",");
+			//
 			const stringedOutput = stringify(result).replaceAll(new RegExp(REGEXP.TOKEN, "g"), "[REDACTED]");
+			//
 			const parsedInput = parse(code, "**Input**");
 			const parsedOutput = parse(stringedOutput, "**Output**");
-			const successInputEmbed = newDefaultEmbed(intr).setDescription(parsedInput ?? "No input");
+			//
+			const successInputEmbed: APIEmbed = { ...defaultEmbed(intr), description: parsedInput ?? "No input" };
 
-			const successOutputEmbed = newDefaultEmbed(intr)
-				.setDescription(parsedOutput ?? "No output")
-				.setFooter({ text: `${timeTaken} • ${type} (${constructor})` });
+			const successOutputEmbed: APIEmbed = {
+				...defaultEmbed(intr),
+				description: parsedOutput ?? "No output",
+				footer: { text: `${timeTaken} • ${type} (${constructor})` }
+			};
 
 			const output: EvalOutput = {
 				embeds: [successInputEmbed, successOutputEmbed],
@@ -95,14 +103,18 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 			const parsedInput = parse(code, " **Input**");
 			const parsedError = parse(msg, " **Error**", null);
 
-			const errorInputEmbed = newDefaultEmbed(intr)
-				.setColor(client.colors.red)
-				.setDescription(parsedInput ?? "No input");
+			const errorInputEmbed: APIEmbed = {
+				...defaultEmbed(intr),
+				color: client.colors.red,
+				description: parsedInput ?? "No input"
+			};
 
-			const errorOutputEmbed = newDefaultEmbed(intr)
-				.setColor(client.colors.red)
-				.setDescription(parsedError ?? "No error")
-				.setFooter({ text: "Evaluation failed" });
+			const errorOutputEmbed: APIEmbed = {
+				...defaultEmbed(intr),
+				color: client.colors.red,
+				description: parsedError ?? "No error",
+				footer: { text: "Evaluation failed" }
+			};
 
 			const output: EvalOutput = {
 				embeds: [errorInputEmbed, errorOutputEmbed],

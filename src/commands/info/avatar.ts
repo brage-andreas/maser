@@ -1,3 +1,4 @@
+import { type APIEmbed } from "discord-api-types/v9";
 import {
 	ApplicationCommandOptionType,
 	ButtonComponent,
@@ -7,7 +8,7 @@ import {
 	type ChatInputCommandInteraction,
 	type GuildMember
 } from "discord.js";
-import { newDefaultEmbed } from "../../constants/index.js";
+import { defaultEmbed } from "../../constants/index.js";
 import { ButtonManager } from "../../modules/index.js";
 import { type Command, type ImageSizes } from "../../typings/index.js";
 
@@ -79,7 +80,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 		hasGuildAvatar ? `**Guild avatar**: ${guildAvatarLinks!.join(", ")}\n` : ""
 	}**Avatar**: ${userAvatarLinks.join(", ")}`;
 
-	const embed = newDefaultEmbed(intr).setTitle("Avatar").setDescription(description).setImage(avatar);
+	const embed: APIEmbed = { ...defaultEmbed(intr), title: "Avatar", description, image: { url: avatar } };
 	const buttonManager = new ButtonManager();
 
 	const outputButton = new ButtonComponent()
@@ -99,7 +100,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	if (hasGuildAvatar) {
 		buttonManager.setRows(outputButton, codeButton);
 
-		embed.setFooter({ text: "Buttons last for 30 seconds" });
+		embed.footer = { text: "Buttons last for 30 seconds" };
 	}
 
 	const msg = await intr.editReply({ embeds: [embed], components: buttonManager.rows });
@@ -120,7 +121,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 			await interaction.deferUpdate();
 
 			if (interaction.customId === "user") {
-				embed.setImage(user.displayAvatarURL({ size }));
+				embed.image = { url: user.displayAvatarURL({ size }) };
 
 				buttonManager.disable("user").enable("member");
 
@@ -128,7 +129,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 			}
 			//
 			else if (interaction.customId === "member") {
-				embed.setImage((member ?? user).displayAvatarURL({ size }));
+				embed.image = { url: (member ?? user).displayAvatarURL({ size }) };
 
 				buttonManager.disable("member").enable("user");
 
@@ -137,7 +138,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 		});
 
 		collector.on("end", () => {
-			embed.setFooter({ text: "" });
+			embed.footer = { text: "" };
 
 			msg.edit({ embeds: [embed], components: [] }).catch(() => null);
 		});

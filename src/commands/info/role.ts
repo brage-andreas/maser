@@ -1,9 +1,10 @@
+import { type APIEmbed } from "discord-api-types/v9";
 import {
 	ApplicationCommandOptionType,
 	type ChatInputApplicationCommandData,
 	type ChatInputCommandInteraction
 } from "discord.js";
-import { newDefaultEmbed } from "../../constants/index.js";
+import { defaultEmbed } from "../../constants/index.js";
 import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 
@@ -41,10 +42,11 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const { bitfield } = isEveryone ? role.permissions : role.permissions.remove(guild.roles.everyone.permissions);
 	const memberCount = `${role.members.size} ${applyS("member", role.members.size)}`;
 
-	const roleEmbed = newDefaultEmbed(intr)
-		.setColor(getColor(role.color))
-		.setTitle(role.name)
-		.addFields(
+	const roleEmbed: APIEmbed = {
+		...defaultEmbed(intr),
+		color: getColor(role.color),
+		title: role.name,
+		fields: [
 			{ name: "Created", value: Util.date(role.createdTimestamp) },
 			{ name: "Members", value: memberCount },
 			{ name: "Hoisted", value: role.hoist ? "Yes" : "No" },
@@ -60,7 +62,8 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 				name: isEveryone ? "Permissions" : "Extra permissions",
 				value: `[${bitfield}](<https://finitereality.github.io/permissions-calculator/?v=${bitfield}>)`
 			}
-		);
+		]
+	};
 
 	intr.editReply({ embeds: [roleEmbed] });
 

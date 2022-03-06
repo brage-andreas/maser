@@ -1,10 +1,5 @@
-import type {
-	AutocompleteInteraction,
-	ChatInputApplicationCommandData,
-	Client,
-	CommandInteraction,
-	Embed
-} from "discord.js";
+import { type APIEmbed } from "discord-api-types/v9";
+import type { AutocompleteInteraction, ChatInputApplicationCommandData, Client, CommandInteraction } from "discord.js";
 
 /**/
 
@@ -32,7 +27,7 @@ export interface Event {
 }
 
 export interface EvalOutput {
-	embeds: Embed[];
+	embeds: APIEmbed[];
 	output: string;
 	type: "error" | "output";
 }

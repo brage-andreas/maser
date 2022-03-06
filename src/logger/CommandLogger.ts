@@ -1,12 +1,12 @@
+import { type APIEmbed } from "discord-api-types/v9";
 import {
 	type AutocompleteInteraction,
 	type CommandInteraction,
-	type Embed,
 	type Guild,
 	type GuildTextBasedChannel,
 	type User
 } from "discord.js";
-import { COLORS, LoggerTypes, newDefaultEmbed } from "../constants/index.js";
+import { COLORS, defaultEmbed, LoggerTypes } from "../constants/index.js";
 import ConfigManager from "../database/ConfigManager.js";
 import Util from "../utils/index.js";
 import BaseLogger from "./BaseLogger.js";
@@ -95,11 +95,11 @@ export default class CommandLogger extends BaseLogger {
 
 		const createEmbed = (description: string, index = 0, total = 1) => {
 			const { user } = this.interaction!;
-			const embed = newDefaultEmbed(this.interaction).setColor(COLORS.invisible).setDescription(description);
+			const embed: APIEmbed = { ...defaultEmbed(this.interaction), color: COLORS.invisible, description };
 
-			if (index === 0) embed.setAuthor({ name: `${user.tag} (${user.id})` });
+			if (index === 0) embed.author = { name: `${user.tag} (${user.id})` };
 
-			if (total > 1) embed.setFooter({ text: `${index + 1}/${total}` });
+			if (total > 1) embed.footer = { text: `${index + 1}/${total}` };
 
 			return embed;
 		};
@@ -107,12 +107,12 @@ export default class CommandLogger extends BaseLogger {
 		const botLogManager = new ConfigManager(client, guild.id, "botLogChannel");
 
 		botLogManager.getChannel().then((channel) => {
-			if (!this.interaction) return; // not really needed - mostly for TS
+			if (!this.interaction) return; // not really needed - mostly for inferring types
 
 			if (!channel) return;
 
 			const commandStr = `\`${this.interaction.toString()}\`\n`;
-			let embeds: Embed[] = [];
+			let embeds: APIEmbed[] = [];
 
 			if (logLevel === 2)
 				embeds = messages.map((msg, i) => {

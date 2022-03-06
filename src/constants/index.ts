@@ -1,6 +1,5 @@
 import { type APIEmbed, type GatewayIntentBits } from "discord-api-types/v9";
 import {
-	Embed,
 	IntentsBitField,
 	Partials,
 	type AutocompleteInteraction,
@@ -90,9 +89,9 @@ export enum LoggerTypes {
 	Info
 }
 
-export function newDefaultEmbed(
+export function defaultEmbed(
 	intr?: AutocompleteInteraction<"cached"> | CommandInteraction<"cached"> | null | undefined
-): Embed {
+): APIEmbed {
 	const options: APIEmbed = { color: COLORS.green };
 
 	if (intr) {
@@ -102,5 +101,5 @@ export function newDefaultEmbed(
 		options.author = { icon_url: iconURL, name };
 	}
 
-	return new Embed(options);
+	return options;
 }

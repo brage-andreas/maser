@@ -1,6 +1,7 @@
 /* eslint-disable padding-line-between-statements */
+import { type APIEmbed } from "discord-api-types/v9";
 import { type ChatInputApplicationCommandData, type CommandInteraction, type Guild } from "discord.js";
-import { BOOST_LEVELS, newDefaultEmbed } from "../../constants/index.js";
+import { BOOST_LEVELS, defaultEmbed } from "../../constants/index.js";
 import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 
@@ -58,24 +59,27 @@ function execute(intr: CommandInteraction<"cached">) {
 	const channelsStr = `${totalChs} in total\n${textChs} and ${voiceChs}`;
 
 	const emojisAndStickerStr = getEmojisAndStickers(guild);
-	const guildEmbed = newDefaultEmbed(intr).setThumbnail(icon).setTitle(name);
+	const guildEmbed: APIEmbed = {
+		...defaultEmbed(intr),
+		thumbnail: { url: icon },
+		title: name,
+		fields: [
+			{ name: "Roles", value: roles },
+			{ name: "Created", value: created },
+			{ name: "Members", value: `**${guild.memberCount}** ${applyS("member", guild.memberCount)}` },
+			{ name: "Channels", value: channelsStr },
+			{ name: "Emojis", value: emojisAndStickerStr },
+			{
+				name: "Boosting",
+				value: boosters ? `Server has ${tier} with **${boosters}** ${applyS("boost", boosters)}` : "No boosts"
+			}
+		]
+	};
 
 	if (verified || partnered)
-		if (verified && !partnered) guildEmbed.setDescription(`A verified server ${vanityStr}`);
-		else if (partnered && !verified) guildEmbed.setDescription(`A partnered server ${vanityStr}`);
-		else guildEmbed.setDescription(`A verified and partnered server ${vanityStr}`);
-
-	guildEmbed.addFields(
-		{ name: "Roles", value: roles },
-		{ name: "Created", value: created },
-		{ name: "Members", value: `**${guild.memberCount}** ${applyS("member", guild.memberCount)}` },
-		{ name: "Channels", value: channelsStr },
-		{ name: "Emojis", value: emojisAndStickerStr },
-		{
-			name: "Boosting",
-			value: boosters ? `Server has ${tier} with **${boosters}** ${applyS("boost", boosters)}` : "No boosts"
-		}
-	);
+		if (verified && !partnered) guildEmbed.description = `A verified server ${vanityStr}`;
+		else if (partnered && !verified) guildEmbed.description = `A partnered server ${vanityStr}`;
+		else guildEmbed.description = `A verified and partnered server ${vanityStr}`;
 
 	intr.editReply({ embeds: [guildEmbed] });
 

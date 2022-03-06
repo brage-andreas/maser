@@ -1,10 +1,10 @@
+import { type APIEmbed } from "discord-api-types/v9";
 import {
 	ApplicationCommandOptionType,
-	Embed,
 	type ChatInputApplicationCommandData,
 	type ChatInputCommandInteraction
 } from "discord.js";
-import { newDefaultEmbed } from "../../constants/index.js";
+import { defaultEmbed } from "../../constants/index.js";
 import { type Command, type ImageSizes } from "../../typings/index.js";
 
 const sizeChoices = [16, 32, 64, 128, 256, 300, 512, 600, 1024, 2048, 4096].map((size) => ({
@@ -73,7 +73,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 		`**Size**: ${size} px\n\n` +
 		`**Banner**: ${bannerLinks.join(", ")}`;
 
-	const embed = new Embed(newDefaultEmbed(intr)).setDescription(description).setTitle(nameStr).setImage(dynamic);
+	const embed: APIEmbed = { ...defaultEmbed(intr), description, title: nameStr, image: { url: dynamic } };
 
 	intr.editReply({ embeds: [embed] });
 

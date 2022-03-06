@@ -1,10 +1,11 @@
 /* eslint-disable padding-line-between-statements */
+import { type APIEmbed } from "discord-api-types/v9";
 import {
 	ApplicationCommandOptionType,
 	type ChatInputApplicationCommandData,
 	type CommandInteraction
 } from "discord.js";
-import { newDefaultEmbed, USER_FLAGS_STRINGS } from "../../constants/index.js";
+import { defaultEmbed, USER_FLAGS_STRINGS } from "../../constants/index.js";
 import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 
@@ -61,27 +62,27 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 	const name = member?.displayName ?? tag;
 
-	const userEmbed = newDefaultEmbed(intr).setColor(color).setThumbnail(avatar).setTitle(name);
+	const userEmbed: APIEmbed = { ...defaultEmbed(intr), color, title: name, thumbnail: { url: avatar } };
 
-	userEmbed.addFields(
+	userEmbed.fields = [
 		{ name: "Tag", value: tag },
 		{ name: "ID", value: `\`${id}\`` },
 		{ name: "Bot", value: bot ? "Yes" : "No" },
 		{ name: "Avatar", value: `[Link](${avatar})` },
 		{ name: "Badges", value: flags.length > 1 ? parseFlags(flags) : "None" },
 		{ name: "Created", value: created }
-	);
+	];
 
 	if (member)
-		userEmbed.addFields(
+		userEmbed.fields.push(
 			{ name: "Roles", value: roles ?? "No roles" },
 			{ name: "Boosting", value: premium ? "Yes" : "No" },
 			{ name: "Color", value: member.displayHexColor }
 		);
 
-	if (joined) userEmbed.addField({ name: "Joined", value: joined });
+	if (joined) userEmbed.fields.push({ name: "Joined", value: joined });
 
-	if (owner) userEmbed.setDescription("👑 Server owner");
+	if (owner) userEmbed.description = "👑 Server owner";
 
 	intr.editReply({ embeds: [userEmbed] });
 
