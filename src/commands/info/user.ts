@@ -62,25 +62,29 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 	const name = member?.displayName ?? tag;
 
-	const userEmbed: APIEmbed = { ...defaultEmbed(intr), color, title: name, thumbnail: { url: avatar } };
-
-	userEmbed.fields = [
-		{ name: "Tag", value: tag },
-		{ name: "ID", value: `\`${id}\`` },
-		{ name: "Bot", value: bot ? "Yes" : "No" },
-		{ name: "Avatar", value: `[Link](${avatar})` },
-		{ name: "Badges", value: flags.length > 1 ? parseFlags(flags) : "None" },
-		{ name: "Created", value: created }
-	];
+	const userEmbed: APIEmbed = {
+		...defaultEmbed(intr),
+		color,
+		title: name,
+		thumbnail: { url: avatar },
+		fields: [
+			{ name: "Tag", value: tag },
+			{ name: "ID", value: `\`${id}\`` },
+			{ name: "Bot", value: bot ? "Yes" : "No" },
+			{ name: "Avatar", value: `[Link](${avatar})` },
+			{ name: "Badges", value: flags.length > 1 ? parseFlags(flags) : "None" },
+			{ name: "Created", value: created }
+		]
+	};
 
 	if (member)
-		userEmbed.fields.push(
+		userEmbed.fields!.push(
 			{ name: "Roles", value: roles ?? "No roles" },
 			{ name: "Boosting", value: premium ? "Yes" : "No" },
 			{ name: "Color", value: member.displayHexColor }
 		);
 
-	if (joined) userEmbed.fields.push({ name: "Joined", value: joined });
+	if (joined) userEmbed.fields!.push({ name: "Joined", value: joined });
 
 	if (owner) userEmbed.description = "👑 Server owner";
 
