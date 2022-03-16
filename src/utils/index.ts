@@ -141,4 +141,9 @@ export default class Util extends null {
 
 		return 0 < excess ? `${roleMentions}, and ${excess} more` : roleMentions;
 	}
+
+	// Very simple and definitely not the best -- gets the job done
+	public static escapeDiscordMarkdown(text: string): string {
+		return text.replaceAll(/(\*)|(_)|(\|)|(\\)/g, (match) => `\\${match}`);
+	}
 }
