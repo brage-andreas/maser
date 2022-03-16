@@ -1,10 +1,12 @@
 /* eslint-disable padding-line-between-statements */
+
 import { type APIEmbed } from "discord-api-types/v9";
 import {
 	ApplicationCommandOptionType,
 	type ChatInputApplicationCommandData,
 	type CommandInteraction
 } from "discord.js";
+import { EMOJIS } from "../../constants/emojis.js";
 import { defaultEmbed, USER_FLAGS_STRINGS } from "../../constants/index.js";
 import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
@@ -26,14 +28,6 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const member = userOptionIsProvided ? intr.options.getMember("user") : intr.member;
 	const user = userOptionIsProvided ? intr.options.getUser("user", true) : intr.user;
 
-	const parseFlags = (flagArray: string[]) => {
-		flagArray.shift();
-
-		const flags = `• ${flagArray.join("\n• ")}`;
-
-		return flags.charAt(0).toUpperCase() + flags.slice(1);
-	};
-
 	const getColor = (hex: number | undefined) => {
 		const { green } = intr.client.colors;
 
@@ -43,48 +37,68 @@ async function execute(intr: CommandInteraction<"cached">) {
 		return empty ? green : hex;
 	};
 
-	const rawFlags = (await user.fetchFlags()).toArray();
-	const flags = rawFlags.map((flag) => USER_FLAGS_STRINGS[flag] ?? flag);
-
 	const premium = Boolean(member?.premiumSinceTimestamp);
 	const owner = Boolean(member) && member!.id === member?.guild.ownerId;
 
-	const avatar = (member ?? user).displayAvatarURL({ size: 2048 });
+	const rawFlags = (await user.fetchFlags()).toArray();
+	const flags = rawFlags.map((flag) => USER_FLAGS_STRINGS[flag] ?? flag);
+
+	if (premium) flags.push(`${EMOJIS.boost} Booster`);
+
+	const memberAvatar = member?.displayAvatarURL({ size: 2048 }) ?? null;
+	const userAvatar = user.displayAvatarURL({ size: 2048 });
+	const displayAvatar = memberAvatar ?? userAvatar;
+	const banner = user.bannerURL({ size: 2048 });
 
 	const joined = member?.joinedTimestamp ? Util.date(member.joinedTimestamp) : null;
 
 	const color = getColor(member?.displayColor);
 
 	const created = Util.date(user.createdTimestamp);
-	const roles = Util.parseRoles(member);
+
+	const hoistedRole = member?.roles.hoist?.toString() ?? null;
+	const coloredRole = member?.roles.color?.toString() ?? null;
+	const iconRole = member?.roles.icon?.iconURL({ size: 1024 }) ?? null;
+
+	let roles = `${Util.parseRoles(member)}\n`;
+
+	if (hoistedRole) roles += `\n• Hoisted: ${hoistedRole}`;
+	if (coloredRole) roles += `\n• Coloured: ${coloredRole}`;
+	if (iconRole) roles += `\n• Icon: ${iconRole}`;
 
 	const { bot, tag, id } = user;
 
-	const name = member?.displayName ?? tag;
+	const name = Util.escapeDiscordMarkdown(member?.displayName ?? tag);
+
+	let infoFieldValue =
+		// eslint-disable-next-line prefer-template
+		(owner ? "• 👑 Server Owner\n" : "") +
+		`• Tag: \`${tag}\`\n` +
+		`• ID: \`${id}\`\n` +
+		`• Created: ${created}\n` +
+		(member ? `• Joined: ${joined}\n• Colour: \`#${color.toString(16)}\`\n` : "") +
+		`• [Avatar](${displayAvatar})`;
+
+	if (premium) infoFieldValue += "\n• Booster";
+
+	if (bot) infoFieldValue += "\n• Bot";
 
 	const userEmbed: APIEmbed = {
 		...defaultEmbed(intr),
 		color,
 		title: name,
-		thumbnail: { url: avatar },
+		thumbnail: { url: displayAvatar },
 		fields: [
-			{ name: "Tag", value: tag },
-			{ name: "ID", value: `\`${id}\`` },
-			{ name: "Bot", value: bot ? "Yes" : "No" },
-			{ name: "Avatar", value: `[Link](${avatar})` },
-			{ name: "Badges", value: flags.length > 1 ? parseFlags(flags) : "None" },
-			{ name: "Created", value: created }
+			{ name: "Info", value: infoFieldValue },
+			{ name: "Badges", value: flags.length ? `• ${flags.join("\n• ")}` : "None" }
 		]
 	};
 
 	if (member)
-		userEmbed.fields!.push(
-			{ name: "Roles", value: roles ?? "No roles" },
-			{ name: "Boosting", value: premium ? "Yes" : "No" },
-			{ name: "Color", value: member.displayHexColor }
-		);
-
-	if (joined) userEmbed.fields!.push({ name: "Joined", value: joined });
+		userEmbed.fields!.push({
+			name: `Roles (${member.roles.cache.size - 1})`,
+			value: 1 < member.roles.cache.size ? roles : "No roles"
+		});
 
 	if (owner) userEmbed.description = "👑 Server owner";
 
