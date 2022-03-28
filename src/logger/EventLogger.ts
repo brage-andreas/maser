@@ -38,7 +38,7 @@ export default class EventLogger extends BaseLogger {
 
 		if (!channel) return;
 
-		const getDate = (date: Date | null | undefined) => (date ? Util.date(date) : "Date not found");
+		const getDate = (date: Date | null | undefined) => (date ? Util.fullDate(date) : "Date not found");
 		const user = member.user ?? (await this.client.users.fetch(member.id).catch(() => null));
 		const color = this.client.colors[joined ? "green" : "red"];
 		const footer = joined ? "User joined" : "User left";

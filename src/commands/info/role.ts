@@ -47,7 +47,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 		color: getColor(role.color),
 		title: role.name,
 		fields: [
-			{ name: "Created", value: Util.date(role.createdTimestamp) },
+			{ name: "Created", value: Util.fullDate(role.createdTimestamp) },
 			{ name: "Members", value: memberCount },
 			{ name: "Hoisted", value: role.hoist ? "Yes" : "No" },
 			{ name: "Icon", value: icon },

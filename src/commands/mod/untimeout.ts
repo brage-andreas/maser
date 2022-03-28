@@ -56,7 +56,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 	const info =
 		`• **Reason**: ${reason ?? "No reason provided"}\n` +
-		`• **Expiration**: ${Util.date(expiration)}\n` +
+		`• **Expiration**: ${Util.fullDate(expiration)}\n` +
 		`• **Target**: ${target.user.tag} (${target} ${target.id})`;
 
 	const query = `${emojis.warning} Are you sure you want to untimeout **${target.user.tag}** (${target.id})?\n\n${info}`;

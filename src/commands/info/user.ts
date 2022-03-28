@@ -52,11 +52,11 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const displayAvatar = memberAvatar ?? userAvatar;
 	const banner = user.bannerURL({ size: 2048 });
 
-	const joined = member?.joinedTimestamp ? Util.date(member.joinedTimestamp) : null;
+	const joined = member?.joinedTimestamp ? Util.fullDate(member.joinedTimestamp) : null;
 
 	const color = getColor(member?.displayColor);
 
-	const created = Util.date(user.createdTimestamp);
+	const created = Util.fullDate(user.createdTimestamp);
 
 	const hoistedRole = member?.roles.hoist ?? null;
 	const coloredRole = member?.roles.color ?? null;

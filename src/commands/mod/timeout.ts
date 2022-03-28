@@ -67,14 +67,15 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 	const info =
 		`• **Reason**: ${reason ?? "No reason provided"}\n` +
-		`• **Duration**: ${ms(duration, { long: true })} (Expiration ${Util.date(expiration)})\n` +
+		`• **Duration**: ${ms(duration, { long: true })}\n` +
+		`• **Expiration**: ${Util.fullDate(expiration)}\n` +
 		`• **Target**: ${target.user.tag} (${target} ${target.id})`;
 
 	const query =
 		// eslint-disable-next-line prefer-template
 		`${emojis.warning} Are you sure you want to timeout **${target.user.tag}** (${target.id})?` +
 		(inTimeout
-			? `\nThis will override their current timeout, set until ${Util.fullDate(
+			? `\nThis will override their current timeout, set to expire ${Util.fullDate(
 					target.communicationDisabledUntilTimestamp ?? 0 // should be present -- just in case
 			  )}.`
 			: "") +

@@ -48,7 +48,7 @@ function execute(intr: CommandInteraction<"cached">) {
 	const { partnered, verified, name, vanityURLCode: vanity, premiumSubscriptionCount: boosters } = guild;
 
 	const vanityStr = vanity ? `with vanity \`${vanity}\`` : "";
-	const created = Util.date(guild.createdAt);
+	const created = Util.fullDate(guild.createdAt);
 	const roles = Util.parseRoles(guild);
 	const icon = guild.iconURL({ size: 2048 }) ?? "";
 	const tier = BOOST_LEVELS[guild.premiumTier];
