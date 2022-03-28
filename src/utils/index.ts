@@ -1,3 +1,4 @@
+import { type TimestampStylesString } from "@discordjs/builders";
 import { type Guild, type GuildMember } from "discord.js";
 import { MAX_EMBED_DESCRIPTION_LEN } from "../constants/index.js";
 
@@ -62,11 +63,18 @@ export default class Util extends null {
 	/**
 	 * Turns any given timestamp or date into a markdown timestamp.
 	 */
-	public static date(time: Date | number, style = "R"): string {
+	public static date(time: Date | number, style: TimestampStylesString = "R"): string {
 		const timestamp = time instanceof Date ? time.getTime() : time;
 		const seconds = Math.ceil(timestamp / 1000);
 
 		return `<t:${seconds}:${style}>`;
+	}
+
+	/**
+	 * Turns any given timestamp or date into a markdown timestamp in a `<full date> (<relative time>)` format.
+	 */
+	public static fullDate(time: Date | number): string {
+		return `${Util.date(time, "f")} (${Util.date(time)})`;
 	}
 
 	/**
