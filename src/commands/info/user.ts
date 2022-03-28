@@ -28,6 +28,8 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const member = userOptionIsProvided ? intr.options.getMember("user") : intr.member;
 	const user = userOptionIsProvided ? intr.options.getUser("user", true) : intr.user;
 
+	await user.fetch(true);
+
 	const getColor = (hex: number | undefined) => {
 		const { green } = intr.client.colors;
 
@@ -56,15 +58,15 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 	const created = Util.date(user.createdTimestamp);
 
-	const hoistedRole = member?.roles.hoist?.toString() ?? null;
-	const coloredRole = member?.roles.color?.toString() ?? null;
-	const iconRole = member?.roles.icon?.iconURL({ size: 1024 }) ?? null;
+	const hoistedRole = member?.roles.hoist ?? null;
+	const coloredRole = member?.roles.color ?? null;
+	const iconRole = member?.roles.icon ?? null;
 
 	let roles = `${Util.parseRoles(member)}\n`;
 
 	if (hoistedRole) roles += `\n• Hoisted: ${hoistedRole}`;
 	if (coloredRole) roles += `\n• Coloured: ${coloredRole}`;
-	if (iconRole) roles += `\n• Icon: ${iconRole}`;
+	if (iconRole) roles += `\n• Icon: ${iconRole} ([Link to icon](${iconRole.iconURL({ size: 1024 })}))`;
 
 	const { bot, tag, id } = user;
 
@@ -77,17 +79,21 @@ async function execute(intr: CommandInteraction<"cached">) {
 		`• ID: \`${id}\`\n` +
 		`• Created: ${created}\n` +
 		(member ? `• Joined: ${joined}\n• Colour: \`#${color.toString(16)}\`\n` : "") +
-		`• [Avatar](${displayAvatar})`;
+		`• [User avatar](${userAvatar})\n` +
+		(memberAvatar ? `• [Member avatar](${memberAvatar})\n` : "") +
+		(banner ? `• [Banner](${banner})\n` : "");
 
-	if (premium) infoFieldValue += "\n• Booster";
+	if (premium) infoFieldValue += "• Booster\n";
 
-	if (bot) infoFieldValue += "\n• Bot";
+	if (bot) infoFieldValue += "• Bot\n";
 
 	const userEmbed: APIEmbed = {
 		...defaultEmbed(intr),
-		color,
-		title: name,
 		thumbnail: { url: displayAvatar },
+		footer: { icon_url: iconRole?.iconURL({ size: 1024 }) ?? "", text: hoistedRole?.name ?? "" },
+		image: { url: banner ?? "" },
+		title: name,
+		color,
 		fields: [
 			{ name: "Info", value: infoFieldValue },
 			{ name: "Badges", value: flags.length ? `• ${flags.join("\n• ")}` : "None" }
