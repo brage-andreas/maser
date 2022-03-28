@@ -1,7 +1,6 @@
-import { type APIEmbed } from "discord-api-types/v9";
+import { type APIButtonComponentWithCustomId, ComponentType, type APIEmbed } from "discord-api-types/v9";
 import {
 	ApplicationCommandOptionType,
-	ButtonComponent,
 	ButtonStyle,
 	User,
 	type ChatInputApplicationCommandData,
@@ -83,19 +82,23 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const embed: APIEmbed = { ...defaultEmbed(intr), title: "Avatar", description, image: { url: avatar } };
 	const buttonManager = new ButtonManager();
 
-	const outputButton = new ButtonComponent()
-		.setDisabled(!includeGuildAvatar)
-		.setCustomId("user")
-		.setLabel("User avatar")
-		.setStyle(ButtonStyle.Secondary)
-		.setEmoji({ name: "🙃" });
+	const outputButton: APIButtonComponentWithCustomId = {
+		custom_id: "user",
+		disabled: !includeGuildAvatar,
+		style: ButtonStyle.Secondary,
+		label: "User avatar",
+		emoji: { name: "🙃" },
+		type: ComponentType.Button
+	};
 
-	const codeButton = new ButtonComponent()
-		.setDisabled(includeGuildAvatar)
-		.setCustomId("member")
-		.setLabel("Guild avatar")
-		.setStyle(ButtonStyle.Secondary)
-		.setEmoji({ name: "😗" });
+	const codeButton: APIButtonComponentWithCustomId = {
+		custom_id: "member",
+		disabled: includeGuildAvatar,
+		style: ButtonStyle.Secondary,
+		label: "Guild avatar",
+		emoji: { name: "😗" },
+		type: ComponentType.Button
+	};
 
 	if (hasGuildAvatar) {
 		buttonManager.setRows(outputButton, codeButton);

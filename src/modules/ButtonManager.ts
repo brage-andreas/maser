@@ -1,6 +1,5 @@
+import { type APIActionRowComponent, type APIButtonComponentWithCustomId } from "discord-api-types/v9";
 import {
-	ActionRow,
-	ButtonComponent,
 	ButtonStyle,
 	ComponentType,
 	MessageComponentInteraction,
@@ -20,7 +19,7 @@ const MAX_ROW_LEN = 5;
  */
 export default class ButtonManager {
 	public message: Message<true> | null;
-	public rows: ActionRow<ButtonComponent>[];
+	public rows: APIActionRowComponent<APIButtonComponentWithCustomId>[];
 
 	/**
 	 * Creates a button manager.
@@ -34,18 +33,25 @@ export default class ButtonManager {
 	/**
 	 * Replaces the manager's current rows with new ones from given buttons.
 	 */
-	public setRows(...buttons: ButtonComponent[] | ButtonComponent[][]): this {
+	public setRows(...buttons: APIButtonComponentWithCustomId[] | APIButtonComponentWithCustomId[][]): this {
 		if (!buttons.length) return this;
 
 		const components = this.chunkButtons(buttons);
-		const amountOfRows = Math.ceil(components.length / MAX_ROW_LEN);
-		const length = amountOfRows <= MAX_ROW_LEN ? amountOfRows : MAX_ROW_LEN;
 
-		this.rows = Array.from({ length }, () => new ActionRow<ButtonComponent>()).map((row, i) => {
+		this.rows = Array.from(
+			{ length: components.length },
+			() =>
+				({
+					type: ComponentType.ActionRow,
+					components: []
+				} as APIActionRowComponent<APIButtonComponentWithCustomId>)
+		).map((row, i) => {
 			const start = i * MAX_ROW_LEN;
 			const end = i * MAX_ROW_LEN + MAX_ROW_LEN;
 
-			return row.addComponents(...components.slice(start, end));
+			row.components = components.slice(start, end);
+
+			return row;
 		});
 
 		return this;
@@ -98,10 +104,14 @@ export default class ButtonManager {
 	/**
 	 * Chunks the buttons into arrays with a set size and total length
 	 */
-	public chunkButtons(buttons: ButtonComponent[] | ButtonComponent[][], amount = 5, rows = 5): ButtonComponent[] {
+	public chunkButtons(
+		buttons: APIButtonComponentWithCustomId[] | APIButtonComponentWithCustomId[][],
+		amount = 5,
+		rows = 5
+	): APIButtonComponentWithCustomId[] {
 		const parsedButtonsArray = this._parseButtons(buttons);
 		const cutParsedButtonsArray = parsedButtonsArray.slice(0, rows);
-		const chunk: ButtonComponent[] = [];
+		const chunk: APIButtonComponentWithCustomId[] = [];
 
 		cutParsedButtonsArray.forEach((buttonArray) => {
 			const buttons = buttonArray.slice(0, amount);
@@ -115,11 +125,13 @@ export default class ButtonManager {
 	/**
 	 * Parses buttons by nesting them appropriately.
 	 */
-	private _parseButtons(buttons: ButtonComponent[] | ButtonComponent[][]): ButtonComponent[][] {
+	private _parseButtons(
+		buttons: APIButtonComponentWithCustomId[] | APIButtonComponentWithCustomId[][]
+	): APIButtonComponentWithCustomId[][] {
 		if (buttons.some((buttonOrRow) => Array.isArray(buttonOrRow)))
 			return buttons.map((button) => (Array.isArray(button) ? button : [button]));
 
-		return [buttons as ButtonComponent[]];
+		return [buttons as APIButtonComponentWithCustomId[]];
 	}
 
 	/**
@@ -127,13 +139,11 @@ export default class ButtonManager {
 	 */
 	private _toggleButtons(customIds: string[], disable: boolean) {
 		this.rows = this.rows.map((row) => {
-			row.setComponents(
-				...row.components.map((button) => {
-					if (button.customId && customIds.includes(button.customId)) button.setDisabled(disable);
+			row.components = row.components.map((button) => {
+				if (button.custom_id && customIds.includes(button.custom_id)) button.disabled = disable;
 
-					return button;
-				})
-			);
+				return button;
+			});
 
 			return row;
 		});
@@ -169,17 +179,24 @@ export class ConfirmationButtons extends ButtonManager {
 
 		this.time = options?.time ?? "30s";
 
-		const yesButton = new ButtonComponent()
-			.setLabel("Yes")
-			.setStyle(this.invertedColors ? ButtonStyle.Danger : ButtonStyle.Success)
-			.setCustomId("yes");
+		const yesButton: APIButtonComponentWithCustomId = {
+			custom_id: "yes",
+			style: this.invertedColors ? ButtonStyle.Danger : ButtonStyle.Success,
+			label: "Yes",
+			type: ComponentType.Button
+		};
 
-		const noButton = new ButtonComponent()
-			.setLabel("No")
-			.setStyle(this.invertedColors ? ButtonStyle.Secondary : ButtonStyle.Secondary)
-			.setCustomId("no");
+		const noButton: APIButtonComponentWithCustomId = {
+			custom_id: "no",
+			style: this.invertedColors ? ButtonStyle.Success : ButtonStyle.Secondary,
+			label: "No",
+			type: ComponentType.Button
+		};
 
-		const row = new ActionRow<ButtonComponent>().addComponents(yesButton, noButton);
+		const row: APIActionRowComponent<APIButtonComponentWithCustomId> = {
+			components: [yesButton, noButton],
+			type: 1
+		};
 
 		this.rows = [row];
 	}
@@ -258,7 +275,7 @@ export class ConfirmationButtons extends ButtonManager {
 
 	private async _updateOrEditReply(
 		content: string,
-		components: ActionRow<ButtonComponent>[]
+		components: APIActionRowComponent<APIButtonComponentWithCustomId>[]
 	): Promise<Message<true>> {
 		if (!this.interaction) throw new Error("Interaction must be set to the ConfirmationButtons");
 

@@ -1,7 +1,6 @@
-import { type APIEmbed } from "discord-api-types/v9";
+import { ComponentType, type APIEmbed, type APIButtonComponentWithCustomId } from "discord-api-types/v9";
 import Discord, {
 	ApplicationCommandOptionType,
-	ButtonComponent,
 	ButtonStyle,
 	MessageAttachment,
 	type ChatInputApplicationCommandData,
@@ -131,17 +130,21 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	if (reply) {
 		const buttonManager = new ButtonManager();
 
-		const outputButton = new ButtonComponent() //
-			.setLabel(`Full ${type}`)
-			.setCustomId("output")
-			.setStyle(ButtonStyle.Secondary)
-			.setEmoji({ name: "📤" });
+		const outputButton: APIButtonComponentWithCustomId = {
+			label: `Full ${type}`,
+			custom_id: "output",
+			style: ButtonStyle.Secondary,
+			emoji: { name: "📤" },
+			type: ComponentType.Button
+		};
 
-		const codeButton = new ButtonComponent() //
-			.setLabel("Full input")
-			.setCustomId("code")
-			.setStyle(ButtonStyle.Secondary)
-			.setEmoji({ name: "📥" });
+		const codeButton: APIButtonComponentWithCustomId = {
+			label: "Full input",
+			custom_id: "code",
+			style: ButtonStyle.Secondary,
+			emoji: { name: "📥" },
+			type: ComponentType.Button
+		};
 
 		buttonManager.setRows(outputButton, codeButton);
 
