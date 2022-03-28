@@ -20,7 +20,7 @@ export const REASON = (action: string, required?: true): ApplicationCommandOptio
 export const DURATION = (action: string, required?: true): ApplicationCommandOptionData => ({
 	name: "duration",
 	type: ApplicationCommandOptionType.Integer,
-	description: `The duration for this ${action}`,
+	description: `The duration for this ${action} (3 hours)`,
 	required,
 	choices: [
 		{ name: "3 hours (default)", value: DURATIONS.THREE_HRS },

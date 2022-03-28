@@ -22,18 +22,18 @@ const data: ChatInputApplicationCommandData = {
 	options: [
 		{
 			name: "user",
-			description: "The user to target. Default is you",
+			description: "The user to target (You)",
 			type: ApplicationCommandOptionType.User
 		},
 		{
 			name: "size",
-			description: "Size of the image. Default is 2048px",
+			description: "Size of the image (2048px)",
 			type: ApplicationCommandOptionType.Integer,
 			choices: sizeChoices
 		},
 		{
 			name: "guild-avatar",
-			description: "Include guild avatars. Default is true",
+			description: "Include guild avatars (True)",
 			type: ApplicationCommandOptionType.Boolean
 		}
 	]

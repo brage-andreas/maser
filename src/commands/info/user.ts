@@ -17,7 +17,7 @@ const data: ChatInputApplicationCommandData = {
 	options: [
 		{
 			name: "user",
-			description: "The user to target",
+			description: "The user to target (You)",
 			type: ApplicationCommandOptionType.User
 		}
 	]

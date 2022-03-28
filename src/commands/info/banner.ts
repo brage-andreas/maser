@@ -18,12 +18,12 @@ const data: ChatInputApplicationCommandData = {
 	options: [
 		{
 			name: "user",
-			description: "The user to target. Default is you",
+			description: "The user to target (You)",
 			type: ApplicationCommandOptionType.User
 		},
 		{
 			name: "size",
-			description: "Size of the banner. Default is 2048px",
+			description: "Size of the banner (2048px)",
 			type: ApplicationCommandOptionType.Integer,
 			choices: sizeChoices
 		}

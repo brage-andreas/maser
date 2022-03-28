@@ -24,7 +24,7 @@ const data: ChatInputApplicationCommandData = {
 		REASON("ban"),
 		{
 			name: "days",
-			description: "How many days to prune user's messages. Default is 1 day.",
+			description: "Days to prune user's messages (1 day)",
 			type: ApplicationCommandOptionType.Integer,
 			choices: [
 				{ name: "No prune", value: 0 },

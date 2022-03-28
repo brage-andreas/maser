@@ -18,11 +18,11 @@ const options: Partial<CommandOptions> = {
 
 const data: ChatInputApplicationCommandData = {
 	name: "timeout",
-	description: "Time out a user for a given time",
+	description: "Timeout a user for a given time",
 	options: [
 		USER(true), //
-		REASON("time-out"),
-		DURATION("time-out")
+		REASON("timeout"),
+		DURATION("timeout")
 	]
 };
 
@@ -34,13 +34,13 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const emojis = intr.client.maserEmojis;
 
 	if (!intr.guild.me?.permissions.has(PermissionsBitField.Flags.ModerateMembers)) {
-		intr.editReply(`${emojis.cross} I don't have permissions to timeout users`);
+		intr.editReply(`${emojis.cross} I do not have permissions to timeout users`);
 
 		return;
 	}
 
 	if (!target) {
-		intr.editReply(`${emojis.cross} The user to target was not found in this server`);
+		intr.editReply(`${emojis.cross} The user was not found in this server`);
 
 		return;
 	}
@@ -58,23 +58,27 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	}
 
 	if (target.id === intr.guild.ownerId) {
-		intr.editReply(`${emojis.cross} The user to target is the owner of this server`);
+		intr.editReply(`${emojis.cross} The user is the owner of this server`);
 
 		return;
 	}
 
-	if (Date.now() < (target.communicationDisabledUntilTimestamp ?? 0)) {
-		intr.editReply(`${emojis.cross} The user to target is already in a time-out`);
-
-		return;
-	}
+	const inTimeout = Date.now() < (target.communicationDisabledUntilTimestamp ?? 0);
 
 	const info =
 		`• **Reason**: ${reason ?? "No reason provided"}\n` +
 		`• **Duration**: ${ms(duration, { long: true })} (Expiration ${Util.date(expiration)})\n` +
 		`• **Target**: ${target.user.tag} (${target} ${target.id})`;
 
-	const query = `${emojis.warning} Are you sure you want to timeout **${target.user.tag}** (${target.id})?\n\n${info}`;
+	const query =
+		// eslint-disable-next-line prefer-template
+		`${emojis.warning} Are you sure you want to timeout **${target.user.tag}** (${target.id})?` +
+		(inTimeout
+			? `\nThis will override their current timeout, set until ${Util.fullDate(
+					target.communicationDisabledUntilTimestamp ?? 0 // should be present -- just in case
+			  )}.`
+			: "") +
+		`\n\n${info}`;
 
 	const collector = new ConfirmationButtons({ authorId: intr.user.id, inverted: true }) //
 		.setInteraction(intr)

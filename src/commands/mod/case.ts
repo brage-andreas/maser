@@ -60,12 +60,12 @@ const data: ChatInputApplicationCommandData = {
 				},
 				{
 					name: "time",
-					description: 'The time since this case (e.g. "5min"). Default is current time',
+					description: 'The time since this case, e.g. "5min" (Current time)',
 					type: ApplicationCommandOptionType.String
 				},
 				{
 					name: "duration",
-					description: 'The duration of this case (e.g. "5min")',
+					description: 'The duration of this case, e.g. "5min"',
 					type: ApplicationCommandOptionType.String
 				}
 			]
