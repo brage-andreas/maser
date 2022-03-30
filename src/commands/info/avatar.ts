@@ -101,7 +101,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	};
 
 	if (hasGuildAvatar) {
-		buttonManager.setRows(outputButton, codeButton);
+		buttonManager.setRows([outputButton, codeButton]);
 
 		embed.footer = { text: "Buttons last for 30 seconds" };
 	}

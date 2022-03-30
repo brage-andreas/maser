@@ -12,8 +12,6 @@ import ms from "ms";
 
 // Not everything here is tested
 
-const MAX_ROW_LEN = 5;
-
 /**
  * Manages buttons for the client.
  */
@@ -33,23 +31,18 @@ export default class ButtonManager {
 	/**
 	 * Replaces the manager's current rows with new ones from given buttons.
 	 */
-	public setRows(...buttons: APIButtonComponentWithCustomId[] | APIButtonComponentWithCustomId[][]): this {
+	public setRows(...buttons: APIButtonComponentWithCustomId[][]): this {
 		if (!buttons.length) return this;
 
-		const components = this.chunkButtons(buttons);
-
 		this.rows = Array.from(
-			{ length: components.length },
+			{ length: buttons.length },
 			() =>
 				({
 					type: ComponentType.ActionRow,
 					components: []
 				} as APIActionRowComponent<APIButtonComponentWithCustomId>)
 		).map((row, i) => {
-			const start = i * MAX_ROW_LEN;
-			const end = i * MAX_ROW_LEN + MAX_ROW_LEN;
-
-			row.components = components.slice(start, end);
+			row.components = buttons[i];
 
 			return row;
 		});
@@ -99,39 +92,6 @@ export default class ButtonManager {
 		this._toggleButtons(customIds, false);
 
 		return this;
-	}
-
-	/**
-	 * Chunks the buttons into arrays with a set size and total length
-	 */
-	public chunkButtons(
-		buttons: APIButtonComponentWithCustomId[] | APIButtonComponentWithCustomId[][],
-		amount = 5,
-		rows = 5
-	): APIButtonComponentWithCustomId[] {
-		const parsedButtonsArray = this._parseButtons(buttons);
-		const cutParsedButtonsArray = parsedButtonsArray.slice(0, rows);
-		const chunk: APIButtonComponentWithCustomId[] = [];
-
-		cutParsedButtonsArray.forEach((buttonArray) => {
-			const buttons = buttonArray.slice(0, amount);
-
-			chunk.push(...buttons);
-		});
-
-		return chunk;
-	}
-
-	/**
-	 * Parses buttons by nesting them appropriately.
-	 */
-	private _parseButtons(
-		buttons: APIButtonComponentWithCustomId[] | APIButtonComponentWithCustomId[][]
-	): APIButtonComponentWithCustomId[][] {
-		if (buttons.some((buttonOrRow) => Array.isArray(buttonOrRow)))
-			return buttons.map((button) => (Array.isArray(button) ? button : [button]));
-
-		return [buttons as APIButtonComponentWithCustomId[]];
 	}
 
 	/**

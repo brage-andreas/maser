@@ -146,7 +146,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 			type: ComponentType.Button
 		};
 
-		buttonManager.setRows(outputButton, codeButton);
+		buttonManager.setRows([outputButton, codeButton]);
 
 		const msg = await intr.editReply({ embeds, components: buttonManager.rows });
 		const collector = buttonManager.setMessage(msg).createCollector();
