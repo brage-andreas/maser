@@ -40,13 +40,12 @@ const data: ChatInputApplicationCommandData = {
 };
 
 async function execute(intr: ChatInputCommandInteraction<"cached">) {
+	const userOptionIsProvided = Boolean(intr.options.get("user")?.value);
+	const member = userOptionIsProvided ? intr.options.getMember("user") : intr.member;
+	const user = userOptionIsProvided ? intr.options.getUser("user", true) : intr.user;
 	const includeGuildAvatar = intr.options.getBoolean("guild-avatar") ?? true;
-	const memberOptionValue = intr.options.getMember("user");
-	const userOptionValue = intr.options.getUser("user");
-	const size = (intr.options.getInteger("size") ?? 2048) as ImageSizes;
-	const member = userOptionValue ? memberOptionValue : intr.member;
-	const user = userOptionValue ?? intr.user;
 	const hasGuildAvatar = Boolean(member?.avatar);
+	const size = (intr.options.getInteger("size") ?? 2048) as ImageSizes;
 
 	const getURL = (target: GuildMember | User, format: string) => {
 		const { discriminator } = target instanceof User ? target : target.user;
