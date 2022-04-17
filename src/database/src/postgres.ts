@@ -6,10 +6,10 @@ import PostgresConnection from "./connection.js";
 export default abstract class Postgres extends PostgresConnection {
 	public client: Client<true>;
 
-	protected idValue: string;
-	protected schema: string;
-	protected idKey: string;
-	protected table: string;
+	public readonly idValue: string;
+	public readonly schema: string;
+	public readonly table: string;
+	public readonly idKey: string;
 
 	public constructor(client: Client<true>, options: PostgresOptions) {
 		super();
