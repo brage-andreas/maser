@@ -1,8 +1,10 @@
 import { type Client } from "discord.js";
+import { CaseTypes } from "../constants/database.js";
 import { REGEXP } from "../constants/index.js";
 import InfoLogger from "../logger/InfoLogger.js";
 import Case from "../modules/Case.js";
 import { type CaseData } from "../typings/database.js";
+import Util from "../utils/index.js";
 import Postgres from "./src/postgres.js";
 
 export default class CaseManager extends Postgres {
@@ -150,10 +152,21 @@ export default class CaseManager extends Postgres {
 		return await this.getCase(caseId);
 	}
 
-	public async setURL(caseId: number | string, url: string) {
+	public async setURL(caseId: number | string, url: string): Promise<CaseManager> {
 		await this.updateRow(["url"], [url], `"caseId"=${caseId}`);
 
 		return this;
+	}
+
+	public compactCases(cases: CaseData[]): string[] {
+		return cases.map((c) => {
+			const { caseId, url, reason } = c;
+			const time = Util.date(c.timestamp);
+			const type = CaseTypes[c.type];
+			const idStr = url ? `[#${caseId}](${url})` : `#${caseId}`;
+
+			return `${time} • ${idStr} ${type} - ${reason}`;
+		});
 	}
 
 	private async getData(caseId: number | string): Promise<CaseData | null> {
