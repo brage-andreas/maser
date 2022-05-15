@@ -27,7 +27,6 @@ async function execute(intr: CommandInteraction<"cached">) {
 		? intr.options.getUser("user", true)
 		: intr.user;
 
-	// eslint-disable-next-line padding-line-between-statements
 	const caseManager = new CaseManager(intr.client, intr.guildId);
 
 	await caseManager.initialise();

@@ -98,11 +98,12 @@ export default class CaseManager extends Postgres {
 		caseId: number,
 		returnIfDeleted: true
 	): Promise<Case>;
+
 	public async deleteCase(
 		caseId: number,
 		returnIfDeleted?: false
 	): Promise<null>;
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 	public async deleteCase(
 		caseId: number,
 		returnIfDeleted?: boolean
@@ -209,9 +210,8 @@ export default class CaseManager extends Postgres {
 
 	public compactCases(cases: Array<CaseData>): Array<string> {
 		return cases.map((c) => {
-			const {
- caseId, url, reason 
-} = c;
+			// eslint-disable-next-line object-curly-newline
+			const { caseId, url, reason } = c;
 
 			const time = Util.date(c.timestamp);
 			const type = CaseTypes[c.type];

@@ -89,7 +89,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const collector = new ConfirmationButtons({
 		authorId: intr.user.id,
 		inverted: true
-	}) //
+	})
 		.setInteraction(intr)
 		.setQuery(query);
 

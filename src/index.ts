@@ -1,5 +1,3 @@
-/* eslint-disable padding-line-between-statements */
-
 import { Client } from "discord.js";
 import "dotenv/config";
 import { EMOJIS } from "./constants/emojis.js";

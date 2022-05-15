@@ -118,11 +118,9 @@ export default class Util extends null {
 		const suffix = options?.suffix ?? "";
 		const lang = options?.lang ?? "";
 
-		// eslint-disable-next-line padding-line-between-statements
 		const createString = (input?: string) =>
 			`${prefix}\n\`\`\`${lang}\n${input ?? ""}\n\`\`\`\n${suffix}`;
 
-		// eslint-disable-next-line padding-line-between-statements
 		const lenWithoutInput = createString().length;
 		let string = createString(input);
 

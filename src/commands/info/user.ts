@@ -1,5 +1,3 @@
-/* eslint-disable padding-line-between-statements */
-
 import { type APIEmbed } from "discord-api-types/v9";
 import {
 	ApplicationCommandOptionType,
@@ -25,9 +23,11 @@ const data: ChatInputApplicationCommandData = {
 
 async function execute(intr: CommandInteraction<"cached">) {
 	const userOptionIsProvided = Boolean(intr.options.get("user")?.value);
+
 	const member = userOptionIsProvided
 		? intr.options.getMember("user")
 		: intr.member;
+
 	const user = userOptionIsProvided
 		? intr.options.getUser("user", true)
 		: intr.user;
@@ -40,6 +40,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 		if (!hex) {
 			return green;
 		}
+
 		const empty = hex === 0x000000 || hex === 0xffffff;
 
 		return empty ? green : hex;
@@ -77,18 +78,19 @@ async function execute(intr: CommandInteraction<"cached">) {
 	if (hoistedRole) {
 		roles += `\n• Hoisted: ${hoistedRole}`;
 	}
+
 	if (coloredRole) {
 		roles += `\n• Coloured: ${coloredRole}`;
 	}
+
 	if (iconRole) {
 		roles += `\n• Icon: ${iconRole} ([Link to icon](${iconRole.iconURL({
 			size: 1024
 		})}))`;
 	}
 
-	const {
- bot, tag, id 
-} = user;
+	// eslint-disable-next-line object-curly-newline
+	const { bot, tag, id } = user;
 
 	const name = Util.escapeDiscordMarkdown(member?.displayName ?? tag);
 

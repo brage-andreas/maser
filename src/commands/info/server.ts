@@ -1,4 +1,3 @@
-/* eslint-disable padding-line-between-statements */
 import { type APIEmbed } from "discord-api-types/v9";
 import {
 	type ChatInputApplicationCommandData,
@@ -17,6 +16,7 @@ const data: ChatInputApplicationCommandData = {
 function execute(intr: CommandInteraction<"cached">) {
 	const applyS = (string: string, size: number) =>
 		size !== 1 ? `${string}s` : string;
+
 	const { guild } = intr;
 
 	const getEmojisAndStickers = (guild: Guild) => {
@@ -26,6 +26,7 @@ function execute(intr: CommandInteraction<"cached">) {
 		const standardEmojisAmount = guild.emojis.cache.filter(
 			(em) => em.animated === false
 		).size;
+
 		const animatedEmojisAmount = guild.emojis.cache.filter(
 			(em) => em.animated === true
 		).size;
@@ -33,6 +34,7 @@ function execute(intr: CommandInteraction<"cached">) {
 		const emojiAmountStr = `${
 			emojiAmount ? `**${emojiAmount}**` : "No"
 		} ${applyS("emoji", emojiAmount)}`;
+
 		const stickerAmountStr = `${stickerAmount || "no"} ${applyS(
 			"sticker",
 			stickerAmount
@@ -56,9 +58,11 @@ function execute(intr: CommandInteraction<"cached">) {
 	const voiceChannels = guild.channels.cache.filter((ch) =>
 		ch.isVoice()
 	).size;
+
 	const textChannels = guild.channels.cache.filter(
 		(ch) => ch.isText() && !ch.isThread()
 	).size;
+
 	const channels = guild.channels.cache.size;
 
 	const {
@@ -77,10 +81,12 @@ function execute(intr: CommandInteraction<"cached">) {
 
 	const totalChs = `**${channels}** ${applyS("channel", channels)}`;
 	const textChs = `${textChannels} text ${applyS("channel", textChannels)}`;
+
 	const voiceChs = `${voiceChannels} voice ${applyS(
 		"channel",
 		voiceChannels
 	)}`;
+
 	const channelsStr = `${totalChs} in total\n${textChs} and ${voiceChs}`;
 
 	const emojisAndStickerStr = getEmojisAndStickers(guild);

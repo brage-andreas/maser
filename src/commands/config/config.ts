@@ -69,7 +69,6 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 			// const role = intr.guild.roles.cache.get(value)?.toString() ?? null;
 			const mention = channel; //?? role;
 
-			// eslint-disable-next-line padding-line-between-statements
 			const mentionString = mention
 				? `${mention} (${value})`
 				: `Couldn't find anything with ID of \`${value}\``;
