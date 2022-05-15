@@ -83,31 +83,17 @@
 			"error",
 			{
 				"blankLine": "always",
-				"prev": "multiline-block-like",
-				"next": "*"
-			},
-			{
-				"blankLine": "always",
-				"next": ["return", "if", "for", "while", "switch", "throw"],
-				"prev": "*"
+				"prev": "*",
+				"next": ["return", "if", "for", "while", "switch", "throw"]
 			},
 			{
 				"blankLine": "always",
 				"prev": [
+					"multiline-expression",
+					"multiline-block-like",
 					"multiline-const",
-					"multiline-let",
-					"multiline-expression"
+					"multiline-let"
 				],
-				"next": "*"
-			},
-			{
-				"blankLine": "always",
-				"next": "expression",
-				"prev": "*"
-			},
-			{
-				"blankLine": "always",
-				"prev": "expression",
 				"next": "*"
 			}
 		]
