@@ -62,7 +62,9 @@ export default class CommandHandler {
 	/**
 	 * Gets the default hide option of this command.
 	 */
-	public getDefaultHide(intr: ChatInputCommandInteraction<"cached"> | string): boolean {
+	public getDefaultHide(
+		intr: ChatInputCommandInteraction<"cached"> | string
+	): boolean {
 		if (typeof intr !== "string") {
 			const commandOption = intr.options.getBoolean("hide");
 			const standard = this._get(intr.commandName).options.defaultHide;
@@ -80,7 +82,8 @@ export default class CommandHandler {
 		const data = this._commands.get(key);
 
 		// This should never be undefined
-		if (!data) throw new Error(`No internal command found with name: ${key}`);
+		if (!data)
+			throw new Error(`No internal command found with name: ${key}`);
 
 		return data;
 	}
@@ -95,22 +98,34 @@ export default class CommandHandler {
 	/**
 	 * Returns a map of all commands in given folders mapped by their names.
 	 */
-	private async _getCommands(folders: string[]): Promise<Map<string, Command>> {
+	private async _getCommands(
+		folders: string[]
+	): Promise<Map<string, Command>> {
 		const hash: Map<string, Command> = new Map();
 
 		for (const folder of folders) {
-			const FOLDER_DIR = new URL(`../commands/${folder}`, import.meta.url);
+			const FOLDER_DIR = new URL(
+				`../commands/${folder}`,
+				import.meta.url
+			);
 
 			const files = this._readDir(FOLDER_DIR).filter(
-				(fileName) => fileName.toLowerCase().endsWith(".js") && !fileName.toLowerCase().startsWith("noread.")
+				(fileName) =>
+					fileName.toLowerCase().endsWith(".js") &&
+					!fileName.toLowerCase().startsWith("noread.")
 			);
 
 			for (const fileName of files) {
-				const commandModule = (await import(`../commands/${folder}/${fileName}`)) as CommandModule;
+				const commandModule = (await import(
+					`../commands/${folder}/${fileName}`
+				)) as CommandModule;
+
 				const partialCommand = commandModule.getCommand();
 
 				if (!partialCommand.data || !partialCommand.execute)
-					throw new Error(`File "/commands/${folder}/${fileName}" is missing command properties`);
+					throw new Error(
+						`File "/commands/${folder}/${fileName}" is missing command properties`
+					);
 
 				if (!partialCommand.options) {
 					partialCommand.options = {
@@ -141,7 +156,10 @@ export default class CommandHandler {
 	/**
 	 * Adds a "hide" option to the given option array, if none present.
 	 */
-	private _addHideOption(options: ApplicationCommandOptionData[], name: string): ApplicationCommandOptionData[] {
+	private _addHideOption(
+		options: ApplicationCommandOptionData[],
+		name: string
+	): ApplicationCommandOptionData[] {
 		if (!options.some((option) => option.name === "hide")) {
 			const hide = this.getDefaultHide(name);
 
@@ -169,27 +187,38 @@ export default class CommandHandler {
 			cmd.data.options ??= [];
 
 			const subcommandGroups = cmd.data.options.filter(
-				(option) => option.type === ApplicationCommandOptionType.SubcommandGroup
+				(option) =>
+					option.type === ApplicationCommandOptionType.SubcommandGroup
 			) as ApplicationCommandSubGroupData[];
 
 			const subcommands = cmd.data.options.filter(
-				(option) => option.type === ApplicationCommandOptionType.Subcommand
+				(option) =>
+					option.type === ApplicationCommandOptionType.Subcommand
 			) as ApplicationCommandSubCommandData[];
 
 			subcommandGroups.forEach((subgroup) => {
 				subgroup.options?.forEach((subcommand) => {
 					// @ts-expect-error TODO: fix this mess
-					subcommand.options = this._addHideOption(subcommand.options ?? [], cmd.data.name);
+					subcommand.options = this._addHideOption(
+						subcommand.options ?? [],
+						cmd.data.name
+					);
 				});
 			});
 
 			subcommands.forEach((sub) => {
 				// @ts-expect-error TODO: fix this mess
-				sub.options = this._addHideOption(sub.options ?? [], cmd.data.name);
+				sub.options = this._addHideOption(
+					sub.options ?? [],
+					cmd.data.name
+				);
 			});
 
 			if (!subcommandGroups.length && !subcommands.length)
-				cmd.data.options = this._addHideOption(cmd.data.options, cmd.data.name);
+				cmd.data.options = this._addHideOption(
+					cmd.data.options,
+					cmd.data.name
+				);
 
 			dataSet.add(cmd.data);
 		});
@@ -201,7 +230,11 @@ export default class CommandHandler {
 	 * Sets cached commands in Discord.
 	 * Returns true if it succeeded, and false if it failed.
 	 */
-	private async _put(clientId: string, guildId?: string, clear = false): Promise<boolean> {
+	private async _put(
+		clientId: string,
+		guildId?: string,
+		clear = false
+	): Promise<boolean> {
 		const errorLogger = new ErrorLogger();
 		const infoLogger = new InfoLogger();
 
@@ -233,7 +266,10 @@ export default class CommandHandler {
 
 			const options = { body: clear ? [] : data };
 			const clearMsg = clear ? "Cleared" : "Set";
-			const logMsg = guildId ? `${clearMsg} commands in guild: ${guildId}` : `${clearMsg} global commands`;
+
+			const logMsg = guildId
+				? `${clearMsg} commands in guild: ${guildId}`
+				: `${clearMsg} global commands`;
 
 			const res = await rest
 				.put(route, options)

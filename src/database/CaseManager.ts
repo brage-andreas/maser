@@ -11,7 +11,12 @@ export default class CaseManager extends Postgres {
 	private initialised = false;
 
 	public constructor(client: Client<true>, guildId: string) {
-		super(client, { schema: "guilds", table: `cases-${guildId}`, idKey: "caseId", idValue: guildId });
+		super(client, {
+			schema: "guilds",
+			table: `cases-${guildId}`,
+			idKey: "caseId",
+			idValue: guildId
+		});
 	}
 
 	public async initialise(): Promise<this> {
@@ -46,7 +51,10 @@ export default class CaseManager extends Postgres {
 		return this;
 	}
 
-	public async createCase(data: Partial<CaseData>, logToChannel = false): Promise<Case> {
+	public async createCase(
+		data: Partial<CaseData>,
+		logToChannel = false
+	): Promise<Case> {
 		if (!this.initialised) await this.initialise();
 
 		const patchedData = await this.patch(data);
@@ -59,7 +67,9 @@ export default class CaseManager extends Postgres {
 
 		if (!case_) throw new Error("Something really went wrong");
 
-		const guild = this.client.guilds.cache.get(patchedData.guildId)?.name ?? "unknown name";
+		const guild =
+			this.client.guilds.cache.get(patchedData.guildId)?.name ??
+			"unknown name";
 
 		new InfoLogger().log(
 			`Created new case with ID: ${patchedData.caseId}`,
@@ -76,10 +86,19 @@ export default class CaseManager extends Postgres {
 		return case_;
 	}
 
-	public async deleteCase(caseId: number, returnIfDeleted: true): Promise<Case>;
-	public async deleteCase(caseId: number, returnIfDeleted?: false): Promise<null>;
+	public async deleteCase(
+		caseId: number,
+		returnIfDeleted: true
+	): Promise<Case>;
+	public async deleteCase(
+		caseId: number,
+		returnIfDeleted?: false
+	): Promise<null>;
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public async deleteCase(caseId: number, returnIfDeleted?: boolean): Promise<Case | null> {
+	public async deleteCase(
+		caseId: number,
+		returnIfDeleted?: boolean
+	): Promise<Case | null> {
 		if (!this.initialised) await this.initialise();
 
 		const case_ = await this.getCase(caseId);
@@ -88,7 +107,8 @@ export default class CaseManager extends Postgres {
 
 		this.deleteRow(`"caseId"='${caseId}'`);
 
-		const guild = this.client.guilds.cache.get(case_.guildId)?.name ?? "unknown name";
+		const guild =
+			this.client.guilds.cache.get(case_.guildId)?.name ?? "unknown name";
 
 		new InfoLogger().log(
 			`Deleted case with ID: ${caseId}`,
@@ -120,7 +140,10 @@ export default class CaseManager extends Postgres {
 		return res?.caseId ?? null;
 	}
 
-	public async getCaseDataWithinRange(offset: number, limit = 5): Promise<CaseData[] | null> {
+	public async getCaseDataWithinRange(
+		offset: number,
+		limit = 5
+	): Promise<CaseData[] | null> {
 		if (!this.initialised) await this.initialise();
 
 		const validatedOffset = Math.ceil(offset) < 0 ? 0 : Math.ceil(offset);
@@ -135,7 +158,10 @@ export default class CaseManager extends Postgres {
 		return await this.manyOrNone<CaseData>(query);
 	}
 
-	public async editCase(caseId: number | string, partialData: Partial<CaseData>): Promise<Case | null> {
+	public async editCase(
+		caseId: number | string,
+		partialData: Partial<CaseData>
+	): Promise<Case | null> {
 		if (!this.initialised) await this.initialise();
 
 		const data = await this.patch(partialData).catch(() => null);
@@ -152,7 +178,10 @@ export default class CaseManager extends Postgres {
 		return await this.getCase(caseId);
 	}
 
-	public async setURL(caseId: number | string, url: string): Promise<CaseManager> {
+	public async setURL(
+		caseId: number | string,
+		url: string
+	): Promise<CaseManager> {
 		await this.updateRow(["url"], [url], `"caseId"=${caseId}`);
 
 		return this;
@@ -238,7 +267,11 @@ export default class CaseManager extends Postgres {
 		return (res?.caseId ?? 0) + 1;
 	}
 
-	private test(column: string, value: string | null | undefined, opt?: { id?: true; required?: boolean }): void;
+	private test(
+		column: string,
+		value: string | null | undefined,
+		opt?: { id?: true; required?: boolean }
+	): void;
 	private test(
 		column: string,
 		value: number | string | null | undefined,
@@ -247,17 +280,23 @@ export default class CaseManager extends Postgres {
 	private test(
 		column: string,
 		value: number | string | null | undefined,
-		opt: { id?: boolean; required?: boolean } = { id: false, required: true }
+		opt: { id?: boolean; required?: boolean } = {
+			id: false,
+			required: true
+		}
 	): void {
 		opt.required ??= true;
 
 		opt.id ??= false;
 
 		if (value === undefined)
-			if (opt.required) throw new Error(`An argument for "${column}" must be provided`);
+			if (opt.required)
+				throw new Error(`An argument for "${column}" must be provided`);
 			else return;
 
 		if (opt.id && !REGEXP.ID.test(value as string))
-			throw new Error(`A valid argument for "${column}" must be provided (reading: ${value})`);
+			throw new Error(
+				`A valid argument for "${column}" must be provided (reading: ${value})`
+			);
 	}
 }

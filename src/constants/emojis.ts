@@ -1,4 +1,10 @@
-export type MaserEmojis = "check" | "cross" | "lock" | "sparkles" | "warning" | "wip";
+export type MaserEmojis =
+	| "check"
+	| "cross"
+	| "lock"
+	| "sparkles"
+	| "warning"
+	| "wip";
 
 // Source of emojis are located in /icons
 export const EMOJIS: Record<MaserEmojis | "boost", string> = {

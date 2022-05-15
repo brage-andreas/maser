@@ -33,8 +33,14 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const expiration = Date.now() + duration;
 	const emojis = intr.client.maserEmojis;
 
-	if (!intr.guild.me?.permissions.has(PermissionsBitField.Flags.ModerateMembers)) {
-		intr.editReply(`${emojis.cross} I do not have permissions to timeout users`);
+	if (
+		!intr.guild.me?.permissions.has(
+			PermissionsBitField.Flags.ModerateMembers
+		)
+	) {
+		intr.editReply(
+			`${emojis.cross} I do not have permissions to timeout users`
+		);
 
 		return;
 	}
@@ -63,7 +69,8 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 		return;
 	}
 
-	const inTimeout = Date.now() < (target.communicationDisabledUntilTimestamp ?? 0);
+	const inTimeout =
+		Date.now() < (target.communicationDisabledUntilTimestamp ?? 0);
 
 	const info =
 		`• **Reason**: ${reason ?? "No reason provided"}\n` +
@@ -81,23 +88,34 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 			: "") +
 		`\n\n${info}`;
 
-	const collector = new ConfirmationButtons({ authorId: intr.user.id, inverted: true }) //
+	const collector = new ConfirmationButtons({
+		authorId: intr.user.id,
+		inverted: true
+	}) //
 		.setInteraction(intr)
 		.setQuery(query);
 
 	const auditLogSuffix = `| By ${intr.user.tag} ${intr.user.id}`;
 
 	const auditLogReason = reason
-		? Util.appendPrefixAndSuffix(reason, MAX_AUDIT_REASON_LEN, { suffix: auditLogSuffix })
+		? Util.appendPrefixAndSuffix(reason, MAX_AUDIT_REASON_LEN, {
+				suffix: auditLogSuffix
+		  })
 		: `By ${intr.user.tag} ${intr.user.id}`;
 
 	collector
 		.start({ noReply: true })
 		.then(() => {
 			target
-				.disableCommunicationUntil(Date.now() + duration, auditLogReason)
+				.disableCommunicationUntil(
+					Date.now() + duration,
+					auditLogReason
+				)
 				.then(async () => {
-					const cases = await new CaseManager(intr.client, intr.guildId).initialise();
+					const cases = await new CaseManager(
+						intr.client,
+						intr.guildId
+					).initialise();
 
 					const case_ = await cases.createCase(
 						{
@@ -122,7 +140,9 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 					intr.logger.log(
 						`Timed out ${target.user.tag} (${target.id}) ` +
-							`for ${ms(duration, { long: true })} with reason: ${reason}`
+							`for ${ms(duration, {
+								long: true
+							})} with reason: ${reason}`
 					);
 				})
 				.catch(() => {
@@ -133,8 +153,12 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 				});
 		})
 		.catch(() => {
-			intr.editReply({ content: `${emojis.check} Gotcha. Command cancelled`, components: [] });
+			intr.editReply({
+				content: `${emojis.check} Gotcha. Command cancelled`,
+				components: []
+			});
 		});
 }
 
-export const getCommand = () => ({ options, data, execute } as Partial<Command>);
+export const getCommand = () =>
+	({ options, data, execute } as Partial<Command>);

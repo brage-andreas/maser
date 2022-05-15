@@ -1,4 +1,7 @@
-import { type ChatInputApplicationCommandData, type ChatInputCommandInteraction } from "discord.js";
+import {
+	type ChatInputApplicationCommandData,
+	type ChatInputCommandInteraction
+} from "discord.js";
 import { type Command } from "../../typings/index.js";
 
 const data: ChatInputApplicationCommandData = {

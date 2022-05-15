@@ -15,7 +15,9 @@ export default abstract class Postgres extends PostgresConnection {
 		super();
 
 		if (!REGEXP.ID.test(options.idValue))
-			throw new TypeError(`Provided argument for idValue is not a valid ID (reading: "${options.idValue}")"`);
+			throw new TypeError(
+				`Provided argument for idValue is not a valid ID (reading: "${options.idValue}")"`
+			);
 
 		this.client = client;
 
@@ -46,7 +48,10 @@ export default abstract class Postgres extends PostgresConnection {
 		return res ? res.exists : false;
 	}
 
-	protected async createRow(columns: string[], values: unknown[]): Promise<void> {
+	protected async createRow(
+		columns: string[],
+		values: unknown[]
+	): Promise<void> {
 		const formattedColumns = columns.map((e) => `"${e}"`);
 
 		const formattedValues = values.map((e) =>
@@ -54,7 +59,9 @@ export default abstract class Postgres extends PostgresConnection {
 		);
 
 		const query = `
-            INSERT INTO ${this.schema}."${this.table}" (\n${formattedColumns.join(", ")}\n)
+            INSERT INTO ${this.schema}."${
+			this.table
+		}" (\n${formattedColumns.join(", ")}\n)
             VALUES (\n${formattedValues.join(", ")}\n)
             ON CONFLICT DO NOTHING;
         `;
@@ -68,7 +75,10 @@ export default abstract class Postgres extends PostgresConnection {
 		whereQuery?: string
 	): Promise<void> {
 		const data = columns.map(
-			(column, i) => `"${column}"=${newValues[i] === "NULL" ? "NULL" : `'${newValues[i]}'`}`
+			(column, i) =>
+				`"${column}"=${
+					newValues[i] === "NULL" ? "NULL" : `'${newValues[i]}'`
+				}`
 		);
 
 		const query = `

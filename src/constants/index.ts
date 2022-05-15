@@ -10,9 +10,10 @@ import {
 export const MAX_EMBED_DESCRIPTION_LEN = 4096;
 export const MAX_AUDIT_REASON_LEN = 512;
 
+// TODO: remove cast
 export const INTENTS: GatewayIntentBits[] = [
-	IntentsBitField.Flags.GuildMembers, //
-	IntentsBitField.Flags.Guilds
+	IntentsBitField.Flags.GuildMembers as number,
+	IntentsBitField.Flags.Guilds as number
 ];
 
 export const PARTIALS: Partials[] = [
@@ -63,14 +64,19 @@ export const USER_FLAGS_STRINGS: Record<UserFlagsString, string> = {
 	Hypesquad: "<:discord_hypesquad:938523382004203550> Hypesquad",
 	BugHunterLevel1: "<:discord_bughunter_1:938523381756751924> Bughunter",
 	HypeSquadOnlineHouse1: "<:discord_bravery:938523381995798558> Bravery",
-	HypeSquadOnlineHouse2: "<:discord_brilliance:938523381626728510> Brilliance",
+	HypeSquadOnlineHouse2:
+		"<:discord_brilliance:938523381626728510> Brilliance",
 	HypeSquadOnlineHouse3: "<:discord_balance:938523381710602241> Balance",
-	PremiumEarlySupporter: "<:discord_early_nitro:938523382029369394> Early Nitro",
+	PremiumEarlySupporter:
+		"<:discord_early_nitro:938523382029369394> Early Nitro",
 	TeamPseudoUser: "Team user",
-	BugHunterLevel2: "<:discord_bughunter_2:938523382104879144> Bughunter but better",
+	BugHunterLevel2:
+		"<:discord_bughunter_2:938523382104879144> Bughunter but better",
 	VerifiedBot: "Verified bot",
-	VerifiedDeveloper: "<:discord_early_developer:938523382083895316> Early verified dev",
-	CertifiedModerator: "<:discord_certified_mod:938523382083895318> Certified mod",
+	VerifiedDeveloper:
+		"<:discord_early_developer:938523382083895316> Early verified dev",
+	CertifiedModerator:
+		"<:discord_certified_mod:938523382083895318> Certified mod",
 	BotHTTPInteractions: "HTTP-only bot",
 	Spammer: "⚠️ Spammer"
 };
@@ -90,7 +96,11 @@ export enum LoggerTypes {
 }
 
 export function defaultEmbed(
-	intr?: AutocompleteInteraction<"cached"> | CommandInteraction<"cached"> | null | undefined
+	intr?:
+		| AutocompleteInteraction<"cached">
+		| CommandInteraction<"cached">
+		| null
+		| undefined
 ): APIEmbed {
 	const options: APIEmbed = { color: COLORS.green };
 

@@ -21,7 +21,11 @@ export default abstract class BaseLogger {
 	 * All messages are parsed.
 	 * Type defines what colour is printed in console.
 	 */
-	protected print(type: LoggerTypes, name: string, ...messages: string[]): void {
+	protected print(
+		type: LoggerTypes,
+		name: string,
+		...messages: string[]
+	): void {
 		this._printBase(type, name);
 
 		this._printTrace();
@@ -76,12 +80,17 @@ export default abstract class BaseLogger {
 		process.stdout.write(gray(" > "));
 
 		if (this.traceValues.has("USER"))
-			if (cache.user) messages.push(`${yellow(cache.user)} ${gray(`(u: ${cache.userId})`)}`);
+			if (cache.user)
+				messages.push(
+					`${yellow(cache.user)} ${gray(`(u: ${cache.userId})`)}`
+				);
 			else messages.push(`u: ${yellow(cache.userId!)}`);
 
-		if (this.traceValues.has("CHANNEL")) messages.push(`${gray("in")} #${cache.channel}`);
+		if (this.traceValues.has("CHANNEL"))
+			messages.push(`${gray("in")} #${cache.channel}`);
 
-		if (this.traceValues.has("GUILD")) messages.push(`${gray("in")} ${cache.guild}`);
+		if (this.traceValues.has("GUILD"))
+			messages.push(`${gray("in")} ${cache.guild}`);
 
 		process.stdout.write(messages.join(" "));
 	}

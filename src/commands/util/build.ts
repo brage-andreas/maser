@@ -63,9 +63,17 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 		if (clear) intr.client.commandHandler.clear(clientId, guildId);
 		else intr.client.commandHandler.put(clientId, guildId);
 
-		intr.editReply(`${clear ? "Cleared" : "Put"} commands in guild: ${guild.name} (${guild.id})`);
+		intr.editReply(
+			`${clear ? "Cleared" : "Put"} commands in guild: ${guild.name} (${
+				guild.id
+			})`
+		);
 
-		intr.logger.log(`${clear ? "Cleared" : "Put"} commands in guild: ${guild.name} (${guild.id})`);
+		intr.logger.log(
+			`${clear ? "Cleared" : "Put"} commands in guild: ${guild.name} (${
+				guild.id
+			})`
+		);
 	} else {
 		if (clear) intr.client.commandHandler.clear(clientId);
 		else intr.client.commandHandler.put(clientId);
@@ -76,4 +84,5 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	}
 }
 
-export const getCommand = () => ({ data, options, execute } as Partial<Command>);
+export const getCommand = () =>
+	({ data, options, execute } as Partial<Command>);

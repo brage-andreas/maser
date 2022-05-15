@@ -1,4 +1,7 @@
-import { type APIActionRowComponent, type APIButtonComponentWithCustomId } from "discord-api-types/v9";
+import {
+	type APIActionRowComponent,
+	type APIButtonComponentWithCustomId
+} from "discord-api-types/v9";
 import {
 	ButtonStyle,
 	ComponentType,
@@ -62,10 +65,14 @@ export default class ButtonManager {
 	/**
 	 * Creates and returns a button collector.
 	 */
-	public createCollector(options?: { filter?: CollectorFilter<[ButtonInteraction<"cached">]>; time?: string }) {
+	public createCollector(options?: {
+		filter?: CollectorFilter<[ButtonInteraction<"cached">]>;
+		time?: string;
+	}) {
 		const { filter, time } = options ?? {};
 
-		if (!this.message) throw new Error("A message must be set to the button manager");
+		if (!this.message)
+			throw new Error("A message must be set to the button manager");
 
 		const milliseconds = ms(time ?? "30s");
 
@@ -100,7 +107,8 @@ export default class ButtonManager {
 	private _toggleButtons(customIds: string[], disable: boolean) {
 		this.rows = this.rows.map((row) => {
 			row.components = row.components.map((button) => {
-				if (button.custom_id && customIds.includes(button.custom_id)) button.disabled = disable;
+				if (button.custom_id && customIds.includes(button.custom_id))
+					button.disabled = disable;
 
 				return button;
 			});
@@ -112,7 +120,10 @@ export default class ButtonManager {
 
 export class ConfirmationButtons extends ButtonManager {
 	public invertedColors: boolean | null;
-	public interaction: CommandInteraction<"cached"> | MessageComponentInteraction<"cached"> | null;
+	public interaction:
+		| CommandInteraction<"cached">
+		| MessageComponentInteraction<"cached">
+		| null;
 	public authorOnly: boolean;
 	public yesMessage: string | null;
 	public noMessage: string | null;
@@ -120,7 +131,12 @@ export class ConfirmationButtons extends ButtonManager {
 	public query: string | null;
 	public time: string | null;
 
-	public constructor(options?: { query?: string; authorId?: string; time?: string; inverted?: boolean }) {
+	public constructor(options?: {
+		query?: string;
+		authorId?: string;
+		time?: string;
+		inverted?: boolean;
+	}) {
 		super();
 
 		this.interaction = null;
@@ -141,14 +157,18 @@ export class ConfirmationButtons extends ButtonManager {
 
 		const yesButton: APIButtonComponentWithCustomId = {
 			custom_id: "yes",
-			style: this.invertedColors ? ButtonStyle.Danger : ButtonStyle.Success,
+			style: this.invertedColors
+				? ButtonStyle.Danger
+				: ButtonStyle.Success,
 			label: "Yes",
 			type: ComponentType.Button
 		};
 
 		const noButton: APIButtonComponentWithCustomId = {
 			custom_id: "no",
-			style: this.invertedColors ? ButtonStyle.Success : ButtonStyle.Secondary,
+			style: this.invertedColors
+				? ButtonStyle.Success
+				: ButtonStyle.Secondary,
 			label: "No",
 			type: ComponentType.Button
 		};
@@ -162,7 +182,10 @@ export class ConfirmationButtons extends ButtonManager {
 	}
 
 	public setInteraction(
-		interaction: CommandInteraction<"cached"> | MessageComponentInteraction<"cached"> | null
+		interaction:
+			| CommandInteraction<"cached">
+			| MessageComponentInteraction<"cached">
+			| null
 	): this {
 		this.interaction = interaction;
 
@@ -187,9 +210,17 @@ export class ConfirmationButtons extends ButtonManager {
 		return this;
 	}
 
-	public async start(options?: { noReply?: boolean; query?: string; onYes?: string; onNo?: string }): Promise<void> {
+	public async start(options?: {
+		noReply?: boolean;
+		query?: string;
+		onYes?: string;
+		onNo?: string;
+	}): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
-			if (!this.interaction) throw new Error("Interaction must be set to the ConfirmationButtons");
+			if (!this.interaction)
+				throw new Error(
+					"Interaction must be set to the ConfirmationButtons"
+				);
 
 			const onYes = options?.onYes ?? this.yesMessage ?? "Done!";
 			const onNo = options?.onNo ?? this.noMessage ?? "Cancelled";
@@ -212,11 +243,13 @@ export class ConfirmationButtons extends ButtonManager {
 					}
 
 					if (intr.customId === "yes") {
-						if (!options?.noReply) this._updateOrEditReply(onYes, []);
+						if (!options?.noReply)
+							this._updateOrEditReply(onYes, []);
 
 						resolve();
 					} else {
-						if (!options?.noReply) this._updateOrEditReply(onNo, []);
+						if (!options?.noReply)
+							this._updateOrEditReply(onNo, []);
 
 						reject();
 					}
@@ -225,7 +258,8 @@ export class ConfirmationButtons extends ButtonManager {
 				});
 
 				collector.on("end", (_, reason) => {
-					if (reason !== "collect") this._updateOrEditReply("Cancelled by timeout", []);
+					if (reason !== "collect")
+						this._updateOrEditReply("Cancelled by timeout", []);
 
 					reject();
 				});
@@ -237,7 +271,10 @@ export class ConfirmationButtons extends ButtonManager {
 		content: string,
 		components: APIActionRowComponent<APIButtonComponentWithCustomId>[]
 	): Promise<Message<true>> {
-		if (!this.interaction) throw new Error("Interaction must be set to the ConfirmationButtons");
+		if (!this.interaction)
+			throw new Error(
+				"Interaction must be set to the ConfirmationButtons"
+			);
 
 		const medium = this.interaction;
 		const isButtonIntr = medium instanceof MessageComponentInteraction;

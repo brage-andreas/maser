@@ -14,7 +14,11 @@ export async function execute(client: Client<true>, intr: Interaction) {
 		return;
 	}
 
-	if ((!intr.isChatInputCommand() && !intr.isAutocomplete()) || !intr.inCachedGuild()) return;
+	if (
+		(!intr.isChatInputCommand() && !intr.isAutocomplete()) ||
+		!intr.inCachedGuild()
+	)
+		return;
 
 	if (intr.member.partial) await intr.member.fetch();
 
@@ -31,13 +35,19 @@ export async function execute(client: Client<true>, intr: Interaction) {
 	if (intr.isAutocomplete()) return commandOptions.execute();
 
 	if (commandOptions.isWIP && isNotOwner) {
-		await intr.reply({ content: `${emojis.wip} This command is work-in-progress`, ephemeral: true });
+		await intr.reply({
+			content: `${emojis.wip} This command is work-in-progress`,
+			ephemeral: true
+		});
 
 		return;
 	}
 
 	if (commandOptions.isPrivate && isNotOwner) {
-		await intr.reply({ content: `${emojis.lock} This command is private`, ephemeral: true });
+		await intr.reply({
+			content: `${emojis.lock} This command is private`,
+			ephemeral: true
+		});
 
 		return;
 	}

@@ -27,7 +27,9 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const emojis = intr.client.maserEmojis;
 
 	if (!intr.guild.me?.permissions.has(PermissionsBitField.Flags.BanMembers)) {
-		intr.editReply(`${emojis.cross} I don't have permissions to unban users`);
+		intr.editReply(
+			`${emojis.cross} I don't have permissions to unban users`
+		);
 
 		return;
 	}
@@ -43,12 +45,14 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const auditLogSuffix = `| By ${intr.user.tag} ${intr.user.id}`;
 
 	const auditLogReason = reason
-		? Util.appendPrefixAndSuffix(reason, MAX_AUDIT_REASON_LEN, { suffix: auditLogSuffix })
+		? Util.appendPrefixAndSuffix(reason, MAX_AUDIT_REASON_LEN, {
+				suffix: auditLogSuffix
+		  })
 		: `By ${intr.user.tag} ${intr.user.id}`;
 
-	const info = `• **Reason**: ${reason ?? "No reason provided"}\n• **Target**: ${target.tag} (${target} ${
-		target.id
-	})`;
+	const info = `• **Reason**: ${
+		reason ?? "No reason provided"
+	}\n• **Target**: ${target.tag} (${target} ${target.id})`;
 
 	const query = `${emojis.warning} Are you sure you want to unban **${target.tag}** (${target.id})?\n\n${info}`;
 
@@ -62,7 +66,10 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 			intr.guild.members
 				.unban(target.id, auditLogReason)
 				.then(async () => {
-					const cases = await new CaseManager(intr.client, intr.guildId).initialise();
+					const cases = await new CaseManager(
+						intr.client,
+						intr.guildId
+					).initialise();
 
 					const case_ = await cases.createCase(
 						{
@@ -79,7 +86,9 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 					intr.logger.log(
 						`Unbanned ${target.tag} (${target.id}) ${
-							reason ? `with reason: "${reason}"` : "with no reason"
+							reason
+								? `with reason: "${reason}"`
+								: "with no reason"
 						}`
 					);
 
@@ -98,8 +107,12 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 				});
 		})
 		.catch(() => {
-			intr.editReply({ content: `${emojis.check} Gotcha. Command cancelled`, components: [] });
+			intr.editReply({
+				content: `${emojis.check} Gotcha. Command cancelled`,
+				components: []
+			});
 		});
 }
 
-export const getCommand = () => ({ data, options, execute } as Partial<Command>);
+export const getCommand = () =>
+	({ data, options, execute } as Partial<Command>);

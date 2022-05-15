@@ -25,8 +25,12 @@ const data: ChatInputApplicationCommandData = {
 
 async function execute(intr: CommandInteraction<"cached">) {
 	const userOptionIsProvided = Boolean(intr.options.get("user")?.value);
-	const member = userOptionIsProvided ? intr.options.getMember("user") : intr.member;
-	const user = userOptionIsProvided ? intr.options.getUser("user", true) : intr.user;
+	const member = userOptionIsProvided
+		? intr.options.getMember("user")
+		: intr.member;
+	const user = userOptionIsProvided
+		? intr.options.getUser("user", true)
+		: intr.user;
 
 	await user.fetch(true);
 
@@ -52,7 +56,9 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const displayAvatar = memberAvatar ?? userAvatar;
 	const banner = user.bannerURL({ size: 2048 });
 
-	const joined = member?.joinedTimestamp ? Util.fullDate(member.joinedTimestamp) : null;
+	const joined = member?.joinedTimestamp
+		? Util.fullDate(member.joinedTimestamp)
+		: null;
 
 	const color = getColor(member?.displayColor);
 
@@ -66,7 +72,10 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 	if (hoistedRole) roles += `\n• Hoisted: ${hoistedRole}`;
 	if (coloredRole) roles += `\n• Coloured: ${coloredRole}`;
-	if (iconRole) roles += `\n• Icon: ${iconRole} ([Link to icon](${iconRole.iconURL({ size: 1024 })}))`;
+	if (iconRole)
+		roles += `\n• Icon: ${iconRole} ([Link to icon](${iconRole.iconURL({
+			size: 1024
+		})}))`;
 
 	const { bot, tag, id } = user;
 
@@ -78,7 +87,9 @@ async function execute(intr: CommandInteraction<"cached">) {
 		`• Tag: \`${tag}\`\n` +
 		`• ID: \`${id}\`\n` +
 		`• Created: ${created}\n` +
-		(member ? `• Joined: ${joined}\n• Colour: \`#${color.toString(16)}\`\n` : "") +
+		(member
+			? `• Joined: ${joined}\n• Colour: \`#${color.toString(16)}\`\n`
+			: "") +
 		`• [User avatar](${userAvatar})\n` +
 		(memberAvatar ? `• [Member avatar](${memberAvatar})\n` : "") +
 		(banner ? `• [Banner](${banner})\n` : "");
@@ -90,13 +101,19 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const userEmbed: APIEmbed = {
 		...defaultEmbed(intr),
 		thumbnail: { url: displayAvatar },
-		footer: { icon_url: iconRole?.iconURL({ size: 1024 }) ?? "", text: hoistedRole?.name ?? "" },
+		footer: {
+			icon_url: iconRole?.iconURL({ size: 1024 }) ?? "",
+			text: hoistedRole?.name ?? ""
+		},
 		image: { url: banner ?? "" },
 		title: name,
 		color,
 		fields: [
 			{ name: "Info", value: infoFieldValue },
-			{ name: "Badges", value: flags.length ? `• ${flags.join("\n• ")}` : "None" }
+			{
+				name: "Badges",
+				value: flags.length ? `• ${flags.join("\n• ")}` : "None"
+			}
 		]
 	};
 

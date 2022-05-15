@@ -1,8 +1,12 @@
-import { ComponentType, type APIEmbed, type APIButtonComponentWithCustomId } from "discord-api-types/v9";
+import {
+	ComponentType,
+	type APIButtonComponentWithCustomId,
+	type APIEmbed
+} from "discord-api-types/v9";
 import Discord, {
 	ApplicationCommandOptionType,
+	Attachment,
 	ButtonStyle,
-	MessageAttachment,
 	type ChatInputApplicationCommandData,
 	type ChatInputCommandInteraction
 } from "discord.js";
@@ -10,7 +14,11 @@ import ms from "ms";
 import { performance } from "perf_hooks";
 import { defaultEmbed, REGEXP } from "../../constants/index.js";
 import { ButtonManager } from "../../modules/index.js";
-import { type Command, type CommandOptions, type EvalOutput } from "../../typings/index.js";
+import {
+	type Command,
+	type CommandOptions,
+	type EvalOutput
+} from "../../typings/index.js";
 import Util from "../../utils/index.js";
 
 const options: Partial<CommandOptions> = {
@@ -49,15 +57,24 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 			return val;
 		};
 
-		const string = JSON.stringify(value, replacer, 2) ?? "Something went wrong with stringifying the content";
+		const string =
+			JSON.stringify(value, replacer, 2) ??
+			"Something went wrong with stringifying the content";
 
 		return string.replace('"void"', "void");
 	};
 
-	const parse = (string: string, prefix: string, embedStyle?: string | null) => {
+	const parse = (
+		string: string,
+		prefix: string,
+		embedStyle?: string | null
+	) => {
 		if (!string.length) return null;
 
-		return Util.mergeForCodeblock(string, { prefix, lang: embedStyle === undefined ? "js" : null });
+		return Util.mergeForCodeblock(string, {
+			prefix,
+			lang: embedStyle === undefined ? "js" : null
+		});
 	};
 
 	const evaluate = async () => {
@@ -71,17 +88,31 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 			const end = performance.now();
 			//
 			const type = typeof result;
-			const constructor = result != null ? (result.constructor.name as string) : "Nullish";
+
+			const constructor =
+				result != null
+					? (result.constructor.name as string)
+					: "Nullish";
+
 			//
 			const time = Number((end - start).toFixed(3));
 			const timeTaken = ms(time, { long: true }).replace(".", ",");
+
 			//
-			const stringedOutput = stringify(result).replaceAll(new RegExp(REGEXP.TOKEN, "g"), "[REDACTED]");
+			const stringedOutput = stringify(result).replaceAll(
+				new RegExp(REGEXP.TOKEN, "g"),
+				"[REDACTED]"
+			);
+
 			//
 			const parsedInput = parse(code, "**Input**");
 			const parsedOutput = parse(stringedOutput, "**Output**");
+
 			//
-			const successInputEmbed: APIEmbed = { ...defaultEmbed(intr), description: parsedInput ?? "No input" };
+			const successInputEmbed: APIEmbed = {
+				...defaultEmbed(intr),
+				description: parsedInput ?? "No input"
+			};
 
 			const successOutputEmbed: APIEmbed = {
 				...defaultEmbed(intr),
@@ -148,7 +179,11 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 		buttonManager.setRows([outputButton, codeButton]);
 
-		const msg = await intr.editReply({ embeds, components: buttonManager.rows });
+		const msg = await intr.editReply({
+			embeds,
+			components: buttonManager.rows
+		});
+
 		const collector = buttonManager.setMessage(msg).createCollector();
 
 		collector.on("collect", async (interaction) => {
@@ -164,7 +199,10 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 			await interaction.deferUpdate();
 
 			if (interaction.customId === "output") {
-				const attachment = new MessageAttachment(Buffer.from(output), `${type}.txt`);
+				const attachment = new Attachment(
+					Buffer.from(output),
+					`${type}.txt`
+				);
 
 				buttonManager.disable("output");
 
@@ -172,11 +210,16 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 				await interaction.followUp({ files: [attachment] });
 
-				intr.logger.log(`Sent output as an attachment:\n${Util.indent(output)}`);
+				intr.logger.log(
+					`Sent output as an attachment:\n${Util.indent(output)}`
+				);
 			}
 			//
 			else if (interaction.customId === "code") {
-				const attachment = new MessageAttachment(Buffer.from(code), "code.txt");
+				const attachment = new Attachment(
+					Buffer.from(code),
+					"code.txt"
+				);
 
 				buttonManager.disable("code");
 
@@ -184,18 +227,26 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 				await interaction.followUp({ files: [attachment] });
 
-				intr.logger.log(`Sent code as an attachment:\n${Util.indent(code)}`);
+				intr.logger.log(
+					`Sent code as an attachment:\n${Util.indent(code)}`
+				);
 			}
 		});
 
 		collector.on("end", () => {
 			buttonManager.disable("output", "code");
 
-			intr.editReply({ components: buttonManager.rows }).catch(() => null);
+			intr.editReply({ components: buttonManager.rows }).catch(
+				() => null
+			);
 		});
 	}
 
-	intr.logger.log(`Code:\n${Util.indent(code, 4)}`, `Output:\n${Util.indent(output, 4)}`);
+	intr.logger.log(
+		`Code:\n${Util.indent(code, 4)}`,
+		`Output:\n${Util.indent(output, 4)}`
+	);
 }
 
-export const getCommand = () => ({ options, data, execute } as Partial<Command>);
+export const getCommand = () =>
+	({ options, data, execute } as Partial<Command>);

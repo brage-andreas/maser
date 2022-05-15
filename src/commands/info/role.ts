@@ -22,7 +22,9 @@ const data: ChatInputApplicationCommandData = {
 };
 
 async function execute(intr: ChatInputCommandInteraction<"cached">) {
-	const applyS = (string: string, size: number) => (size !== 1 ? `${string}s` : string);
+	const applyS = (string: string, size: number) =>
+		size !== 1 ? `${string}s` : string;
+
 	const { guild } = intr;
 	const role = intr.options.getRole("role", true);
 
@@ -36,11 +38,26 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 	await guild.members.fetch();
 
-	const icon = role.iconURL() ? `[Link to icon](${role.iconURL()})` : role.unicodeEmoji ?? "None";
-	const { integrationId, botId, premiumSubscriberRole: boostRole } = role.tags ?? {};
+	const icon = role.iconURL()
+		? `[Link to icon](${role.iconURL()})`
+		: role.unicodeEmoji ?? "None";
+
+	const {
+		integrationId,
+		botId,
+		premiumSubscriberRole: boostRole
+	} = role.tags ?? {};
+
 	const isEveryone = role.id === guild.id;
-	const { bitfield } = isEveryone ? role.permissions : role.permissions.remove(guild.roles.everyone.permissions);
-	const memberCount = `${role.members.size} ${applyS("member", role.members.size)}`;
+
+	const { bitfield } = isEveryone
+		? role.permissions
+		: role.permissions.remove(guild.roles.everyone.permissions);
+
+	const memberCount = `${role.members.size} ${applyS(
+		"member",
+		role.members.size
+	)}`;
 
 	const roleEmbed: APIEmbed = {
 		...defaultEmbed(intr),

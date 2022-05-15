@@ -27,13 +27,19 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const emojis = intr.client.maserEmojis;
 
 	if (!target) {
-		intr.editReply(`${emojis.cross} The user to target was not found in this server`);
+		intr.editReply(
+			`${emojis.cross} The user to target was not found in this server`
+		);
 
 		return;
 	}
 
-	if (!intr.guild.me?.permissions.has(PermissionsBitField.Flags.KickMembers)) {
-		intr.editReply(`${emojis.cross} I don't have permissions to kick users`);
+	if (
+		!intr.guild.me?.permissions.has(PermissionsBitField.Flags.KickMembers)
+	) {
+		intr.editReply(
+			`${emojis.cross} I don't have permissions to kick users`
+		);
 
 		return;
 	}
@@ -51,7 +57,9 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	}
 
 	if (target.id === intr.guild.ownerId) {
-		intr.editReply(`${emojis.cross} The user to target is the owner of this server`);
+		intr.editReply(
+			`${emojis.cross} The user to target is the owner of this server`
+		);
 
 		return;
 	}
@@ -65,7 +73,9 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const auditLogSuffix = `| By ${intr.user.tag} ${intr.user.id}`;
 
 	const auditLogReason = reason
-		? Util.appendPrefixAndSuffix(reason, MAX_AUDIT_REASON_LEN, { suffix: auditLogSuffix })
+		? Util.appendPrefixAndSuffix(reason, MAX_AUDIT_REASON_LEN, {
+				suffix: auditLogSuffix
+		  })
 		: `By ${intr.user.tag} ${intr.user.id}`;
 
 	const info =
@@ -74,7 +84,10 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 	const query = `${emojis.warning} Are you sure you want to kick **${target.user.tag}** (${target.id})?\n\n${info}`;
 
-	const collector = new ConfirmationButtons({ authorId: intr.user.id, inverted: true }) //
+	const collector = new ConfirmationButtons({
+		authorId: intr.user.id,
+		inverted: true
+	}) //
 		.setInteraction(intr)
 		.setQuery(query);
 
@@ -84,7 +97,10 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 			target
 				.kick(auditLogReason)
 				.then(async () => {
-					const cases = await new CaseManager(intr.client, intr.guildId).initialise();
+					const cases = await new CaseManager(
+						intr.client,
+						intr.guildId
+					).initialise();
 
 					const case_ = await cases.createCase(
 						{
@@ -101,7 +117,9 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 					intr.logger.log(
 						`Kicked ${target.user.tag} (${target.id}) ${
-							reason ? `with reason: "${reason}"` : "with no reason"
+							reason
+								? `with reason: "${reason}"`
+								: "with no reason"
 						}`
 					);
 
@@ -120,8 +138,12 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 				});
 		})
 		.catch(() => {
-			intr.editReply({ content: `${emojis.check} Gotcha. Command cancelled`, components: [] });
+			intr.editReply({
+				content: `${emojis.check} Gotcha. Command cancelled`,
+				components: []
+			});
 		});
 }
 
-export const getCommand = () => ({ data, options, execute } as Partial<Command>);
+export const getCommand = () =>
+	({ data, options, execute } as Partial<Command>);

@@ -136,8 +136,15 @@ export default class Case {
 
 	public toEmbed(): APIEmbed {
 		const caseEmbed: APIEmbed = {
-			author: { name: `${this.executor.tag} (${this.executor.id})`, icon_url: this.executor.avatar },
-			footer: { text: this.deleted ? "Case deleted" : `#${this.id} ${this.edited ? "• Edited" : ""}` },
+			author: {
+				name: `${this.executor.tag} (${this.executor.id})`,
+				icon_url: this.executor.avatar
+			},
+			footer: {
+				text: this.deleted
+					? "Case deleted"
+					: `#${this.id} ${this.edited ? "• Edited" : ""}`
+			},
 			timestamp: this.timestamp.toString(),
 			color: this.hexColor
 		};
@@ -153,10 +160,12 @@ export default class Case {
 
 		if (this.reason) description.push(`**Reason**: ${this.reason}`);
 
-		if (this.duration && this.type === "Mute") description.push(`**Duration**: ${this.duration}`);
+		if (this.duration && this.type === "Mute")
+			description.push(`**Duration**: ${this.duration}`);
 
 		if (this.reference || this.referenceId) {
-			const validReference = Boolean(this.reference) && Boolean(this.reference!.data.url);
+			const validReference =
+				Boolean(this.reference) && Boolean(this.reference!.data.url);
 
 			const str = validReference
 				? `[Case #${this.reference!.id}](${this.reference!.data.url})`
@@ -171,19 +180,29 @@ export default class Case {
 	}
 
 	public async channelLog(): Promise<Message | null> {
-		const modLogManager = new ConfigManager(this.client, this.guildId, "modLogChannel");
+		const modLogManager = new ConfigManager(
+			this.client,
+			this.guildId,
+			"modLogChannel"
+		);
+
 		const channel = await modLogManager.getChannel();
 
 		if (!channel) return null;
 
-		return await channel.send({ embeds: [this.toEmbed()] }).catch(() => null);
+		return await channel
+			.send({ embeds: [this.toEmbed()] })
+			.catch(() => null);
 	}
 
 	public async updateLogMessage(data?: MessageEditOptions): Promise<boolean> {
 		if (!this.messageURL) return false;
 
 		// "discord.com/channels/<guild id>/<channel id>/<message id>"
-		const [guildId, channelId, messageId] = [...this.messageURL.matchAll(REGEXP.ID)].map((e) => e[0]);
+		const [guildId, channelId, messageId] = [
+			...this.messageURL.matchAll(REGEXP.ID)
+		].map((e) => e[0]);
+
 		const guild = this.client.guilds.cache.get(guildId);
 		const channel = guild?.channels.cache.get(channelId);
 

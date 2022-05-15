@@ -3,7 +3,11 @@ import {
 	type ChatInputApplicationCommandData,
 	type ChatInputCommandInteraction
 } from "discord.js";
-import { CONFIG_COLUMN_STRINGS, CONFIG_COMMAND_OPTIONS, CONFIG_COMMAND_TO_COLUMN } from "../../constants/database.js";
+import {
+	CONFIG_COLUMN_STRINGS,
+	CONFIG_COMMAND_OPTIONS,
+	CONFIG_COMMAND_TO_COLUMN
+} from "../../constants/database.js";
 import ConfigManager from "../../database/ConfigManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 
@@ -49,20 +53,30 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 	if (method === "view-config") {
 		const res = await config.getAllValues();
-		const response = [`Config for **${intr.guild.name}** (${intr.guildId})\n`];
+
+		const response = [
+			`Config for **${intr.guild.name}** (${intr.guildId})\n`
+		];
 
 		Object.entries(res).forEach(([key, value]) => {
 			if (key === "id") return;
 
 			const keyStr = CONFIG_COLUMN_STRINGS[key];
-			const channel = intr.guild.channels.cache.get(value)?.toString() ?? null;
+
+			const channel =
+				intr.guild.channels.cache.get(value)?.toString() ?? null;
+
 			// const role = intr.guild.roles.cache.get(value)?.toString() ?? null;
 			const mention = channel; //?? role;
 
 			// eslint-disable-next-line padding-line-between-statements
-			const mentionString = mention ? `${mention} (${value})` : `Couldn't find anything with ID of \`${value}\``;
+			const mentionString = mention
+				? `${mention} (${value})`
+				: `Couldn't find anything with ID of \`${value}\``;
 
-			response.push(`• **${keyStr}**: ${value ? mentionString : "*Not set*"}`);
+			response.push(
+				`• **${keyStr}**: ${value ? mentionString : "*Not set*"}`
+			);
 		});
 
 		intr.editReply(response.join("\n"));
@@ -88,14 +102,20 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 			intr.editReply(response);
 
 			intr.logger.log(
-				`Used method VIEW on option ${option}: ${/*(channel?? role)?.id*/ channel?.id ?? "No value"}`
+				`Used method VIEW on option ${option}: ${
+					/*(channel?? role)?.id*/ channel?.id ?? "No value"
+				}`
 			);
 
 			break;
 		}
 
 		case "set": {
-			const res = intr.options.getChannel("channel"); /* ?? intr.options.getRole("role"); */
+			const res =
+				intr.options.getChannel(
+					"channel"
+				); /* ?? intr.options.getRole("role"); */
+
 			const old = await config.getAllValues();
 			const value = res?.id ?? "NULL";
 
@@ -107,7 +127,10 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 			for (const [key, value] of Object.entries(old)) {
 				const keyStr = CONFIG_COLUMN_STRINGS[key];
-				const channel = intr.guild.channels.cache.get(value)?.toString() ?? null;
+
+				const channel =
+					intr.guild.channels.cache.get(value)?.toString() ?? null;
+
 				const guild = intr.client.guilds.cache.get(value)?.name ?? null;
 				// const role = intr.guild.roles.cache.get(value)?.toString() ?? null;
 				const mention = channel ?? guild; /* ?? role; */
@@ -115,15 +138,21 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 				if (key === option) {
 					let valueString = `\n• **${keyStr}**: `;
 
-					if (mention && res) valueString += `${mention} (${res.id}) **(updated)**`;
-					else if (res) valueString += `Couldn't find anything with ID: ${value} **(updated)**`;
+					if (mention && res)
+						valueString += `${mention} (${res.id}) **(updated)**`;
+					else if (res)
+						valueString += `Couldn't find anything with ID: ${value} **(updated)**`;
 					else valueString += "Not set **(updated)**";
 
 					response += valueString;
 				} else {
-					const valueString = mention ? `${mention} (${value})` : `Couldn't find anything with ID: ${value}`;
+					const valueString = mention
+						? `${mention} (${value})`
+						: `Couldn't find anything with ID: ${value}`;
 
-					response += `\n• **${keyStr}**: ${value ? valueString : "Not set"}`;
+					response += `\n• **${keyStr}**: ${
+						value ? valueString : "Not set"
+					}`;
 				}
 			}
 
@@ -136,4 +165,5 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	}
 }
 
-export const getCommand = () => ({ options, data, execute } as Partial<Command>);
+export const getCommand = () =>
+	({ options, data, execute } as Partial<Command>);

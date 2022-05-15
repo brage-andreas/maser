@@ -1,4 +1,9 @@
-import { type Client, type Guild, type GuildMember, type PartialGuildMember } from "discord.js";
+import {
+	type Client,
+	type Guild,
+	type GuildMember,
+	type PartialGuildMember
+} from "discord.js";
 import { LoggerTypes } from "../constants/index.js";
 import ConfigManager from "../database/ConfigManager.js";
 import Util from "../utils/index.js";
@@ -32,17 +37,33 @@ export default class EventLogger extends BaseLogger {
 		return this;
 	}
 
-	public async memberLog(member: GuildMember | PartialGuildMember, joined: boolean) {
-		const config = new ConfigManager(this.client, member.guild.id, "memberLogChannel");
+	public async memberLog(
+		member: GuildMember | PartialGuildMember,
+		joined: boolean
+	) {
+		const config = new ConfigManager(
+			this.client,
+			member.guild.id,
+			"memberLogChannel"
+		);
+
 		const channel = await config.getChannel();
 
 		if (!channel) return;
 
-		const getDate = (date: Date | null | undefined) => (date ? Util.fullDate(date) : "Date not found");
-		const user = member.user ?? (await this.client.users.fetch(member.id).catch(() => null));
+		const getDate = (date: Date | null | undefined) =>
+			date ? Util.fullDate(date) : "Date not found";
+
+		const user =
+			member.user ??
+			(await this.client.users.fetch(member.id).catch(() => null));
+
 		const color = this.client.colors[joined ? "green" : "red"];
 		const footer = joined ? "User joined" : "User left";
-		const joinedAtStr = member.joinedAt ? `\nJoined: ${getDate(member.joinedAt)}` : "";
+
+		const joinedAtStr = member.joinedAt
+			? `\nJoined: ${getDate(member.joinedAt)}`
+			: "";
 
 		const descriptionStr =
 			`User: ${member} (${member.id})\n` + //

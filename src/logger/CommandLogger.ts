@@ -13,10 +13,15 @@ import BaseLogger from "./BaseLogger.js";
 import { gray } from "./LoggerColors.js";
 
 export default class CommandLogger extends BaseLogger {
-	public interaction: AutocompleteInteraction<"cached"> | CommandInteraction<"cached"> | null;
+	public interaction:
+		| AutocompleteInteraction<"cached">
+		| CommandInteraction<"cached">
+		| null;
 	public name: string | null;
 
-	public constructor(intr?: AutocompleteInteraction<"cached"> | CommandInteraction<"cached">) {
+	public constructor(
+		intr?: AutocompleteInteraction<"cached"> | CommandInteraction<"cached">
+	) {
 		super();
 
 		this.interaction = intr ?? null;
@@ -31,11 +36,16 @@ export default class CommandLogger extends BaseLogger {
 	}
 
 	public log(...messages: string[]) {
-		if (!this.name) throw new Error("Name of command must be set to log command");
+		if (!this.name)
+			throw new Error("Name of command must be set to log command");
 
 		const command = this.interaction?.toString();
 		const logLevel = this.interaction?.commandOptions.logLevel ?? 1;
-		const toLog = command && logLevel !== 2 ? [gray(`>>> ${command}`), ...messages] : messages;
+
+		const toLog =
+			command && logLevel !== 2
+				? [gray(`>>> ${command}`), ...messages]
+				: messages;
 
 		this.print(LoggerTypes.Command, this.name, ...toLog);
 
@@ -95,16 +105,26 @@ export default class CommandLogger extends BaseLogger {
 
 		const createEmbed = (description: string, index = 0, total = 1) => {
 			const { user } = this.interaction!;
-			const embed: APIEmbed = { ...defaultEmbed(this.interaction), color: COLORS.invisible, description };
 
-			if (index === 0) embed.author = { name: `${user.tag} (${user.id})` };
+			const embed: APIEmbed = {
+				...defaultEmbed(this.interaction),
+				color: COLORS.invisible,
+				description
+			};
+
+			if (index === 0)
+				embed.author = { name: `${user.tag} (${user.id})` };
 
 			if (total > 1) embed.footer = { text: `${index + 1}/${total}` };
 
 			return embed;
 		};
 
-		const botLogManager = new ConfigManager(client, guild.id, "botLogChannel");
+		const botLogManager = new ConfigManager(
+			client,
+			guild.id,
+			"botLogChannel"
+		);
 
 		botLogManager.getChannel().then((channel) => {
 			if (!this.interaction) return; // not really needed - mostly for inferring types

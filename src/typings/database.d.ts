@@ -26,7 +26,11 @@ export interface PostresExists {
    ---------
 */
 
-export type ConfigTableColumns = "botLogChannel" | "guildId" | "memberLogChannel" | "modLogChannel";
+export type ConfigTableColumns =
+	| "botLogChannel"
+	| "guildId"
+	| "memberLogChannel"
+	| "modLogChannel";
 export type ConfigChannelTypes = NewsChannel | TextChannel;
 
 export interface ConfigData {

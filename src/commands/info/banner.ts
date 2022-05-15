@@ -7,10 +7,12 @@ import {
 import { defaultEmbed } from "../../constants/index.js";
 import { type Command, type ImageSizes } from "../../typings/index.js";
 
-const sizeChoices = [16, 32, 64, 128, 256, 300, 512, 600, 1024, 2048, 4096].map((size) => ({
-	name: `${size}px`,
-	value: size
-}));
+const sizeChoices = [16, 32, 64, 128, 256, 300, 512, 600, 1024, 2048, 4096].map(
+	(size) => ({
+		name: `${size}px`,
+		value: size
+	})
+);
 
 const data: ChatInputApplicationCommandData = {
 	name: "banner",
@@ -33,7 +35,9 @@ const data: ChatInputApplicationCommandData = {
 type ImageFormats = "jpg" | "png" | "webp";
 
 async function execute(intr: ChatInputCommandInteraction<"cached">) {
-	const userId = (intr.options.get("user")?.value as string | undefined) ?? intr.user.id;
+	const userId =
+		(intr.options.get("user")?.value as string | undefined) ?? intr.user.id;
+
 	const member = intr.options.getMember("user");
 	const size = (intr.options.getInteger("size") ?? 2048) as ImageSizes;
 	const emojis = intr.client.maserEmojis;
@@ -60,7 +64,12 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const jpg = getURL("jpg");
 	const dynamic = user.bannerURL({ size })!;
 	const name = member?.displayName ?? user.username;
-	const nameStr = name.endsWith("s") || name.endsWith("z") ? `${name}' banner` : `${name}'s banner`;
+
+	const nameStr =
+		name.endsWith("s") || name.endsWith("z")
+			? `${name}' banner`
+			: `${name}'s banner`;
+
 	const bannerLinks: string[] = [];
 	const isGIF = dynamic.endsWith(`.gif?size=${size}`);
 
@@ -73,7 +82,12 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 		`**Size**: ${size} px\n\n` +
 		`**Banner**: ${bannerLinks.join(", ")}`;
 
-	const embed: APIEmbed = { ...defaultEmbed(intr), description, title: nameStr, image: { url: dynamic } };
+	const embed: APIEmbed = {
+		...defaultEmbed(intr),
+		description,
+		title: nameStr,
+		image: { url: dynamic }
+	};
 
 	intr.editReply({ embeds: [embed] });
 

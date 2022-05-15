@@ -1,5 +1,10 @@
 import { type APIEmbed } from "discord-api-types/v9";
-import type { AutocompleteInteraction, ChatInputApplicationCommandData, Client, CommandInteraction } from "discord.js";
+import type {
+	AutocompleteInteraction,
+	ChatInputApplicationCommandData,
+	Client,
+	CommandInteraction
+} from "discord.js";
 
 /**/
 
@@ -12,7 +17,11 @@ export interface CommandModule {
 export interface Command {
 	options: CommandOptions;
 	data: ChatInputApplicationCommandData;
-	execute(interaction: AutocompleteInteraction<"cached"> | CommandInteraction<"cached">): Promise<void> | void;
+	execute(
+		interaction:
+			| AutocompleteInteraction<"cached">
+			| CommandInteraction<"cached">
+	): Promise<void> | void;
 }
 
 export interface CommandOptions {

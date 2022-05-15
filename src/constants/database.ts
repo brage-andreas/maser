@@ -1,4 +1,8 @@
-import { ApplicationCommandOptionType, ChannelType, type ApplicationCommandSubCommandData } from "discord.js";
+import {
+	ApplicationCommandOptionType,
+	ChannelType,
+	type ApplicationCommandSubCommandData
+} from "discord.js";
 import type { ConfigTableColumns } from "../typings/database.js";
 
 /*
@@ -7,7 +11,10 @@ import type { ConfigTableColumns } from "../typings/database.js";
    --------
 */
 
-export const CONFIG_COLUMN_STRINGS: Record<ConfigTableColumns | string, string> = {
+export const CONFIG_COLUMN_STRINGS: Record<
+	ConfigTableColumns | string,
+	string
+> = {
 	memberLogChannel: "Member log channel",
 	botLogChannel: "Bot log channel",
 	modLogChannel: "Mod log channel",
@@ -33,7 +40,8 @@ const CONFIG_COMMAND_CHANNEL_OPTIONS: ApplicationCommandSubCommandData[] = [
 		options: [
 			{
 				name: "channel",
-				description: "The new channel to set to. Omitting this option will remove its value",
+				description:
+					"The new channel to set to. Omitting this option will remove its value",
 				channelTypes: [ChannelType.GuildText, ChannelType.GuildNews],
 				type: ApplicationCommandOptionType.Channel
 			}

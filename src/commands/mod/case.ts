@@ -60,7 +60,8 @@ const data: ChatInputApplicationCommandData = {
 				},
 				{
 					name: "time",
-					description: 'The time since this case, e.g. "5min" (Current time)',
+					description:
+						'The time since this case, e.g. "5min" (Current time)',
 					type: ApplicationCommandOptionType.String
 				},
 				{
@@ -105,12 +106,14 @@ const data: ChatInputApplicationCommandData = {
 				},
 				{
 					name: "time",
-					description: 'The time since this case. Accepts relative times ("5 min"). Default is current time',
+					description:
+						'The time since this case. Accepts relative times ("5 min"). Default is current time',
 					type: ApplicationCommandOptionType.String
 				},
 				{
 					name: "duration",
-					description: 'The duration of this case. Accepts timestamps and relative times ("5min")',
+					description:
+						'The duration of this case. Accepts timestamps and relative times ("5min")',
 					type: ApplicationCommandOptionType.String
 				}
 			]
@@ -146,7 +149,11 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-async function execute(intr: AutocompleteInteraction<"cached"> | ChatInputCommandInteraction<"cached">) {
+async function execute(
+	intr:
+		| AutocompleteInteraction<"cached">
+		| ChatInputCommandInteraction<"cached">
+) {
 	const sub = intr.options.getSubcommand();
 	const emojis = intr.client.maserEmojis;
 	const cases = new CaseManager(intr.client, intr.guildId);
@@ -162,7 +169,10 @@ async function execute(intr: AutocompleteInteraction<"cached"> | ChatInputComman
 
 			const getName = (data: CaseData) => {
 				const id = data.caseId;
-				const emoji = id === focused ? "✨" : id > focused ? "🔸" : "🔹";
+
+				const emoji =
+					id === focused ? "✨" : id > focused ? "🔸" : "🔹";
+
 				let str = `${emoji} #${id} ${CaseTypes[data.type]}`;
 
 				if (data.targetTag) str += ` - ${data.targetTag}`;
@@ -186,7 +196,11 @@ async function execute(intr: AutocompleteInteraction<"cached"> | ChatInputComman
 				}));
 		};
 
-		const emptyResponse = { name: "😴 Whoa so empty — There are no cases", value: "0" };
+		const emptyResponse = {
+			name: "😴 Whoa so empty — There are no cases",
+			value: "0"
+		};
+
 		const focused = Number(intr.options.getFocused()) || undefined;
 		const response = (await getData(focused)) ?? [emptyResponse];
 
@@ -235,7 +249,9 @@ async function execute(intr: AutocompleteInteraction<"cached"> | ChatInputComman
 
 		intr.editReply({ embeds: [case_.toEmbed()] });
 
-		intr.logger.log(`Manually created new case of type ${CaseTypes[type] ?? "Unknown"}`);
+		intr.logger.log(
+			`Manually created new case of type ${CaseTypes[type] ?? "Unknown"}`
+		);
 	} else if (sub === "show") {
 		const caseId = getIdOptionValue("case");
 
@@ -313,7 +329,9 @@ async function execute(intr: AutocompleteInteraction<"cached"> | ChatInputComman
 		const newcase = await cases.editCase(caseId, data);
 
 		if (!newcase) {
-			intr.editReply(`${emojis.cross} Something went wrong with editing case #${caseId}`);
+			intr.editReply(
+				`${emojis.cross} Something went wrong with editing case #${caseId}`
+			);
 
 			return;
 		}
@@ -360,4 +378,5 @@ async function execute(intr: AutocompleteInteraction<"cached"> | ChatInputComman
 	}
 }
 
-export const getCommand = () => ({ data, options, execute } as Partial<Command>);
+export const getCommand = () =>
+	({ data, options, execute } as Partial<Command>);

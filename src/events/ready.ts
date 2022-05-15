@@ -2,7 +2,11 @@ import { type Client } from "discord.js";
 
 export async function execute(client: Client<true>) {
 	const guilds = client.guilds.cache.size;
-	const users = client.guilds.cache.reduce((count, guild) => count + guild.memberCount, 0);
+
+	const users = client.guilds.cache.reduce(
+		(count, guild) => count + guild.memberCount,
+		0
+	);
 
 	client.logger.log(
 		`Logged on as ${client.user.tag} (${client.user.id})`,

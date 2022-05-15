@@ -29,7 +29,11 @@ export default class TraceValueManager {
 	}
 
 	public any() {
-		return Boolean(this._cache.channel) || Boolean(this._cache.guild) || Boolean(this._cache.userId);
+		return (
+			Boolean(this._cache.channel) ||
+			Boolean(this._cache.guild) ||
+			Boolean(this._cache.userId)
+		);
 	}
 
 	public setChannel(channel: GuildTextBasedChannel | null) {
