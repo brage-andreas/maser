@@ -1,7 +1,13 @@
-import { type CommandInteraction, type ChatInputApplicationCommandData } from "discord.js";
+import { type APIEmbed } from "discord-api-types/v9";
+import {
+	type ChatInputApplicationCommandData,
+	type CommandInteraction
+} from "discord.js";
+import { CaseTypes } from "../../constants/database.js";
 import CaseManager from "../../database/CaseManager.js";
 import { type CaseData } from "../../typings/database.js";
 import { type Command } from "../../typings/index.js";
+import Util from "../../utils/index.js";
 import { USER } from "./noread.methods.js";
 
 const data: ChatInputApplicationCommandData = {
@@ -12,31 +18,82 @@ const data: ChatInputApplicationCommandData = {
 
 async function execute(intr: CommandInteraction<"cached">) {
 	const userOptionIsProvided = Boolean(intr.options.get("user")?.value);
-	//const member = userOptionIsProvided ? intr.options.getMember("user") : intr.member;
-	const user = userOptionIsProvided ? intr.options.getUser("user", true) : intr.user;
+
+	const member = userOptionIsProvided
+		? intr.options.getMember("user")
+		: intr.member;
+
+	const user = userOptionIsProvided
+		? intr.options.getUser("user", true)
+		: intr.user;
 
 	// eslint-disable-next-line padding-line-between-statements
 	const caseManager = new CaseManager(intr.client, intr.guildId);
 
 	await caseManager.initialise();
 
-	const cases = await caseManager.manyOrNone<CaseData>(`
+	const rawCases = await caseManager.manyOrNone<CaseData>(`
 		SELECT *
 		FROM ${caseManager.schema}."${caseManager.table}"
 		WHERE "${caseManager.table}"."targetId" = '${user.id}'
+		ORDER BY "caseId" DESC
 	`);
 
-	if (!cases) {
-		("lol");
+	const caseFooterArr: Array<string> = [];
 
-		return;
+	const caseFooterObj: Record<number, number> = {
+		0: 0,
+		1: 0,
+		2: 0,
+		3: 0,
+		4: 0,
+		5: 0,
+		6: 0
+	};
+
+	rawCases?.forEach(({ type }) => caseFooterObj[type]++);
+
+	for (const [type, amount] of Object.entries(caseFooterObj)) {
+		caseFooterArr.push(
+			`${amount} ${CaseTypes[Number(type)].toLowerCase()}s`
+		);
 	}
 
-	const casesStr = caseManager.compactCases(cases);
+	const compactedCases = rawCases
+		? caseManager.compactCases(rawCases)
+		: ["No history"];
 
-	intr.editReply(casesStr.slice(0, 10).join("\n"));
+	const [caseList, rest] = Util.listify(compactedCases, 5);
+
+	const casesString = `• ${caseList.join("\n• ")}${
+		rest ? `\n${rest} more...` : ""
+	}`;
+
+	const historyEmbed: APIEmbed = {
+		author: {
+			icon_url: (member ?? user).displayAvatarURL(),
+			name: `${user.tag} (${user.id})`
+		},
+		fields: [
+			{
+				name: "Cases",
+				value: casesString
+			},
+			{
+				name: "Info",
+				value: "lol"
+			}
+		],
+		footer: { text: caseFooterArr.join(", ") }
+	};
+
+	intr.editReply({ embeds: [historyEmbed] });
 
 	intr.logger.log("Command used");
 }
 
-export const getCommand = () => ({ data, execute } as Partial<Command>);
+export const getCommand = () =>
+	({
+		data,
+		execute
+	} as Partial<Command>);
