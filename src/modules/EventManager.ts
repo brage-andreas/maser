@@ -38,15 +38,16 @@ export default class EventManager {
 	/**
 	 * Reads and returns a directory for files with a given URL.
 	 */
-	private _readDir(dir: URL): string[] {
+	private _readDir(dir: URL): Array<string> {
 		return readdirSync(dir);
 	}
 
 	/**
 	 * Returns a map of all events from their provided names.
 	 */
-	private async _getEvents(files: string[]) {
+	private async _getEvents(files: Array<string>) {
 		const hash: Map<string, Event> = new Map();
+
 		for (const fileName of files) {
 			const event = (await import(`../events/${fileName}`)) as Event;
 			const name = fileName.split(".")[0];
@@ -62,7 +63,7 @@ export default class EventManager {
 	 */
 	private _setEvents() {
 		this._events.forEach((event, name) => {
-			this.client.on(name, (...args: unknown[]) => {
+			this.client.on(name, (...args: Array<unknown>) => {
 				event.execute(this.client, ...args);
 			});
 		});

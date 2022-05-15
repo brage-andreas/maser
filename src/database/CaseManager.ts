@@ -20,7 +20,9 @@ export default class CaseManager extends Postgres {
 	}
 
 	public async initialise(): Promise<this> {
-		if (!this.idValue) throw new Error("Guild ID must be set");
+		if (!this.idValue) {
+			throw new Error("Guild ID must be set");
+		}
 
 		const query = `
             CREATE TABLE IF NOT EXISTS guilds."cases-${this.idValue}"
@@ -55,7 +57,9 @@ export default class CaseManager extends Postgres {
 		data: Partial<CaseData>,
 		logToChannel = false
 	): Promise<Case> {
-		if (!this.initialised) await this.initialise();
+		if (!this.initialised) {
+			await this.initialise();
+		}
 
 		const patchedData = await this.patch(data);
 		const columnNames = Object.keys(patchedData);
@@ -65,7 +69,9 @@ export default class CaseManager extends Postgres {
 
 		const case_ = await this.getCase(patchedData.caseId);
 
-		if (!case_) throw new Error("Something really went wrong");
+		if (!case_) {
+			throw new Error("Something really went wrong");
+		}
 
 		const guild =
 			this.client.guilds.cache.get(patchedData.guildId)?.name ??
@@ -80,7 +86,9 @@ export default class CaseManager extends Postgres {
 		if (logToChannel) {
 			const message = await case_.channelLog();
 
-			if (message) this.setURL(patchedData.caseId, message.url);
+			if (message) {
+				this.setURL(patchedData.caseId, message.url);
+			}
 		}
 
 		return case_;
@@ -99,11 +107,15 @@ export default class CaseManager extends Postgres {
 		caseId: number,
 		returnIfDeleted?: boolean
 	): Promise<Case | null> {
-		if (!this.initialised) await this.initialise();
+		if (!this.initialised) {
+			await this.initialise();
+		}
 
 		const case_ = await this.getCase(caseId);
 
-		if (!case_) return null;
+		if (!case_) {
+			return null;
+		}
 
 		this.deleteRow(`"caseId"='${caseId}'`);
 
@@ -120,7 +132,9 @@ export default class CaseManager extends Postgres {
 	}
 
 	public async getCase(caseId: number | string): Promise<Case | null> {
-		if (!this.initialised) await this.initialise();
+		if (!this.initialised) {
+			await this.initialise();
+		}
 
 		const data = await this.getData(caseId);
 
@@ -143,8 +157,10 @@ export default class CaseManager extends Postgres {
 	public async getCaseDataWithinRange(
 		offset: number,
 		limit = 5
-	): Promise<CaseData[] | null> {
-		if (!this.initialised) await this.initialise();
+	): Promise<Array<CaseData> | null> {
+		if (!this.initialised) {
+			await this.initialise();
+		}
 
 		const validatedOffset = Math.ceil(offset) < 0 ? 0 : Math.ceil(offset);
 		const validatedLimit = Math.ceil(limit) < 1 ? 1 : Math.ceil(limit);
@@ -162,11 +178,15 @@ export default class CaseManager extends Postgres {
 		caseId: number | string,
 		partialData: Partial<CaseData>
 	): Promise<Case | null> {
-		if (!this.initialised) await this.initialise();
+		if (!this.initialised) {
+			await this.initialise();
+		}
 
 		const data = await this.patch(partialData).catch(() => null);
 
-		if (!data) return null;
+		if (!data) {
+			return null;
+		}
 
 		data.edited = true;
 
@@ -187,9 +207,12 @@ export default class CaseManager extends Postgres {
 		return this;
 	}
 
-	public compactCases(cases: CaseData[]): string[] {
+	public compactCases(cases: Array<CaseData>): Array<string> {
 		return cases.map((c) => {
-			const { caseId, url, reason } = c;
+			const {
+ caseId, url, reason 
+} = c;
+
 			const time = Util.date(c.timestamp);
 			const type = CaseTypes[c.type];
 			const idStr = url ? `[#${caseId}](${url})` : `#${caseId}`;
@@ -199,7 +222,9 @@ export default class CaseManager extends Postgres {
 	}
 
 	private async getData(caseId: number | string): Promise<CaseData | null> {
-		if (!this.initialised) await this.initialise();
+		if (!this.initialised) {
+			await this.initialise();
+		}
 
 		const query = `
 			SELECT *
@@ -211,7 +236,9 @@ export default class CaseManager extends Postgres {
 	}
 
 	private _createCase(data: CaseData | null) {
-		if (!data) return null;
+		if (!data) {
+			return null;
+		}
 
 		// bigints turn to strings via pg-promise
 		data.timestamp = Number(data.timestamp);
@@ -234,7 +261,10 @@ export default class CaseManager extends Postgres {
 
 		this.test("targetTag", data.targetTag, { required: false });
 
-		this.test("targetId", data.targetId, { id: true, required: false });
+		this.test("targetId", data.targetId, {
+			id: true,
+			required: false
+		});
 
 		this.test("guildId", data.guildId, { id: true });
 
@@ -251,7 +281,9 @@ export default class CaseManager extends Postgres {
 	}
 
 	private async getId(): Promise<number> {
-		if (!this.initialised) await this.initialise();
+		if (!this.initialised) {
+			await this.initialise();
+		}
 
 		const query = `
 			SELECT "${this.idKey}" FROM (
@@ -289,14 +321,18 @@ export default class CaseManager extends Postgres {
 
 		opt.id ??= false;
 
-		if (value === undefined)
-			if (opt.required)
+		if (value === undefined) {
+			if (opt.required) {
 				throw new Error(`An argument for "${column}" must be provided`);
-			else return;
+			} else {
+				return;
+			}
+		}
 
-		if (opt.id && !REGEXP.ID.test(value as string))
+		if (opt.id && !REGEXP.ID.test(value as string)) {
 			throw new Error(
 				`A valid argument for "${column}" must be provided (reading: ${value})`
 			);
+		}
 	}
 }

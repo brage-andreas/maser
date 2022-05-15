@@ -37,7 +37,9 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const getColor = (hex: number | undefined) => {
 		const { green } = intr.client.colors;
 
-		if (!hex) return green;
+		if (!hex) {
+			return green;
+		}
 		const empty = hex === 0x000000 || hex === 0xffffff;
 
 		return empty ? green : hex;
@@ -49,7 +51,9 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const rawFlags = (await user.fetchFlags()).toArray();
 	const flags = rawFlags.map((flag) => USER_FLAGS_STRINGS[flag] ?? flag);
 
-	if (premium) flags.push(`${EMOJIS.boost} Booster`);
+	if (premium) {
+		flags.push(`${EMOJIS.boost} Booster`);
+	}
 
 	const memberAvatar = member?.displayAvatarURL({ size: 2048 }) ?? null;
 	const userAvatar = user.displayAvatarURL({ size: 2048 });
@@ -70,14 +74,21 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 	let roles = `${Util.parseRoles(member)}\n`;
 
-	if (hoistedRole) roles += `\n• Hoisted: ${hoistedRole}`;
-	if (coloredRole) roles += `\n• Coloured: ${coloredRole}`;
-	if (iconRole)
+	if (hoistedRole) {
+		roles += `\n• Hoisted: ${hoistedRole}`;
+	}
+	if (coloredRole) {
+		roles += `\n• Coloured: ${coloredRole}`;
+	}
+	if (iconRole) {
 		roles += `\n• Icon: ${iconRole} ([Link to icon](${iconRole.iconURL({
 			size: 1024
 		})}))`;
+	}
 
-	const { bot, tag, id } = user;
+	const {
+ bot, tag, id 
+} = user;
 
 	const name = Util.escapeDiscordMarkdown(member?.displayName ?? tag);
 
@@ -94,9 +105,13 @@ async function execute(intr: CommandInteraction<"cached">) {
 		(memberAvatar ? `• [Member avatar](${memberAvatar})\n` : "") +
 		(banner ? `• [Banner](${banner})\n` : "");
 
-	if (premium) infoFieldValue += "• Booster\n";
+	if (premium) {
+		infoFieldValue += "• Booster\n";
+	}
 
-	if (bot) infoFieldValue += "• Bot\n";
+	if (bot) {
+		infoFieldValue += "• Bot\n";
+	}
 
 	const userEmbed: APIEmbed = {
 		...defaultEmbed(intr),
@@ -109,7 +124,10 @@ async function execute(intr: CommandInteraction<"cached">) {
 		title: name,
 		color,
 		fields: [
-			{ name: "Info", value: infoFieldValue },
+			{
+				name: "Info",
+				value: infoFieldValue
+			},
 			{
 				name: "Badges",
 				value: flags.length ? `• ${flags.join("\n• ")}` : "None"
@@ -117,17 +135,24 @@ async function execute(intr: CommandInteraction<"cached">) {
 		]
 	};
 
-	if (member)
+	if (member) {
 		userEmbed.fields!.push({
 			name: `Roles (${member.roles.cache.size - 1})`,
 			value: 1 < member.roles.cache.size ? roles : "No roles"
 		});
+	}
 
-	if (owner) userEmbed.description = "👑 Server owner";
+	if (owner) {
+		userEmbed.description = "👑 Server owner";
+	}
 
 	intr.editReply({ embeds: [userEmbed] });
 
 	intr.logger.log(`Sent info of ${user.tag} (${user.id})`);
 }
 
-export const getCommand = () => ({ data, execute } as Partial<Command>);
+export const getCommand = () =>
+	({
+		data,
+		execute
+	} as Partial<Command>);

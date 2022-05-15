@@ -20,7 +20,7 @@ import ms from "ms";
  */
 export default class ButtonManager {
 	public message: Message<true> | null;
-	public rows: APIActionRowComponent<APIButtonComponentWithCustomId>[];
+	public rows: Array<APIActionRowComponent<APIButtonComponentWithCustomId>>;
 
 	/**
 	 * Creates a button manager.
@@ -34,8 +34,12 @@ export default class ButtonManager {
 	/**
 	 * Replaces the manager's current rows with new ones from given buttons.
 	 */
-	public setRows(...buttons: APIButtonComponentWithCustomId[][]): this {
-		if (!buttons.length) return this;
+	public setRows(
+		...buttons: Array<Array<APIButtonComponentWithCustomId>>
+	): this {
+		if (!buttons.length) {
+			return this;
+		}
 
 		this.rows = Array.from(
 			{ length: buttons.length },
@@ -69,10 +73,13 @@ export default class ButtonManager {
 		filter?: CollectorFilter<[ButtonInteraction<"cached">]>;
 		time?: string;
 	}) {
-		const { filter, time } = options ?? {};
+		const {
+ filter, time 
+} = options ?? {};
 
-		if (!this.message)
+		if (!this.message) {
 			throw new Error("A message must be set to the button manager");
+		}
 
 		const milliseconds = ms(time ?? "30s");
 
@@ -86,7 +93,7 @@ export default class ButtonManager {
 	/**
 	 * Disables one or more buttons on this interaction.
 	 */
-	public disable(...customIds: string[]): this {
+	public disable(...customIds: Array<string>): this {
 		this._toggleButtons(customIds, true);
 
 		return this;
@@ -95,7 +102,7 @@ export default class ButtonManager {
 	/**
 	 * Enables one or more buttons on this interaction.
 	 */
-	public enable(...customIds: string[]): this {
+	public enable(...customIds: Array<string>): this {
 		this._toggleButtons(customIds, false);
 
 		return this;
@@ -104,11 +111,12 @@ export default class ButtonManager {
 	/**
 	 * Toggles one or more buttons on or off.
 	 */
-	private _toggleButtons(customIds: string[], disable: boolean) {
+	private _toggleButtons(customIds: Array<string>, disable: boolean) {
 		this.rows = this.rows.map((row) => {
 			row.components = row.components.map((button) => {
-				if (button.custom_id && customIds.includes(button.custom_id))
+				if (button.custom_id && customIds.includes(button.custom_id)) {
 					button.disabled = disable;
+				}
 
 				return button;
 			});
@@ -217,10 +225,11 @@ export class ConfirmationButtons extends ButtonManager {
 		onNo?: string;
 	}): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
-			if (!this.interaction)
+			if (!this.interaction) {
 				throw new Error(
 					"Interaction must be set to the ConfirmationButtons"
 				);
+			}
 
 			const onYes = options?.onYes ?? this.yesMessage ?? "Done!";
 			const onNo = options?.onNo ?? this.noMessage ?? "Cancelled";
@@ -243,13 +252,15 @@ export class ConfirmationButtons extends ButtonManager {
 					}
 
 					if (intr.customId === "yes") {
-						if (!options?.noReply)
+						if (!options?.noReply) {
 							this._updateOrEditReply(onYes, []);
+						}
 
 						resolve();
 					} else {
-						if (!options?.noReply)
+						if (!options?.noReply) {
 							this._updateOrEditReply(onNo, []);
+						}
 
 						reject();
 					}
@@ -258,8 +269,9 @@ export class ConfirmationButtons extends ButtonManager {
 				});
 
 				collector.on("end", (_, reason) => {
-					if (reason !== "collect")
+					if (reason !== "collect") {
 						this._updateOrEditReply("Cancelled by timeout", []);
+					}
 
 					reject();
 				});
@@ -269,19 +281,27 @@ export class ConfirmationButtons extends ButtonManager {
 
 	private async _updateOrEditReply(
 		content: string,
-		components: APIActionRowComponent<APIButtonComponentWithCustomId>[]
+		components: Array<APIActionRowComponent<APIButtonComponentWithCustomId>>
 	): Promise<Message<true>> {
-		if (!this.interaction)
+		if (!this.interaction) {
 			throw new Error(
 				"Interaction must be set to the ConfirmationButtons"
 			);
+		}
 
 		const medium = this.interaction;
 		const isButtonIntr = medium instanceof MessageComponentInteraction;
 
 		const msg = isButtonIntr
-			? medium.update({ content, components, fetchReply: true })
-			: medium.editReply({ content, components });
+			? medium.update({
+					content,
+					components,
+					fetchReply: true
+			  })
+			: medium.editReply({
+					content,
+					components
+			  });
 
 		return msg;
 	}

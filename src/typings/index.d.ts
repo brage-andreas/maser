@@ -32,11 +32,11 @@ export interface CommandOptions {
 }
 
 export interface Event {
-	execute(client: Client, ...args: unknown[]): Promise<void> | void;
+	execute(client: Client, ...args: Array<unknown>): Promise<void> | void;
 }
 
 export interface EvalOutput {
-	embeds: APIEmbed[];
+	embeds: Array<APIEmbed>;
 	output: string;
 	type: "error" | "output";
 }

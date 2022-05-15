@@ -19,11 +19,17 @@ export default class TraceValueManager {
 	}
 
 	public has(key: "CHANNEL" | "GUILD" | "USER") {
-		if (key === "CHANNEL") return Boolean(this._cache.channel);
+		if (key === "CHANNEL") {
+			return Boolean(this._cache.channel);
+		}
 
-		if (key === "GUILD") return Boolean(this._cache.guild);
+		if (key === "GUILD") {
+			return Boolean(this._cache.guild);
+		}
 
-		if (key === "USER") return Boolean(this._cache.userId);
+		if (key === "USER") {
+			return Boolean(this._cache.userId);
+		}
 
 		return false;
 	}

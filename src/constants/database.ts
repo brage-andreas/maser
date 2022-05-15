@@ -27,27 +27,31 @@ export const CONFIG_COMMAND_TO_COLUMN: Record<string, ConfigTableColumns> = {
 	"mod-log": "modLogChannel"
 };
 
-const CONFIG_COMMAND_CHANNEL_OPTIONS: ApplicationCommandSubCommandData[] = [
-	{
-		name: "view",
-		description: "Sends the option's value",
-		type: ApplicationCommandOptionType.Subcommand
-	},
-	{
-		name: "set",
-		description: "Sets a new value for the option",
-		type: ApplicationCommandOptionType.Subcommand,
-		options: [
-			{
-				name: "channel",
-				description:
-					"The new channel to set to. Omitting this option will remove its value",
-				channelTypes: [ChannelType.GuildText, ChannelType.GuildNews],
-				type: ApplicationCommandOptionType.Channel
-			}
-		]
-	}
-];
+const CONFIG_COMMAND_CHANNEL_OPTIONS: Array<ApplicationCommandSubCommandData> =
+	[
+		{
+			name: "view",
+			description: "Sends the option's value",
+			type: ApplicationCommandOptionType.Subcommand
+		},
+		{
+			name: "set",
+			description: "Sets a new value for the option",
+			type: ApplicationCommandOptionType.Subcommand,
+			options: [
+				{
+					name: "channel",
+					description:
+						"The new channel to set to. Omitting this option will remove its value",
+					channelTypes: [
+						ChannelType.GuildText,
+						ChannelType.GuildNews
+					],
+					type: ApplicationCommandOptionType.Channel
+				}
+			]
+		}
+	];
 
 /* const CONFIG_ROLE_OPTIONS: ApplicationCommandSubCommandData[] = [
 	{

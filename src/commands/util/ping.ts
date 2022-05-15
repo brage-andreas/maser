@@ -15,4 +15,8 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	intr.logger.log("Pinged");
 }
 
-export const getCommand = () => ({ data, execute } as Partial<Command>);
+export const getCommand = () =>
+	({
+		data,
+		execute
+	} as Partial<Command>);

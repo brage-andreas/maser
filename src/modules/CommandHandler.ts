@@ -82,8 +82,9 @@ export default class CommandHandler {
 		const data = this._commands.get(key);
 
 		// This should never be undefined
-		if (!data)
+		if (!data) {
 			throw new Error(`No internal command found with name: ${key}`);
+		}
 
 		return data;
 	}
@@ -91,7 +92,7 @@ export default class CommandHandler {
 	/**
 	 * Reads and returns a directory for files with a given URL.
 	 */
-	private _readDir(dir: URL): string[] {
+	private _readDir(dir: URL): Array<string> {
 		return readdirSync(dir);
 	}
 
@@ -99,7 +100,7 @@ export default class CommandHandler {
 	 * Returns a map of all commands in given folders mapped by their names.
 	 */
 	private async _getCommands(
-		folders: string[]
+		folders: Array<string>
 	): Promise<Map<string, Command>> {
 		const hash: Map<string, Command> = new Map();
 
@@ -122,10 +123,11 @@ export default class CommandHandler {
 
 				const partialCommand = commandModule.getCommand();
 
-				if (!partialCommand.data || !partialCommand.execute)
+				if (!partialCommand.data || !partialCommand.execute) {
 					throw new Error(
 						`File "/commands/${folder}/${fileName}" is missing command properties`
 					);
+				}
 
 				if (!partialCommand.options) {
 					partialCommand.options = {
@@ -157,9 +159,9 @@ export default class CommandHandler {
 	 * Adds a "hide" option to the given option array, if none present.
 	 */
 	private _addHideOption(
-		options: ApplicationCommandOptionData[],
+		options: Array<ApplicationCommandOptionData>,
 		name: string
-	): ApplicationCommandOptionData[] {
+	): Array<ApplicationCommandOptionData> {
 		if (!options.some((option) => option.name === "hide")) {
 			const hide = this.getDefaultHide(name);
 
@@ -179,7 +181,7 @@ export default class CommandHandler {
 	 * Returns an array of all the cached commands' data.
 	 * Ensures a "hide" option in all chat-input commands.
 	 */
-	private _getData(): ApplicationCommandData[] {
+	private _getData(): Array<ApplicationCommandData> {
 		const dataSet: Set<ApplicationCommandData> = new Set();
 		const commands = [...this._commands.values()];
 
@@ -189,12 +191,12 @@ export default class CommandHandler {
 			const subcommandGroups = cmd.data.options.filter(
 				(option) =>
 					option.type === ApplicationCommandOptionType.SubcommandGroup
-			) as ApplicationCommandSubGroupData[];
+			) as Array<ApplicationCommandSubGroupData>;
 
 			const subcommands = cmd.data.options.filter(
 				(option) =>
 					option.type === ApplicationCommandOptionType.Subcommand
-			) as ApplicationCommandSubCommandData[];
+			) as Array<ApplicationCommandSubCommandData>;
 
 			subcommandGroups.forEach((subgroup) => {
 				subgroup.options?.forEach((subcommand) => {
@@ -214,11 +216,12 @@ export default class CommandHandler {
 				);
 			});
 
-			if (!subcommandGroups.length && !subcommands.length)
+			if (!subcommandGroups.length && !subcommands.length) {
 				cmd.data.options = this._addHideOption(
 					cmd.data.options,
 					cmd.data.name
 				);
+			}
 
 			dataSet.add(cmd.data);
 		});

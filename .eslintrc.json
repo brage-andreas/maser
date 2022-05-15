@@ -17,54 +17,68 @@
 		"prettier"
 	],
 	"rules": {
-		"quotes": ["error", "double", { "avoidEscape": true }],
-		"@typescript-eslint/array-type": [
-			"error",
-			{
-				"default": "array"
-			}
-		],
-		"@typescript-eslint/no-non-null-assertion": "off",
-		"@typescript-eslint/await-thenable": "error",
+		"@typescript-eslint/sort-type-union-intersection-members": "error",
+		"@typescript-eslint/explicit-member-accessibility": "error",
+		"@typescript-eslint/no-unnecessary-type-assertion": "error",
+		"@typescript-eslint/no-meaningless-void-operator": "error",
 		"@typescript-eslint/consistent-type-definitions": "error",
 		"@typescript-eslint/consistent-type-imports": "error",
-		"@typescript-eslint/explicit-member-accessibility": "error",
-		"@typescript-eslint/member-ordering": "error",
 		"@typescript-eslint/method-signature-style": ["error", "method"],
-		"@typescript-eslint/no-implicit-any-catch": "error",
-		"@typescript-eslint/no-inferrable-types": "error",
-		"@typescript-eslint/no-meaningless-void-operator": "error",
-		"@typescript-eslint/no-misused-promises": "error",
-		"@typescript-eslint/no-unnecessary-type-assertion": "error",
 		"@typescript-eslint/prefer-optional-chain": "error",
+		"@typescript-eslint/no-implicit-any-catch": "error",
+		"@typescript-eslint/no-non-null-assertion": "off",
+		"@typescript-eslint/no-inferrable-types": "error",
+		"@typescript-eslint/no-misused-promises": "error",
+		"@typescript-eslint/member-ordering": "error",
 		"@typescript-eslint/prefer-readonly": "error",
+		"@typescript-eslint/await-thenable": "error",
 		"@typescript-eslint/require-await": "error",
-		"@typescript-eslint/sort-type-union-intersection-members": "error",
-		"arrow-body-style": "error",
-		"curly": ["error", "multi", "consistent"],
-		"eqeqeq": ["error", "smart"],
-		"no-else-return": "error",
+		"@typescript-eslint/array-type": ["error", { "default": "generic" }],
+
 		"no-extra-boolean-cast": "error",
+		"no-duplicate-imports": "error",
 		"no-implicit-coercion": "error",
-		"no-invalid-regexp": "error",
-		"no-lonely-if": "error",
-		"no-param-reassign": "error",
 		"no-unneeded-ternary": "error",
 		"no-useless-concat": "error",
 		"no-useless-escape": "error",
 		"no-useless-rename": "error",
 		"no-useless-return": "error",
+		"no-invalid-regexp": "error",
+		"no-param-reassign": "error",
+		"no-else-return": "error",
+		"no-lonely-if": "error",
 		"no-var": "error",
-		"no-duplicate-imports": "error",
+
+		"prefer-template": "error",
+		"prefer-const": "error",
+
+		"arrow-body-style": ["error", "as-needed"],
+		"quotes": ["error", "double", { "avoidEscape": true }],
+		"eqeqeq": ["error", "smart"],
+		"curly": "error",
+
 		"object-curly-newline": [
-			"off",
+			"error",
 			{
-				"consistent": true,
-				"multiline": true,
-				"minProperties": 2
+				"ExportDeclaration": {
+					"minProperties": 2,
+					"consistent": true,
+					"multiline": true
+				},
+				"ObjectExpression": {
+					"minProperties": 2,
+					"consistent": true,
+					"multiline": true
+				},
+				"ObjectPattern": {
+					"minProperties": 2,
+					"consistent": true,
+					"multiline": true
+				}
 			}
 		],
 		"object-shorthand": "error",
+
 		"padding-line-between-statements": [
 			"error",
 			{
@@ -74,22 +88,8 @@
 			},
 			{
 				"blankLine": "always",
-				"prev": "*",
-				"next": ["return", "if"]
-			},
-			{
-				"blankLine": "never",
-				"prev": ["singleline-const", "singleline-let"],
-				"next": ["singleline-const", "singleline-let"]
-			},
-			{
-				"blankLine": "always",
-				"prev": "*",
-				"next": [
-					"multiline-const",
-					"multiline-let",
-					"multiline-expression"
-				]
+				"next": ["return", "if", "for", "while", "switch", "throw"],
+				"prev": "*"
 			},
 			{
 				"blankLine": "always",
@@ -102,16 +102,14 @@
 			},
 			{
 				"blankLine": "always",
-				"prev": "*",
-				"next": "expression"
+				"next": "expression",
+				"prev": "*"
 			},
 			{
 				"blankLine": "always",
 				"prev": "expression",
 				"next": "*"
 			}
-		],
-		"prefer-const": "error",
-		"prefer-template": "error"
+		]
 	}
 }

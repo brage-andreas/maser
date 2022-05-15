@@ -11,12 +11,12 @@ export const MAX_EMBED_DESCRIPTION_LEN = 4096;
 export const MAX_AUDIT_REASON_LEN = 512;
 
 // TODO: remove cast
-export const INTENTS: GatewayIntentBits[] = [
+export const INTENTS: Array<GatewayIntentBits> = [
 	IntentsBitField.Flags.GuildMembers as number,
 	IntentsBitField.Flags.Guilds as number
 ];
 
-export const PARTIALS: Partials[] = [
+export const PARTIALS: Array<Partials> = [
 	Partials.GuildMember //
 ];
 
@@ -108,7 +108,10 @@ export function defaultEmbed(
 		const iconURL = intr.member.displayAvatarURL();
 		const name = `${intr.user.tag} (${intr.user.id})`;
 
-		options.author = { icon_url: iconURL, name };
+		options.author = {
+			icon_url: iconURL,
+			name
+		};
 	}
 
 	return options;

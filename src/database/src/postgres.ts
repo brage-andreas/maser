@@ -14,10 +14,11 @@ export default abstract class Postgres extends PostgresConnection {
 	public constructor(client: Client<true>, options: PostgresOptions) {
 		super();
 
-		if (!REGEXP.ID.test(options.idValue))
+		if (!REGEXP.ID.test(options.idValue)) {
 			throw new TypeError(
 				`Provided argument for idValue is not a valid ID (reading: "${options.idValue}")"`
 			);
+		}
 
 		this.client = client;
 
@@ -30,8 +31,13 @@ export default abstract class Postgres extends PostgresConnection {
 		this.idKey = options.idKey;
 	}
 
-	protected async still(columns: string[], values: unknown[]): Promise<void> {
-		if (!(await this.existsRow())) await this.createRow(columns, values);
+	protected async still(
+		columns: Array<string>,
+		values: Array<unknown>
+	): Promise<void> {
+		if (!(await this.existsRow())) {
+			await this.createRow(columns, values);
+		}
 	}
 
 	protected async existsRow(): Promise<boolean> {
@@ -49,8 +55,8 @@ export default abstract class Postgres extends PostgresConnection {
 	}
 
 	protected async createRow(
-		columns: string[],
-		values: unknown[]
+		columns: Array<string>,
+		values: Array<unknown>
 	): Promise<void> {
 		const formattedColumns = columns.map((e) => `"${e}"`);
 
@@ -70,8 +76,8 @@ export default abstract class Postgres extends PostgresConnection {
 	}
 
 	protected async updateRow(
-		columns: string[],
-		newValues: (boolean | number | string | null)[],
+		columns: Array<string>,
+		newValues: Array<boolean | number | string | null>,
 		whereQuery?: string
 	): Promise<void> {
 		const data = columns.map(

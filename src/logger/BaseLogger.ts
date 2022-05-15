@@ -24,7 +24,7 @@ export default abstract class BaseLogger {
 	protected print(
 		type: LoggerTypes,
 		name: string,
-		...messages: string[]
+		...messages: Array<string>
 	): void {
 		this._printBase(type, name);
 
@@ -45,8 +45,10 @@ export default abstract class BaseLogger {
 	 * Parses any messages provided.
 	 * Indents every line by 2.
 	 */
-	protected parse(...messages: string[]): string[] | null {
-		if (!messages.length) return null;
+	protected parse(...messages: Array<string>): Array<string> | null {
+		if (!messages.length) {
+			return null;
+		}
 
 		return messages.map((message) => {
 			const lines = message.split(/[\r\n]/);
@@ -72,25 +74,32 @@ export default abstract class BaseLogger {
 	 * Prints the trace of this log.
 	 */
 	private _printTrace(): void {
-		if (!this.traceValues.any()) return;
+		if (!this.traceValues.any()) {
+			return;
+		}
 
 		const cache = this.traceValues.get();
-		const messages: string[] = [];
+		const messages: Array<string> = [];
 
 		process.stdout.write(gray(" > "));
 
-		if (this.traceValues.has("USER"))
-			if (cache.user)
+		if (this.traceValues.has("USER")) {
+			if (cache.user) {
 				messages.push(
 					`${yellow(cache.user)} ${gray(`(u: ${cache.userId})`)}`
 				);
-			else messages.push(`u: ${yellow(cache.userId!)}`);
+			} else {
+				messages.push(`u: ${yellow(cache.userId!)}`);
+			}
+		}
 
-		if (this.traceValues.has("CHANNEL"))
+		if (this.traceValues.has("CHANNEL")) {
 			messages.push(`${gray("in")} #${cache.channel}`);
+		}
 
-		if (this.traceValues.has("GUILD"))
+		if (this.traceValues.has("GUILD")) {
 			messages.push(`${gray("in")} ${cache.guild}`);
+		}
 
 		process.stdout.write(messages.join(" "));
 	}

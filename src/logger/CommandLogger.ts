@@ -32,12 +32,15 @@ export default class CommandLogger extends BaseLogger {
 
 		this.traceValues.setGuild(intr?.guild ?? null);
 
-		if (intr?.channel) this.traceValues.setChannel(intr.channel);
+		if (intr?.channel) {
+			this.traceValues.setChannel(intr.channel);
+		}
 	}
 
-	public log(...messages: string[]) {
-		if (!this.name)
+	public log(...messages: Array<string>) {
+		if (!this.name) {
 			throw new Error("Name of command must be set to log command");
+		}
 
 		const command = this.interaction?.toString();
 		const logLevel = this.interaction?.commandOptions.logLevel ?? 1;
@@ -65,7 +68,9 @@ export default class CommandLogger extends BaseLogger {
 	}
 
 	public setChannel(channel: GuildTextBasedChannel | null) {
-		if (!channel) this.traceValues.setChannel(channel);
+		if (!channel) {
+			this.traceValues.setChannel(channel);
+		}
 
 		return this;
 	}
@@ -82,26 +87,43 @@ export default class CommandLogger extends BaseLogger {
 		channel?: GuildTextBasedChannel | null;
 		name?: string | null;
 	}) {
-		const { user, guild, channel, name } = options;
+		const {
+ user, guild, channel, name 
+} = options;
 
-		if (name !== undefined) this.setName(name);
+		if (name !== undefined) {
+			this.setName(name);
+		}
 
-		if (user !== undefined) this.setUser(user);
+		if (user !== undefined) {
+			this.setUser(user);
+		}
 
-		if (guild !== undefined) this.setGuild(guild);
+		if (guild !== undefined) {
+			this.setGuild(guild);
+		}
 
-		if (channel !== undefined) this.setChannel(channel);
+		if (channel !== undefined) {
+			this.setChannel(channel);
+		}
 
 		return this;
 	}
 
-	private channelLog(...messages: string[]) {
-		if (!this.interaction) return;
+	private channelLog(...messages: Array<string>) {
+		if (!this.interaction) {
+			return;
+		}
 
-		const { client, guild } = this.interaction;
+		const {
+ client, guild 
+} = this.interaction;
+
 		const logLevel = this.interaction.commandOptions.logLevel;
 
-		if (logLevel === 0) return;
+		if (logLevel === 0) {
+			return;
+		}
 
 		const createEmbed = (description: string, index = 0, total = 1) => {
 			const { user } = this.interaction!;
@@ -112,10 +134,13 @@ export default class CommandLogger extends BaseLogger {
 				description
 			};
 
-			if (index === 0)
+			if (index === 0) {
 				embed.author = { name: `${user.tag} (${user.id})` };
+			}
 
-			if (total > 1) embed.footer = { text: `${index + 1}/${total}` };
+			if (total > 1) {
+				embed.footer = { text: `${index + 1}/${total}` };
+			}
 
 			return embed;
 		};
@@ -127,21 +152,27 @@ export default class CommandLogger extends BaseLogger {
 		);
 
 		botLogManager.getChannel().then((channel) => {
-			if (!this.interaction) return; // not really needed - mostly for inferring types
+			if (!this.interaction) {
+				return;
+			} // not really needed - mostly for inferring types
 
-			if (!channel) return;
+			if (!channel) {
+				return;
+			}
 
 			const commandStr = `\`${this.interaction.toString()}\`\n`;
-			let embeds: APIEmbed[] = [];
+			let embeds: Array<APIEmbed> = [];
 
-			if (logLevel === 2)
+			if (logLevel === 2) {
 				embeds = messages.map((msg, i) => {
 					const prefix = i === 0 ? commandStr : "";
 					const str = Util.mergeForCodeblock(msg, { prefix });
 
 					return createEmbed(str, i, messages.length);
 				});
-			else embeds.push(createEmbed(commandStr));
+			} else {
+				embeds.push(createEmbed(commandStr));
+			}
 
 			channel.send({ embeds }).catch(() => null);
 		});

@@ -70,10 +70,12 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 			? `${name}' banner`
 			: `${name}'s banner`;
 
-	const bannerLinks: string[] = [];
+	const bannerLinks: Array<string> = [];
 	const isGIF = dynamic.endsWith(`.gif?size=${size}`);
 
-	if (isGIF) bannerLinks.push(`[gif](${dynamic})`);
+	if (isGIF) {
+		bannerLinks.push(`[gif](${dynamic})`);
+	}
 
 	bannerLinks.push(`[png](${png}), [jpg](${jpg}), [webp](${webp})`);
 
@@ -94,4 +96,8 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	intr.logger.log(`Sent banner of ${user.tag} (${user.id})`);
 }
 
-export const getCommand = () => ({ data, execute } as Partial<Command>);
+export const getCommand = () =>
+	({
+		data,
+		execute
+	} as Partial<Command>);

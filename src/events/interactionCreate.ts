@@ -4,7 +4,9 @@ import { CommandManager } from "../modules/index.js";
 
 export async function execute(client: Client<true>, intr: Interaction) {
 	if (!intr.guildId) {
-		if (!intr.isCommand()) return;
+		if (!intr.isCommand()) {
+			return;
+		}
 
 		intr.reply({
 			content: `${intr.client.maserEmojis.lock} My commands are only accessible inside servers!`,
@@ -17,10 +19,13 @@ export async function execute(client: Client<true>, intr: Interaction) {
 	if (
 		(!intr.isChatInputCommand() && !intr.isAutocomplete()) ||
 		!intr.inCachedGuild()
-	)
+	) {
 		return;
+	}
 
-	if (intr.member.partial) await intr.member.fetch();
+	if (intr.member.partial) {
+		await intr.member.fetch();
+	}
 
 	const emojis = client.maserEmojis;
 	const isNotOwner = intr.user.id !== client.application.owner?.id;
@@ -32,7 +37,9 @@ export async function execute(client: Client<true>, intr: Interaction) {
 	const commandData = client.commandHandler.getData(intr.commandName);
 	const commandOptions = intr.commandOptions.setCommand(intr, commandData);
 
-	if (intr.isAutocomplete()) return commandOptions.execute();
+	if (intr.isAutocomplete()) {
+		return commandOptions.execute();
+	}
 
 	if (commandOptions.isWIP && isNotOwner) {
 		await intr.reply({

@@ -83,7 +83,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 				)}")`
 		);
 
-		if (target.displayAvatarURL().endsWith(".gif"))
+		if (target.displayAvatarURL().endsWith(".gif")) {
 			arr.splice(
 				0,
 				0,
@@ -92,6 +92,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 					"gif"
 				)}")`
 			);
+		}
 
 		return arr;
 	};
@@ -200,11 +201,18 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 		collector.on("end", () => {
 			embed.footer = { text: "" };
 
-			msg.edit({ embeds: [embed], components: [] }).catch(() => null);
+			msg.edit({
+				embeds: [embed],
+				components: []
+			}).catch(() => null);
 		});
 	}
 
 	intr.logger.log(`Sent avatar of ${user.tag} (${user.id})`);
 }
 
-export const getCommand = () => ({ data, execute } as Partial<Command>);
+export const getCommand = () =>
+	({
+		data,
+		execute
+	} as Partial<Command>);

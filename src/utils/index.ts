@@ -7,12 +7,19 @@ export default class Util extends null {
 	 * Parsed any given string by indenting it with a given width of spaces.
 	 * Returns null if the width is under 0 or more than 16.
 	 */
-	public static parse(string: string | null | undefined, width = 0): string | null {
-		if (!string) return null;
+	public static parse(
+		string: string | null | undefined,
+		width = 0
+	): string | null {
+		if (!string) {
+			return null;
+		}
 
 		const parsedWidth = Math.ceil(width);
 
-		if (parsedWidth < 0 || parsedWidth > 16) return null;
+		if (parsedWidth < 0 || parsedWidth > 16) {
+			return null;
+		}
 
 		const space = " ".repeat(parsedWidth);
 
@@ -23,8 +30,14 @@ export default class Util extends null {
 	 * Indents all lines or elements of any given string or array with a given width of spaces.
 	 * Splits strings on new-lines.
 	 */
-	public static indent(string: string[] | string | null | undefined, width = 2, sep = " "): string | null {
-		if (!string) return null;
+	public static indent(
+		string: Array<string> | string | null | undefined,
+		width = 2,
+		sep = " "
+	): string | null {
+		if (!string) {
+			return null;
+		}
 
 		const arr = typeof string === "string" ? string.split("\n") : string;
 
@@ -35,7 +48,9 @@ export default class Util extends null {
 	 * Logs any given string to console.
 	 */
 	public static log(string: string | null | undefined): void {
-		if (!string) return;
+		if (!string) {
+			return;
+		}
 
 		console.log(Util.parse(string));
 	}
@@ -44,7 +59,9 @@ export default class Util extends null {
 	 * Makes any given number have a length of at least 2 by adding a given separator to one-digit numbers.
 	 */
 	public static twoLen(input: number, sep = " "): string {
-		if (!sep.length) throw new Error("Separator must be a non-empty string");
+		if (!sep.length) {
+			throw new Error("Separator must be a non-empty string");
+		}
 
 		return input < 10 ? sep + String(input) : String(input);
 	}
@@ -63,7 +80,10 @@ export default class Util extends null {
 	/**
 	 * Turns any given timestamp or date into a markdown timestamp.
 	 */
-	public static date(time: Date | number, style: TimestampStylesString = "R"): string {
+	public static date(
+		time: Date | number,
+		style: TimestampStylesString = "R"
+	): string {
 		const timestamp = time instanceof Date ? time.getTime() : time;
 		const seconds = Math.ceil(timestamp / 1000);
 
@@ -89,7 +109,9 @@ export default class Util extends null {
 			lang?: string | null | undefined;
 		}
 	): string {
-		if (!input.length) throw new Error("input cannot be empty string");
+		if (!input.length) {
+			throw new Error("input cannot be empty string");
+		}
 
 		const maxLen = options?.maxLen ?? MAX_EMBED_DESCRIPTION_LEN;
 		const prefix = options?.prefix ?? "";
@@ -97,7 +119,8 @@ export default class Util extends null {
 		const lang = options?.lang ?? "";
 
 		// eslint-disable-next-line padding-line-between-statements
-		const createString = (input?: string) => `${prefix}\n\`\`\`${lang}\n${input ?? ""}\n\`\`\`\n${suffix}`;
+		const createString = (input?: string) =>
+			`${prefix}\n\`\`\`${lang}\n${input ?? ""}\n\`\`\`\n${suffix}`;
 
 		// eslint-disable-next-line padding-line-between-statements
 		const lenWithoutInput = createString().length;
@@ -133,25 +156,60 @@ export default class Util extends null {
 	 * Gives you a string of the three highest roles with a mention of any excess.
 	 */
 	public static parseRoles(memberOrGuild: Guild | GuildMember): string;
-	public static parseRoles(memberOrGuild: Guild | GuildMember | null | undefined): string | null;
+	public static parseRoles(
+		memberOrGuild: Guild | GuildMember | null | undefined
+	): string | null;
 	public static parseRoles(memberOrGuild: null | undefined): null;
-	public static parseRoles(memberOrGuild: Guild | GuildMember | null | undefined): string | null {
-		if (!memberOrGuild) return null;
+	public static parseRoles(
+		memberOrGuild: Guild | GuildMember | null | undefined
+	): string | null {
+		if (!memberOrGuild) {
+			return null;
+		}
 
 		const roles = memberOrGuild.roles.cache;
 
-		if (roles.size <= 1) return "None";
+		if (roles.size <= 1) {
+			return "None";
+		}
 
 		const sortedRoles = roles.sort((a, b) => b.position - a.position);
-		const parsedRoles = sortedRoles.map((role) => role.toString()).slice(0, -1); // removes @everyone
+
+		const parsedRoles = sortedRoles
+			.map((role) => role.toString())
+			.slice(0, -1); // removes @everyone
+
 		const roleMentions = parsedRoles.slice(0, 3).join(", ");
 		const excess = parsedRoles.length - 3;
 
-		return 0 < excess ? `${roleMentions}, and ${excess} more` : roleMentions;
+		return 0 < excess
+			? `${roleMentions}, and ${excess} more`
+			: roleMentions;
 	}
 
 	// Very simple and definitely not the best -- gets the job done
 	public static escapeDiscordMarkdown(text: string): string {
 		return text.replaceAll(/(\*)|(_)|(\|)|(\\)/g, (match) => `\\${match}`);
+	}
+
+	/**
+	 * Listifies an array to a desired length.
+	 * @param elements The elements to listify.
+	 * @param desiredLength The desired amount of elements in the list.
+	 * @param give The amount of extra elements to include before cutting list off.
+	 */
+	public static listify(
+		elements: Array<string>,
+		desiredLength = 1,
+		give = 1
+	): [Array<string>, number] {
+		if (elements.length <= (desiredLength ?? 5) + (give ?? 1)) {
+			return [elements, 0];
+		}
+
+		return [
+			elements.slice(0, desiredLength),
+			elements.length - desiredLength
+		];
 	}
 }

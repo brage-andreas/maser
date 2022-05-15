@@ -50,9 +50,13 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 	const stringify = (value: unknown): string => {
 		const replacer = (_: string, val: unknown) => {
-			if (typeof val === "function" || val == null) return `${value}`;
+			if (typeof val === "function" || val == null) {
+				return `${value}`;
+			}
 
-			if (typeof val === "bigint") return `${val}n`;
+			if (typeof val === "bigint") {
+				return `${val}n`;
+			}
 
 			return val;
 		};
@@ -69,7 +73,9 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 		prefix: string,
 		embedStyle?: string | null
 	) => {
-		if (!string.length) return null;
+		if (!string.length) {
+			return null;
+		}
 
 		return Util.mergeForCodeblock(string, {
 			prefix,
@@ -156,7 +162,9 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 		}
 	};
 
-	const { embeds, output, type } = await evaluate();
+	const {
+ embeds, output, type 
+} = await evaluate();
 
 	if (reply) {
 		const buttonManager = new ButtonManager();
@@ -249,4 +257,8 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 }
 
 export const getCommand = () =>
-	({ options, data, execute } as Partial<Command>);
+	({
+		options,
+		data,
+		execute
+	} as Partial<Command>);

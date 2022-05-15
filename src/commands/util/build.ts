@@ -5,9 +5,7 @@ import {
 } from "discord.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 
-export const options: Partial<CommandOptions> = {
-	private: true
-};
+export const options: Partial<CommandOptions> = { private: true };
 
 const data: ChatInputApplicationCommandData = {
 	name: "build",
@@ -60,8 +58,11 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 			return;
 		}
 
-		if (clear) intr.client.commandHandler.clear(clientId, guildId);
-		else intr.client.commandHandler.put(clientId, guildId);
+		if (clear) {
+			intr.client.commandHandler.clear(clientId, guildId);
+		} else {
+			intr.client.commandHandler.put(clientId, guildId);
+		}
 
 		intr.editReply(
 			`${clear ? "Cleared" : "Put"} commands in guild: ${guild.name} (${
@@ -75,8 +76,11 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 			})`
 		);
 	} else {
-		if (clear) intr.client.commandHandler.clear(clientId);
-		else intr.client.commandHandler.put(clientId);
+		if (clear) {
+			intr.client.commandHandler.clear(clientId);
+		} else {
+			intr.client.commandHandler.put(clientId);
+		}
 
 		intr.editReply(`${clear ? "Cleared" : "Put"} global commands`);
 
@@ -85,4 +89,8 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 }
 
 export const getCommand = () =>
-	({ data, options, execute } as Partial<Command>);
+	({
+		data,
+		options,
+		execute
+	} as Partial<Command>);

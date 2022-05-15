@@ -11,9 +11,7 @@ import { type Command, type CommandOptions } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 import { REASON, USER } from "./noread.methods.js";
 
-const options: Partial<CommandOptions> = {
-	wip: true
-};
+const options: Partial<CommandOptions> = { wip: true };
 
 const data: ChatInputApplicationCommandData = {
 	name: "untimeout",
@@ -138,4 +136,8 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 }
 
 export const getCommand = () =>
-	({ options, data, execute } as Partial<Command>);
+	({
+		options,
+		data,
+		execute
+	} as Partial<Command>);

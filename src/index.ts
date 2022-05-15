@@ -1,19 +1,20 @@
 /* eslint-disable padding-line-between-statements */
 
 import { Client } from "discord.js";
-import dotenv from "dotenv";
+import "dotenv/config";
 import { EMOJIS } from "./constants/emojis.js";
 import { COLORS, INTENTS, PARTIALS } from "./constants/index.js";
 import { InfoLogger } from "./logger/index.js";
 import { CommandHandler, EventManager } from "./modules/index.js";
 
-dotenv.config();
-
 // clears console -- console.clear() does not fully clear it
 process.stdout.write("\x1Bc");
 
 const client = new Client<true>({
-	allowedMentions: { repliedUser: false, parse: [] },
+	allowedMentions: {
+		repliedUser: false,
+		parse: []
+	},
 	partials: PARTIALS,
 	intents: INTENTS
 });

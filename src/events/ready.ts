@@ -13,5 +13,7 @@ export async function execute(client: Client<true>) {
 		`In ${guilds} guilds with ${users} total members`
 	);
 
-	if (!client.application.owner) await client.application.fetch();
+	if (!client.application.owner) {
+		await client.application.fetch();
+	}
 }

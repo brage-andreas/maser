@@ -30,7 +30,7 @@ export default class PostgresConnection {
 
 	public async manyOrNone<
 		T extends Exclude<PostgresResponses, PostresExists>
-	>(query: string): Promise<T[] | null> {
+	>(query: string): Promise<Array<T> | null> {
 		const res = await this.connection.manyOrNone<T>(query);
 
 		return res.length ? res : null;

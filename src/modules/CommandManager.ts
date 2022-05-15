@@ -97,10 +97,12 @@ export default class CommandManager {
 	 * Checks if command is present.
 	 */
 	private checkCommand(): void {
-		if (!this.command)
+		if (!this.command) {
 			throw new Error("commandData must be set to the CommandManager");
+		}
 
-		if (!this.interaction)
+		if (!this.interaction) {
 			throw new Error("command must be set to the CommandManager");
+		}
 	}
 }

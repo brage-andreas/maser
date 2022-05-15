@@ -12,9 +12,7 @@ import { type Command, type CommandOptions } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 import { REASON, USER } from "./noread.methods.js";
 
-const options: Partial<CommandOptions> = {
-	private: true
-};
+const options: Partial<CommandOptions> = { private: true };
 
 const data: ChatInputApplicationCommandData = {
 	name: "ban",
@@ -27,14 +25,38 @@ const data: ChatInputApplicationCommandData = {
 			description: "Days to prune user's messages (1 day)",
 			type: ApplicationCommandOptionType.Integer,
 			choices: [
-				{ name: "No prune", value: 0 },
-				{ name: "1 day (default)", value: 1 },
-				{ name: "2 days", value: 2 },
-				{ name: "3 days", value: 3 },
-				{ name: "4 days", value: 4 },
-				{ name: "5 days", value: 5 },
-				{ name: "6 days", value: 6 },
-				{ name: "7 days", value: 7 }
+				{
+					name: "No prune",
+					value: 0
+				},
+				{
+					name: "1 day (default)",
+					value: 1
+				},
+				{
+					name: "2 days",
+					value: 2
+				},
+				{
+					name: "3 days",
+					value: 3
+				},
+				{
+					name: "4 days",
+					value: 4
+				},
+				{
+					name: "5 days",
+					value: 5
+				},
+				{
+					name: "6 days",
+					value: 6
+				},
+				{
+					name: "7 days",
+					value: 7
+				}
 			]
 		}
 	]
@@ -159,4 +181,8 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 }
 
 export const getCommand = () =>
-	({ data, options, execute } as Partial<Command>);
+	({
+		data,
+		options,
+		execute
+	} as Partial<Command>);

@@ -100,7 +100,9 @@ export default class Case {
 	}
 
 	public get duration() {
-		if (!this.data.duration) return null;
+		if (!this.data.duration) {
+			return null;
+		}
 
 		return ms(this.data.duration, { long: true });
 	}
@@ -125,7 +127,9 @@ export default class Case {
 	}
 
 	public async getReference(): Promise<Case | null> {
-		if (!this.data.referenceId) return null;
+		if (!this.data.referenceId) {
+			return null;
+		}
 
 		const manager = new CaseManager(this.client, this.data.guildId);
 
@@ -158,10 +162,13 @@ export default class Case {
 			description.push(`**Target**: \`${targetTag}\` (${targetId})`);
 		}
 
-		if (this.reason) description.push(`**Reason**: ${this.reason}`);
+		if (this.reason) {
+			description.push(`**Reason**: ${this.reason}`);
+		}
 
-		if (this.duration && this.type === "Mute")
+		if (this.duration && this.type === "Mute") {
 			description.push(`**Duration**: ${this.duration}`);
+		}
 
 		if (this.reference || this.referenceId) {
 			const validReference =
@@ -188,7 +195,9 @@ export default class Case {
 
 		const channel = await modLogManager.getChannel();
 
-		if (!channel) return null;
+		if (!channel) {
+			return null;
+		}
 
 		return await channel
 			.send({ embeds: [this.toEmbed()] })
@@ -196,7 +205,9 @@ export default class Case {
 	}
 
 	public async updateLogMessage(data?: MessageEditOptions): Promise<boolean> {
-		if (!this.messageURL) return false;
+		if (!this.messageURL) {
+			return false;
+		}
 
 		// "discord.com/channels/<guild id>/<channel id>/<message id>"
 		const [guildId, channelId, messageId] = [
@@ -206,7 +217,9 @@ export default class Case {
 		const guild = this.client.guilds.cache.get(guildId);
 		const channel = guild?.channels.cache.get(channelId);
 
-		if (!channel?.isTextBased()) return false;
+		if (!channel?.isTextBased()) {
+			return false;
+		}
 
 		const msg = await channel.messages.fetch(messageId);
 

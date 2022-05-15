@@ -29,9 +29,13 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const role = intr.options.getRole("role", true);
 
 	const getColor = (hex: number | undefined) => {
-		const { green, black, white } = intr.client.colors;
+		const {
+ green, black, white 
+} = intr.client.colors;
 
-		if (!hex) return green;
+		if (!hex) {
+			return green;
+		}
 
 		return hex === black || hex === white ? green : hex;
 	};
@@ -64,10 +68,22 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 		color: getColor(role.color),
 		title: role.name,
 		fields: [
-			{ name: "Created", value: Util.fullDate(role.createdTimestamp) },
-			{ name: "Members", value: memberCount },
-			{ name: "Hoisted", value: role.hoist ? "Yes" : "No" },
-			{ name: "Icon", value: icon },
+			{
+				name: "Created",
+				value: Util.fullDate(role.createdTimestamp)
+			},
+			{
+				name: "Members",
+				value: memberCount
+			},
+			{
+				name: "Hoisted",
+				value: role.hoist ? "Yes" : "No"
+			},
+			{
+				name: "Icon",
+				value: icon
+			},
 			{
 				name: "Tags",
 				value:
@@ -87,4 +103,8 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	intr.logger.log(`Sent info of ${role.name} (${role.id})`);
 }
 
-export const getCommand = () => ({ data, execute } as Partial<Command>);
+export const getCommand = () =>
+	({
+		data,
+		execute
+	} as Partial<Command>);

@@ -11,9 +11,7 @@ import {
 import ConfigManager from "../../database/ConfigManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 
-const options: Partial<CommandOptions> = {
-	private: true
-};
+const options: Partial<CommandOptions> = { private: true };
 
 const data: ChatInputApplicationCommandData = {
 	name: "config",
@@ -59,7 +57,9 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 		];
 
 		Object.entries(res).forEach(([key, value]) => {
-			if (key === "id") return;
+			if (key === "id") {
+				return;
+			}
 
 			const keyStr = CONFIG_COLUMN_STRINGS[key];
 
@@ -95,9 +95,13 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 			const optionStr = CONFIG_COLUMN_STRINGS[option];
 			let response = `Config for **${intr.guild.name}** (${intr.guildId})\n\n• **${optionStr}**: `;
 
-			if (channel) response += channel.toString();
+			if (channel) {
+				response += channel.toString();
+			}
 			// else if (role) response += role.toString();
-			else response += "Not set";
+			else {
+				response += "Not set";
+			}
 
 			intr.editReply(response);
 
@@ -138,11 +142,13 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 				if (key === option) {
 					let valueString = `\n• **${keyStr}**: `;
 
-					if (mention && res)
+					if (mention && res) {
 						valueString += `${mention} (${res.id}) **(updated)**`;
-					else if (res)
+					} else if (res) {
 						valueString += `Couldn't find anything with ID: ${value} **(updated)**`;
-					else valueString += "Not set **(updated)**";
+					} else {
+						valueString += "Not set **(updated)**";
+					}
 
 					response += valueString;
 				} else {
@@ -166,4 +172,8 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 }
 
 export const getCommand = () =>
-	({ options, data, execute } as Partial<Command>);
+	({
+		options,
+		data,
+		execute
+	} as Partial<Command>);

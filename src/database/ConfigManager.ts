@@ -31,20 +31,27 @@ export default class ConfigManager extends Postgres {
 	}
 
 	public async getChannel(): Promise<ConfigChannelTypes | null> {
-		if (!this.idValue)
+		if (!this.idValue) {
 			throw new Error("Guild id must be set to the ConfigManager");
+		}
 
-		if (!this.key) throw new Error("Key must be set to the ConfigManager");
+		if (!this.key) {
+			throw new Error("Key must be set to the ConfigManager");
+		}
 
 		const id = await this.getAll().then(
 			(result) => result?.[this.key!] ?? null
 		);
 
-		if (!id) return null;
+		if (!id) {
+			return null;
+		}
 
 		const guild = this.client.guilds.cache.get(this.idValue);
 
-		if (!guild) return null;
+		if (!guild) {
+			return null;
+		}
 
 		const channel = guild.channels.cache.get(id) as
 			| ConfigChannelTypes
@@ -69,8 +76,9 @@ export default class ConfigManager extends Postgres {
 	}*/
 
 	public async set(value: string, key?: ConfigTableColumns): Promise<void> {
-		if (!key && !this.key)
+		if (!key && !this.key) {
 			throw new Error("Key must be set or provided to the ConfigManager");
+		}
 
 		await this.still([this.idKey], [this.idValue]);
 
@@ -78,8 +86,9 @@ export default class ConfigManager extends Postgres {
 	}
 
 	public async getAll(): Promise<ConfigData> {
-		if (!this.idValue)
+		if (!this.idValue) {
 			throw new Error("Guild id must be set to the ConfigManager");
+		}
 
 		await this.still([this.idKey], [this.idValue]);
 
@@ -93,8 +102,9 @@ export default class ConfigManager extends Postgres {
 	}
 
 	public async getAllValues(): Promise<ConfigData> {
-		if (!this.idValue)
+		if (!this.idValue) {
 			throw new Error("Guild id must be set to the ConfigManager");
+		}
 
 		await this.still([this.idKey], [this.idValue]);
 

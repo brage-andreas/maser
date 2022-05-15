@@ -89,8 +89,14 @@ function execute(intr: CommandInteraction<"cached">) {
 		thumbnail: { url: icon },
 		title: name,
 		fields: [
-			{ name: "Roles", value: roles },
-			{ name: "Created", value: created },
+			{
+				name: "Roles",
+				value: roles
+			},
+			{
+				name: "Created",
+				value: created
+			},
 			{
 				name: "Members",
 				value: `**${guild.memberCount}** ${applyS(
@@ -98,8 +104,14 @@ function execute(intr: CommandInteraction<"cached">) {
 					guild.memberCount
 				)}`
 			},
-			{ name: "Channels", value: channelsStr },
-			{ name: "Emojis", value: emojisAndStickerStr },
+			{
+				name: "Channels",
+				value: channelsStr
+			},
+			{
+				name: "Emojis",
+				value: emojisAndStickerStr
+			},
 			{
 				name: "Boosting",
 				value: boosters
@@ -112,17 +124,23 @@ function execute(intr: CommandInteraction<"cached">) {
 		]
 	};
 
-	if (verified || partnered)
-		if (verified && !partnered)
+	if (verified || partnered) {
+		if (verified && !partnered) {
 			guildEmbed.description = `A verified server ${vanityStr}`;
-		else if (partnered && !verified)
+		} else if (partnered && !verified) {
 			guildEmbed.description = `A partnered server ${vanityStr}`;
-		else
+		} else {
 			guildEmbed.description = `A verified and partnered server ${vanityStr}`;
+		}
+	}
 
 	intr.editReply({ embeds: [guildEmbed] });
 
 	intr.logger.log(`Sent info of ${guild.name} (${guild.id})`);
 }
 
-export const getCommand = () => ({ data, execute } as Partial<Command>);
+export const getCommand = () =>
+	({
+		data,
+		execute
+	} as Partial<Command>);

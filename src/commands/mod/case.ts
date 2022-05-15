@@ -10,14 +10,15 @@ import CaseManager from "../../database/CaseManager.js";
 import { type CaseData } from "../../typings/database.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 
-const options: Partial<CommandOptions> = {
-	private: true
-};
+const options: Partial<CommandOptions> = { private: true };
 
 // stupid enum shenanigans
 const TYPE_CHOICES = Object.entries(CaseTypes)
 	.filter(([, value]) => typeof value === "number")
-	.map(([key, value]) => ({ name: key, value }));
+	.map(([key, value]) => ({
+		name: key,
+		value
+	}));
 // { name: "Ban", value: 0 } etc.
 
 const data: ChatInputApplicationCommandData = {
@@ -175,7 +176,9 @@ async function execute(
 
 				let str = `${emoji} #${id} ${CaseTypes[data.type]}`;
 
-				if (data.targetTag) str += ` - ${data.targetTag}`;
+				if (data.targetTag) {
+					str += ` - ${data.targetTag}`;
+				}
 
 				return str;
 			};
@@ -183,9 +186,13 @@ async function execute(
 			return data
 				?.sort((a, b) => {
 					// Makes the focused value always be atop
-					if (a.caseId === focused) return -1;
+					if (a.caseId === focused) {
+						return -1;
+					}
 
-					if (b.caseId === focused) return 1;
+					if (b.caseId === focused) {
+						return 1;
+					}
 
 					// high -> low
 					return b.caseId - a.caseId;
@@ -212,7 +219,9 @@ async function execute(
 	const getIdOptionValue = (option: string) => {
 		const value = intr.options.getString(option)?.replaceAll(/\D*/g, "");
 
-		if (!value) return null;
+		if (!value) {
+			return null;
+		}
 
 		return parseInt(value) || null;
 	};
@@ -312,13 +321,21 @@ async function execute(
 			newData.targetId = target.id;
 		}
 
-		if (referenceId) newData.referenceId = referenceId;
+		if (referenceId) {
+			newData.referenceId = referenceId;
+		}
 
-		if (duration) newData.duration = ms(duration);
+		if (duration) {
+			newData.duration = ms(duration);
+		}
 
-		if (reason) newData.reason = reason;
+		if (reason) {
+			newData.reason = reason;
+		}
 
-		if (time) newData.timestamp = Date.now() - ms(time);
+		if (time) {
+			newData.timestamp = Date.now() - ms(time);
+		}
 
 		const data = Object.assign({}, oldData, newData); // merges the objects
 
@@ -379,4 +396,8 @@ async function execute(
 }
 
 export const getCommand = () =>
-	({ data, options, execute } as Partial<Command>);
+	({
+		data,
+		options,
+		execute
+	} as Partial<Command>);

@@ -11,9 +11,7 @@ import { type Command, type CommandOptions } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 import { REASON, USER } from "./noread.methods.js";
 
-const options: Partial<CommandOptions> = {
-	private: true
-};
+const options: Partial<CommandOptions> = { private: true };
 
 const data: ChatInputApplicationCommandData = {
 	name: "kick",
@@ -146,4 +144,8 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 }
 
 export const getCommand = () =>
-	({ data, options, execute } as Partial<Command>);
+	({
+		data,
+		options,
+		execute
+	} as Partial<Command>);

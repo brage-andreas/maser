@@ -21,7 +21,7 @@ export default class EventLogger extends BaseLogger {
 		this.event = null;
 	}
 
-	public log(...messages: string[]) {
+	public log(...messages: Array<string>) {
 		this.print(LoggerTypes.Event, this.event ?? "EVENT", ...messages);
 	}
 
@@ -49,7 +49,9 @@ export default class EventLogger extends BaseLogger {
 
 		const channel = await config.getChannel();
 
-		if (!channel) return;
+		if (!channel) {
+			return;
+		}
 
 		const getDate = (date: Date | null | undefined) =>
 			date ? Util.fullDate(date) : "Date not found";
