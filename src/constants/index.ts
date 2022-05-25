@@ -1,6 +1,5 @@
-import { type APIEmbed, type GatewayIntentBits } from "discord-api-types/v9";
+import { GatewayIntentBits, type APIEmbed } from "discord-api-types/v9";
 import {
-	IntentsBitField,
 	Partials,
 	type AutocompleteInteraction,
 	type CommandInteraction,
@@ -10,10 +9,9 @@ import {
 export const MAX_EMBED_DESCRIPTION_LEN = 4096;
 export const MAX_AUDIT_REASON_LEN = 512;
 
-// TODO: remove cast
 export const INTENTS: Array<GatewayIntentBits> = [
-	IntentsBitField.Flags.GuildMembers as number,
-	IntentsBitField.Flags.Guilds as number
+	GatewayIntentBits.GuildMembers,
+	GatewayIntentBits.Guilds
 ];
 
 export const PARTIALS: Array<Partials> = [
@@ -35,14 +33,14 @@ export const DURATIONS = {
 } as const;
 
 export const REGEXP = {
-	/* GUILD_EMOJI: /<?(a)?:?(\w{2,32}):(\d{17,19})>?/, */
-	CODEBLOCK: /```(?:(?<lang>\S+)\n)?\s?(?<code>[^]+?)\s?```/,
-	CHANNEL: /^<#\d{17,19}>$/,
-	/* INVITE: /(?:https?:\/\/)?(?:www\.)?discord(?:\.gg|(?:app)?\.com\/invite)\/(\S+)/, */
+	// GUILD_EMOJI: /<?(a)?:?(\w{2,32}):(\d{17,19})>?/,
+	// CODEBLOCK: /```(?:(?<lang>\S+)\n)?\s?(?<code>[^]+?)\s?```/,
+	// CHANNEL: /^<#\d{17,19}>$/,
+	// INVITE: /(?:https?:\/\/)?(?:www\.)?discord(?:\.gg|(?:app)?\.com\/invite)\/(\S+)/,
 	TOKEN: /[\w-]{24}\.[\w-]{6}\.[\w-]{27}/,
-	CODE: /`(?<code>.+?)`/,
-	ROLE: /^<@&\d{17,19}>$/,
-	USER: /^<@!?\d{17,19}>$/,
+	// CODE: /`(?<code>.+?)`/,
+	// ROLE: /^<@&\d{17,19}>$/,
+	// USER: /^<@!?\d{17,19}>$/,
 	ID: /^\d{17,19}$/
 } as const;
 
