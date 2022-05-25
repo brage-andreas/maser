@@ -72,11 +72,6 @@
 					"minProperties": 2,
 					"consistent": true,
 					"multiline": true
-				},
-				"ObjectPattern": {
-					"minProperties": 2,
-					"consistent": true,
-					"multiline": true
 				}
 			}
 		],
