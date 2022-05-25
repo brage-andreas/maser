@@ -110,7 +110,7 @@ export default class CommandHandler {
 				import.meta.url
 			);
 
-			const files = this._readDir(FOLDER_DIR).filter(
+			const files: Array<string> = this._readDir(FOLDER_DIR).filter(
 				(fileName) =>
 					fileName.toLowerCase().endsWith(".js") &&
 					!fileName.toLowerCase().startsWith("noread.")

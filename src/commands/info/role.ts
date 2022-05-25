@@ -29,9 +29,8 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const role = intr.options.getRole("role", true);
 
 	const getColor = (hex: number | undefined) => {
-		const {
- green, black, white 
-} = intr.client.colors;
+		// eslint-disable-next-line object-curly-newline
+		const { green, black, white } = intr.client.colors;
 
 		if (!hex) {
 			return green;

@@ -31,6 +31,7 @@ export type ConfigTableColumns =
 	| "guildId"
 	| "memberLogChannel"
 	| "modLogChannel";
+
 export type ConfigChannelTypes = NewsChannel | TextChannel;
 
 export interface ConfigData {
