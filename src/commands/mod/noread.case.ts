@@ -1,4 +1,4 @@
-import {
+/*import {
 	ApplicationCommandOptionType,
 	type AutocompleteInteraction,
 	type ChatInputApplicationCommandData,
@@ -7,7 +7,7 @@ import {
 import ms from "ms";
 import { CaseTypes } from "../../constants/database.js";
 import CaseManager from "../../database/CaseManager.js";
-import { type CaseData } from "../../typings/database.js";
+import { CreateCaseData, type CaseData } from "../../typings/database.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 
 const options: Partial<CommandOptions> = { private: true };
@@ -217,7 +217,7 @@ async function execute(
 	}
 
 	const getIdOptionValue = (option: string) => {
-		const value = intr.options.getString(option)?.replaceAll(/\D*/g, "");
+		const value = intr.options.getString(option)?.replaceAll(/\D*/ /*g, "");
 
 		if (!value) {
 			return null;
@@ -227,7 +227,6 @@ async function execute(
 	};
 
 	if (sub === "create") {
-		const executorMember = intr.options.getMember("executor");
 		const reference = getIdOptionValue("reference-id");
 		const duration = intr.options.getString("duration");
 		const executor = intr.options.getUser("executor", true);
@@ -236,27 +235,23 @@ async function execute(
 		const type = intr.options.getInteger("type", true);
 		const time = intr.options.getString("time");
 
-		const data: Partial<CaseData> = {
-			executorAvatar: (executorMember ?? executor).displayAvatarURL(),
-			referenceId: reference ?? undefined,
-			executorTag: executor.tag,
-			executorId: executor.id,
-			timestamp: time ? Date.now() - ms(time) : Date.now(),
-			targetTag: target?.tag,
-			duration: duration ? ms(duration) : undefined,
-			targetId: target?.id,
-			guildId: intr.guildId,
-			edited: false,
-			reason: reason ?? undefined,
-			type,
-			url: undefined
+		const data: CreateCaseData = {
+			expirationTimestamp: duration
+				? new Date(Date.now() + duration)
+				: null,
+			referencedCaseId: reference,
+			logMessageURL: null,
+			targetTag: target?.tag ?? null,
+			targetId: target?.id ?? null,
+			modTag: executor.tag,
+			reason,
+			modId: executor.id,
+			type
 		};
 
 		const case_ = await cases.createCase(data, true);
 
-		await case_.getReference();
-
-		intr.editReply({ embeds: [case_.toEmbed()] });
+		intr.editReply({ embeds: [await case_.toEmbed()] });
 
 		intr.logger.log(
 			`Manually created new case of type ${CaseTypes[type] ?? "Unknown"}`
@@ -278,9 +273,7 @@ async function execute(
 			return;
 		}
 
-		await case_.getReference();
-
-		intr.editReply({ embeds: [case_.toEmbed()] });
+		intr.editReply({ embeds: [await case_.toEmbed()] });
 
 		intr.logger.log(`Viewed case #${caseId}`);
 	} else if (sub === "edit") {
@@ -401,3 +394,4 @@ export const getCommand = () =>
 		options,
 		execute
 	} as Partial<Command>);
+*/

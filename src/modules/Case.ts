@@ -1,155 +1,139 @@
+// TODO: refactor
+
 import { type APIEmbed } from "discord-api-types/v9";
-import { type Client, type Message, type MessageEditOptions } from "discord.js";
-import ms from "ms";
+import { type Client, type TextBasedChannel } from "discord.js";
 import { CaseTypes } from "../constants/database.js";
-import { REGEXP } from "../constants/index.js";
+import { COLORS, REGEXP } from "../constants/index.js";
 import CaseManager from "../database/CaseManager.js";
 import ConfigManager from "../database/ConfigManager.js";
 import { type CaseData } from "../typings/database.js";
 
+const getHexColor = (type: CaseTypes): number => {
+	switch (type) {
+		case CaseTypes.Untimeout:
+			return COLORS.green;
+
+		case CaseTypes.Softban:
+			return COLORS.orange;
+
+		case CaseTypes.Timeout:
+			return COLORS.black;
+
+		case CaseTypes.Unban:
+			return COLORS.green;
+
+		case CaseTypes.Kick:
+			return COLORS.yellow;
+
+		case CaseTypes.Warn:
+			return COLORS.blue;
+
+		case CaseTypes.Ban:
+			return COLORS.red;
+
+		default:
+			return COLORS.invisible;
+	}
+};
+
+const getType = (type: CaseTypes): string => {
+	switch (type) {
+		case CaseTypes.Softban:
+			return "Softban";
+
+		case CaseTypes.Unban:
+			return "Unban";
+
+		case CaseTypes.Kick:
+			return "Kick";
+
+		case CaseTypes.Warn:
+			return "Warn";
+
+		case CaseTypes.Timeout:
+			return "Mute";
+
+		case CaseTypes.Ban:
+			return "Ban";
+
+		default:
+			return "Unknown";
+	}
+};
+
 export default class Case {
 	public readonly client: Client;
-	public readonly data: CaseData;
-	public reference: Case | null;
-	public deleted = false;
+	public readonly rawCaseData: CaseData;
 
-	// Data shorthands
-	public readonly referenceId: number | null;
-	public readonly timestamp: number;
-	public readonly guildId: string;
+	public readonly createdTimestamp: number;
+	public readonly duration: number | null;
 	public readonly edited: boolean;
-	public readonly reason: string | null;
+	public readonly embedHexColor: number;
+	public readonly expirationTimestamp: number | null;
+	public readonly guildId: string;
 	public readonly id: number;
+	public readonly logMessageUrl: string | null;
+	public readonly mod: { tag: string; id: string };
+	public readonly referencedCaseId: number | null;
+	public readonly reason: string | null;
+	public readonly target: { tag: string | null; id: string | null };
+	public readonly type: string;
+	public readonly hexColor: number | undefined;
 
-	public constructor(client: Client, data: CaseData) {
-		this.reference = null;
-
+	public constructor(client: Client, caseData: CaseData) {
 		this.client = client;
+		this.rawCaseData = caseData;
 
-		this.data = data;
+		const start = caseData.createdTimestamp.getTime();
+		const end = caseData.expirationTimestamp?.getTime();
 
-		this.referenceId = data.referenceId;
+		this.createdTimestamp = caseData.createdTimestamp.getTime();
+		this.duration = end ? end - start : null;
+		this.edited = caseData.edited;
+		this.embedHexColor = getHexColor(caseData.type);
 
-		this.timestamp = data.timestamp;
+		this.expirationTimestamp =
+			caseData.expirationTimestamp?.getTime() ?? null;
 
-		this.guildId = data.guildId;
+		this.guildId = caseData.guildId;
+		this.id = caseData.caseId;
+		this.logMessageUrl = caseData.logMessageURL;
 
-		this.edited = data.edited;
+		this.mod = {
+			tag: caseData.modTag,
+			id: caseData.modId
+		};
 
-		this.reason = data.reason;
+		this.referencedCaseId = caseData.referencedCaseId;
+		this.reason = caseData.reason;
 
-		this.id = data.caseId;
+		this.target = {
+			tag: caseData.targetTag,
+			id: caseData.targetId
+		};
+
+		this.type = getType(caseData.type);
 	}
 
-	public get hexColor(): number {
-		const { colors } = this.client;
-		const { type } = this.data;
-
-		switch (type) {
-			case CaseTypes.Untimeout:
-				return colors.green;
-
-			case CaseTypes.Softban:
-				return colors.orange;
-
-			case CaseTypes.Timeout:
-				return colors.black;
-
-			case CaseTypes.Unban:
-				return colors.green;
-
-			case CaseTypes.Kick:
-				return colors.yellow;
-
-			case CaseTypes.Warn:
-				return colors.blue;
-
-			case CaseTypes.Ban:
-				return colors.red;
-
-			default:
-				return colors.invisible;
-		}
-	}
-
-	public get type(): string {
-		const { type } = this.data;
-
-		switch (type) {
-			case CaseTypes.Softban:
-				return "Softban";
-
-			case CaseTypes.Unban:
-				return "Unban";
-
-			case CaseTypes.Kick:
-				return "Kick";
-
-			case CaseTypes.Warn:
-				return "Warn";
-
-			case CaseTypes.Timeout:
-				return "Mute";
-
-			case CaseTypes.Ban:
-				return "Ban";
-
-			default:
-				return "Unknown";
-		}
-	}
-
-	public get duration() {
-		if (!this.data.duration) {
+	public async getReferencedCase() {
+		if (!this.rawCaseData.referencedCaseId) {
 			return null;
 		}
 
-		return ms(this.data.duration, { long: true });
+		return await new CaseManager(this.client, this.guildId).getCase(
+			this.rawCaseData.referencedCaseId
+		);
 	}
 
-	public get executor() {
-		return {
-			avatar: this.data.executorAvatar ?? undefined,
-			tag: this.data.executorTag,
-			id: this.data.executorId
-		};
-	}
-
-	public get target() {
-		return {
-			tag: this.data.targetTag,
-			id: this.data.targetId
-		};
-	}
-
-	public get messageURL() {
-		return this.data.url;
-	}
-
-	public async getReference(): Promise<Case | null> {
-		if (!this.data.referenceId) {
-			return null;
-		}
-
-		const manager = new CaseManager(this.client, this.data.guildId);
-
-		this.reference = await manager.getCase(this.data.referenceId);
-
-		return this.reference;
-	}
-
-	public toEmbed(): APIEmbed {
+	public async toEmbed(): Promise<APIEmbed> {
 		const caseEmbed: APIEmbed = {
 			author: {
-				name: `${this.executor.tag} (${this.executor.id})`,
-				icon_url: this.executor.avatar
+				name: `${this.mod.tag} (${this.mod.id})`
 			},
 			footer: {
-				text: this.deleted
-					? "Case deleted"
-					: `#${this.id} ${this.edited ? "• Edited" : ""}`
+				text: `#${this.id} ${this.edited ? "• Edited" : ""}`
 			},
-			timestamp: this.timestamp.toString(),
+			timestamp: this.createdTimestamp.toString(),
 			color: this.hexColor
 		};
 
@@ -170,13 +154,14 @@ export default class Case {
 			description.push(`**Duration**: ${this.duration}`);
 		}
 
-		if (this.reference || this.referenceId) {
-			const validReference =
-				Boolean(this.reference) && Boolean(this.reference!.data.url);
+		if (this.referencedCaseId) {
+			const referenceLogUrl = await this.getReferencedCase().then(
+				(res) => res?.logMessageUrl
+			);
 
-			const str = validReference
-				? `[Case #${this.reference!.id}](${this.reference!.data.url})`
-				: `Case #${this.referenceId}`;
+			const str = referenceLogUrl
+				? `[Case #${this.referencedCaseId}](${referenceLogUrl})`
+				: `Case #${this.referencedCaseId}`;
 
 			description.push(`**Reference**: ${str}`);
 		}
@@ -186,46 +171,94 @@ export default class Case {
 		return caseEmbed;
 	}
 
-	public async channelLog(): Promise<Message | null> {
-		const modLogManager = new ConfigManager(
+	public async channelLog() {
+		const channel = await new ConfigManager(
 			this.client,
-			this.guildId,
-			"modLogChannel"
-		);
-
-		const channel = await modLogManager.getChannel();
-
-		if (!channel) {
-			return null;
-		}
-
-		return await channel
-			.send({ embeds: [this.toEmbed()] })
-			.catch(() => null);
-	}
-
-	public async updateLogMessage(data?: MessageEditOptions): Promise<boolean> {
-		if (!this.messageURL) {
-			return false;
-		}
-
-		// "discord.com/channels/<guild id>/<channel id>/<message id>"
-		const [guildId, channelId, messageId] = [
-			...this.messageURL.matchAll(REGEXP.ID)
-		].map((e) => e[0]);
-
-		const guild = this.client.guilds.cache.get(guildId);
-		const channel = guild?.channels.cache.get(channelId);
+			this.guildId
+		).get.modLogChannel();
 
 		if (!channel?.isTextBased()) {
 			return false;
 		}
 
-		const msg = await channel.messages.fetch(messageId);
+		const url = await channel
+			.send({ embeds: [await this.toEmbed()] })
+			.then((msg) => msg.url)
+			.catch(() => null);
 
-		return await msg
-			.edit(data ?? { embeds: [this.toEmbed()] })
+		if (!url) {
+			return false;
+		}
+
+		await new CaseManager(this.client, this.guildId).setLogMessageURL(
+			this.id,
+			url
+		);
+
+		return true;
+	}
+
+	public async updateLogMessage() {
+		const editedRawCaseData = this.rawCaseData;
+		editedRawCaseData.edited = true;
+
+		const { rawCaseData } = await new CaseManager(
+			this.client,
+			this.guildId
+		).editCase(editedRawCaseData);
+
+		const [channel, messageId] = this._getLogMessageChannel();
+
+		if (!channel || !messageId) {
+			return;
+		}
+
+		return await channel.messages
+			.edit(messageId, {
+				embeds: [await new Case(this.client, rawCaseData).toEmbed()]
+			})
 			.then(() => true)
 			.catch(() => false);
+	}
+
+	public async deleteLogMessage() {
+		const [channel, messageId] = this._getLogMessageChannel();
+
+		if (!channel || !messageId) {
+			return;
+		}
+
+		return await channel.messages
+			.delete(messageId)
+			.then(() => true)
+			.catch(() => false);
+	}
+
+	private _getLogMessageChannel(): [] | [TextBasedChannel, string] {
+		if (!this.rawCaseData.logMessageURL) {
+			return [];
+		}
+
+		// Turns discord.com/channels/<guild id>/<channel id>/<message id>
+		// into [<guild id>, <channel id>, <message id>] and destructures it
+		const [guildId, channelId, messageId] = [
+			...this.rawCaseData.logMessageURL.matchAll(
+				new RegExp(REGEXP.ID, "g")
+			)
+		].map((e) => (Array.isArray(e) ? e[0] : e));
+
+		if (!guildId || !channelId || !messageId) {
+			return [];
+		}
+
+		const channel = this.client.guilds.cache
+			.get(guildId)
+			?.channels.cache.get(channelId);
+
+		if (!channel?.isTextBased()) {
+			return [];
+		}
+
+		return [channel, messageId];
 	}
 }

@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model cases {
+  caseId              Int
+  guildId             String
+  createdTimestamp    DateTime  @default(now()) @db.Timestamptz(6)
+  reason              String?
+  edited              Boolean   @default(false)
+  modTag              String
+  modId               String
+  targetTag           String?
+  targetId            String?
+  expirationTimestamp DateTime? @db.Timestamptz(6)
+  logMessageURL       String?
+  referencedCaseId    Int?
+  type                Int
+
+  @@id([caseId, guildId])
+}
+
+model configs {
+  guildId       String  @id
+  botLogChId    String?
+  modLogChId    String?
+  memberLogChId String?
+}

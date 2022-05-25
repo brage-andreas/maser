@@ -1,338 +1,143 @@
 import { type Client } from "discord.js";
-import { CaseTypes } from "../constants/database.js";
-import { REGEXP } from "../constants/index.js";
-import InfoLogger from "../logger/InfoLogger.js";
 import Case from "../modules/Case.js";
-import { type CaseData } from "../typings/database.js";
-import Util from "../utils/index.js";
-import Postgres from "./src/postgres.js";
+import type { CaseData } from "../typings/database.js";
+import prisma from "./prisma.js";
 
-export default class CaseManager extends Postgres {
-	private initialised = false;
+export default class CaseManager {
+	public readonly prisma = prisma;
+	public readonly client: Client<true>;
+	public guildId: string;
 
 	public constructor(client: Client<true>, guildId: string) {
-		super(client, {
-			schema: "guilds",
-			table: `cases-${guildId}`,
-			idKey: "caseId",
-			idValue: guildId
-		});
-	}
-
-	public async initialise(): Promise<this> {
-		if (!this.idValue) {
-			throw new Error("Guild ID must be set");
-		}
-
-		const query = `
-            CREATE TABLE IF NOT EXISTS guilds."cases-${this.idValue}"
-            (
-                "caseId" integer NOT NULL,
-				"guildId" bigint NOT NULL,
-				"executorAvatar" text,
-				"referenceId" integer,
-				"executorTag" text NOT NULL,
-				"executorId" bigint NOT NULL,
-				"targetTag" text,
-				"timestamp" bigint NOT NULL,
-				"targetId" bigint,
-				"duration" bigint,
-				"edited" boolean NOT NULL,
-				"reason" text,
-				"type" integer NOT NULL,
-				"url" text,
-
-                CONSTRAINT "cases-${this.idValue}_pkey" PRIMARY KEY ("caseId")
-            )
-        `;
-
-		await this.none(query);
-
-		this.initialised = true;
-
-		return this;
+		this.guildId = guildId;
+		this.client = client;
 	}
 
 	public async createCase(
-		data: Partial<CaseData>,
-		logToChannel = false
-	): Promise<Case> {
-		if (!this.initialised) {
-			await this.initialise();
-		}
+		data: Omit<
+			CaseData,
+			"caseId" | "createdTimestamp" | "edited" | "guildId"
+		>,
+		channelLog = true
+	) {
+		// TODO: channel log
+		channelLog;
 
-		const patchedData = await this.patch(data);
-		const columnNames = Object.keys(patchedData);
-		const values = Object.values(patchedData);
+		const lastId = await this.getLastCaseId();
 
-		await this.createRow(columnNames, values);
-
-		const case_ = await this.getCase(patchedData.caseId);
-
-		if (!case_) {
-			throw new Error("Something really went wrong");
-		}
-
-		const guild =
-			this.client.guilds.cache.get(patchedData.guildId)?.name ??
-			"unknown name";
-
-		new InfoLogger().log(
-			`Created new case with ID: ${patchedData.caseId}`,
-			`in guild: "${guild}" (${patchedData.guildId})`,
-			`of type: "${case_.type.toLowerCase()}" (${patchedData.type})`
-		);
-
-		if (logToChannel) {
-			const message = await case_.channelLog();
-
-			if (message) {
-				this.setURL(patchedData.caseId, message.url);
+		const case_ = await this.prisma.cases.create({
+			data: {
+				...data,
+				guildId: this.guildId,
+				caseId: lastId + 1
 			}
-		}
+		});
+
+		return new Case(this.client, case_);
+	}
+
+	public async deleteCase(caseId: number) {
+		const data = await this.prisma.cases.delete({
+			where: {
+				caseId_guildId: {
+					guildId: this.guildId,
+					caseId
+				}
+			}
+		});
+
+		const case_ = new Case(this.client, data);
+
+		await case_.deleteLogMessage();
 
 		return case_;
 	}
 
-	public async deleteCase(
-		caseId: number,
-		returnIfDeleted: true
-	): Promise<Case>;
-
-	public async deleteCase(
-		caseId: number,
-		returnIfDeleted?: false
-	): Promise<null>;
-
-	public async deleteCase(
-		caseId: number,
-		returnIfDeleted?: boolean
-	): Promise<Case | null> {
-		if (!this.initialised) {
-			await this.initialise();
-		}
-
-		const case_ = await this.getCase(caseId);
-
-		if (!case_) {
-			return null;
-		}
-
-		this.deleteRow(`"caseId"='${caseId}'`);
-
-		const guild =
-			this.client.guilds.cache.get(case_.guildId)?.name ?? "unknown name";
-
-		new InfoLogger().log(
-			`Deleted case with ID: ${caseId}`,
-			`in guild: "${guild}" (${case_.guildId})`,
-			`of type: "${case_.type.toLowerCase()}" (${case_.type})`
-		);
-
-		return returnIfDeleted ? case_ : null;
-	}
-
-	public async getCase(caseId: number | string): Promise<Case | null> {
-		if (!this.initialised) {
-			await this.initialise();
-		}
-
-		const data = await this.getData(caseId);
-
-		return this._createCase(data);
-	}
-
-	public async getLatestId(): Promise<number | null> {
-		const query = `
-			SELECT "${this.idKey}"
-			FROM ${this.schema}."${this.table}"
-			ORDER BY "${this.idKey}" DESC
-			LIMIT 1
-		`;
-
-		const res = await this.oneOrNone<CaseData>(query);
-
-		return res?.caseId ?? null;
-	}
-
-	public async getCaseDataWithinRange(
-		offset: number,
-		limit = 5
-	): Promise<Array<CaseData> | null> {
-		if (!this.initialised) {
-			await this.initialise();
-		}
-
-		const validatedOffset = Math.ceil(offset) < 0 ? 0 : Math.ceil(offset);
-		const validatedLimit = Math.ceil(limit) < 1 ? 1 : Math.ceil(limit);
-
-		const query = `
-			SELECT *
-			FROM ${this.schema}."${this.table}"
-			LIMIT ${validatedLimit} OFFSET ${validatedOffset}
-		`;
-
-		return await this.manyOrNone<CaseData>(query);
-	}
-
-	public async editCase(
-		caseId: number | string,
-		partialData: Partial<CaseData>
-	): Promise<Case | null> {
-		if (!this.initialised) {
-			await this.initialise();
-		}
-
-		const data = await this.patch(partialData).catch(() => null);
-
-		if (!data) {
-			return null;
-		}
-
-		data.edited = true;
-
-		const columnNames = Object.keys(data);
-		const values = Object.values(data);
-
-		await this.updateRow(columnNames, values, `"caseId"=${caseId}`);
-
-		return await this.getCase(caseId);
-	}
-
-	public async setURL(
-		caseId: number | string,
-		url: string
-	): Promise<CaseManager> {
-		await this.updateRow(["url"], [url], `"caseId"=${caseId}`);
-
-		return this;
-	}
-
-	public compactCases(cases: Array<CaseData>): Array<string> {
-		return cases.map((c) => {
-			// eslint-disable-next-line object-curly-newline
-			const { caseId, url, reason } = c;
-
-			const time = Util.date(c.timestamp);
-			const type = CaseTypes[c.type];
-			const idStr = url ? `[#${caseId}](${url})` : `#${caseId}`;
-
-			return `${time} • ${idStr} ${type} - ${reason}`;
-		});
-	}
-
-	private async getData(caseId: number | string): Promise<CaseData | null> {
-		if (!this.initialised) {
-			await this.initialise();
-		}
-
-		const query = `
-			SELECT *
-			FROM ${this.schema}."${this.table}"
-			WHERE "${this.idKey}" = ${caseId}
-		`;
-
-		return await this.oneOrNone<CaseData>(query);
-	}
-
-	private _createCase(data: CaseData | null) {
-		if (!data) {
-			return null;
-		}
-
-		// bigints turn to strings via pg-promise
-		data.timestamp = Number(data.timestamp);
-
-		data.duration = data.duration ? Number(data.duration) : null;
-
-		return new Case(this.client, data);
-	}
-
-	private async patch(data: Partial<CaseData>) {
-		data.timestamp ??= Date.now();
-
-		data.guildId ??= this.idValue ?? undefined;
-
-		data.edited ??= false;
-
-		this.test("executorTag", data.executorTag);
-
-		this.test("executorId", data.executorId, { id: true });
-
-		this.test("targetTag", data.targetTag, { required: false });
-
-		this.test("targetId", data.targetId, {
-			id: true,
-			required: false
-		});
-
-		this.test("guildId", data.guildId, { id: true });
-
-		this.test("type", data.type);
-
-		data.caseId ??= await this.getId();
-
-		Object.entries(data).forEach(([key]) => {
-			// @ts-expect-error expression of type 'string' can't be used to index type 'Partial<CaseData>'
-			data[key] ??= "NULL";
-		});
-
-		return data as CaseData;
-	}
-
-	private async getId(): Promise<number> {
-		if (!this.initialised) {
-			await this.initialise();
-		}
-
-		const query = `
-			SELECT "${this.idKey}" FROM (
-				SELECT "${this.idKey}"
-				FROM ${this.schema}."${this.table}"
-				ORDER BY "${this.idKey}" DESC
-				LIMIT 1
-			) AS _ ORDER BY "${this.idKey}" ASC;
-		`;
-
-		const res = await this.oneOrNone<CaseData>(query);
-
-		return (res?.caseId ?? 0) + 1;
-	}
-
-	private test(
-		column: string,
-		value: string | null | undefined,
-		opt?: { id?: true; required?: boolean }
-	): void;
-	private test(
-		column: string,
-		value: number | string | null | undefined,
-		opt?: { id?: boolean; required?: boolean }
-	): void;
-	private test(
-		column: string,
-		value: number | string | null | undefined,
-		opt: { id?: boolean; required?: boolean } = {
-			id: false,
-			required: true
-		}
-	): void {
-		opt.required ??= true;
-
-		opt.id ??= false;
-
-		if (value === undefined) {
-			if (opt.required) {
-				throw new Error(`An argument for "${column}" must be provided`);
-			} else {
-				return;
+	public async getCase(caseId: number) {
+		const data = await this.prisma.cases.findFirst({
+			where: {
+				guildId: this.guildId,
+				caseId
+			},
+			orderBy: {
+				caseId: "desc"
 			}
-		}
+		});
 
-		if (opt.id && !REGEXP.ID.test(value as string)) {
-			throw new Error(
-				`A valid argument for "${column}" must be provided (reading: ${value})`
-			);
-		}
+		return data ? new Case(this.client, data) : null;
 	}
+
+	public async getHistory(userId: string) {
+		const data = await this.prisma.cases.findMany({
+			where: {
+				guildId: this.guildId,
+				targetId: userId
+			},
+			orderBy: {
+				caseId: "desc"
+			}
+		});
+
+		return data.map((case_) => new Case(this.client, case_));
+	}
+
+	public async getLastCaseId() {
+		return await this.prisma.cases
+			.findFirst({
+				where: {
+					guildId: this.guildId
+				},
+				orderBy: {
+					caseId: "desc"
+				},
+				select: {
+					caseId: true
+				}
+			})
+			.then((res) => res?.caseId ?? 0);
+	}
+
+	// public async getCaseDataWithinRange() {}
+
+	public async editCase(data: CaseData) {
+		const case_ = await this.prisma.cases.update({
+			where: {
+				caseId_guildId: {
+					guildId: this.guildId,
+					caseId: data.caseId
+				}
+			},
+			data
+		});
+
+		return new Case(this.client, case_);
+	}
+
+	public async setLogMessageURL(caseId: number, url: string) {
+		const case_ = await this.prisma.cases.update({
+			where: {
+				caseId_guildId: {
+					guildId: this.guildId,
+					caseId
+				}
+			},
+			data: {
+				logMessageURL: url
+			}
+		});
+
+		return new Case(this.client, case_);
+	}
+
+	// public async compactCases() {}
+
+	/*
+	private async getData() {}
+
+	private async _createCase() {}
+
+	private async patch() {}
+
+	private async getId() {}
+	*/
 }

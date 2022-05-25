@@ -4,7 +4,6 @@ import {
 	type ChatInputApplicationCommandData,
 	type CommandInteraction
 } from "discord.js";
-import { EMOJIS } from "../../constants/emojis.js";
 import { defaultEmbed, USER_FLAGS_STRINGS } from "../../constants/index.js";
 import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
@@ -53,7 +52,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const flags = rawFlags.map((flag) => USER_FLAGS_STRINGS[flag] ?? flag);
 
 	if (premium) {
-		flags.push(`${EMOJIS.boost} Booster`);
+		flags.push("Booster");
 	}
 
 	const memberAvatar = member?.displayAvatarURL({ size: 2048 }) ?? null;
@@ -89,7 +88,6 @@ async function execute(intr: CommandInteraction<"cached">) {
 		})}))`;
 	}
 
-	// eslint-disable-next-line object-curly-newline
 	const { bot, tag, id } = user;
 
 	const name = Util.escapeDiscordMarkdown(member?.displayName ?? tag);

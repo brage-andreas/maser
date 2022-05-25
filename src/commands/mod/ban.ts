@@ -69,7 +69,11 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const days = intr.options.getInteger("days") ?? 1;
 	const emojis = intr.client.maserEmojis;
 
-	if (!intr.guild.me?.permissions.has(PermissionsBitField.Flags.BanMembers)) {
+	if (
+		!intr.guild.members.me?.permissions.has(
+			PermissionsBitField.Flags.BanMembers
+		)
+	) {
 		intr.editReply(`${emojis.cross} I don't have permissions to ban users`);
 
 		return;
@@ -132,19 +136,18 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 					deleteMessageDays: days
 				})
 				.then(async () => {
-					const cases = await new CaseManager(
-						intr.client,
-						intr.guildId
-					).initialise();
+					const cases = new CaseManager(intr.client, intr.guildId);
 
 					const case_ = await cases.createCase(
 						{
-							executorAvatar: intr.member.displayAvatarURL(),
-							executorTag: intr.user.tag,
-							executorId: intr.user.id,
+							expirationTimestamp: null,
+							referencedCaseId: null,
+							logMessageURL: null,
 							targetTag: target.tag,
 							targetId: target.id,
-							reason: reason ?? undefined,
+							modTag: intr.user.tag,
+							reason,
+							modId: intr.user.id,
 							type: CaseTypes.Ban
 						},
 						true

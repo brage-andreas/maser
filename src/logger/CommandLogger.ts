@@ -1,4 +1,4 @@
-import { type APIEmbed } from "discord-api-types/v9";
+import { type APIEmbed } from "discord-api-types/v9.js";
 import {
 	type AutocompleteInteraction,
 	type CommandInteraction,
@@ -87,9 +87,7 @@ export default class CommandLogger extends BaseLogger {
 		channel?: GuildTextBasedChannel | null;
 		name?: string | null;
 	}) {
-		const {
- user, guild, channel, name 
-} = options;
+		const { user, guild, channel, name } = options;
 
 		if (name !== undefined) {
 			this.setName(name);
@@ -115,9 +113,7 @@ export default class CommandLogger extends BaseLogger {
 			return;
 		}
 
-		const {
- client, guild 
-} = this.interaction;
+		const { client, guild } = this.interaction;
 
 		const logLevel = this.interaction.commandOptions.logLevel;
 
@@ -145,13 +141,9 @@ export default class CommandLogger extends BaseLogger {
 			return embed;
 		};
 
-		const botLogManager = new ConfigManager(
-			client,
-			guild.id,
-			"botLogChannel"
-		);
+		const configManager = new ConfigManager(client, guild.id);
 
-		botLogManager.getChannel().then((channel) => {
+		configManager.get.botLogChannel().then((channel) => {
 			if (!this.interaction) {
 				return;
 			} // not really needed - mostly for inferring types

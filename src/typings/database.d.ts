@@ -1,69 +1,27 @@
-import type { NewsChannel, TextChannel } from "discord.js";
-import type { CaseTypes } from "../constants/database.js";
-
-/*
-   --------
-    GLOBAL
-   --------
-*/
-
-export interface PostgresOptions {
-	idValue: string;
-	schema: string;
-	idKey: string;
-	table: string;
-}
-
-export type PostgresResponses = CaseData | ConfigData | PostresExists;
-
-export interface PostresExists {
-	exists: boolean;
-}
-
-/*
-   ---------
-    CONFIGS
-   ---------
-*/
-
-export type ConfigTableColumns =
-	| "botLogChannel"
-	| "guildId"
-	| "memberLogChannel"
-	| "modLogChannel";
-
-export type ConfigChannelTypes = NewsChannel | TextChannel;
-
 export interface ConfigData {
-	guildId?: string;
-	memberLogChannel?: string | null;
-	botLogChannel?: string | null;
-	modLogChannel?: string | null;
+	guildId: string;
+	botLogChId?: string | null;
+	memberLogChId?: string | null;
+	modLogChId?: string | null;
 }
-
-/*
-   ------
-    CASE
-   ------
-*/
 
 export interface CaseData {
 	caseId: number;
 	guildId: string;
-	executorAvatar: string | null;
-	referenceId: number | null;
-	executorTag: string;
-	executorId: string;
-	targetTag: string | null;
-	timestamp: number;
-	targetId: string | null;
-	duration: number | null;
+	createdTimestamp: Date;
 	edited: boolean;
+	expirationTimestamp: Date | null;
+	logMessageURL: string | null;
+	modId: string;
+	modTag: string;
 	reason: string | null;
-	type: CaseTypes;
-	url: string | null;
+	referencedCaseId: number | null;
+	targetId: string | null;
+	targetTag: string | null;
+	type: number;
 }
 
-export interface CaseIdResult {
-	caseId: number;
-}
+export type CreateCaseData = Omit<
+	CaseData,
+	"caseId" | "createdTimestamp" | "edited" | "guildId"
+>;

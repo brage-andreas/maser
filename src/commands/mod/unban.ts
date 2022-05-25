@@ -24,7 +24,11 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const reason = intr.options.getString("reason");
 	const emojis = intr.client.maserEmojis;
 
-	if (!intr.guild.me?.permissions.has(PermissionsBitField.Flags.BanMembers)) {
+	if (
+		!intr.guild.members.me?.permissions.has(
+			PermissionsBitField.Flags.BanMembers
+		)
+	) {
 		intr.editReply(
 			`${emojis.cross} I don't have permissions to unban users`
 		);
@@ -64,19 +68,18 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 			intr.guild.members
 				.unban(target.id, auditLogReason)
 				.then(async () => {
-					const cases = await new CaseManager(
-						intr.client,
-						intr.guildId
-					).initialise();
+					const cases = new CaseManager(intr.client, intr.guildId);
 
 					const case_ = await cases.createCase(
 						{
-							executorAvatar: intr.member.displayAvatarURL(),
-							executorTag: intr.user.tag,
-							executorId: intr.user.id,
+							expirationTimestamp: null,
+							referencedCaseId: null,
+							logMessageURL: null,
 							targetTag: target.tag,
 							targetId: target.id,
-							reason: reason ?? undefined,
+							modTag: intr.user.tag,
+							reason,
+							modId: intr.user.id,
 							type: CaseTypes.Unban
 						},
 						true

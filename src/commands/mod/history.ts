@@ -5,7 +5,6 @@ import {
 } from "discord.js";
 import { CaseTypes } from "../../constants/database.js";
 import CaseManager from "../../database/CaseManager.js";
-import { type CaseData } from "../../typings/database.js";
 import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 import { USER } from "./noread.methods.js";
@@ -28,29 +27,15 @@ async function execute(intr: CommandInteraction<"cached">) {
 		: intr.user;
 
 	const caseManager = new CaseManager(intr.client, intr.guildId);
+	const cases = await caseManager.getHistory(user.id);
 
-	await caseManager.initialise();
+	const caseFooterObj: Record<string, number> = {};
 
-	const rawCases = await caseManager.manyOrNone<CaseData>(`
-		SELECT *
-		FROM ${caseManager.schema}."${caseManager.table}"
-		WHERE "${caseManager.table}"."targetId" = '${user.id}'
-		ORDER BY "caseId" DESC
-	`);
+	cases.forEach(({ type }) => {
+		caseFooterObj[type] = (caseFooterObj[type] ?? 0) + 1;
+	});
 
 	const caseFooterArr: Array<string> = [];
-
-	const caseFooterObj: Record<number, number> = {
-		0: 0,
-		1: 0,
-		2: 0,
-		3: 0,
-		4: 0,
-		5: 0,
-		6: 0
-	};
-
-	rawCases?.forEach(({ type }) => caseFooterObj[type]++);
 
 	for (const [type, amount] of Object.entries(caseFooterObj)) {
 		caseFooterArr.push(
@@ -58,9 +43,10 @@ async function execute(intr: CommandInteraction<"cached">) {
 		);
 	}
 
-	const compactedCases = rawCases
-		? caseManager.compactCases(rawCases)
-		: ["No history"];
+	// const compactedCases = rawCases
+	//		? caseManager.compactCases(rawCases)
+	//		: ["No history"];
+	const compactedCases = ["No history"];
 
 	const [caseList, rest] = Util.listify(compactedCases, 5);
 
@@ -80,7 +66,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 			},
 			{
 				name: "Info",
-				value: "lol"
+				value: "..."
 			}
 		],
 		footer: { text: caseFooterArr.join(", ") }

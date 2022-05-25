@@ -92,7 +92,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 			const start = performance.now();
 			const result = await eval(`(async () => {\n${code}\n})()`);
 			const end = performance.now();
-			//
+
 			const type = typeof result;
 
 			const constructor =
@@ -100,21 +100,17 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 					? (result.constructor.name as string)
 					: "Nullish";
 
-			//
 			const time = Number((end - start).toFixed(3));
 			const timeTaken = ms(time, { long: true }).replace(".", ",");
 
-			//
 			const stringedOutput = stringify(result).replaceAll(
 				new RegExp(REGEXP.TOKEN, "g"),
 				"[REDACTED]"
 			);
 
-			//
 			const parsedInput = parse(code, "**Input**");
 			const parsedOutput = parse(stringedOutput, "**Output**");
 
-			//
 			const successInputEmbed: APIEmbed = {
 				...defaultEmbed(intr),
 				description: parsedInput ?? "No input"
@@ -162,9 +158,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 		}
 	};
 
-	const {
- embeds, output, type 
-} = await evaluate();
+	const { embeds, output, type } = await evaluate();
 
 	if (reply) {
 		const buttonManager = new ButtonManager();
@@ -221,9 +215,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 				intr.logger.log(
 					`Sent output as an attachment:\n${Util.indent(output)}`
 				);
-			}
-			//
-			else if (interaction.customId === "code") {
+			} else if (interaction.customId === "code") {
 				const attachment = new Attachment(
 					Buffer.from(code),
 					"code.txt"

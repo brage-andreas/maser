@@ -41,13 +41,9 @@ export default class EventLogger extends BaseLogger {
 		member: GuildMember | PartialGuildMember,
 		joined: boolean
 	) {
-		const config = new ConfigManager(
-			this.client,
-			member.guild.id,
-			"memberLogChannel"
-		);
+		const configManager = new ConfigManager(this.client, member.guild.id);
 
-		const channel = await config.getChannel();
+		const channel = await configManager.get.memberLogChannel();
 
 		if (!channel) {
 			return;

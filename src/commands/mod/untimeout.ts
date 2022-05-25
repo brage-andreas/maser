@@ -29,7 +29,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const emojis = intr.client.maserEmojis;
 
 	if (
-		!intr.guild.me?.permissions.has(
+		!intr.guild.members.me?.permissions.has(
 			PermissionsBitField.Flags.ModerateMembers
 		)
 	) {
@@ -89,19 +89,18 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 			target
 				.disableCommunicationUntil(null, auditLogReason)
 				.then(async () => {
-					const cases = await new CaseManager(
-						intr.client,
-						intr.guildId
-					).initialise();
+					const cases = new CaseManager(intr.client, intr.guildId);
 
 					const case_ = await cases.createCase(
 						{
-							executorAvatar: intr.member.displayAvatarURL(),
-							executorTag: intr.user.tag,
-							executorId: intr.user.id,
+							expirationTimestamp: null,
+							referencedCaseId: null,
+							logMessageURL: null,
 							targetTag: target.user.tag,
 							targetId: target.id,
-							reason: reason ?? undefined,
+							modTag: intr.user.tag,
+							reason,
+							modId: intr.user.id,
 							type: CaseTypes.Untimeout
 						},
 						true

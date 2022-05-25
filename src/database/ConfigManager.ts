@@ -1,123 +1,97 @@
-import { type Client } from "discord.js";
-import type {
-	ConfigChannelTypes,
-	ConfigData,
-	ConfigTableColumns
-} from "../typings/database.js";
-import Postgres from "./src/postgres.js";
+import { type Client, type TextBasedChannel } from "discord.js";
+import prisma from "./prisma.js";
 
-export default class ConfigManager extends Postgres {
-	public key: ConfigTableColumns | null;
+export default class ConfigManager {
+	public readonly prisma = prisma;
+	public readonly client: Client<true>;
+	public guildId: string;
 
-	public constructor(
-		client: Client<true>,
-		guildId: string,
-		key?: ConfigTableColumns | null
+	public readonly get: Record<
+		"botLogChannel" | "memberLogChannel" | "modLogChannel",
+		() => Promise<TextBasedChannel | null>
+	> = {
+		botLogChannel: async () => this._get("botLogChId"),
+		memberLogChannel: async () => this._get("memberLogChId"),
+		modLogChannel: async () => this._get("modLogChId")
+	};
+
+	public readonly set = {
+		botLogChannel: async (channelId: string) =>
+			this._set("botLogChId", channelId),
+
+		memberLogChannel: async (channelId: string) =>
+			this._set("memberLogChId", channelId),
+
+		modLogChannel: async (channelId: string) =>
+			this._set("modLogChId", channelId)
+	};
+
+	public constructor(client: Client<true>, guildId: string) {
+		this.guildId = guildId;
+		this.client = client;
+	}
+
+	public async getAll() {
+		return await this.prisma.configs.findUnique({
+			where: {
+				guildId: this.guildId
+			}
+		});
+	}
+
+	public async setAll(data: {
+		botLogChId?: string;
+		memberLogChId?: string;
+		modLogChId?: string;
+	}) {
+		return await this.prisma.configs.upsert({
+			update: data,
+			create: {
+				...data,
+				guildId: this.guildId
+			},
+			where: {
+				guildId: this.guildId
+			}
+		});
+	}
+
+	private async _get(key: "botLogChId" | "memberLogChId" | "modLogChId") {
+		const chIdObj = await this.prisma.configs
+			.findUnique({
+				where: {
+					guildId: this.guildId
+				},
+				select: {
+					[key]: true
+				}
+			})
+			.then((res: Record<string, string | null> | null) => res?.[key]);
+
+		if (!chIdObj) {
+			return null;
+		}
+
+		const channel = this.client.channels.cache.get(chIdObj);
+
+		return channel?.isTextBased() ? channel : null;
+	}
+
+	private async _set(
+		key: "botLogChId" | "memberLogChId" | "modLogChId",
+		channelId: string
 	) {
-		super(client, {
-			schema: "guilds",
-			table: "configs",
-			idKey: "guildId",
-			idValue: guildId
+		await this.prisma.configs.upsert({
+			create: {
+				guildId: this.guildId,
+				[key]: channelId
+			},
+			update: {
+				[key]: channelId
+			},
+			where: {
+				guildId: this.guildId
+			}
 		});
-
-		this.key = key ?? null;
-	}
-
-	public setKey(key: ConfigTableColumns): this {
-		this.key = key;
-
-		return this;
-	}
-
-	public async getChannel(): Promise<ConfigChannelTypes | null> {
-		if (!this.idValue) {
-			throw new Error("Guild id must be set to the ConfigManager");
-		}
-
-		if (!this.key) {
-			throw new Error("Key must be set to the ConfigManager");
-		}
-
-		const id = await this.getAll().then(
-			(result) => result?.[this.key!] ?? null
-		);
-
-		if (!id) {
-			return null;
-		}
-
-		const guild = this.client.guilds.cache.get(this.idValue);
-
-		if (!guild) {
-			return null;
-		}
-
-		const channel = guild.channels.cache.get(id) as
-			| ConfigChannelTypes
-			| undefined;
-
-		return channel ?? null;
-	}
-
-	/* public async getRole(): Promise<Role | null> {
-		if (!this.idValue) throw new Error("Guild id must be set to the ConfigManager");
-		if (!this.key) throw new Error("Key must be set to the ConfigManager");
-
-		const id = await this.getAll().then((result) => {
-			return result?.[this.key!] ?? null;
-		});
-		if (!id) return null;
-
-		const guild = this.client.guilds.cache.get(this.idValue);
-		if (!guild) return null;
-
-		return guild.roles.cache.get(id) ?? null;
-	}*/
-
-	public async set(value: string, key?: ConfigTableColumns): Promise<void> {
-		if (!key && !this.key) {
-			throw new Error("Key must be set or provided to the ConfigManager");
-		}
-
-		await this.still([this.idKey], [this.idValue]);
-
-		return this.updateRow([key ?? this.key!], [value]);
-	}
-
-	public async getAll(): Promise<ConfigData> {
-		if (!this.idValue) {
-			throw new Error("Guild id must be set to the ConfigManager");
-		}
-
-		await this.still([this.idKey], [this.idValue]);
-
-		const query = `
-            SELECT *
-            FROM ${this.schema}."${this.table}"
-            WHERE "guildId" = ${this.idValue}
-        `;
-
-		return this.one<ConfigData>(query);
-	}
-
-	public async getAllValues(): Promise<ConfigData> {
-		if (!this.idValue) {
-			throw new Error("Guild id must be set to the ConfigManager");
-		}
-
-		await this.still([this.idKey], [this.idValue]);
-
-		const query = `
-            SELECT *
-            FROM ${this.schema}."${this.table}"
-            WHERE "guildId" = ${this.idValue}
-        `;
-
-		const res = await this.one<ConfigData>(query);
-
-		delete res.guildId;
-
-		return res;
 	}
 }

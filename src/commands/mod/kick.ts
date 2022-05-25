@@ -33,7 +33,9 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	}
 
 	if (
-		!intr.guild.me?.permissions.has(PermissionsBitField.Flags.KickMembers)
+		!intr.guild.members.me?.permissions.has(
+			PermissionsBitField.Flags.KickMembers
+		)
 	) {
 		intr.editReply(
 			`${emojis.cross} I don't have permissions to kick users`
@@ -95,19 +97,18 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 			target
 				.kick(auditLogReason)
 				.then(async () => {
-					const cases = await new CaseManager(
-						intr.client,
-						intr.guildId
-					).initialise();
+					const cases = new CaseManager(intr.client, intr.guildId);
 
 					const case_ = await cases.createCase(
 						{
-							executorAvatar: intr.member.displayAvatarURL(),
-							executorTag: intr.user.tag,
-							executorId: intr.user.id,
+							expirationTimestamp: null,
+							referencedCaseId: null,
+							logMessageURL: null,
 							targetTag: target.user.tag,
 							targetId: target.id,
-							reason: reason ?? undefined,
+							modTag: intr.user.tag,
+							reason,
+							modId: intr.user.id,
 							type: CaseTypes.Kick
 						},
 						true
