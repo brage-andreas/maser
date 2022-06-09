@@ -3,7 +3,6 @@ import { Routes } from "discord-api-types/v9";
 import {
 	ApplicationCommandOptionType,
 	type ApplicationCommandData,
-	type ApplicationCommandOption,
 	type ApplicationCommandOptionData,
 	type ApplicationCommandSubCommandData,
 	type ApplicationCommandSubGroupData,
@@ -165,10 +164,10 @@ export default class CommandHandler {
 		if (!options.some((option) => option.name === "hide")) {
 			const hide = this.getDefaultHide(name);
 
-			const hideOption: ApplicationCommandOption = {
+			const hideOption: ApplicationCommandOptionData = {
 				name: "hide",
-				description: `Hide the response. Default is ${hide}`,
-				type: 5 // ApplicationCommandOptionType.Boolean
+				description: `Hide the response (${hide})`,
+				type: ApplicationCommandOptionType.Boolean
 			};
 
 			options.push(hideOption);
