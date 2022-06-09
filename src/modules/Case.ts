@@ -51,13 +51,16 @@ const getType = (type: CaseTypes): string => {
 			return "Warn";
 
 		case CaseTypes.Timeout:
-			return "Mute";
+			return "Timeout";
+
+		case CaseTypes.Untimeout:
+			return "Untimeout";
 
 		case CaseTypes.Ban:
 			return "Ban";
 
 		default:
-			return "Unknown";
+			return "Unknown type";
 	}
 };
 
