@@ -9,7 +9,7 @@ import CaseManager from "../../database/CaseManager.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 import Util from "../../utils/index.js";
-import { REASON, USER } from "./noread.methods.js";
+import { reason, user } from "./noread.sharedCommandOptions.js";
 
 const options: Partial<CommandOptions> = { wip: true };
 
@@ -17,8 +17,8 @@ const data: ChatInputApplicationCommandData = {
 	name: "untimeout",
 	description: "Removes the time-out of a user",
 	options: [
-		USER(true), //
-		REASON("time-out")
+		user(true), //
+		reason("time-out")
 	]
 };
 
@@ -64,10 +64,11 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 		return;
 	}
 
-	const info =
-		`• **Reason**: ${reason ?? "No reason provided"}\n` +
-		`• **Expiration**: ${Util.fullDate(expiration)}\n` +
-		`• **Target**: ${target.user.tag} (${target} ${target.id})`;
+	const info = Util.createList({
+		"**Expiration**": Util.fullDate(expiration),
+		"**Reason**": reason ?? "No reason provided",
+		"**Target**": `${target.user.tag} (${target} ${target.id})`
+	});
 
 	const query = `${emojis.warning} Are you sure you want to untimeout **${target.user.tag}** (${target.id})?\n\n${info}`;
 

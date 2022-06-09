@@ -1,6 +1,6 @@
-import { type APIEmbed } from "discord-api-types/v9";
 import {
 	ApplicationCommandOptionType,
+	type APIEmbed,
 	type ChatInputApplicationCommandData,
 	type CommandInteraction
 } from "discord.js";
@@ -33,17 +33,8 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 	await user.fetch(true);
 
-	const getColor = (hex: number | undefined) => {
-		const { green } = intr.client.colors;
-
-		if (!hex) {
-			return green;
-		}
-
-		const empty = hex === 0x000000 || hex === 0xffffff;
-
-		return empty ? green : hex;
-	};
+	const getColor = (hex: number | undefined) =>
+		hex === undefined ? intr.client.colors.green : hex;
 
 	const premium = Boolean(member?.premiumSinceTimestamp);
 	const owner = Boolean(member) && member!.id === member?.guild.ownerId;
@@ -55,8 +46,9 @@ async function execute(intr: CommandInteraction<"cached">) {
 		flags.push("Booster");
 	}
 
-	const memberAvatar = member?.displayAvatarURL({ size: 2048 }) ?? null;
+	const memberAvatar = member?.avatarURL({ size: 2048 }) ?? null;
 	const userAvatar = user.displayAvatarURL({ size: 2048 });
+
 	const displayAvatar = memberAvatar ?? userAvatar;
 	const banner = user.bannerURL({ size: 2048 });
 
@@ -92,26 +84,21 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 	const name = Util.escapeDiscordMarkdown(member?.displayName ?? tag);
 
-	let infoFieldValue =
-		// eslint-disable-next-line prefer-template
-		(owner ? "• 👑 Server Owner\n" : "") +
-		`• Tag: \`${tag}\`\n` +
-		`• ID: \`${id}\`\n` +
-		`• Created: ${created}\n` +
-		(member
-			? `• Joined: ${joined}\n• Colour: \`#${color.toString(16)}\`\n`
-			: "") +
-		`• [User avatar](${userAvatar})\n` +
-		(memberAvatar ? `• [Member avatar](${memberAvatar})\n` : "") +
-		(banner ? `• [Banner](${banner})\n` : "");
-
-	if (premium) {
-		infoFieldValue += "• Booster\n";
-	}
-
-	if (bot) {
-		infoFieldValue += "• Bot\n";
-	}
+	const infoFieldValue = Util.createList({
+		"Tag": `\`${tag}\``,
+		"ID": `\`${id}\``,
+		"Colour": `\`#${color.toString(16)}\``,
+		"👑 Server Owner": owner ? "{single}" : null,
+		"Bot": bot ? "{single}" : null,
+		"Created": created,
+		"Joined": joined,
+		"User avatar": `[Link](${userAvatar} "Link to user avatar")`,
+		"Member avatar": memberAvatar
+			? `[Link](${memberAvatar} "Link to member avatar")`
+			: null,
+		"Banner": banner ? `[Link](${banner} "Link to banner")` : null,
+		"Accent colour": user.hexAccentColor
+	});
 
 	const userEmbed: APIEmbed = {
 		...defaultEmbed(intr),
@@ -140,10 +127,6 @@ async function execute(intr: CommandInteraction<"cached">) {
 			name: `Roles (${member.roles.cache.size - 1})`,
 			value: 1 < member.roles.cache.size ? roles : "No roles"
 		});
-	}
-
-	if (owner) {
-		userEmbed.description = "👑 Server owner";
 	}
 
 	intr.editReply({ embeds: [userEmbed] });

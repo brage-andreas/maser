@@ -1,4 +1,6 @@
+import { oneLine, stripIndents } from "common-tags";
 import {
+	ApplicationCommandOptionType,
 	PermissionsBitField,
 	type ChatInputApplicationCommandData,
 	type ChatInputCommandInteraction
@@ -10,7 +12,7 @@ import CaseManager from "../../database/CaseManager.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 import Util from "../../utils/index.js";
-import { DURATION, REASON, USER } from "./noread.methods.js";
+import { reason, user } from "./noread.sharedCommandOptions.js";
 
 const options: Partial<CommandOptions> = { wip: true };
 
@@ -18,9 +20,51 @@ const data: ChatInputApplicationCommandData = {
 	name: "timeout",
 	description: "Timeout a user for a given time",
 	options: [
-		USER(true), //
-		REASON("timeout"),
-		DURATION("timeout")
+		user(true),
+		reason("timeout"),
+		{
+			name: "duration",
+			type: ApplicationCommandOptionType.Integer,
+			description: "The duration for this timeout (3 hours)",
+			choices: [
+				{
+					name: "3 hours (default)",
+					value: DURATIONS.THREE_HRS
+				},
+				{
+					name: "15 minutes",
+					value: DURATIONS.FIFTEEN_MIN
+				},
+				{
+					name: "45 minutes",
+					value: DURATIONS.FOURTY_FIVE_MIN
+				},
+				{
+					name: "1,5 hours",
+					value: DURATIONS.ONE_AND_HALF_HRS
+				},
+				{
+					name: "6 hours",
+					value: DURATIONS.SIX_HRS
+				},
+				{
+					name: "12 hours",
+					value: DURATIONS.TWELVE_HRS
+				},
+				{
+					name: "1 day",
+					value: DURATIONS.ONE_DAY
+				},
+				{
+					name: "3 days",
+					value: DURATIONS.THREE_DAYS
+				},
+				{
+					name: "7 days",
+					value: DURATIONS.THREE_DAYS
+				}
+			]
+		}
 	]
 };
 
@@ -29,40 +73,38 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const reason = intr.options.getString("reason");
 	const duration = intr.options.getInteger("duration") ?? DURATIONS.THREE_HRS;
 	const expiration = Date.now() + duration;
-	const emojis = intr.client.maserEmojis;
+	const { warning, cross, check } = intr.client.maserEmojis;
 
 	if (
 		!intr.guild.members.me?.permissions.has(
 			PermissionsBitField.Flags.ModerateMembers
 		)
 	) {
-		intr.editReply(
-			`${emojis.cross} I do not have permissions to timeout users`
-		);
+		intr.editReply(`${cross} I do not have permissions to timeout users`);
 
 		return;
 	}
 
 	if (!target) {
-		intr.editReply(`${emojis.cross} The user was not found in this server`);
+		intr.editReply(`${cross} The user was not found in this server`);
 
 		return;
 	}
 
 	if (target.id === intr.user.id) {
-		intr.editReply(`${emojis.cross} You cannot do this action on yourself`);
+		intr.editReply(`${cross} You cannot do this action on yourself`);
 
 		return;
 	}
 
 	if (target.id === intr.client.user.id) {
-		intr.editReply(`${emojis.cross} I cannot do this action on myself`);
+		intr.editReply(`${cross} I cannot do this action on myself`);
 
 		return;
 	}
 
 	if (target.id === intr.guild.ownerId) {
-		intr.editReply(`${emojis.cross} The user is the owner of this server`);
+		intr.editReply(`${cross} The user is the owner of this server`);
 
 		return;
 	}
@@ -70,21 +112,25 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const inTimeout =
 		Date.now() < (target.communicationDisabledUntilTimestamp ?? 0);
 
-	const info =
-		`• **Reason**: ${reason ?? "No reason provided"}\n` +
-		`• **Duration**: ${ms(duration, { long: true })}\n` +
-		`• **Expiration**: ${Util.fullDate(expiration)}\n` +
-		`• **Target**: ${target.user.tag} (${target} ${target.id})`;
+	const info = Util.createList({
+		"**Duration**": ms(duration, { long: true }),
+		"**Expiration**": Util.fullDate(expiration),
+		"**Reason**": reason ?? "No reason provided",
+		"**Target**": `${target.user.tag} (${target.id})`
+	});
 
-	const query =
-		// eslint-disable-next-line prefer-template
-		`${emojis.warning} Are you sure you want to timeout **${target.user.tag}** (${target.id})?` +
-		(inTimeout
-			? `\nThis will override their current timeout, set to expire ${Util.fullDate(
-					target.communicationDisabledUntilTimestamp ?? 0 // should be present -- just in case
-			  )}.`
-			: "") +
-		`\n\n${info}`;
+	const overrideStr = oneLine`
+		${warning} This will override their
+		current timeout, set to expire
+		${Util.fullDate(target.communicationDisabledUntilTimestamp!)}.
+	`;
+
+	const query = stripIndents`
+		Are you sure you want to timeout **${target.user.tag}** (${target.id})?
+		${inTimeout ? `\n${overrideStr}` : ""}
+		
+		${info}
+	`;
 
 	const collector = new ConfirmationButtons({
 		authorId: intr.user.id,
@@ -131,7 +177,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 					intr.editReply({
 						content:
-							`${emojis.check} Successfully **timed out ${target.user.tag}** (${target.id}) ` +
+							`${check} Successfully **timed out ${target.user.tag}** (${target.id}) ` +
 							`in case **#${case_.id}**\n\n${info}`,
 						components: []
 					});
@@ -145,14 +191,14 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 				})
 				.catch(() => {
 					intr.editReply({
-						content: `${emojis.cross} I failed to time out ${target.user.tag} (${target.id})\n\n${info}`,
+						content: `${cross} I failed to time out ${target.user.tag} (${target.id})\n\n${info}`,
 						components: []
 					});
 				});
 		})
 		.catch(() => {
 			intr.editReply({
-				content: `${emojis.check} Gotcha. Command cancelled`,
+				content: `${check} Gotcha. Command cancelled`,
 				components: []
 			});
 		});

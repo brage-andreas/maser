@@ -9,14 +9,14 @@ import CaseManager from "../../database/CaseManager.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 import Util from "../../utils/index.js";
-import { REASON, USER } from "./noread.methods.js";
+import { reason, user } from "./noread.sharedCommandOptions.js";
 
 const options: Partial<CommandOptions> = { private: true };
 
 const data: ChatInputApplicationCommandData = {
 	name: "unban",
 	description: "Unbans a user",
-	options: [USER(true), REASON("unban")]
+	options: [user(true), reason("unban")]
 };
 
 async function execute(intr: ChatInputCommandInteraction<"cached">) {
@@ -52,9 +52,10 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 		  })
 		: `By ${intr.user.tag} ${intr.user.id}`;
 
-	const info = `• **Reason**: ${
-		reason ?? "No reason provided"
-	}\n• **Target**: ${target.tag} (${target} ${target.id})`;
+	const info = Util.createList({
+		"**Reason**": reason ?? "No reason provided",
+		"**Target**": `${target.tag} (${target.id})`
+	});
 
 	const query = `${emojis.warning} Are you sure you want to unban **${target.tag}** (${target.id})?\n\n${info}`;
 
@@ -89,7 +90,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 						`Unbanned ${target.tag} (${target.id}) ${
 							reason
 								? `with reason: "${reason}"`
-								: "with no reason"
+								: "with no reason provided"
 						}`
 					);
 

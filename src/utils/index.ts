@@ -210,4 +210,13 @@ export default class Util extends null {
 			elements.length - desiredLength
 		];
 	}
+
+	public static createList(obj: Record<string, string | null | undefined>) {
+		return Object.entries(obj)
+			.filter(([, val]) => Boolean(val))
+			.map(([key, val]) =>
+				val === "{single}" ? `• ${key}` : `• ${key}: ${val}`
+			)
+			.join("\n");
+	}
 }

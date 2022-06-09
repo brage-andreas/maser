@@ -10,7 +10,7 @@ import CaseManager from "../../database/CaseManager.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 import Util from "../../utils/index.js";
-import { REASON, USER } from "./noread.methods.js";
+import { reason, user } from "./noread.sharedCommandOptions.js";
 
 const options: Partial<CommandOptions> = { private: true };
 
@@ -18,10 +18,10 @@ const data: ChatInputApplicationCommandData = {
 	name: "ban",
 	description: "Bans a user off this server",
 	options: [
-		USER(true),
-		REASON("ban"),
+		user(true),
+		reason("ban"),
 		{
-			name: "days",
+			name: "days-of-pruning",
 			description: "Days to prune user's messages (1 day)",
 			type: ApplicationCommandOptionType.Integer,
 			choices: [
@@ -113,17 +113,18 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 		  })
 		: `By ${intr.user.tag} ${intr.user.id}`;
 
-	const info =
-		`• **Target**: ${target.tag} (${target} ${target.id})\n` +
-		`• **Reason**: ${reason ?? "No reason provided"}\n` +
-		`• **Days pruned**: ${days ? `${days} days` : "No pruning"}`;
+	const info = Util.createList({
+		"**Days pruned**": days ? `${days} days` : "None",
+		"**Reason**": reason ?? "No reason provided",
+		"**Target**": `${target.tag} (${target.id})`
+	});
 
 	const query = `${emojis.warning} Are you sure you want to ban **${target.tag}** (${target.id})?\n\n${info}`;
 
 	const collector = new ConfirmationButtons({
 		authorId: intr.user.id,
 		inverted: true
-	}) //
+	})
 		.setInteraction(intr)
 		.setQuery(query);
 
@@ -157,7 +158,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 						`Banned ${target.tag} (${target.id}) ${
 							reason
 								? `with reason: "${reason}"`
-								: "with no reason"
+								: "with no reason provided"
 						}`
 					);
 

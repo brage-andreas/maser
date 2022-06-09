@@ -9,14 +9,14 @@ import CaseManager from "../../database/CaseManager.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 import Util from "../../utils/index.js";
-import { REASON, USER } from "./noread.methods.js";
+import { reason, user } from "./noread.sharedCommandOptions.js";
 
 const options: Partial<CommandOptions> = { private: true };
 
 const data: ChatInputApplicationCommandData = {
 	name: "kick",
 	description: "Kicks a user off this server",
-	options: [USER(true), REASON("kick")]
+	options: [user(true), reason("kick")]
 };
 
 function execute(intr: ChatInputCommandInteraction<"cached">) {
@@ -78,9 +78,10 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 		  })
 		: `By ${intr.user.tag} ${intr.user.id}`;
 
-	const info =
-		`• **Reason**: ${reason ?? "No reason provided"}\n` +
-		`• **Target**: ${target.user.tag} (${target} ${target.id})`;
+	const info = Util.createList({
+		"**Reason**": reason ?? "No reason provided",
+		"**Target**": `${target.user.tag} (${target.id})`
+	});
 
 	const query = `${emojis.warning} Are you sure you want to kick **${target.user.tag}** (${target.id})?\n\n${info}`;
 
@@ -118,7 +119,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 						`Kicked ${target.user.tag} (${target.id}) ${
 							reason
 								? `with reason: "${reason}"`
-								: "with no reason"
+								: "with no reason provided"
 						}`
 					);
 
