@@ -3,16 +3,14 @@ import {
 	type ChatInputApplicationCommandData,
 	type CommandInteraction
 } from "discord.js";
-import { CaseTypes } from "../../constants/database.js";
 import CaseManager from "../../database/CaseManager.js";
 import { type Command } from "../../typings/index.js";
-import Util from "../../utils/index.js";
-import { USER } from "./noread.methods.js";
+import { user } from "./noread.sharedCommandOptions.js";
 
 const data: ChatInputApplicationCommandData = {
 	name: "history",
 	description: "Show the history of a user",
-	options: [USER()]
+	options: [user()]
 };
 
 async function execute(intr: CommandInteraction<"cached">) {
@@ -29,30 +27,18 @@ async function execute(intr: CommandInteraction<"cached">) {
 	const caseManager = new CaseManager(intr.client, intr.guildId);
 	const cases = await caseManager.getHistory(user.id);
 
-	const caseFooterObj: Record<string, number> = {};
+	const embedFooter =
+		Object.entries(
+			cases.reduce((obj: Record<string, number>, case_) => {
+				obj[case_.type] = (obj[case_.type] ?? 0) + 1;
 
-	cases.forEach(({ type }) => {
-		caseFooterObj[type] = (caseFooterObj[type] ?? 0) + 1;
-	});
-
-	const caseFooterArr: Array<string> = [];
-
-	for (const [type, amount] of Object.entries(caseFooterObj)) {
-		caseFooterArr.push(
-			`${amount} ${CaseTypes[Number(type)].toLowerCase()}s`
-		);
-	}
-
-	// const compactedCases = rawCases
-	//		? caseManager.compactCases(rawCases)
-	//		: ["No history"];
-	const compactedCases = ["No history"];
-
-	const [caseList, rest] = Util.listify(compactedCases, 5);
-
-	const casesString = `• ${caseList.join("\n• ")}${
-		rest ? `\n${rest} more...` : ""
-	}`;
+				return obj;
+			}, {})
+		)
+			.map(
+				([type, n]) => `${n} ${type.toLowerCase()}${n === 1 ? "" : "s"}`
+			)
+			.join(", ") || "No history";
 
 	const historyEmbed: APIEmbed = {
 		author: {
@@ -62,14 +48,14 @@ async function execute(intr: CommandInteraction<"cached">) {
 		fields: [
 			{
 				name: "Cases",
-				value: casesString
+				value: "test"
 			},
 			{
 				name: "Info",
 				value: "..."
 			}
 		],
-		footer: { text: caseFooterArr.join(", ") }
+		footer: { text: embedFooter }
 	};
 
 	intr.editReply({ embeds: [historyEmbed] });
