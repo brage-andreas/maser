@@ -97,7 +97,20 @@ export default class CaseManager {
 			.then((res) => res?.caseId ?? 0);
 	}
 
-	// public async getCaseDataWithinRange() {}
+	public async getCasesInRange(caseIdLow?: number, caseIdHigh?: number) {
+		return await this.prisma.cases.findMany({
+			where: {
+				guildId: this.guildId,
+				caseId: {
+					lte: caseIdHigh,
+					gte: caseIdLow
+				}
+			},
+			orderBy: {
+				caseId: "desc"
+			}
+		});
+	}
 
 	public async editCase(data: CaseData) {
 		const case_ = await this.prisma.cases.update({
@@ -128,16 +141,4 @@ export default class CaseManager {
 
 		return new Case(this.client, case_);
 	}
-
-	// public async compactCases() {}
-
-	/*
-	private async getData() {}
-
-	private async _createCase() {}
-
-	private async patch() {}
-
-	private async getId() {}
-	*/
 }
