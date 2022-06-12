@@ -1,4 +1,4 @@
-import type { LoggerTypes } from "../constants/index.js";
+import { type LoggerTypes } from "../constants/index.js";
 import Util from "../utils/index.js";
 import { getColor, gray, yellow } from "./LoggerColors.js";
 import TraceValueManager from "./TraceValueManager.js";

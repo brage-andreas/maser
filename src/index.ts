@@ -2,7 +2,7 @@ import { Client } from "discord.js";
 import "dotenv/config";
 import { EMOJIS } from "./constants/emojis.js";
 import { COLORS, INTENTS, PARTIALS } from "./constants/index.js";
-import { InfoLogger } from "./logger/index.js";
+import { InfoLogger } from "./loggers/index.js";
 import CommandHandler from "./modules/CommandHandler.js";
 import EventManager from "./modules/EventManager.js";
 

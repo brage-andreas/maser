@@ -10,7 +10,7 @@ import {
 } from "discord.js";
 import { readdirSync } from "fs";
 import { REGEXP } from "../constants/index.js";
-import { ErrorLogger, InfoLogger } from "../logger/index.js";
+import { ErrorLogger, InfoLogger } from "../loggers/index.js";
 import { type Command, type CommandModule } from "../typings/index.js";
 
 type CommandMap = Map<string, Command>;

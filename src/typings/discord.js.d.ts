@@ -1,7 +1,7 @@
 import "discord.js";
 import type { EMOJIS } from "../constants/emojis.js";
 import type { COLORS } from "../constants/index.js";
-import type { CommandLogger, InfoLogger } from "../logger/index.js";
+import type { CommandLogger, InfoLogger } from "../loggers/index.js";
 import type CommandHandler from "../modules/CommandHandler.js";
 import type CommandHelper from "../modules/CommandHelper.js";
 import type EventManager from "../modules/EventManager.js";

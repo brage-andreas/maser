@@ -1,5 +1,5 @@
 import { type Client, type Interaction } from "discord.js";
-import { CommandLogger } from "../logger/index.js";
+import { CommandLogger } from "../loggers/index.js";
 import CommandHelper from "../modules/CommandHelper.js";
 
 export async function execute(client: Client<true>, intr: Interaction) {
