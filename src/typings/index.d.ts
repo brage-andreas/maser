@@ -6,9 +6,7 @@ import type {
 	CommandInteraction
 } from "discord.js";
 
-/**/
-
-export type ImageSizes = 16 | 32 | 64 | 128 | 256 | 512 | 1024 | 2048 | 4096;
+export type LogLevels = "full" | "none" | "normal";
 
 export interface CommandModule {
 	getCommand(): Partial<Command>;
@@ -21,18 +19,21 @@ export interface Command {
 		interaction:
 			| AutocompleteInteraction<"cached">
 			| CommandInteraction<"cached">
-	): Promise<void> | void;
+	): Promise<unknown> | unknown;
 }
 
 export interface CommandOptions {
 	defaultHide: boolean;
-	logLevel: 0 | 1 | 2;
+	logLevel: LogLevels;
 	private: boolean;
 	wip: boolean;
 }
 
 export interface Event {
-	execute(client: Client, ...args: Array<unknown>): Promise<void> | void;
+	execute(
+		client: Client,
+		...args: Array<unknown>
+	): Promise<unknown> | unknown;
 }
 
 export interface EvalOutput {

@@ -5,15 +5,15 @@ import {
 } from "discord-api-types/v9";
 import Discord, {
 	ApplicationCommandOptionType,
-	Attachment,
 	ButtonStyle,
 	type ChatInputApplicationCommandData,
-	type ChatInputCommandInteraction
+	type ChatInputCommandInteraction,
+	type Message
 } from "discord.js";
 import ms from "ms";
 import { performance } from "perf_hooks";
 import { defaultEmbed, REGEXP } from "../../constants/index.js";
-import { ButtonManager } from "../../modules/index.js";
+import ButtonManager from "../../modules/ButtonManager.js";
 import {
 	type Command,
 	type CommandOptions,
@@ -22,7 +22,7 @@ import {
 import Util from "../../utils/index.js";
 
 const options: Partial<CommandOptions> = {
-	logLevel: 2,
+	logLevel: "full",
 	private: true
 };
 
@@ -181,10 +181,10 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 		buttonManager.setRows([outputButton, codeButton]);
 
-		const msg = await intr.editReply({
+		const msg = (await intr.editReply({
 			embeds,
 			components: buttonManager.rows
-		});
+		})) as Message<true>;
 
 		const collector = buttonManager.setMessage(msg).createCollector();
 
@@ -201,10 +201,10 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 			await interaction.deferUpdate();
 
 			if (interaction.customId === "output") {
-				const attachment = new Attachment(
-					Buffer.from(output),
-					`${type}.txt`
-				);
+				const attachment = {
+					attachment: Buffer.from(output),
+					name: `${type}.txt`
+				};
 
 				buttonManager.disable("output");
 
@@ -216,10 +216,10 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 					`Sent output as an attachment:\n${Util.indent(output)}`
 				);
 			} else if (interaction.customId === "code") {
-				const attachment = new Attachment(
-					Buffer.from(code),
-					"code.txt"
-				);
+				const attachment = {
+					attachment: Buffer.from(code),
+					name: "code.txt"
+				};
 
 				buttonManager.disable("code");
 

@@ -13,109 +13,107 @@ import { REGEXP } from "../constants/index.js";
 import { ErrorLogger, InfoLogger } from "../logger/index.js";
 import { type Command, type CommandModule } from "../typings/index.js";
 
+type CommandMap = Map<string, Command>;
 const COMMAND_DIR = new URL("../commands", import.meta.url);
 
 /**
- * Manages commands for the client.
+ * Handles commands for the client.
  */
 export default class CommandHandler {
-	private _commands: Map<string, Command>;
+	private commands: CommandMap = new Map();
 
 	/**
-	 * Creates a command manager.
-	 */
-	public constructor() {
-		this._commands = new Map();
-	}
-
-	/**
-	 * Initialises the class by loading commands internally.
+	 * Initialises the handler by loading commands.
 	 */
 	public async init(): Promise<void> {
-		const folders = this._readDir(COMMAND_DIR);
-
-		this._commands = await this._getCommands(folders);
+		this.commands = await this.getCommands();
 	}
 
 	/**
-	 * Sets global (client) or guild commands in Discord.
+	 * Publishes the commands to Discord.
+	 * @param clientId ID of the client.
+	 * @param guildId ID of the guild.
+	 * @returns `true` if successful, `false` if unsuccessful.
 	 */
-	public async put(clientId: string, guildId?: string): Promise<boolean> {
-		return await this._put(clientId, guildId);
+	public async set(clientId: string, guildId?: string): Promise<boolean> {
+		return await this.publish({
+			clientId,
+			guildId,
+			clear: false
+		});
 	}
 
 	/**
-	 * Clears global (client) or guild commands in Discord.
+	 * Unpublishes the commands from Discord.
+	 * @param clientId ID of the client.
+	 * @param guildId ID of the guild.
+	 * @returns `true` if successful, `false` if unsuccessful.
 	 */
 	public async clear(clientId: string, guildId?: string): Promise<boolean> {
-		return await this._put(clientId, guildId, true);
+		return await this.publish({
+			clientId,
+			guildId,
+			clear: true
+		});
 	}
 
 	/**
-	 * Get a command's data.
+	 * If this interaction or command should be ephemeral.
+	 * @param interactionOrCommandName Interaction object or name of command.
+	 * @returns If this interaction should be ephemeral.
 	 */
-	public getData(command: string): Command {
-		return this._get(command);
-	}
-
-	/**
-	 * Gets the default hide option of this command.
-	 */
-	public getDefaultHide(
-		intr: ChatInputCommandInteraction<"cached"> | string
+	public isHidden(
+		interactionOrCommandName: ChatInputCommandInteraction<"cached"> | string
 	): boolean {
-		if (typeof intr !== "string") {
-			const commandOption = intr.options.getBoolean("hide");
-			const standard = this._get(intr.commandName).options.defaultHide;
-
-			return commandOption ?? standard;
+		if (typeof interactionOrCommandName === "string") {
+			return this.getData(interactionOrCommandName).options.defaultHide;
 		}
 
-		return this._get(intr).options.defaultHide;
+		const intr = interactionOrCommandName;
+		const commandOption = intr.options.getBoolean("hide");
+		const standard = this.getData(intr.commandName).options.defaultHide;
+
+		return commandOption ?? standard;
 	}
 
 	/**
-	 * Short-hand for getting a command's data. Ensures it is available.
+	 * Gets the data of a command.
+	 * @param commandName Name of the command.
+	 * @returnsThe data of the command.
 	 */
-	private _get(key: string): Command {
-		const data = this._commands.get(key);
+	public getData(commandName: string): Command {
+		const data = this.commands.get(commandName);
 
 		// This should never be undefined
 		if (!data) {
-			throw new Error(`No internal command found with name: ${key}`);
+			throw new Error(
+				`No internal command found with name: ${commandName}`
+			);
 		}
 
 		return data;
 	}
 
 	/**
-	 * Reads and returns a directory for files with a given URL.
+	 * Retrieves all commands.
+	 * @returns A map of all commands keyed by their respective names.
 	 */
-	private _readDir(dir: URL): Array<string> {
-		return readdirSync(dir);
-	}
+	private async getCommands(): Promise<CommandMap> {
+		const map: CommandMap = new Map();
 
-	/**
-	 * Returns a map of all commands in given folders mapped by their names.
-	 */
-	private async _getCommands(
-		folders: Array<string>
-	): Promise<Map<string, Command>> {
-		const hash: Map<string, Command> = new Map();
-
-		for (const folder of folders) {
+		for (const folder of readdirSync(COMMAND_DIR)) {
 			const FOLDER_DIR = new URL(
 				`../commands/${folder}`,
 				import.meta.url
 			);
 
-			const files: Array<string> = this._readDir(FOLDER_DIR).filter(
+			const fileNames: Array<string> = readdirSync(FOLDER_DIR).filter(
 				(fileName) =>
 					fileName.toLowerCase().endsWith(".js") &&
 					!fileName.toLowerCase().startsWith("noread.")
 			);
 
-			for (const fileName of files) {
+			for (const fileName of fileNames) {
 				const commandModule = (await import(
 					`../commands/${folder}/${fileName}`
 				)) as CommandModule;
@@ -131,58 +129,61 @@ export default class CommandHandler {
 				if (!partialCommand.options) {
 					partialCommand.options = {
 						defaultHide: true,
-						logLevel: 1,
+						logLevel: "normal",
 						private: false,
 						wip: false
 					};
 				} else {
 					partialCommand.options.defaultHide ??= true;
-
-					partialCommand.options.logLevel ??= 1;
-
+					partialCommand.options.logLevel ??= "normal";
 					partialCommand.options.private ??= false;
-
 					partialCommand.options.wip ??= false;
 				}
 
 				const command = partialCommand as Command;
 
-				hash.set(command.data.name, command);
+				map.set(command.data.name, command);
 			}
 		}
 
-		return hash;
+		return map;
 	}
 
 	/**
-	 * Adds a "hide" option to the given option array, if none present.
+	 * Adds a hide option to an array of options, if a hide options does not already exist.
+	 * @param commandOptions An array of the command's options.
+	 * @param commandName The name of the command.
+	 * @returns The new command's options
 	 */
-	private _addHideOption(
-		options: Array<ApplicationCommandOptionData>,
-		name: string
+	private addHideOption(
+		commandOptions: Array<ApplicationCommandOptionData>,
+		commandName: string
 	): Array<ApplicationCommandOptionData> {
-		if (!options.some((option) => option.name === "hide")) {
-			const hide = this.getDefaultHide(name);
-
-			const hideOption: ApplicationCommandOptionData = {
-				name: "hide",
-				description: `Hide the response (${hide})`,
-				type: ApplicationCommandOptionType.Boolean
-			};
-
-			options.push(hideOption);
+		if (commandOptions.some((option) => option.name === "hide")) {
+			return commandOptions;
 		}
 
-		return options;
+		const defaultHide = this.isHidden(commandName);
+
+		const hideOption: ApplicationCommandOptionData = {
+			name: "hide",
+			description: `Hide the response (${defaultHide})`,
+			type: ApplicationCommandOptionType.Boolean
+		};
+
+		commandOptions.push(hideOption);
+
+		return commandOptions;
 	}
 
 	/**
-	 * Returns an array of all the cached commands' data.
-	 * Ensures a "hide" option in all chat-input commands.
+	 * Gets the data of all loaded commands, and adds a hide option to all of them.
+	 * @returns The command data of all loaded commands.
 	 */
-	private _getData(): Array<ApplicationCommandData> {
+	private getRawData(): Array<ApplicationCommandData> {
+		// Using a set to stop command duplication
 		const dataSet: Set<ApplicationCommandData> = new Set();
-		const commands = [...this._commands.values()];
+		const commands = [...this.commands.values()];
 
 		commands.forEach((cmd) => {
 			cmd.data.options ??= [];
@@ -198,25 +199,25 @@ export default class CommandHandler {
 			) as Array<ApplicationCommandSubCommandData>;
 
 			subcommandGroups.forEach((subgroup) => {
-				subgroup.options?.forEach((subcommand) => {
-					// @ts-expect-error TODO: fix this mess
-					subcommand.options = this._addHideOption(
-						subcommand.options ?? [],
+				subgroup.options?.forEach((sub) => {
+					// @ts-expect-error TODO: fix type error
+					sub.options = this.addHideOption(
+						sub.options ?? [],
 						cmd.data.name
 					);
 				});
 			});
 
 			subcommands.forEach((sub) => {
-				// @ts-expect-error TODO: fix this mess
-				sub.options = this._addHideOption(
+				// @ts-expect-error TODO: fix type error
+				sub.options = this.addHideOption(
 					sub.options ?? [],
 					cmd.data.name
 				);
 			});
 
 			if (!subcommandGroups.length && !subcommands.length) {
-				cmd.data.options = this._addHideOption(
+				cmd.data.options = this.addHideOption(
 					cmd.data.options,
 					cmd.data.name
 				);
@@ -229,14 +230,16 @@ export default class CommandHandler {
 	}
 
 	/**
-	 * Sets cached commands in Discord.
-	 * Returns true if it succeeded, and false if it failed.
+	 * Publishes or removes the loaded commands to/from Discord.
+	 * @param options The options needed to publish/clear commands.
+	 * @returns `true` if successful, `false` if unsuccessful.
 	 */
-	private async _put(
-		clientId: string,
-		guildId?: string,
-		clear = false
-	): Promise<boolean> {
+	private async publish(options: {
+		clientId: string;
+		guildId?: string;
+		clear: boolean;
+	}): Promise<boolean> {
+		const { clientId, guildId, clear } = options;
 		const errorLogger = new ErrorLogger();
 		const infoLogger = new InfoLogger();
 
@@ -258,7 +261,7 @@ export default class CommandHandler {
 			return false;
 		}
 
-		const data = this._getData();
+		const data = this.getRawData();
 		const rest = new REST({ version: "9" }).setToken(process.env.BOT_TOKEN);
 
 		try {

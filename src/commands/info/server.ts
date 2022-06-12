@@ -1,5 +1,6 @@
 import { type APIEmbed } from "discord-api-types/v9";
 import {
+	ChannelType,
 	type ChatInputApplicationCommandData,
 	type CommandInteraction,
 	type Guild
@@ -55,12 +56,14 @@ function execute(intr: CommandInteraction<"cached">) {
 		return str;
 	};
 
-	const voiceChannels = guild.channels.cache.filter((ch) =>
-		ch.isVoice()
+	const voiceChannels = guild.channels.cache.filter(
+		(ch) =>
+			ch.type === ChannelType.GuildVoice ||
+			ch.type === ChannelType.GuildStageVoice
 	).size;
 
 	const textChannels = guild.channels.cache.filter(
-		(ch) => ch.isText() && !ch.isThread()
+		(ch) => ch.isTextBased() && !ch.isThread()
 	).size;
 
 	const channels = guild.channels.cache.size;

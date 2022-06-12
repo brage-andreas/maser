@@ -3,7 +3,8 @@ import "dotenv/config";
 import { EMOJIS } from "./constants/emojis.js";
 import { COLORS, INTENTS, PARTIALS } from "./constants/index.js";
 import { InfoLogger } from "./logger/index.js";
-import { CommandHandler, EventManager } from "./modules/index.js";
+import CommandHandler from "./modules/CommandHandler.js";
+import EventManager from "./modules/EventManager.js";
 
 // clears console -- console.clear() does not fully clear it
 process.stdout.write("\x1Bc");

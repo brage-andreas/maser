@@ -42,11 +42,15 @@ export default class CommandLogger extends BaseLogger {
 			throw new Error("Name of command must be set to log command");
 		}
 
+		if (this.interaction?.commandOptions.logLevel === "none") {
+			return;
+		}
+
 		const command = this.interaction?.toString();
-		const logLevel = this.interaction?.commandOptions.logLevel ?? 1;
+		const logLevel = this.interaction?.commandOptions.logLevel ?? "normal";
 
 		const toLog =
-			command && logLevel !== 2
+			command && logLevel !== "full"
 				? [gray(`>>> ${command}`), ...messages]
 				: messages;
 
@@ -117,7 +121,8 @@ export default class CommandLogger extends BaseLogger {
 
 		const logLevel = this.interaction.commandOptions.logLevel;
 
-		if (logLevel === 0) {
+		// not needed but nice to have here as well
+		if (logLevel === "none") {
 			return;
 		}
 
@@ -155,7 +160,7 @@ export default class CommandLogger extends BaseLogger {
 			const commandStr = `\`${this.interaction.toString()}\`\n`;
 			let embeds: Array<APIEmbed> = [];
 
-			if (logLevel === 2) {
+			if (logLevel === "full") {
 				embeds = messages.map((msg, i) => {
 					const prefix = i === 0 ? commandStr : "";
 					const str = Util.mergeForCodeblock(msg, { prefix });

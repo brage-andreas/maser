@@ -73,9 +73,7 @@ export default class ButtonManager {
 		filter?: CollectorFilter<[ButtonInteraction<"cached">]>;
 		time?: string;
 	}) {
-		const {
- filter, time 
-} = options ?? {};
+		const { filter, time } = options ?? {};
 
 		if (!this.message) {
 			throw new Error("A message must be set to the button manager");
@@ -303,6 +301,6 @@ export class ConfirmationButtons extends ButtonManager {
 					components
 			  });
 
-		return msg;
+		return (await msg) as Message<true>;
 	}
 }

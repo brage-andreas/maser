@@ -61,7 +61,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 		if (clear) {
 			intr.client.commandHandler.clear(clientId, guildId);
 		} else {
-			intr.client.commandHandler.put(clientId, guildId);
+			intr.client.commandHandler.set(clientId, guildId);
 		}
 
 		intr.editReply(
@@ -79,7 +79,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 		if (clear) {
 			intr.client.commandHandler.clear(clientId);
 		} else {
-			intr.client.commandHandler.put(clientId);
+			intr.client.commandHandler.set(clientId);
 		}
 
 		intr.editReply(`${clear ? "Cleared" : "Put"} global commands`);

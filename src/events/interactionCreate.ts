@@ -1,15 +1,17 @@
 import { type Client, type Interaction } from "discord.js";
 import { CommandLogger } from "../logger/index.js";
-import { CommandManager } from "../modules/index.js";
+import CommandHelper from "../modules/CommandHelper.js";
 
 export async function execute(client: Client<true>, intr: Interaction) {
-	if (!intr.guildId) {
+	const emojis = client.maserEmojis;
+
+	if (!intr.inGuild()) {
 		if (!intr.isCommand()) {
 			return;
 		}
 
 		intr.reply({
-			content: `${intr.client.maserEmojis.lock} My commands are only accessible inside servers!`,
+			content: `${emojis.lock} My commands are only accessible inside servers!`,
 			ephemeral: true
 		});
 
@@ -27,21 +29,18 @@ export async function execute(client: Client<true>, intr: Interaction) {
 		await intr.member.fetch();
 	}
 
-	const emojis = client.maserEmojis;
 	const isNotOwner = intr.user.id !== client.application.owner?.id;
 
-	intr.commandOptions = new CommandManager(intr);
-
+	intr.commandOptions = new CommandHelper(intr);
 	intr.logger = new CommandLogger(intr);
 
-	const commandData = client.commandHandler.getData(intr.commandName);
-	const commandOptions = intr.commandOptions.setCommand(intr, commandData);
+	const command = intr.commandOptions.setCommand(intr);
 
 	if (intr.isAutocomplete()) {
-		return commandOptions.execute();
+		return command.execute();
 	}
 
-	if (commandOptions.isWIP && isNotOwner) {
+	if (command.isWIP && isNotOwner) {
 		await intr.reply({
 			content: `${emojis.wip} This command is work-in-progress`,
 			ephemeral: true
@@ -50,7 +49,7 @@ export async function execute(client: Client<true>, intr: Interaction) {
 		return;
 	}
 
-	if (commandOptions.isPrivate && isNotOwner) {
+	if (command.isPrivate && isNotOwner) {
 		await intr.reply({
 			content: `${emojis.lock} This command is private`,
 			ephemeral: true
@@ -59,7 +58,7 @@ export async function execute(client: Client<true>, intr: Interaction) {
 		return;
 	}
 
-	await intr.deferReply({ ephemeral: commandOptions.hide });
+	await intr.deferReply({ ephemeral: command.isHidden });
 
-	commandOptions.execute();
+	command.execute();
 }
