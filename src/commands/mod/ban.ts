@@ -75,9 +75,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 			PermissionsBitField.Flags.BanMembers
 		)
 	) {
-		intr.editReply(
-			e`dwwadwad{cross} I don't have permissions to ban users`
-		);
+		intr.editReply(e`{cross} I don't have permissions to ban users`);
 
 		return;
 	}
@@ -145,13 +143,13 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 					const case_ = await cases.createCase(
 						{
 							expirationTimestamp: null,
-							referencedCaseId: null,
 							logMessageURL: null,
-							targetTag: target.tag,
-							targetId: target.id,
+							modId: intr.user.id,
 							modTag: intr.user.tag,
 							reason,
-							modId: intr.user.id,
+							referencedCaseId: null,
+							targetId: target.id,
+							targetTag: target.tag,
 							type: CaseTypes.Ban
 						},
 						true
