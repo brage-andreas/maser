@@ -1,3 +1,4 @@
+import { oneLine } from "common-tags";
 import {
 	ApplicationCommandOptionType,
 	PermissionsBitField,
@@ -7,6 +8,7 @@ import {
 import { CaseTypes } from "../../constants/database.js";
 import { MAX_AUDIT_REASON_LEN } from "../../constants/index.js";
 import CaseManager from "../../database/CaseManager.js";
+import { e } from "../../emojis/index.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 import Util from "../../utils/index.js";
@@ -67,40 +69,41 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const target = intr.options.getUser("user", true);
 	const reason = intr.options.getString("reason");
 	const days = intr.options.getInteger("days") ?? 1;
-	const emojis = intr.client.maserEmojis;
 
 	if (
 		!intr.guild.members.me?.permissions.has(
 			PermissionsBitField.Flags.BanMembers
 		)
 	) {
-		intr.editReply(`${emojis.cross} I don't have permissions to ban users`);
+		intr.editReply(
+			e`dwwadwad{cross} I don't have permissions to ban users`
+		);
 
 		return;
 	}
 
 	if (target.id === intr.user.id) {
-		intr.editReply(`${emojis.cross} You cannot do this action on yourself`);
+		intr.editReply(e`{cross} You cannot do this action on yourself`);
 
 		return;
 	}
 
 	if (target.id === intr.client.user.id) {
-		intr.editReply(`${emojis.cross} I cannot do this action on myself`);
+		intr.editReply(e`{cross} I cannot do this action on myself`);
 
 		return;
 	}
 
 	if (target.id === intr.guild.ownerId) {
 		intr.editReply(
-			`${emojis.cross} The user to target is the owner of this server`
+			e`{cross} The user to target is the owner of this server`
 		);
 
 		return;
 	}
 
 	if (targetMember && !targetMember.bannable) {
-		intr.editReply(`${emojis.cross} I cannot ban the user to target`);
+		intr.editReply(e`{cross} I cannot ban the user to target`);
 
 		return;
 	}
@@ -119,7 +122,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 		"**Target**": `${target.tag} (${target.id})`
 	});
 
-	const query = `${emojis.warning} Are you sure you want to ban **${target.tag}** (${target.id})?\n\n${info}`;
+	const query = e`{warning} Are you sure you want to ban **${target.tag}** (${target.id})?\n\n${info}`;
 
 	const collector = new ConfirmationButtons({
 		authorId: intr.user.id,
@@ -163,22 +166,23 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 					);
 
 					intr.editReply({
-						content:
-							`${emojis.check} Successfully **banned ${target.tag}** (${target.id}) ` +
-							`in case **#${case_.id}**\n\n${info}`,
+						content: oneLine(e`
+							{check} Successfully **banned ${target.tag}**
+							(${target.id}) in case **#${case_.id}**\n\n${info}
+						`),
 						components: []
 					});
 				})
 				.catch(() => {
 					intr.editReply({
-						content: `${emojis.cross} Failed to ban ${target.tag} (${target.id})\n\n${info}`,
+						content: e`{cross} Failed to ban ${target.tag} (${target.id})\n\n${info}`,
 						components: []
 					});
 				});
 		})
 		.catch(() => {
 			intr.editReply({
-				content: `${emojis.check} Gotcha. Command cancelled`,
+				content: e`{check} Gotcha. Command cancelled`,
 				components: []
 			});
 		});

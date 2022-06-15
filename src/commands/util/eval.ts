@@ -12,7 +12,8 @@ import Discord, {
 } from "discord.js";
 import ms from "ms";
 import { performance } from "perf_hooks";
-import { defaultEmbed, REGEXP } from "../../constants/index.js";
+import { COLORS, defaultEmbed, REGEXP } from "../../constants/index.js";
+import { e } from "../../emojis/index.js";
 import ButtonManager from "../../modules/ButtonManager.js";
 import {
 	type Command,
@@ -86,6 +87,8 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const evaluate = async () => {
 		const client = intr.client;
 
+		// For use in eval
+		client;
 		Discord; // "ReferenceError: Discord is not defined" if not here
 
 		try {
@@ -137,13 +140,13 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 			const errorInputEmbed: APIEmbed = {
 				...defaultEmbed(intr),
-				color: client.colors.red,
+				color: COLORS.red,
 				description: parsedInput ?? "No input"
 			};
 
 			const errorOutputEmbed: APIEmbed = {
 				...defaultEmbed(intr),
-				color: client.colors.red,
+				color: COLORS.red,
 				description: parsedError ?? "No error",
 				footer: { text: "Evaluation failed" }
 			};
@@ -191,7 +194,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 		collector.on("collect", async (interaction) => {
 			if (interaction.user.id !== intr.user.id) {
 				interaction.reply({
-					content: `${intr.client.maserEmojis.cross} This button is not for you`,
+					content: e`{cross} This button is not for you`,
 					ephemeral: true
 				});
 

@@ -7,10 +7,10 @@ export interface ConfigData {
 
 export interface CaseData {
 	caseId: number;
-	guildId: string;
 	createdTimestamp: Date;
 	edited: boolean;
 	expirationTimestamp: Date | null;
+	guildId: string;
 	logMessageURL: string | null;
 	modId: string;
 	modTag: string;

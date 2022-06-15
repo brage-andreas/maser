@@ -9,6 +9,7 @@ import ms from "ms";
 import { CaseTypes } from "../../constants/database.js";
 import { DURATIONS, MAX_AUDIT_REASON_LEN } from "../../constants/index.js";
 import CaseManager from "../../database/CaseManager.js";
+import { e } from "../../emojis/index.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 import Util from "../../utils/index.js";
@@ -73,38 +74,37 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const reason = intr.options.getString("reason");
 	const duration = intr.options.getInteger("duration") ?? DURATIONS.THREE_HRS;
 	const expiration = Date.now() + duration;
-	const { warning, cross, check } = intr.client.maserEmojis;
 
 	if (
 		!intr.guild.members.me?.permissions.has(
 			PermissionsBitField.Flags.ModerateMembers
 		)
 	) {
-		intr.editReply(`${cross} I do not have permissions to timeout users`);
+		intr.editReply(e`{cross} I do not have permissions to timeout users`);
 
 		return;
 	}
 
 	if (!target) {
-		intr.editReply(`${cross} The user was not found in this server`);
+		intr.editReply(e`{cross} The user was not found in this server`);
 
 		return;
 	}
 
 	if (target.id === intr.user.id) {
-		intr.editReply(`${cross} You cannot do this action on yourself`);
+		intr.editReply(e`{cross} You cannot do this action on yourself`);
 
 		return;
 	}
 
 	if (target.id === intr.client.user.id) {
-		intr.editReply(`${cross} I cannot do this action on myself`);
+		intr.editReply(e`{cross} I cannot do this action on myself`);
 
 		return;
 	}
 
 	if (target.id === intr.guild.ownerId) {
-		intr.editReply(`${cross} The user is the owner of this server`);
+		intr.editReply(e`{cross} The user is the owner of this server`);
 
 		return;
 	}
@@ -119,11 +119,11 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 		"**Target**": `${target.user.tag} (${target.id})`
 	});
 
-	const overrideStr = oneLine`
-		${warning} This will override their
+	const overrideStr = oneLine(e`
+		{warning} This will override their
 		current timeout, set to expire
 		${Util.fullDate(target.communicationDisabledUntilTimestamp!)}.
-	`;
+	`);
 
 	const query = stripIndents`
 		Are you sure you want to timeout **${target.user.tag}** (${target.id})?
@@ -176,29 +176,28 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 					);
 
 					intr.editReply({
-						content:
-							`${check} Successfully **timed out ${target.user.tag}** (${target.id}) ` +
-							`in case **#${case_.id}**\n\n${info}`,
+						content: oneLine(e`
+							{check} Successfully **timed out ${target.user.tag}**
+							(${target.id}) in case **#${case_.id}**\n\n${info}
+						`),
 						components: []
 					});
 
-					intr.logger.log(
-						`Timed out ${target.user.tag} (${target.id}) ` +
-							`for ${ms(duration, {
-								long: true
-							})} with reason: ${reason}`
-					);
+					intr.logger.log(oneLine`
+						Timed out ${target.user.tag} (${target.id}) for
+						${ms(duration, { long: true })} with reason: ${reason}
+					`);
 				})
 				.catch(() => {
 					intr.editReply({
-						content: `${cross} I failed to time out ${target.user.tag} (${target.id})\n\n${info}`,
+						content: e`{cross} I failed to time out ${target.user.tag} (${target.id})\n\n${info}`,
 						components: []
 					});
 				});
 		})
 		.catch(() => {
 			intr.editReply({
-				content: `${check} Gotcha. Command cancelled`,
+				content: e`{check} Gotcha. Command cancelled`,
 				components: []
 			});
 		});

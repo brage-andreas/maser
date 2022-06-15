@@ -16,5 +16,5 @@ export async function execute(
 		await member.fetch();
 	}
 
-	client.events.logger.memberLog(member, true);
+	client.eventHandler.logger.memberLog(member, true);
 }

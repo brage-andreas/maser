@@ -1,7 +1,6 @@
 import { Client } from "discord.js";
 import "dotenv/config";
-import { EMOJIS } from "./constants/emojis.js";
-import { COLORS, INTENTS, PARTIALS } from "./constants/index.js";
+import { INTENTS, PARTIALS } from "./constants/index.js";
 import { InfoLogger } from "./loggers/index.js";
 import CommandHandler from "./modules/CommandHandler.js";
 import EventManager from "./modules/EventManager.js";
@@ -14,17 +13,15 @@ const client = new Client<true>({
 		repliedUser: false,
 		parse: []
 	},
-	partials: PARTIALS,
-	intents: INTENTS
+	intents: INTENTS,
+	partials: PARTIALS
 });
 
 client.commandHandler = new CommandHandler();
-client.maserEmojis = EMOJIS;
-client.events = new EventManager(client);
+client.eventHandler = new EventManager(client);
 client.logger = new InfoLogger();
-client.colors = COLORS;
 
-await client.commandHandler.init();
-await client.events.init();
+await client.commandHandler.readyCommands();
+await client.eventHandler.readyEvents();
 
 client.login(process.env.BOT_TOKEN);

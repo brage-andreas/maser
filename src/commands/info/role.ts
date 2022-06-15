@@ -4,7 +4,7 @@ import {
 	type ChatInputApplicationCommandData,
 	type ChatInputCommandInteraction
 } from "discord.js";
-import { defaultEmbed } from "../../constants/index.js";
+import { COLORS, defaultEmbed } from "../../constants/index.js";
 import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 
@@ -29,7 +29,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const role = intr.options.getRole("role", true);
 
 	const getColor = (hex: number | undefined) => {
-		const { green, black, white } = intr.client.colors;
+		const { green, black, white } = COLORS;
 
 		if (!hex) {
 			return green;

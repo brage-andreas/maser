@@ -1,3 +1,4 @@
+import { oneLine } from "common-tags";
 import {
 	PermissionsBitField,
 	type ChatInputApplicationCommandData,
@@ -6,6 +7,7 @@ import {
 import { CaseTypes } from "../../constants/database.js";
 import { MAX_AUDIT_REASON_LEN } from "../../constants/index.js";
 import CaseManager from "../../database/CaseManager.js";
+import { e } from "../../emojis/index.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 import Util from "../../utils/index.js";
@@ -22,11 +24,10 @@ const data: ChatInputApplicationCommandData = {
 function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const target = intr.options.getMember("user");
 	const reason = intr.options.getString("reason");
-	const emojis = intr.client.maserEmojis;
 
 	if (!target) {
 		intr.editReply(
-			`${emojis.cross} The user to target was not found in this server`
+			e`{cross} The user to target was not found in this server`
 		);
 
 		return;
@@ -37,35 +38,33 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 			PermissionsBitField.Flags.KickMembers
 		)
 	) {
-		intr.editReply(
-			`${emojis.cross} I don't have permissions to kick users`
-		);
+		intr.editReply(e`{cross} I don't have permissions to kick users`);
 
 		return;
 	}
 
 	if (target.id === intr.user.id) {
-		intr.editReply(`${emojis.cross} You cannot do this action on yourself`);
+		intr.editReply(e`{cross} You cannot do this action on yourself`);
 
 		return;
 	}
 
 	if (target.id === intr.client.user.id) {
-		intr.editReply(`${emojis.cross} I cannot do this action on myself`);
+		intr.editReply(e`{cross} I cannot do this action on myself`);
 
 		return;
 	}
 
 	if (target.id === intr.guild.ownerId) {
 		intr.editReply(
-			`${emojis.cross} The user to target is the owner of this server`
+			e`{cross} The user to target is the owner of this server`
 		);
 
 		return;
 	}
 
 	if (!target.kickable) {
-		intr.editReply(`${emojis.cross} I cannot kick the user to target`);
+		intr.editReply(e`{cross} I cannot kick the user to target`);
 
 		return;
 	}
@@ -83,7 +82,10 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 		"**Target**": `${target.user.tag} (${target.id})`
 	});
 
-	const query = `${emojis.warning} Are you sure you want to kick **${target.user.tag}** (${target.id})?\n\n${info}`;
+	const query = oneLine(e`
+		{warning} Are you sure you want to kick
+		**${target.user.tag}** (${target.id})?\n\n${info}
+	`);
 
 	const collector = new ConfirmationButtons({
 		authorId: intr.user.id,
@@ -124,22 +126,23 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 					);
 
 					intr.editReply({
-						content:
-							`${emojis.check} Successfully **kicked ${target.user.tag}** (${target.id})` +
-							`in case **#${case_.id}**\n\n${info}`,
+						content: oneLine(e`
+							{check} Successfully **kicked ${target.user.tag}**
+							(${target.id}) in case **#${case_.id}**\n\n${info}
+						`),
 						components: []
 					});
 				})
 				.catch(() => {
 					intr.editReply({
-						content: `${emojis.cross} Failed to kick ${target.user.tag} (${target.id})\n\n${info}`,
+						content: e`{cross} Failed to kick ${target.user.tag} (${target.id})\n\n${info}`,
 						components: []
 					});
 				});
 		})
 		.catch(() => {
 			intr.editReply({
-				content: `${emojis.check} Gotcha. Command cancelled`,
+				content: e`{check} Gotcha. Command cancelled`,
 				components: []
 			});
 		});

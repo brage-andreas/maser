@@ -12,6 +12,7 @@ import {
 	type Message
 } from "discord.js";
 import ms from "ms";
+import { e } from "../emojis/index.js";
 
 // Not everything here is tested
 
@@ -242,7 +243,7 @@ export class ConfirmationButtons extends ButtonManager {
 				collector.on("collect", (intr) => {
 					if (this.authorOnly && intr.user.id !== this.authorId) {
 						intr.reply({
-							content: `${intr.client.maserEmojis.cross} This button is not for you`,
+							content: e`{cross} This button is not for you`,
 							ephemeral: true
 						});
 

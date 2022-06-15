@@ -1,17 +1,16 @@
 import { type Client, type Interaction } from "discord.js";
+import { e } from "../emojis/index.js";
 import { CommandLogger } from "../loggers/index.js";
 import CommandHelper from "../modules/CommandHelper.js";
 
 export async function execute(client: Client<true>, intr: Interaction) {
-	const emojis = client.maserEmojis;
-
 	if (!intr.inGuild()) {
 		if (!intr.isCommand()) {
 			return;
 		}
 
 		intr.reply({
-			content: `${emojis.lock} My commands are only accessible inside servers!`,
+			content: e`{lock} My commands are only accessible inside servers!`,
 			ephemeral: true
 		});
 
@@ -42,7 +41,7 @@ export async function execute(client: Client<true>, intr: Interaction) {
 
 	if (command.isWIP && isNotOwner) {
 		await intr.reply({
-			content: `${emojis.wip} This command is work-in-progress`,
+			content: e`{wip} This command is work-in-progress`,
 			ephemeral: true
 		});
 
@@ -51,7 +50,7 @@ export async function execute(client: Client<true>, intr: Interaction) {
 
 	if (command.isPrivate && isNotOwner) {
 		await intr.reply({
-			content: `${emojis.lock} This command is private`,
+			content: e`{lock} This command is private`,
 			ephemeral: true
 		});
 

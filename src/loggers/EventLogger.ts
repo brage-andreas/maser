@@ -4,7 +4,7 @@ import {
 	type GuildMember,
 	type PartialGuildMember
 } from "discord.js";
-import { LoggerTypes } from "../constants/index.js";
+import { COLORS, LoggerTypes } from "../constants/index.js";
 import ConfigManager from "../database/ConfigManager.js";
 import Util from "../utils/index.js";
 import BaseLogger from "./BaseLogger.js";
@@ -56,7 +56,7 @@ export default class EventLogger extends BaseLogger {
 			member.user ??
 			(await this.client.users.fetch(member.id).catch(() => null));
 
-		const color = this.client.colors[joined ? "green" : "red"];
+		const color = joined ? COLORS.green : COLORS.red;
 		const footer = joined ? "User joined" : "User left";
 
 		const joinedAtStr = member.joinedAt

@@ -13,8 +13,8 @@ export interface CommandModule {
 }
 
 export interface Command {
-	options: CommandOptions;
 	data: ChatInputApplicationCommandData;
+	options: CommandOptions;
 	execute(
 		interaction:
 			| AutocompleteInteraction<"cached">

@@ -4,7 +4,11 @@ import {
 	type ChatInputApplicationCommandData,
 	type CommandInteraction
 } from "discord.js";
-import { defaultEmbed, USER_FLAGS_STRINGS } from "../../constants/index.js";
+import {
+	COLORS,
+	defaultEmbed,
+	USER_FLAGS_STRINGS
+} from "../../constants/index.js";
 import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 
@@ -34,7 +38,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 	await user.fetch(true);
 
 	const getColor = (hex: number | undefined) =>
-		hex === undefined ? intr.client.colors.green : hex;
+		hex === undefined ? COLORS.green : hex;
 
 	const premium = Boolean(member?.premiumSinceTimestamp);
 	const owner = Boolean(member) && member!.id === member?.guild.ownerId;

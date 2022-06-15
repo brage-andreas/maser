@@ -1,3 +1,4 @@
+import { oneLine } from "common-tags";
 import {
 	PermissionsBitField,
 	type ChatInputApplicationCommandData,
@@ -6,6 +7,7 @@ import {
 import { CaseTypes } from "../../constants/database.js";
 import { MAX_AUDIT_REASON_LEN } from "../../constants/index.js";
 import CaseManager from "../../database/CaseManager.js";
+import { e } from "../../emojis/index.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 import Util from "../../utils/index.js";
@@ -26,39 +28,34 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const target = intr.options.getMember("user");
 	const reason = intr.options.getString("reason");
 	const expiration = target?.communicationDisabledUntilTimestamp;
-	const emojis = intr.client.maserEmojis;
 
 	if (
 		!intr.guild.members.me?.permissions.has(
 			PermissionsBitField.Flags.ModerateMembers
 		)
 	) {
-		intr.editReply(
-			`${emojis.cross} I don't have permissions to untimeout users`
-		);
+		intr.editReply(e`{cross} I don't have permissions to untimeout users`);
 
 		return;
 	}
 
 	if (!target) {
 		intr.editReply(
-			`${emojis.cross} The user to target was not found in this server`
+			e`{cross} The user to target was not found in this server`
 		);
 
 		return;
 	}
 
 	if (!expiration) {
-		intr.editReply(
-			`${emojis.cross} The user to target is not in a timeout`
-		);
+		intr.editReply(e`{cross} The user to target is not in a timeout`);
 
 		return;
 	}
 
 	if (target.id === intr.guild.ownerId) {
 		intr.editReply(
-			`${emojis.cross} The user to target is the owner of this server`
+			e`{cross} The user to target is the owner of this server`
 		);
 
 		return;
@@ -70,7 +67,10 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 		"**Target**": `${target.user.tag} (${target} ${target.id})`
 	});
 
-	const query = `${emojis.warning} Are you sure you want to untimeout **${target.user.tag}** (${target.id})?\n\n${info}`;
+	const query = oneLine(e`
+		{warning} Are you sure you want to untimeout
+		**${target.user.tag}** (${target.id})?\n\n${info}
+	`);
 
 	const collector = new ConfirmationButtons({ authorId: intr.user.id }) //
 		.setInteraction(intr)
@@ -108,28 +108,28 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 					);
 
 					intr.editReply({
-						content:
-							`${emojis.check} Successfully **removed timeout** on **${target.user.tag}** (${target.id}) ` +
-							`in case **#${case_.id}**\n\n${info}`,
+						content: oneLine(
+							e`{check} Successfully **removed timeout** on
+							**${target.user.tag}** (${target.id}) in
+							case **#${case_.id}**\n\n${info}`
+						),
 						components: []
 					});
 
 					intr.logger.log(
-						`Removed time-out of ${target.user.tag} (${target.id}) with reason: ${reason}`
+						`Removed timeout of ${target.user.tag} (${target.id}) with reason: ${reason}`
 					);
 				})
 				.catch(() => {
 					intr.editReply({
-						content:
-							`${emojis.cross} I failed to remove timeout ` +
-							`of ${target.user.tag} (${target.id})\n\n${info}`,
+						content: e`{cross} I failed to remove timeout of ${target.user.tag} (${target.id})\n\n${info}`,
 						components: []
 					});
 				});
 		})
 		.catch(() => {
 			intr.editReply({
-				content: `${emojis.check} Gotcha. Command cancelled`,
+				content: e`{check} Gotcha. Command cancelled`,
 				components: []
 			});
 		});

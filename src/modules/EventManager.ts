@@ -4,65 +4,57 @@ import { EventLogger } from "../loggers/index.js";
 import type { Event } from "../typings/index.js";
 
 const EVENT_DIR = new URL("../events", import.meta.url);
+type EventMap = Map<string, Event>;
 
 /**
  * Manages events for the client.
  */
 export default class EventManager {
-	public logger: EventLogger;
 	public client: Client<true>;
-	private _events: Map<string, Event>;
+	public logger: EventLogger;
+	private events: EventMap;
 
 	/**
 	 * Creates an event manager.
+	 * @param client The client to use in the events.
 	 */
 	public constructor(client: Client<true>) {
-		this._events = new Map<string, Event>();
-
+		this.events = new Map();
 		this.logger = new EventLogger(client);
 
 		this.client = client;
 	}
 
 	/**
-	 * Initialises the class by loading and setting events internally.
+	 * Readies the events by loading them internally.
 	 */
-	public async init(): Promise<void> {
-		const eventNames = this._readDir(EVENT_DIR);
+	public async readyEvents(): Promise<void> {
+		this.events = await this.getEvents();
 
-		this._events = await this._getEvents(eventNames);
-
-		this._setEvents();
-	}
-
-	/**
-	 * Reads and returns a directory for files with a given URL.
-	 */
-	private _readDir(dir: URL): Array<string> {
-		return readdirSync(dir);
+		this.setEvents();
 	}
 
 	/**
 	 * Returns a map of all events from their provided names.
 	 */
-	private async _getEvents(files: Array<string>) {
-		const hash: Map<string, Event> = new Map();
+	private async getEvents() {
+		const map: EventMap = new Map();
 
-		for (const fileName of files) {
+		for (const fileName of readdirSync(EVENT_DIR)) {
 			const event = (await import(`../events/${fileName}`)) as Event;
 			const name = fileName.split(".")[0];
 
-			hash.set(name, event);
+			map.set(name, event);
 		}
 
-		return hash;
+		return map;
 	}
 
 	/**
 	 * Returns a map of all events from their provided names.
 	 */
-	private _setEvents() {
-		this._events.forEach((event, name) => {
+	private setEvents() {
+		this.events.forEach((event, name) => {
 			this.client.on(name, (...args: Array<unknown>) => {
 				event.execute(this.client, ...args);
 			});

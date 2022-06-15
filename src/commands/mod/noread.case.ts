@@ -156,7 +156,6 @@ async function execute(
 		| ChatInputCommandInteraction<"cached">
 ) {
 	const sub = intr.options.getSubcommand();
-	const emojis = intr.client.maserEmojis;
 	const cases = new CaseManager(intr.client, intr.guildId);
 
 	await cases.initialise();
@@ -260,7 +259,7 @@ async function execute(
 		const caseId = getIdOptionValue("case");
 
 		if (!caseId) {
-			intr.editReply(`${emojis.cross} Provided ID is invalid: ${caseId}`);
+			intr.editReply(e`{cross} Provided ID is invalid: ${caseId}`);
 
 			return;
 		}
@@ -268,7 +267,7 @@ async function execute(
 		const case_ = await cases.getCase(caseId);
 
 		if (!case_) {
-			intr.editReply(`${emojis.cross} case #${caseId} was not found`);
+			intr.editReply(e`{cross} case #${caseId} was not found`);
 
 			return;
 		}
@@ -286,7 +285,7 @@ async function execute(
 		const time = intr.options.getString("time");
 
 		if (!caseId) {
-			intr.editReply(`${emojis.cross} Provided ID is invalid: ${caseId}`);
+			intr.editReply(e`{cross} Provided ID is invalid: ${caseId}`);
 
 			return;
 		}
@@ -294,7 +293,7 @@ async function execute(
 		const oldcase = await cases.getCase(caseId);
 
 		if (!oldcase) {
-			intr.editReply(`${emojis.cross} case #${caseId} was not found`);
+			intr.editReply(e`{cross} case #${caseId} was not found`);
 
 			return;
 		}
@@ -340,7 +339,7 @@ async function execute(
 
 		if (!newcase) {
 			intr.editReply(
-				`${emojis.cross} Something went wrong with editing case #${caseId}`
+				e`{cross} Something went wrong with editing case #${caseId}`
 			);
 
 			return;
@@ -351,7 +350,7 @@ async function execute(
 		await newcase.updateLogMessage();
 
 		intr.editReply({
-			content: `${emojis.check} Successfully edited case #${caseId}`,
+			content: e`{check} Successfully edited case #${caseId}`,
 			embeds: [newcase.toEmbed()]
 		});
 
@@ -360,7 +359,7 @@ async function execute(
 		const caseId = getIdOptionValue("case");
 
 		if (!caseId) {
-			intr.editReply(`${emojis.cross} Provided ID is invalid: ${caseId}`);
+			intr.editReply(e`{cross} Provided ID is invalid: ${caseId}`);
 
 			return;
 		}
@@ -368,7 +367,7 @@ async function execute(
 		const case_ = await cases.getCase(caseId);
 
 		if (!case_) {
-			intr.editReply(`${emojis.cross} case #${caseId} was not found`);
+			intr.editReply(e`{cross} case #${caseId} was not found`);
 
 			return;
 		}
@@ -380,7 +379,7 @@ async function execute(
 		await case_.updateLogMessage();
 
 		intr.editReply({
-			content: `${emojis.check} Successfully deleted case #${caseId}`,
+			content: e`{check} Successfully deleted case #${caseId}`,
 			embeds: [case_.toEmbed()]
 		});
 

@@ -12,5 +12,5 @@ export function execute(
 		return;
 	}
 
-	client.events.logger.memberLog(member, false);
+	client.eventHandler.logger.memberLog(member, false);
 }

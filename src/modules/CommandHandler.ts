@@ -13,8 +13,8 @@ import { REGEXP } from "../constants/index.js";
 import { ErrorLogger, InfoLogger } from "../loggers/index.js";
 import { type Command, type CommandModule } from "../typings/index.js";
 
-type CommandMap = Map<string, Command>;
 const COMMAND_DIR = new URL("../commands", import.meta.url);
+type CommandMap = Map<string, Command>;
 
 /**
  * Handles commands for the client.
@@ -23,9 +23,9 @@ export default class CommandHandler {
 	private commands: CommandMap = new Map();
 
 	/**
-	 * Initialises the handler by loading commands.
+	 * Readies the handler by loading commands.
 	 */
-	public async init(): Promise<void> {
+	public async readyCommands(): Promise<void> {
 		this.commands = await this.getCommands();
 	}
 

@@ -1,3 +1,4 @@
+import { oneLine } from "common-tags";
 import {
 	PermissionsBitField,
 	type ChatInputApplicationCommandData,
@@ -6,6 +7,7 @@ import {
 import { CaseTypes } from "../../constants/database.js";
 import { MAX_AUDIT_REASON_LEN } from "../../constants/index.js";
 import CaseManager from "../../database/CaseManager.js";
+import { e } from "../../emojis/index.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 import Util from "../../utils/index.js";
@@ -22,16 +24,13 @@ const data: ChatInputApplicationCommandData = {
 async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const target = intr.options.getUser("user", true);
 	const reason = intr.options.getString("reason");
-	const emojis = intr.client.maserEmojis;
 
 	if (
 		!intr.guild.members.me?.permissions.has(
 			PermissionsBitField.Flags.BanMembers
 		)
 	) {
-		intr.editReply(
-			`${emojis.cross} I don't have permissions to unban users`
-		);
+		intr.editReply(e`{cross} I don't have permissions to unban users`);
 
 		return;
 	}
@@ -39,7 +38,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 	const ban = await intr.guild.bans.fetch(target.id).catch(() => null);
 
 	if (!ban) {
-		intr.editReply(`${emojis.cross} The user to target is not banned`);
+		intr.editReply(e`{cross} The user to target is not banned`);
 
 		return;
 	}
@@ -57,7 +56,10 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 		"**Target**": `${target.tag} (${target.id})`
 	});
 
-	const query = `${emojis.warning} Are you sure you want to unban **${target.tag}** (${target.id})?\n\n${info}`;
+	const query = oneLine(e`
+		{warning} Are you sure you want to unban
+		**${target.tag}** (${target.id})?\n\n${info}
+	`);
 
 	const collector = new ConfirmationButtons({ authorId: intr.user.id }) //
 		.setInteraction(intr)
@@ -95,22 +97,23 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 					);
 
 					intr.editReply({
-						content:
-							`${emojis.check} Successfully **unbanned ${target.tag}** (${target.id})` +
-							`in case **#${case_.id}**\n\n${info}`,
+						content: oneLine(e`
+							{check} Successfully **unbanned ${target.tag}**
+							(${target.id}) in case **#${case_.id}**\n\n${info}
+						`),
 						components: []
 					});
 				})
 				.catch(() => {
 					intr.editReply({
-						content: `${emojis.cross} Failed to unban ${target.tag} (${target.id})\n\n${info}`,
+						content: e`{cross} Failed to unban ${target.tag} (${target.id})\n\n${info}`,
 						components: []
 					});
 				});
 		})
 		.catch(() => {
 			intr.editReply({
-				content: `${emojis.check} Gotcha. Command cancelled`,
+				content: e`{check} Gotcha. Command cancelled`,
 				components: []
 			});
 		});
