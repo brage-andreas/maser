@@ -4,8 +4,13 @@ import {
 	type CommandInteraction
 } from "discord.js";
 import CaseManager from "../../database/CaseManager.js";
-import { type Command } from "../../typings/index.js";
+import { type Command, type CommandOptions } from "../../typings/index.js";
 import { user } from "./noread.sharedCommandOptions.js";
+
+const options: Partial<CommandOptions> = {
+	private: true,
+	wip: true
+};
 
 const data: ChatInputApplicationCommandData = {
 	name: "history",
@@ -66,5 +71,6 @@ async function execute(intr: CommandInteraction<"cached">) {
 export const getCommand = () =>
 	({
 		data,
-		execute
+		execute,
+		options
 	} as Partial<Command>);
