@@ -6,6 +6,7 @@ import {
 	type Guild
 } from "discord.js";
 import { BOOST_LEVELS, defaultEmbed } from "../../constants/index.js";
+import type Logger from "../../loggers/index.js";
 import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 
@@ -14,7 +15,7 @@ const data: ChatInputApplicationCommandData = {
 	description: "Sends information about this server"
 };
 
-function execute(intr: CommandInteraction<"cached">) {
+function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 	const applyS = (string: string, size: number) =>
 		size !== 1 ? `${string}s` : string;
 
@@ -145,7 +146,7 @@ function execute(intr: CommandInteraction<"cached">) {
 
 	intr.editReply({ embeds: [guildEmbed] });
 
-	intr.logger.log(`Sent info of ${guild.name} (${guild.id})`);
+	logger.logInteraction(`Sent info of ${guild.name} (${guild.id})`);
 }
 
 export const getCommand = () =>

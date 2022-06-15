@@ -1,7 +1,6 @@
 import { Client } from "discord.js";
 import "dotenv/config";
 import { INTENTS, PARTIALS } from "./constants/index.js";
-import { InfoLogger } from "./loggers/index.js";
 import CommandHandler from "./modules/CommandHandler.js";
 import EventManager from "./modules/EventManager.js";
 
@@ -19,7 +18,6 @@ const client = new Client<true>({
 
 client.commandHandler = new CommandHandler();
 client.eventHandler = new EventManager(client);
-client.logger = new InfoLogger();
 
 await client.commandHandler.readyCommands();
 await client.eventHandler.readyEvents();

@@ -4,6 +4,7 @@ import {
 	type CommandInteraction
 } from "discord.js";
 import CaseManager from "../../database/CaseManager.js";
+import type Logger from "../../loggers/index.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 import { user } from "./noread.sharedCommandOptions.js";
 
@@ -18,7 +19,7 @@ const data: ChatInputApplicationCommandData = {
 	options: [user()]
 };
 
-async function execute(intr: CommandInteraction<"cached">) {
+async function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 	const userOptionIsProvided = Boolean(intr.options.get("user")?.value);
 
 	const member = userOptionIsProvided
@@ -65,7 +66,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 	intr.editReply({ embeds: [historyEmbed] });
 
-	intr.logger.log("Command used");
+	logger.logInteraction("Command used");
 }
 
 export const getCommand = () =>

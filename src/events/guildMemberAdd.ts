@@ -1,20 +1,23 @@
-import {
-	type Client,
-	type GuildMember,
-	type PartialGuildMember
-} from "discord.js";
+import { type GuildMember, type PartialGuildMember } from "discord.js";
+import Logger from "../loggers/index.js";
 
-export async function execute(
-	client: Client<true>,
-	member: GuildMember | PartialGuildMember
-) {
+export function execute(member: GuildMember | PartialGuildMember) {
 	if (member.pending) {
 		return;
 	}
 
 	if (member.partial) {
-		await member.fetch();
+		// await member.fetch();
 	}
 
-	client.eventHandler.logger.memberLog(member, true);
+	// TODO: channel logging
+
+	const logger = new Logger({
+		type: "MEMBER JOIN",
+		colour: "yellow"
+	});
+
+	logger.log(
+		`${member.user.tag} (${member.user.id}) joined ${member.guild.name} (${member.guild.id})`
+	);
 }

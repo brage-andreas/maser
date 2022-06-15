@@ -14,6 +14,7 @@ import ms from "ms";
 import { performance } from "perf_hooks";
 import { COLORS, defaultEmbed, REGEXP } from "../../constants/index.js";
 import { e } from "../../emojis/index.js";
+import type Logger from "../../loggers/index.js";
 import ButtonManager from "../../modules/ButtonManager.js";
 import {
 	type Command,
@@ -23,7 +24,6 @@ import {
 import Util from "../../utils/index.js";
 
 const options: Partial<CommandOptions> = {
-	logLevel: "full",
 	private: true
 };
 
@@ -45,7 +45,10 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-async function execute(intr: ChatInputCommandInteraction<"cached">) {
+async function execute(
+	intr: ChatInputCommandInteraction<"cached">,
+	logger: Logger
+) {
 	const code = intr.options.getString("code", true);
 	const reply = intr.options.getBoolean("reply") ?? true;
 
@@ -215,7 +218,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 				await interaction.followUp({ files: [attachment] });
 
-				intr.logger.log(
+				logger.logInteraction(
 					`Sent output as an attachment:\n${Util.indent(output)}`
 				);
 			} else if (interaction.customId === "code") {
@@ -230,7 +233,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 				await interaction.followUp({ files: [attachment] });
 
-				intr.logger.log(
+				logger.logInteraction(
 					`Sent code as an attachment:\n${Util.indent(code)}`
 				);
 			}
@@ -245,7 +248,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 		});
 	}
 
-	intr.logger.log(
+	logger.logInteraction(
 		`Code:\n${Util.indent(code, 4)}`,
 		`Output:\n${Util.indent(output, 4)}`
 	);

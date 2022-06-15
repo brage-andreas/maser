@@ -10,7 +10,7 @@ import {
 } from "discord.js";
 import { readdirSync } from "fs";
 import { REGEXP } from "../constants/index.js";
-import { ErrorLogger, InfoLogger } from "../loggers/index.js";
+import Logger from "../loggers/index.js";
 import { type Command, type CommandModule } from "../typings/index.js";
 
 const COMMAND_DIR = new URL("../commands", import.meta.url);
@@ -240,23 +240,26 @@ export default class CommandHandler {
 		clear: boolean;
 	}): Promise<boolean> {
 		const { clientId, guildId, clear } = options;
-		const errorLogger = new ErrorLogger();
-		const infoLogger = new InfoLogger();
+
+		const logger = new Logger({
+			type: "CMD HANDLER",
+			colour: "red"
+		});
 
 		if (!process.env.BOT_TOKEN) {
-			errorLogger.log("Token not defined in .env file");
+			logger.log("Token not defined in .env file");
 
 			return false;
 		}
 
 		if (!REGEXP.ID.test(clientId)) {
-			errorLogger.log(`Client ID is faulty: ${clientId}`);
+			logger.log(`Client ID is faulty: ${clientId}`);
 
 			return false;
 		}
 
 		if (guildId && !REGEXP.ID.test(guildId)) {
-			errorLogger.log(`Guild ID is faulty: ${guildId}`);
+			logger.log(`Guild ID is faulty: ${guildId}`);
 
 			return false;
 		}
@@ -282,13 +285,13 @@ export default class CommandHandler {
 				.catch((err) => {
 					const error = err as Error; // stupid
 
-					errorLogger.log(error.stack ?? error.message);
+					logger.log(error.stack ?? error.message);
 
 					return null;
 				});
 
 			if (res) {
-				infoLogger.log(res);
+				logger.setColour("yellow").log(res);
 
 				return true;
 			}
@@ -297,7 +300,7 @@ export default class CommandHandler {
 		} catch (err: unknown) {
 			const error = err as Error; // stupid
 
-			errorLogger.log(error.stack ?? error.message);
+			logger.log(error.stack ?? error.message);
 
 			return false;
 		}

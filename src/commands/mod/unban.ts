@@ -8,6 +8,7 @@ import { CaseTypes } from "../../constants/database.js";
 import { MAX_AUDIT_REASON_LEN } from "../../constants/index.js";
 import CaseManager from "../../database/CaseManager.js";
 import { e } from "../../emojis/index.js";
+import type Logger from "../../loggers/index.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 import Util from "../../utils/index.js";
@@ -21,7 +22,10 @@ const data: ChatInputApplicationCommandData = {
 	options: [user(true), reason("unban")]
 };
 
-async function execute(intr: ChatInputCommandInteraction<"cached">) {
+async function execute(
+	intr: ChatInputCommandInteraction<"cached">,
+	logger: Logger
+) {
 	const target = intr.options.getUser("user", true);
 	const reason = intr.options.getString("reason");
 
@@ -88,7 +92,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 						true
 					);
 
-					intr.logger.log(
+					logger.logInteraction(
 						`Unbanned ${target.tag} (${target.id}) ${
 							reason
 								? `with reason: "${reason}"`

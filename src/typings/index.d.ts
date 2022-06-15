@@ -2,10 +2,18 @@ import { type APIEmbed } from "discord-api-types/v9";
 import type {
 	AutocompleteInteraction,
 	ChatInputApplicationCommandData,
-	Client,
 	CommandInteraction
 } from "discord.js";
+import type Logger from "../loggers/index.js";
 
+export type Colour =
+	| "black"
+	| "blue"
+	| "green"
+	| "grey"
+	| "red"
+	| "white"
+	| "yellow";
 export type LogLevels = "full" | "none" | "normal";
 
 export interface CommandModule {
@@ -18,7 +26,8 @@ export interface Command {
 	execute(
 		interaction:
 			| AutocompleteInteraction<"cached">
-			| CommandInteraction<"cached">
+			| CommandInteraction<"cached">,
+		logger: Logger
 	): Promise<unknown> | unknown;
 }
 
@@ -30,10 +39,7 @@ export interface CommandOptions {
 }
 
 export interface Event {
-	execute(
-		client: Client,
-		...args: Array<unknown>
-	): Promise<unknown> | unknown;
+	execute(...args: Array<unknown>): Promise<unknown> | unknown;
 }
 
 export interface EvalOutput {

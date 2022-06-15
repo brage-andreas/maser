@@ -1,16 +1,19 @@
-import {
-	type Client,
-	type GuildMember,
-	type PartialGuildMember
-} from "discord.js";
+import { type GuildMember, type PartialGuildMember } from "discord.js";
+import Logger from "../loggers/index.js";
 
-export function execute(
-	client: Client<true>,
-	member: GuildMember | PartialGuildMember
-) {
+export function execute(member: GuildMember | PartialGuildMember) {
 	if (member.pending) {
 		return;
 	}
 
-	client.eventHandler.logger.memberLog(member, false);
+	// TODO: channel logging
+
+	const logger = new Logger({
+		type: "MEMBER LEAVE",
+		colour: "yellow"
+	});
+
+	logger.log(
+		`${member.user.tag} (${member.user.id}) left ${member.guild.name} (${member.guild.id})`
+	);
 }

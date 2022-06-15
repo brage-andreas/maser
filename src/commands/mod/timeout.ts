@@ -10,6 +10,7 @@ import { CaseTypes } from "../../constants/database.js";
 import { DURATIONS, MAX_AUDIT_REASON_LEN } from "../../constants/index.js";
 import CaseManager from "../../database/CaseManager.js";
 import { e } from "../../emojis/index.js";
+import type Logger from "../../loggers/index.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 import Util from "../../utils/index.js";
@@ -69,7 +70,7 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-function execute(intr: ChatInputCommandInteraction<"cached">) {
+function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 	const target = intr.options.getMember("user");
 	const reason = intr.options.getString("reason");
 	const duration = intr.options.getInteger("duration") ?? DURATIONS.THREE_HRS;
@@ -183,7 +184,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 						components: []
 					});
 
-					intr.logger.log(oneLine`
+					logger.logInteraction(oneLine`
 						Timed out ${target.user.tag} (${target.id}) for
 						${ms(duration, { long: true })} with reason: ${reason}
 					`);

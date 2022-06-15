@@ -5,6 +5,7 @@ import {
 	type ChatInputCommandInteraction
 } from "discord.js";
 import { COLORS, defaultEmbed } from "../../constants/index.js";
+import type Logger from "../../loggers/index.js";
 import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 
@@ -21,7 +22,10 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-async function execute(intr: ChatInputCommandInteraction<"cached">) {
+async function execute(
+	intr: ChatInputCommandInteraction<"cached">,
+	logger: Logger
+) {
 	const applyS = (string: string, size: number) =>
 		size !== 1 ? `${string}s` : string;
 
@@ -98,7 +102,7 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 	intr.editReply({ embeds: [roleEmbed] });
 
-	intr.logger.log(`Sent info of ${role.name} (${role.id})`);
+	logger.logInteraction(`Sent info of ${role.name} (${role.id})`);
 }
 
 export const getCommand = () =>

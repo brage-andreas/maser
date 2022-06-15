@@ -3,6 +3,7 @@ import {
 	type ChatInputApplicationCommandData,
 	type ChatInputCommandInteraction
 } from "discord.js";
+import type Logger from "../../loggers/index.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 
 export const options: Partial<CommandOptions> = { private: true };
@@ -43,7 +44,7 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-function execute(intr: ChatInputCommandInteraction<"cached">) {
+function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 	const type = intr.options.getSubcommand(true);
 	const clear = intr.options.getBoolean("clear") ?? false;
 	const guildId = intr.options.getString("guild") ?? intr.guildId;
@@ -70,7 +71,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 			})`
 		);
 
-		intr.logger.log(
+		logger.logInteraction(
 			`${clear ? "Cleared" : "Put"} commands in guild: ${guild.name} (${
 				guild.id
 			})`
@@ -84,7 +85,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 
 		intr.editReply(`${clear ? "Cleared" : "Put"} global commands`);
 
-		intr.logger.log(`${clear ? "Cleared" : "Put"} global commands`);
+		logger.logInteraction(`${clear ? "Cleared" : "Put"} global commands`);
 	}
 }
 

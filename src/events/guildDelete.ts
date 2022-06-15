@@ -1,7 +1,11 @@
-import { type Client, type Guild } from "discord.js";
+import { type Guild } from "discord.js";
+import Logger from "../loggers/index.js";
 
-export function execute(client: Client<true>, guild: Guild) {
-	client.eventHandler.logger
-		.setEvent("guild delete")
-		.log(`Left ${guild.name} (${guild.id})`);
+export function execute(guild: Guild) {
+	const logger = new Logger({
+		type: "GUILD DELETE",
+		colour: "yellow"
+	});
+
+	logger.log(`Left ${guild.name} (${guild.id})`);
 }

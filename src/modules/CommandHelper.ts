@@ -2,6 +2,7 @@ import {
 	type AutocompleteInteraction,
 	type ChatInputCommandInteraction
 } from "discord.js";
+import type Logger from "../loggers/index.js";
 import { type Command, type LogLevels } from "../typings/index.js";
 
 /**
@@ -86,7 +87,7 @@ export default class CommandHelper {
 	/**
 	 * Shorthand for executing the command.
 	 */
-	public execute(): void {
-		this.command.execute(this.interaction);
+	public execute(logger: Logger): void {
+		this.command.execute(this.interaction, logger);
 	}
 }

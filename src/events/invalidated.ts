@@ -1,7 +1,10 @@
-import { type Client } from "discord.js";
+import Logger from "../loggers/index.js";
 
-export function execute(client: Client<true>) {
-	client.eventHandler.logger //
-		.setEvent("invalidated")
-		.log("Session was invalidated");
+export function execute() {
+	const logger = new Logger({
+		type: "INVALIDATED",
+		colour: "red"
+	});
+
+	logger.log("Session was invalidated");
 }

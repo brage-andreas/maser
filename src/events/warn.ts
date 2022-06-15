@@ -1,7 +1,10 @@
-import { type Client } from "discord.js";
+import Logger from "../loggers/index.js";
 
-export function execute(client: Client<true>, info: string) {
-	client.eventHandler.logger //
-		.setEvent("warn")
-		.log(info);
+export function execute(info: string) {
+	const logger = new Logger({
+		type: "GUILD CREATE",
+		colour: "yellow"
+	});
+
+	logger.log(info);
 }

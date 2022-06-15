@@ -1,9 +1,9 @@
-import { type Client, type Interaction } from "discord.js";
+import { type Interaction } from "discord.js";
 import { e } from "../emojis/index.js";
-import { CommandLogger } from "../loggers/index.js";
+import Logger from "../loggers/index.js";
 import CommandHelper from "../modules/CommandHelper.js";
 
-export async function execute(client: Client<true>, intr: Interaction) {
+export async function execute(intr: Interaction) {
 	if (!intr.inGuild()) {
 		if (!intr.isCommand()) {
 			return;
@@ -28,16 +28,20 @@ export async function execute(client: Client<true>, intr: Interaction) {
 		await intr.member.fetch();
 	}
 
-	const isNotOwner = intr.user.id !== client.application.owner?.id;
+	const isNotOwner = intr.user.id !== intr.client.application.owner?.id;
+	const logger = new Logger({
+		colour: "green",
+		type: intr.commandName
+	});
 
 	intr.commandOptions = new CommandHelper(intr);
-	intr.logger = new CommandLogger(intr);
-
 	const command = intr.commandOptions.setCommand(intr);
 
 	if (intr.isAutocomplete()) {
-		return command.execute();
+		return command.execute(logger);
 	}
+
+	logger.setInteraction(intr);
 
 	if (command.isWIP && isNotOwner) {
 		await intr.reply({
@@ -59,5 +63,5 @@ export async function execute(client: Client<true>, intr: Interaction) {
 
 	await intr.deferReply({ ephemeral: command.isHidden });
 
-	command.execute();
+	command.execute(logger);
 }

@@ -1,6 +1,5 @@
 import type { Client } from "discord.js";
 import { readdirSync } from "fs";
-import { EventLogger } from "../loggers/index.js";
 import type { Event } from "../typings/index.js";
 
 const EVENT_DIR = new URL("../events", import.meta.url);
@@ -11,7 +10,6 @@ type EventMap = Map<string, Event>;
  */
 export default class EventManager {
 	public client: Client<true>;
-	public logger: EventLogger;
 	private events: EventMap;
 
 	/**
@@ -20,7 +18,6 @@ export default class EventManager {
 	 */
 	public constructor(client: Client<true>) {
 		this.events = new Map();
-		this.logger = new EventLogger(client);
 
 		this.client = client;
 	}
@@ -56,7 +53,11 @@ export default class EventManager {
 	private setEvents() {
 		this.events.forEach((event, name) => {
 			this.client.on(name, (...args: Array<unknown>) => {
-				event.execute(this.client, ...args);
+				if (name === "ready") {
+					event.execute(this.client, ...args);
+				} else {
+					event.execute(...args);
+				}
 			});
 		});
 	}

@@ -9,6 +9,7 @@ import {
 	defaultEmbed,
 	USER_FLAGS_STRINGS
 } from "../../constants/index.js";
+import type Logger from "../../loggers/index.js";
 import { type Command } from "../../typings/index.js";
 import Util from "../../utils/index.js";
 
@@ -24,7 +25,7 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-async function execute(intr: CommandInteraction<"cached">) {
+async function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 	const userOptionIsProvided = Boolean(intr.options.get("user")?.value);
 
 	const member = userOptionIsProvided
@@ -135,7 +136,7 @@ async function execute(intr: CommandInteraction<"cached">) {
 
 	intr.editReply({ embeds: [userEmbed] });
 
-	intr.logger.log(`Sent info of ${user.tag} (${user.id})`);
+	logger.logInteraction(`Sent info of ${user.tag} (${user.id})`);
 }
 
 export const getCommand = () =>

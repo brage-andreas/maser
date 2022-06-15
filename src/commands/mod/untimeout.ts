@@ -8,6 +8,7 @@ import { CaseTypes } from "../../constants/database.js";
 import { MAX_AUDIT_REASON_LEN } from "../../constants/index.js";
 import CaseManager from "../../database/CaseManager.js";
 import { e } from "../../emojis/index.js";
+import type Logger from "../../loggers/index.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
 import Util from "../../utils/index.js";
@@ -24,7 +25,7 @@ const data: ChatInputApplicationCommandData = {
 	]
 };
 
-function execute(intr: ChatInputCommandInteraction<"cached">) {
+function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 	const target = intr.options.getMember("user");
 	const reason = intr.options.getString("reason");
 	const expiration = target?.communicationDisabledUntilTimestamp;
@@ -116,7 +117,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 						components: []
 					});
 
-					intr.logger.log(
+					logger.logInteraction(
 						`Removed timeout of ${target.user.tag} (${target.id}) with reason: ${reason}`
 					);
 				})

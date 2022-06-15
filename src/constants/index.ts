@@ -5,9 +5,12 @@ import {
 	type CommandInteraction,
 	type UserFlagsString
 } from "discord.js";
+import { type Colour } from "../typings/index.js";
 
-export const MAX_EMBED_DESCRIPTION_LEN = 4096;
+export const DEFAULT_LOGGER_TYPE = "LOG";
+export const DEFAULT_LOGGER_TYPE_COLOUR: Colour = "yellow";
 export const MAX_AUDIT_REASON_LEN = 512;
+export const MAX_EMBED_DESCRIPTION_LEN = 4096;
 
 export const INTENTS: Array<GatewayIntentBits> = [
 	GatewayIntentBits.GuildMembers,
