@@ -3,7 +3,6 @@ import {
 	type ChatInputCommandInteraction
 } from "discord.js";
 import { type Command, type LogLevels } from "../typings/index.js";
-import CommandHandler from "./CommandHandler.js";
 
 /**
  * Manages helper functions for a command.
@@ -77,7 +76,9 @@ export default class CommandHelper {
 	): this {
 		this.interaction = interaction;
 
-		this.command = new CommandHandler().getData(interaction.commandName);
+		this.command = interaction.client.commandHandler.getData(
+			interaction.commandName
+		);
 
 		return this;
 	}
