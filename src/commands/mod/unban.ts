@@ -76,13 +76,13 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 					const case_ = await cases.createCase(
 						{
 							expirationTimestamp: null,
-							referencedCaseId: null,
 							logMessageURL: null,
-							targetTag: target.tag,
-							targetId: target.id,
+							modId: intr.user.id,
 							modTag: intr.user.tag,
 							reason,
-							modId: intr.user.id,
+							referencedCaseId: null,
+							targetId: target.id,
+							targetTag: target.tag,
 							type: CaseTypes.Unban
 						},
 						true
@@ -97,10 +97,10 @@ async function execute(intr: ChatInputCommandInteraction<"cached">) {
 					);
 
 					intr.editReply({
-						content: oneLine(e`
+						content: `${oneLine(e`
 							{check} Successfully **unbanned ${target.tag}**
-							(${target.id}) in case **#${case_.id}**\n\n${info}
-						`),
+							(${target.id}) in case **#${case_.id}**
+						`)}\n\n${info}`,
 						components: []
 					});
 				})

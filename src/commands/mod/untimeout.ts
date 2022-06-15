@@ -95,24 +95,24 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 					const case_ = await cases.createCase(
 						{
 							expirationTimestamp: null,
-							referencedCaseId: null,
 							logMessageURL: null,
-							targetTag: target.user.tag,
-							targetId: target.id,
+							modId: intr.user.id,
 							modTag: intr.user.tag,
 							reason,
-							modId: intr.user.id,
+							referencedCaseId: null,
+							targetId: target.id,
+							targetTag: target.user.tag,
 							type: CaseTypes.Untimeout
 						},
 						true
 					);
 
 					intr.editReply({
-						content: oneLine(
+						content: `${oneLine(
 							e`{check} Successfully **removed timeout** on
 							**${target.user.tag}** (${target.id}) in
-							case **#${case_.id}**\n\n${info}`
-						),
+							case **#${case_.id}**`
+						)}\n\n${info}`,
 						components: []
 					});
 

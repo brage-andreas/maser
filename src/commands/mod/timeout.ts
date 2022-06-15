@@ -163,23 +163,23 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 							expirationTimestamp: new Date(
 								Date.now() + duration
 							),
-							referencedCaseId: null,
 							logMessageURL: null,
-							targetTag: target.user.tag,
-							targetId: target.id,
+							modId: intr.user.id,
 							modTag: intr.user.tag,
 							reason,
-							modId: intr.user.id,
+							referencedCaseId: null,
+							targetId: target.id,
+							targetTag: target.user.tag,
 							type: CaseTypes.Timeout
 						},
 						true
 					);
 
 					intr.editReply({
-						content: oneLine(e`
+						content: `${oneLine(e`
 							{check} Successfully **timed out ${target.user.tag}**
-							(${target.id}) in case **#${case_.id}**\n\n${info}
-						`),
+							(${target.id}) in case **#${case_.id}**
+						`)}\n\n${info}`,
 						components: []
 					});
 

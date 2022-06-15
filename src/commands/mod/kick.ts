@@ -105,13 +105,13 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 					const case_ = await cases.createCase(
 						{
 							expirationTimestamp: null,
-							referencedCaseId: null,
 							logMessageURL: null,
-							targetTag: target.user.tag,
-							targetId: target.id,
+							modId: intr.user.id,
 							modTag: intr.user.tag,
 							reason,
-							modId: intr.user.id,
+							referencedCaseId: null,
+							targetId: target.id,
+							targetTag: target.user.tag,
 							type: CaseTypes.Kick
 						},
 						true
@@ -126,10 +126,10 @@ function execute(intr: ChatInputCommandInteraction<"cached">) {
 					);
 
 					intr.editReply({
-						content: oneLine(e`
+						content: `${oneLine(e`
 							{check} Successfully **kicked ${target.user.tag}**
-							(${target.id}) in case **#${case_.id}**\n\n${info}
-						`),
+							(${target.id}) in case **#${case_.id}**
+						`)}\n\n${info}`,
 						components: []
 					});
 				})
