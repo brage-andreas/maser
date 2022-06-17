@@ -7,7 +7,7 @@ import {
 import { COLORS, defaultEmbed } from "../../constants/index.js";
 import type Logger from "../../loggers/index.js";
 import { type Command } from "../../typings/index.js";
-import Util from "../../utils/index.js";
+import { fullDate } from "../../utils/index.js";
 
 const data: ChatInputApplicationCommandData = {
 	name: "role",
@@ -72,7 +72,7 @@ async function execute(
 		fields: [
 			{
 				name: "Created",
-				value: Util.fullDate(role.createdTimestamp)
+				value: fullDate(role.createdTimestamp)
 			},
 			{
 				name: "Members",

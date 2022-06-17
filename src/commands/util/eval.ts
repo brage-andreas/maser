@@ -21,7 +21,7 @@ import {
 	type CommandOptions,
 	type EvalOutput
 } from "../../typings/index.js";
-import Util from "../../utils/index.js";
+import { codeblock, indent } from "../../utils/index.js";
 
 const options: Partial<CommandOptions> = {
 	private: true
@@ -81,7 +81,7 @@ async function execute(
 			return null;
 		}
 
-		return Util.mergeForCodeblock(string, {
+		return codeblock(string, {
 			prefix,
 			lang: embedStyle === undefined ? "js" : null
 		});
@@ -90,9 +90,9 @@ async function execute(
 	const evaluate = async () => {
 		const client = intr.client;
 
-		// For use in eval
+		// Prevents "ReferenceError: x is not defined"
 		client;
-		Discord; // "ReferenceError: Discord is not defined" if not here
+		Discord;
 
 		try {
 			const start = performance.now();
@@ -102,9 +102,11 @@ async function execute(
 			const type = typeof result;
 
 			const constructor =
-				result != null
-					? (result.constructor.name as string)
-					: "Nullish";
+				result === null
+					? "Null"
+					: result === undefined
+					? "Undefined"
+					: (result.constructor.name as string);
 
 			const time = Number((end - start).toFixed(3));
 			const timeTaken = ms(time, { long: true }).replace(".", ",");
@@ -138,6 +140,7 @@ async function execute(
 		} catch (err: unknown) {
 			const error = err as Error;
 			const msg = error.stack ?? error.toString();
+
 			const parsedInput = parse(code, " **Input**");
 			const parsedError = parse(msg, " **Error**", null);
 
@@ -219,7 +222,8 @@ async function execute(
 				await interaction.followUp({ files: [attachment] });
 
 				logger.logInteraction(
-					`Sent output as an attachment:\n${Util.indent(output)}`
+					"Sent output as an attachment:",
+					...indent(output, { width: 4 }).split("\n")
 				);
 			} else if (interaction.customId === "code") {
 				const attachment = {
@@ -234,7 +238,8 @@ async function execute(
 				await interaction.followUp({ files: [attachment] });
 
 				logger.logInteraction(
-					`Sent code as an attachment:\n${Util.indent(code)}`
+					"Sent code as an attachment:",
+					...indent(code, { width: 4 }).split("\n")
 				);
 			}
 		});
@@ -249,8 +254,10 @@ async function execute(
 	}
 
 	logger.logInteraction(
-		`Code:\n${Util.indent(code, 4)}`,
-		`Output:\n${Util.indent(output, 4)}`
+		"Code:",
+		...indent(code, { width: 4 }).split("\n"),
+		"Output:",
+		...indent(output, { width: 4 }).split("\n")
 	);
 }
 

@@ -1,222 +1,117 @@
-import { type TimestampStylesString } from "@discordjs/builders";
-import { type Guild, type GuildMember } from "discord.js";
+import { stripIndent } from "common-tags";
+import { type TimestampStylesString } from "discord.js";
 import { MAX_EMBED_DESCRIPTION_LEN } from "../constants/index.js";
 
-export default class Util extends null {
-	/**
-	 * Parsed any given string by indenting it with a given width of spaces.
-	 * Returns null if the width is under 0 or more than 16.
-	 */
-	public static parse(
-		string: string | null | undefined,
-		width = 0
-	): string | null {
-		if (!string) {
-			return null;
-		}
+export const indent = (
+	string: string,
+	options?: {
+		separator?: string;
+		width?: number;
+	}
+): string => {
+	const separator = options?.separator ?? " ";
+	const width = options?.width ?? 2;
 
-		const parsedWidth = Math.ceil(width);
+	const space = separator.repeat(Math.ceil(width));
 
-		if (parsedWidth < 0 || parsedWidth > 16) {
-			return null;
-		}
+	return space + string.replaceAll("\n", `\n${space}`);
+};
 
-		const space = " ".repeat(parsedWidth);
+export const twoLen = (input: number | string, separator = "0") =>
+	input.toString().padStart(2, separator);
 
-		return space + string.replace(/[\r\n]/g, `\n${space}`);
+export const now = (): string => {
+	const hours = new Date().getHours();
+	const minutes = new Date().getMinutes();
+	const seconds = new Date().getSeconds();
+
+	return `${twoLen(hours)}:${twoLen(minutes)}:${twoLen(seconds)}`;
+};
+
+export const date = (
+	time: Date | number,
+	style: TimestampStylesString = "R"
+): string => {
+	const timestamp = time instanceof Date ? time.getTime() : time;
+	const seconds = Math.ceil(timestamp / 1000);
+
+	return `<t:${seconds}:${style}>`;
+};
+
+export const fullDate = (time: Date | number): string =>
+	`${date(time, "f")} (${date(time)})`;
+
+export const codeblock = (
+	input: string,
+	options?: {
+		prefix?: string | null;
+		suffix?: string | null;
+		maxLen?: number | null;
+		lang?: string | null;
+	}
+): string => {
+	const maxLen = options?.maxLen ?? MAX_EMBED_DESCRIPTION_LEN;
+	const prefix = options?.prefix ?? "";
+	const suffix = options?.suffix ?? "";
+	const lang = options?.lang ?? "";
+
+	const createString = (input?: string) =>
+		stripIndent`
+			${prefix}
+			${"```"}${lang}
+			${input ?? ""}
+			${"```"}
+			${suffix}
+		`;
+
+	const lenWithoutInput = createString().length;
+	const string = createString(input);
+
+	if (string.length > maxLen) {
+		const lenLeftForInput = maxLen - lenWithoutInput;
+
+		return createString(`${input.slice(0, lenLeftForInput - 3)}...`);
 	}
 
-	/**
-	 * Indents all lines or elements of any given string or array with a given width of spaces.
-	 * Splits strings on new-lines.
-	 */
-	public static indent(
-		string: Array<string> | string | null | undefined,
-		width = 2,
-		sep = " "
-	): string | null {
-		if (!string) {
-			return null;
-		}
+	return string;
+};
 
-		const arr = typeof string === "string" ? string.split("\n") : string;
+export const appendPrefixAndSuffix = (
+	input: string,
+	options: { maxLen: number; prefix?: string; suffix?: string }
+): string => {
+	const prefix = options.prefix?.trim() ?? "";
+	const suffix = options.suffix?.trim() ?? "";
 
-		return arr.map((line) => sep.repeat(width) + line).join("\n");
+	// -2 for the spaces between input and the affixes
+	const lenToGo = options.maxLen - prefix.length - suffix.length - 2;
+
+	return `${prefix} ${input.slice(0, lenToGo)} ${suffix}`;
+};
+
+// Very simple and definitely not the best -- gets the job done
+export const escapeDiscordMarkdown = (text: string): string =>
+	text.replaceAll(/(\*)|(_)|(\|)|(\\)/g, (match) => `\\${match}`);
+
+export const listify = (
+	elements: Array<string>,
+	options: { desiredLen: number; give?: number }
+): string => {
+	const { desiredLen, give } = options ?? {};
+
+	if (elements.length > desiredLen + (give ?? 1)) {
+		elements
+			.splice(0, desiredLen)
+			.push(`and ${elements.length - desiredLen} more`);
 	}
 
-	/**
-	 * Logs any given string to console.
-	 */
-	public static log(string: string | null | undefined): void {
-		if (!string) {
-			return;
-		}
+	return elements.join("\n");
+};
 
-		console.log(Util.parse(string));
-	}
-
-	/**
-	 * Makes any given number have a length of at least 2 by adding a given separator to one-digit numbers.
-	 */
-	public static twoLen(input: number, sep = " "): string {
-		if (!sep.length) {
-			throw new Error("Separator must be a non-empty string");
-		}
-
-		return input < 10 ? sep + String(input) : String(input);
-	}
-
-	/**
-	 * Gets and parses the current date-time in a hh:mm:ss format.
-	 */
-	public static now(sep = "0"): string {
-		const hours = Util.twoLen(new Date().getHours(), sep);
-		const minutes = Util.twoLen(new Date().getMinutes(), sep);
-		const seconds = Util.twoLen(new Date().getSeconds(), sep);
-
-		return `${hours}:${minutes}:${seconds}`;
-	}
-
-	/**
-	 * Turns any given timestamp or date into a markdown timestamp.
-	 */
-	public static date(
-		time: Date | number,
-		style: TimestampStylesString = "R"
-	): string {
-		const timestamp = time instanceof Date ? time.getTime() : time;
-		const seconds = Math.ceil(timestamp / 1000);
-
-		return `<t:${seconds}:${style}>`;
-	}
-
-	/**
-	 * Turns any given timestamp or date into a markdown timestamp in a `<full date> (<relative time>)` format.
-	 */
-	public static fullDate(time: Date | number): string {
-		return `${Util.date(time, "f")} (${Util.date(time)})`;
-	}
-
-	/**
-	 * Makes sure any given pair of label and codeblock fits within given size.
-	 */
-	public static mergeForCodeblock(
-		input: string,
-		options?: {
-			prefix?: string | null | undefined;
-			suffix?: string | null | undefined;
-			maxLen?: number | null | undefined;
-			lang?: string | null | undefined;
-		}
-	): string {
-		if (!input.length) {
-			throw new Error("input cannot be empty string");
-		}
-
-		const maxLen = options?.maxLen ?? MAX_EMBED_DESCRIPTION_LEN;
-		const prefix = options?.prefix ?? "";
-		const suffix = options?.suffix ?? "";
-		const lang = options?.lang ?? "";
-
-		const createString = (input?: string) =>
-			`${prefix}\n\`\`\`${lang}\n${input ?? ""}\n\`\`\`\n${suffix}`;
-
-		const lenWithoutInput = createString().length;
-		let string = createString(input);
-
-		if (string.length > maxLen) {
-			const lenLeftForInput = maxLen - lenWithoutInput;
-
-			string = createString(`${input.slice(0, lenLeftForInput - 3)}...`);
-		}
-
-		return string;
-	}
-
-	/**
-	 * Appends a prefix and suffix to a string with a max length to cut the input by.
-	 */
-	public static appendPrefixAndSuffix(
-		input: string,
-		maxLen: number,
-		options?: { prefix?: string; suffix?: string }
-	): string {
-		const prefix = options?.prefix ?? "";
-		const suffix = options?.suffix ?? "";
-		// -2 for the spaces
-		// if there is no suffix, it will be one less than max
-		const lenToGo = maxLen - prefix.length - suffix.length - 2;
-
-		return `${prefix} ${input.slice(0, lenToGo)} ${suffix}`.trim();
-	}
-
-	/**
-	 * Gives you a string of the three highest roles with a mention of any excess.
-	 */
-	public static parseRoles(memberOrGuild: Guild | GuildMember): string;
-	public static parseRoles(
-		memberOrGuild: Guild | GuildMember | null | undefined
-	): string | null;
-	public static parseRoles(memberOrGuild: null | undefined): null;
-	public static parseRoles(
-		memberOrGuild: Guild | GuildMember | null | undefined
-	): string | null {
-		if (!memberOrGuild) {
-			return null;
-		}
-
-		const roles = memberOrGuild.roles.cache;
-
-		if (roles.size <= 1) {
-			return "None";
-		}
-
-		const sortedRoles = roles.sort((a, b) => b.position - a.position);
-
-		const parsedRoles = sortedRoles
-			.map((role) => role.toString())
-			.slice(0, -1); // removes @everyone
-
-		const roleMentions = parsedRoles.slice(0, 3).join(", ");
-		const excess = parsedRoles.length - 3;
-
-		return 0 < excess
-			? `${roleMentions}, and ${excess} more`
-			: roleMentions;
-	}
-
-	// Very simple and definitely not the best -- gets the job done
-	public static escapeDiscordMarkdown(text: string): string {
-		return text.replaceAll(/(\*)|(_)|(\|)|(\\)/g, (match) => `\\${match}`);
-	}
-
-	/**
-	 * Listifies an array to a desired length.
-	 * @param elements The elements to listify.
-	 * @param desiredLength The desired amount of elements in the list.
-	 * @param give The amount of extra elements to include before cutting list off.
-	 */
-	public static listify(
-		elements: Array<string>,
-		desiredLength = 1,
-		give = 1
-	): [Array<string>, number] {
-		if (elements.length <= (desiredLength ?? 5) + (give ?? 1)) {
-			return [elements, 0];
-		}
-
-		return [
-			elements.slice(0, desiredLength),
-			elements.length - desiredLength
-		];
-	}
-
-	public static createList(obj: Record<string, string | null | undefined>) {
-		return Object.entries(obj)
-			.filter(([, val]) => Boolean(val))
-			.map(([key, val]) =>
-				val === "{single}" ? `• ${key}` : `• ${key}: ${val}`
-			)
-			.join("\n");
-	}
-}
+export const createList = (obj: Record<string, string | null | undefined>) =>
+	Object.entries(obj)
+		.filter(([, val]) => Boolean(val))
+		.map(([key, val]) =>
+			val === "{single}" ? `• ${key}` : `• ${key}: ${val}`
+		)
+		.join("\n");

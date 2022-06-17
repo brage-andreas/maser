@@ -11,7 +11,12 @@ import {
 } from "../../constants/index.js";
 import type Logger from "../../loggers/index.js";
 import { type Command } from "../../typings/index.js";
-import Util from "../../utils/index.js";
+import {
+	createList,
+	escapeDiscordMarkdown,
+	fullDate,
+	listify
+} from "../../utils/index.js";
 
 const data: ChatInputApplicationCommandData = {
 	name: "user",
@@ -58,38 +63,39 @@ async function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 	const banner = user.bannerURL({ size: 2048 });
 
 	const joined = member?.joinedTimestamp
-		? Util.fullDate(member.joinedTimestamp)
+		? fullDate(member.joinedTimestamp)
 		: null;
 
 	const color = getColor(member?.displayColor);
 
-	const created = Util.fullDate(user.createdTimestamp);
+	const created = fullDate(user.createdTimestamp);
 
 	const hoistedRole = member?.roles.hoist ?? null;
 	const coloredRole = member?.roles.color ?? null;
 	const iconRole = member?.roles.icon ?? null;
 
-	let roles = `${Util.parseRoles(member)}\n`;
+	const something = createList({
+		"Roles":
+			member &&
+			listify(
+				member.roles.cache.map((r) => r.toString()),
+				{ desiredLen: 5, give: 1 }
+			),
 
-	if (hoistedRole) {
-		roles += `\n• Hoisted: ${hoistedRole}`;
-	}
-
-	if (coloredRole) {
-		roles += `\n• Coloured: ${coloredRole}`;
-	}
-
-	if (iconRole) {
-		roles += `\n• Icon: ${iconRole} ([Link to icon](${iconRole.iconURL({
-			size: 1024
-		})}))`;
-	}
+		"Hoisted": hoistedRole?.toString(),
+		"Coloured": coloredRole?.toString(),
+		"Icon:":
+			iconRole &&
+			`${iconRole} ([Link to icon](${iconRole.iconURL({
+				size: 1024
+			})}))`
+	});
 
 	const { bot, tag, id } = user;
 
-	const name = Util.escapeDiscordMarkdown(member?.displayName ?? tag);
+	const name = escapeDiscordMarkdown(member?.displayName ?? tag);
 
-	const infoFieldValue = Util.createList({
+	const infoFieldValue = createList({
 		"Tag": `\`${tag}\``,
 		"ID": `\`${id}\``,
 		"Colour": `\`#${color.toString(16)}\``,
@@ -130,7 +136,7 @@ async function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 	if (member) {
 		userEmbed.fields!.push({
 			name: `Roles (${member.roles.cache.size - 1})`,
-			value: 1 < member.roles.cache.size ? roles : "No roles"
+			value: 1 < member.roles.cache.size ? something : "No roles"
 		});
 	}
 

@@ -12,7 +12,7 @@ import { e } from "../../emojis/index.js";
 import type Logger from "../../loggers/index.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
-import Util from "../../utils/index.js";
+import { appendPrefixAndSuffix, createList } from "../../utils/index.js";
 import { reason, user } from "./noread.sharedCommandOptions.js";
 
 const options: Partial<CommandOptions> = { private: true };
@@ -110,12 +110,13 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 	const auditLogSuffix = `| By ${intr.user.tag} ${intr.user.id}`;
 
 	const auditLogReason = reason
-		? Util.appendPrefixAndSuffix(reason, MAX_AUDIT_REASON_LEN, {
+		? appendPrefixAndSuffix(reason, {
+				maxLen: MAX_AUDIT_REASON_LEN,
 				suffix: auditLogSuffix
 		  })
 		: `By ${intr.user.tag} ${intr.user.id}`;
 
-	const info = Util.createList({
+	const info = createList({
 		"**Days pruned**": days ? `${days} days` : "None",
 		"**Reason**": reason ?? "No reason provided",
 		"**Target**": `${target.tag} (${target.id})`

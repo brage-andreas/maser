@@ -1,3 +1,4 @@
+import { oneLine } from "common-tags";
 import { type APIEmbed } from "discord-api-types/v9";
 import {
 	ChannelType,
@@ -8,7 +9,7 @@ import {
 import { BOOST_LEVELS, defaultEmbed } from "../../constants/index.js";
 import type Logger from "../../loggers/index.js";
 import { type Command } from "../../typings/index.js";
-import Util from "../../utils/index.js";
+import { fullDate, listify } from "../../utils/index.js";
 
 const data: ChatInputApplicationCommandData = {
 	name: "server",
@@ -16,8 +17,7 @@ const data: ChatInputApplicationCommandData = {
 };
 
 function execute(intr: CommandInteraction<"cached">, logger: Logger) {
-	const applyS = (string: string, size: number) =>
-		size !== 1 ? `${string}s` : string;
+	const applyS = (str: string, n: number) => (n === 1 ? str : `${str}s`);
 
 	const { guild } = intr;
 
@@ -25,45 +25,50 @@ function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 		const emojiAmount = guild.emojis.cache.size;
 		const stickerAmount = guild.stickers.cache.size;
 
-		const standardEmojisAmount = guild.emojis.cache.filter(
-			(em) => em.animated === false
+		const standardEmojiAmount = guild.emojis.cache.filter(
+			(em) => !em.animated
 		).size;
 
-		const animatedEmojisAmount = guild.emojis.cache.filter(
-			(em) => em.animated === true
-		).size;
+		const animatedEmojiAmount = emojiAmount - standardEmojiAmount;
 
-		const emojiAmountStr = `${
-			emojiAmount ? `**${emojiAmount}**` : "No"
-		} ${applyS("emoji", emojiAmount)}`;
+		// e.g. "**1** emoji", "No emojis", "**20** emojis"
+		const emojiStr = oneLine`
+			${emojiAmount ? `**${emojiAmount}**` : "No"}
+			${applyS("emoji", emojiAmount)}
+		`;
 
-		const stickerAmountStr = `${stickerAmount || "no"} ${applyS(
-			"sticker",
-			stickerAmount
-		)}`;
+		const stickerStr = oneLine`
+			${stickerAmount || "no"}
+			${applyS("sticker", stickerAmount)}
+		`;
 
-		const standardEmojiAmountStr = `${
-			standardEmojisAmount || "no"
-		} normal ${applyS("emoji", standardEmojisAmount)}`;
+		const standardEmojiStr = oneLine`
+			${standardEmojiAmount || "no"}
+			normal ${applyS("emoji", standardEmojiAmount)}
+		`;
 
-		const animatedEmojiAmountStr = `${
-			animatedEmojisAmount || "no"
-		} animated ${applyS("emoji", animatedEmojisAmount)}`;
+		const animatedEmojiAmountStr = oneLine`
+			${animatedEmojiAmount || "no"}
+			animated ${applyS("emoji", animatedEmojiAmount)}
+		`;
 
-		const str = emojiAmount
-			? `${emojiAmountStr} in total\n${standardEmojiAmountStr}, ${animatedEmojiAmountStr}, and ${stickerAmountStr}`
-			: `${emojiAmountStr} and ${stickerAmountStr}`;
+		if (emojiAmount) {
+			return oneLine`
+				${emojiStr} in total\n${standardEmojiStr},
+				${animatedEmojiAmountStr}, and ${stickerStr}
+			`;
+		}
 
-		return str;
+		return `${emojiStr} and ${stickerStr}`;
 	};
 
-	const voiceChannels = guild.channels.cache.filter(
+	const voiceChs = guild.channels.cache.filter(
 		(ch) =>
 			ch.type === ChannelType.GuildVoice ||
 			ch.type === ChannelType.GuildStageVoice
 	).size;
 
-	const textChannels = guild.channels.cache.filter(
+	const textChs = guild.channels.cache.filter(
 		(ch) => ch.isTextBased() && !ch.isThread()
 	).size;
 
@@ -78,20 +83,20 @@ function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 	} = guild;
 
 	const vanityStr = vanity ? `with vanity \`${vanity}\`` : "";
-	const created = Util.fullDate(guild.createdAt);
-	const roles = Util.parseRoles(guild);
+	const created = fullDate(guild.createdAt);
+
+	const roles = listify(
+		guild.roles.cache.map((r) => r.toString()),
+		{ desiredLen: 5, give: 1 }
+	);
+
 	const icon = guild.iconURL({ size: 2048 }) ?? "";
 	const tier = BOOST_LEVELS[guild.premiumTier];
 
-	const totalChs = `**${channels}** ${applyS("channel", channels)}`;
-	const textChs = `${textChannels} text ${applyS("channel", textChannels)}`;
-
-	const voiceChs = `${voiceChannels} voice ${applyS(
-		"channel",
-		voiceChannels
-	)}`;
-
-	const channelsStr = `${totalChs} in total\n${textChs} and ${voiceChs}`;
+	const totalChStr = `**${channels}** ${applyS("channel", channels)}`;
+	const textChStr = `${textChs} text ${applyS("channel", textChs)}`;
+	const voiceChStr = `${voiceChs} voice ${applyS("channel", voiceChs)}`;
+	const channelsStr = `${totalChStr} in total\n${textChStr} and ${voiceChStr}`;
 
 	const emojisAndStickerStr = getEmojisAndStickers(guild);
 	const guildEmbed: APIEmbed = {
@@ -109,10 +114,10 @@ function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 			},
 			{
 				name: "Members",
-				value: `**${guild.memberCount}** ${applyS(
-					"member",
-					guild.memberCount
-				)}`
+				value: oneLine`
+					**${guild.memberCount}**
+					${applyS("member", guild.memberCount)}
+				`
 			},
 			{
 				name: "Channels",
@@ -125,10 +130,10 @@ function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 			{
 				name: "Boosting",
 				value: boosters
-					? `Server has ${tier} with **${boosters}** ${applyS(
-							"boost",
-							boosters
-					  )}`
+					? oneLine`
+					  	Server has ${tier} with **${boosters}**
+						${applyS("boost", boosters)}
+					  `
 					: "No boosts"
 			}
 		]

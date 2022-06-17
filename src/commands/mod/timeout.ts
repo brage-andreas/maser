@@ -13,7 +13,11 @@ import { e } from "../../emojis/index.js";
 import type Logger from "../../loggers/index.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
-import Util from "../../utils/index.js";
+import {
+	appendPrefixAndSuffix,
+	createList,
+	fullDate
+} from "../../utils/index.js";
 import { reason, user } from "./noread.sharedCommandOptions.js";
 
 const options: Partial<CommandOptions> = { wip: true };
@@ -113,9 +117,9 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 	const inTimeout =
 		Date.now() < (target.communicationDisabledUntilTimestamp ?? 0);
 
-	const info = Util.createList({
+	const info = createList({
 		"**Duration**": ms(duration, { long: true }),
-		"**Expiration**": Util.fullDate(expiration),
+		"**Expiration**": fullDate(expiration),
 		"**Reason**": reason ?? "No reason provided",
 		"**Target**": `${target.user.tag} (${target.id})`
 	});
@@ -123,7 +127,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 	const overrideStr = oneLine(e`
 		{warning} This will override their
 		current timeout, set to expire
-		${Util.fullDate(target.communicationDisabledUntilTimestamp!)}.
+		${fullDate(target.communicationDisabledUntilTimestamp!)}.
 	`);
 
 	const query = stripIndents`
@@ -143,7 +147,8 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 	const auditLogSuffix = `| By ${intr.user.tag} ${intr.user.id}`;
 
 	const auditLogReason = reason
-		? Util.appendPrefixAndSuffix(reason, MAX_AUDIT_REASON_LEN, {
+		? appendPrefixAndSuffix(reason, {
+				maxLen: MAX_AUDIT_REASON_LEN,
 				suffix: auditLogSuffix
 		  })
 		: `By ${intr.user.tag} ${intr.user.id}`;
