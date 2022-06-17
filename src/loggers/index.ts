@@ -67,7 +67,7 @@ export default class Logger {
 
 		this.log(
 			`${user_}${channel_}${guild_}`,
-			grey(this.interaction.toString()),
+			grey(`>> ${this.interaction.toString()}`),
 			...messages
 		);
 	}

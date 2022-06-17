@@ -146,7 +146,7 @@ function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 
 	intr.editReply({ embeds: [guildEmbed] });
 
-	logger.logInteraction(`Sent info of ${guild.name} (${guild.id})`);
+	logger.logInteraction();
 }
 
 export const getCommand = () =>

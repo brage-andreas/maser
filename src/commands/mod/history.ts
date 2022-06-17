@@ -66,7 +66,7 @@ async function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 
 	intr.editReply({ embeds: [historyEmbed] });
 
-	logger.logInteraction("Command used");
+	logger.logInteraction(`Sent history of ${user.tag} (${user.id})`);
 }
 
 export const getCommand = () =>

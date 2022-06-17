@@ -13,7 +13,7 @@ const data: ChatInputApplicationCommandData = {
 function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 	intr.editReply("piong");
 
-	logger.logInteraction("Pinged");
+	logger.logInteraction();
 }
 
 export const getCommand = () =>
