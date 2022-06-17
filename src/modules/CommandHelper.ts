@@ -3,7 +3,7 @@ import {
 	type ChatInputCommandInteraction
 } from "discord.js";
 import type Logger from "../loggers/index.js";
-import { type Command, type LogLevels } from "../typings/index.js";
+import { type Command } from "../typings/index.js";
 
 /**
  * Manages helper functions for a command.
@@ -39,21 +39,6 @@ export default class CommandHelper {
 	 */
 	public get isWIP(): boolean {
 		return this.command.options.wip;
-	}
-
-	/**
-	 * The log level of this command.
-	 * Used internally by CommandLogger.
-	 * Default is "normal".
-	 *
-	 * full   --> command string + console output
-	 *
-	 * normal --> command string
-	 *
-	 * none   --> nothing
-	 */
-	public get logLevel(): LogLevels {
-		return this.command.options.logLevel;
 	}
 
 	/**

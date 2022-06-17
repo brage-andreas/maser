@@ -33,7 +33,6 @@ export interface Command {
 
 export interface CommandOptions {
 	defaultHide: boolean;
-	logLevel: LogLevels;
 	private: boolean;
 	wip: boolean;
 }

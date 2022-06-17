@@ -129,13 +129,11 @@ export default class CommandHandler {
 				if (!partialCommand.options) {
 					partialCommand.options = {
 						defaultHide: true,
-						logLevel: "normal",
 						private: false,
 						wip: false
 					};
 				} else {
 					partialCommand.options.defaultHide ??= true;
-					partialCommand.options.logLevel ??= "normal";
 					partialCommand.options.private ??= false;
 					partialCommand.options.wip ??= false;
 				}
