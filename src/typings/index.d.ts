@@ -15,6 +15,7 @@ export type Colour =
 	| "white"
 	| "yellow";
 export type LogLevels = "full" | "none" | "normal";
+export type MaserEmojis = "check" | "cross" | "lock" | "warning" | "wip";
 
 export interface CommandModule {
 	getCommand(): Partial<Command>;

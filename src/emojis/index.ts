@@ -1,4 +1,6 @@
-export type MaserEmojis = "check" | "cross" | "lock" | "warning" | "wip";
+import createTag from "@drango/tag-functions";
+import { type MaserEmojis } from "../typings/index.js";
+
 const regExp = /{(?<emoji>(check)|(cross)|(lock)|(warning)|(wip))}/gi;
 
 // Source in root/icons
@@ -10,7 +12,7 @@ export const EMOJIS: Record<MaserEmojis, string> = {
 	wip: "<:maser_wip:924421206004867132>"
 } as const;
 
-const replacer = (string: string) =>
+const eFn = (string: string): string =>
 	string.replaceAll(
 		regExp,
 		(emoji) => EMOJIS[emoji.slice(1, -1) as MaserEmojis]
@@ -23,20 +25,4 @@ const replacer = (string: string) =>
  * const myString = e`{check} done`;
  * console.log(myString) // "<:maser_check:924421206122328114> done"
  */
-export const e = (
-	strings: ReadonlyArray<string>,
-	...keys: ReadonlyArray<unknown>
-): string => {
-	const result: Array<string> = [];
-
-	for (let i = 0; i < strings.length; i++) {
-		result.push(replacer(strings[i]));
-
-		if (keys[i]) {
-			// I want a pipe operator
-			result.push(replacer(JSON.stringify(keys[i])));
-		}
-	}
-
-	return result.join("");
-};
+export const e = createTag(eFn);
