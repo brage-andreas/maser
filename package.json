@@ -2,6 +2,7 @@
 	"author": "Drango",
 	"dependencies": {
 		"@discordjs/rest": "^0.5.0",
+		"@drango/tag-functions": "^1.0.8",
 		"@prisma/client": "^3.15.0",
 		"common-tags": "^1.8.2",
 		"discord.js": "^14.0.0-dev.1654776344-94bdcac",
@@ -23,13 +24,13 @@
 		"prisma": "^3.15.0",
 		"typescript": "^4.7.3"
 	},
-	"homepage": "https://github.com/hellobafu/maser#readme",
+	"homepage": "https://github.com/el-durango/maser#readme",
 	"license": "MIT",
 	"main": "dist/index.js",
 	"name": "maser",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/hellobafu/maser.git"
+		"url": "git+https://github.com/el-durango/maser.git"
 	},
 	"scripts": {
 		"build": "tsc",
