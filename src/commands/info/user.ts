@@ -11,12 +11,8 @@ import {
 } from "../../constants/index.js";
 import type Logger from "../../loggers/index.js";
 import { type Command } from "../../typings/index.js";
-import {
-	createList,
-	escapeDiscordMarkdown,
-	fullDate,
-	listify
-} from "../../utils/index.js";
+import { escapeMd } from "../../utils/discordMarkdown.js";
+import { createList, fullDate, listify } from "../../utils/index.js";
 
 const data: ChatInputApplicationCommandData = {
 	name: "user",
@@ -93,7 +89,7 @@ async function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 
 	const { bot, tag, id } = user;
 
-	const name = escapeDiscordMarkdown(member?.displayName ?? tag);
+	const name = escapeMd(member?.displayName ?? tag);
 
 	const infoFieldValue = createList({
 		"Tag": `\`${tag}\``,
