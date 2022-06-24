@@ -9,6 +9,7 @@ import {
 import { BOOST_LEVELS, defaultEmbed } from "../../constants/index.js";
 import type Logger from "../../loggers/index.js";
 import { type Command } from "../../typings/index.js";
+import { bold } from "../../utils/discordMarkdown.js";
 import { fullDate, listify } from "../../utils/index.js";
 
 const data: ChatInputApplicationCommandData = {
@@ -33,7 +34,7 @@ function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 
 		// e.g. "**1** emoji", "No emojis", "**20** emojis"
 		const emojiStr = oneLine`
-			${emojiAmount ? `**${emojiAmount}**` : "No"}
+			${emojiAmount ? bold`${emojiAmount}` : "No"}
 			${applyS("emoji", emojiAmount)}
 		`;
 
@@ -93,7 +94,7 @@ function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 	const icon = guild.iconURL({ size: 2048 }) ?? "";
 	const tier = BOOST_LEVELS[guild.premiumTier];
 
-	const totalChStr = `**${channels}** ${applyS("channel", channels)}`;
+	const totalChStr = `${bold`${channels}`} ${applyS("channel", channels)}`;
 	const textChStr = `${textChs} text ${applyS("channel", textChs)}`;
 	const voiceChStr = `${voiceChs} voice ${applyS("channel", voiceChs)}`;
 	const channelsStr = `${totalChStr} in total\n${textChStr} and ${voiceChStr}`;
@@ -115,7 +116,7 @@ function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 			{
 				name: "Members",
 				value: oneLine`
-					**${guild.memberCount}**
+					${bold`${guild.memberCount}`}
 					${applyS("member", guild.memberCount)}
 				`
 			},
@@ -131,7 +132,7 @@ function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 				name: "Boosting",
 				value: boosters
 					? oneLine`
-					  	Server has ${tier} with **${boosters}**
+					  	Server has ${tier} with ${bold`${boosters}`}
 						${applyS("boost", boosters)}
 					  `
 					: "No boosts"

@@ -13,6 +13,7 @@ import { e } from "../../emojis/index.js";
 import type Logger from "../../loggers/index.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
+import { bold } from "../../utils/discordMarkdown.js";
 import {
 	appendPrefixAndSuffix,
 	createList,
@@ -118,10 +119,10 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 		Date.now() < (target.communicationDisabledUntilTimestamp ?? 0);
 
 	const info = createList({
-		"**Duration**": ms(duration, { long: true }),
-		"**Expiration**": fullDate(expiration),
-		"**Reason**": reason ?? "No reason provided",
-		"**Target**": `${target.user.tag} (${target.id})`
+		Duration: ms(duration, { long: true }),
+		Expiration: fullDate(expiration),
+		Reason: reason ?? "No reason provided",
+		Target: `${target.user.tag} (${target.id})`
 	});
 
 	const overrideStr = oneLine(e`
@@ -131,7 +132,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 	`);
 
 	const query = stripIndents`
-		Are you sure you want to timeout **${target.user.tag}** (${target.id})?
+		Are you sure you want to timeout ${bold(target.user.tag)} (${target.id})?
 		${inTimeout ? `\n${overrideStr}` : ""}
 		
 		${info}
@@ -183,8 +184,8 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 
 					intr.editReply({
 						content: `${oneLine(e`
-							{check} Successfully **timed out ${target.user.tag}**
-							(${target.id}) in case **#${case_.id}**
+							{check} Successfully ${bold`timed out ${target.user.tag}`}
+							(${target.id}) in case ${bold`#${case_.id}`}
 						`)}\n\n${info}`,
 						components: []
 					});

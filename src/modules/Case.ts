@@ -1,5 +1,6 @@
 // TODO: refactor
 
+import { oneLine } from "common-tags";
 import { type APIEmbed } from "discord-api-types/v9";
 import { type Client, type TextBasedChannel } from "discord.js";
 import { CaseTypes } from "../constants/database.js";
@@ -7,6 +8,7 @@ import { COLORS, REGEXP } from "../constants/index.js";
 import CaseManager from "../database/CaseManager.js";
 import ConfigManager from "../database/ConfigManager.js";
 import { type CaseData } from "../typings/database.js";
+import { createList } from "../utils/index.js";
 
 const getHexColor = (type: CaseTypes): number => {
 	switch (type) {
@@ -140,36 +142,32 @@ export default class Case {
 			color: this.hexColor
 		};
 
-		const description = [`**Type**: ${this.type}`];
+		const referenceLogUrl = await this.getReferencedCase().then(
+			(res) => res?.logMessageUrl
+		);
 
-		if (this.target.tag || this.target.id) {
-			const targetTag = this.target.tag ?? "Name unavailable";
-			const targetId = this.target.id ?? "ID unavailable";
+		const isMute = this.type === "Mute" || null;
 
-			description.push(`**Target**: \`${targetTag}\` (${targetId})`);
-		}
+		const { id, tag } = this.target;
+		const targetStr =
+			tag || id
+				? oneLine`
+					${tag ? `\`${tag}\`` : "Name unavailable"}
+					(${id ?? "ID unavailable"})
+				`
+				: null;
 
-		if (this.reason) {
-			description.push(`**Reason**: ${this.reason}`);
-		}
+		const str = referenceLogUrl
+			? `[Case #${this.referencedCaseId}](${referenceLogUrl})`
+			: `Case #${this.referencedCaseId}`;
 
-		if (this.duration && this.type === "Mute") {
-			description.push(`**Duration**: ${this.duration}`);
-		}
-
-		if (this.referencedCaseId) {
-			const referenceLogUrl = await this.getReferencedCase().then(
-				(res) => res?.logMessageUrl
-			);
-
-			const str = referenceLogUrl
-				? `[Case #${this.referencedCaseId}](${referenceLogUrl})`
-				: `Case #${this.referencedCaseId}`;
-
-			description.push(`**Reference**: ${str}`);
-		}
-
-		caseEmbed.description = description.join("\n");
+		caseEmbed.description = createList({
+			Type: this.type,
+			Target: targetStr,
+			Reason: this.reason,
+			Duration: isMute && this.duration?.toString(),
+			Reference: str
+		});
 
 		return caseEmbed;
 	}
@@ -210,7 +208,7 @@ export default class Case {
 			this.guildId
 		).editCase(editedRawCaseData);
 
-		const [channel, messageId] = this._getLogMessageChannel();
+		const { channel, messageId } = this.getLogMessageChannel();
 
 		if (!channel || !messageId) {
 			return;
@@ -225,7 +223,7 @@ export default class Case {
 	}
 
 	public async deleteLogMessage() {
-		const [channel, messageId] = this._getLogMessageChannel();
+		const { channel, messageId } = this.getLogMessageChannel();
 
 		if (!channel || !messageId) {
 			return;
@@ -237,9 +235,12 @@ export default class Case {
 			.catch(() => false);
 	}
 
-	private _getLogMessageChannel(): [] | [TextBasedChannel, string] {
+	private getLogMessageChannel(): {
+		channel: TextBasedChannel | null;
+		messageId: string | null;
+	} {
 		if (!this.rawCaseData.logMessageURL) {
-			return [];
+			return { channel: null, messageId: null };
 		}
 
 		// Turns discord.com/channels/<guild id>/<channel id>/<message id>
@@ -251,7 +252,7 @@ export default class Case {
 		].map((e) => (Array.isArray(e) ? e[0] : e));
 
 		if (!guildId || !channelId || !messageId) {
-			return [];
+			return { channel: null, messageId: null };
 		}
 
 		const channel = this.client.guilds.cache
@@ -259,9 +260,9 @@ export default class Case {
 			?.channels.cache.get(channelId);
 
 		if (!channel?.isTextBased()) {
-			return [];
+			return { channel: null, messageId: null };
 		}
 
-		return [channel, messageId];
+		return { channel, messageId };
 	}
 }

@@ -11,6 +11,7 @@ import { e } from "../../emojis/index.js";
 import type Logger from "../../loggers/index.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
+import { bold } from "../../utils/discordMarkdown.js";
 import { appendPrefixAndSuffix, createList } from "../../utils/index.js";
 import { reason, user } from "./noread.sharedCommandOptions.js";
 
@@ -80,13 +81,13 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 		: `By ${intr.user.tag} ${intr.user.id}`;
 
 	const info = createList({
-		"**Reason**": reason ?? "No reason provided",
-		"**Target**": `${target.user.tag} (${target.id})`
+		Reason: reason ?? "No reason provided",
+		Target: `${target.user.tag} (${target.id})`
 	});
 
 	const query = oneLine(e`
 		{warning} Are you sure you want to kick
-		**${target.user.tag}** (${target.id})?\n\n${info}
+		${bold(target.user.tag)} (${target.id})?\n\n${info}
 	`);
 
 	const collector = new ConfirmationButtons({
@@ -129,8 +130,8 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 
 					intr.editReply({
 						content: `${oneLine(e`
-							{check} Successfully **kicked ${target.user.tag}**
-							(${target.id}) in case **#${case_.id}**
+							{check} Successfully ${bold`kicked ${target.user.tag}`}
+							(${target.id}) in case ${bold`#${case_.id}`}
 						`)}\n\n${info}`,
 						components: []
 					});

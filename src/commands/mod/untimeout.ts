@@ -11,6 +11,7 @@ import { e } from "../../emojis/index.js";
 import type Logger from "../../loggers/index.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
+import { bold } from "../../utils/discordMarkdown.js";
 import {
 	appendPrefixAndSuffix,
 	createList,
@@ -67,14 +68,14 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 	}
 
 	const info = createList({
-		"**Expiration**": fullDate(expiration),
-		"**Reason**": reason ?? "No reason provided",
-		"**Target**": `${target.user.tag} (${target} ${target.id})`
+		Expiration: fullDate(expiration),
+		Reason: reason ?? "No reason provided",
+		Target: `${target.user.tag} (${target} ${target.id})`
 	});
 
 	const query = oneLine(e`
 		{warning} Are you sure you want to untimeout
-		**${target.user.tag}** (${target.id})?\n\n${info}
+		${bold(target.user.tag)} (${target.id})?\n\n${info}
 	`);
 
 	const collector = new ConfirmationButtons({ authorId: intr.user.id }) //
@@ -115,9 +116,9 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 
 					intr.editReply({
 						content: `${oneLine(
-							e`{check} Successfully **removed timeout** on
-							**${target.user.tag}** (${target.id}) in
-							case **#${case_.id}**`
+							e`{check} Successfully ${bold("removed timeout")} on
+							${bold(target.user.tag)} (${target.id}) in
+							case ${bold`#${case_.id}`}`
 						)}\n\n${info}`,
 						components: []
 					});

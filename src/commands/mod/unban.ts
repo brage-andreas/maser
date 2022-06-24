@@ -11,6 +11,7 @@ import { e } from "../../emojis/index.js";
 import type Logger from "../../loggers/index.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
+import { bold } from "../../utils/discordMarkdown.js";
 import { appendPrefixAndSuffix, createList } from "../../utils/index.js";
 import { reason, user } from "./noread.sharedCommandOptions.js";
 
@@ -57,13 +58,13 @@ async function execute(
 		: `By ${intr.user.tag} ${intr.user.id}`;
 
 	const info = createList({
-		"**Reason**": reason ?? "No reason provided",
-		"**Target**": `${target.tag} (${target.id})`
+		Reason: reason ?? "No reason provided",
+		Target: `${target.tag} (${target.id})`
 	});
 
 	const query = oneLine(e`
 		{warning} Are you sure you want to unban
-		**${target.tag}** (${target.id})?\n\n${info}
+		${bold(target.tag)} (${target.id})?\n\n${info}
 	`);
 
 	const collector = new ConfirmationButtons({ authorId: intr.user.id }) //
@@ -103,8 +104,8 @@ async function execute(
 
 					intr.editReply({
 						content: `${oneLine(e`
-							{check} Successfully **unbanned ${target.tag}**
-							(${target.id}) in case **#${case_.id}**
+							{check} Successfully ${bold`unbanned ${target.tag}`}
+							(${target.id}) in case ${bold`#${case_.id}`}
 						`)}\n\n${info}`,
 						components: []
 					});

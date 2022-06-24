@@ -1,6 +1,7 @@
 import { stripIndent } from "common-tags";
 import { type TimestampStylesString } from "discord.js";
 import { MAX_EMBED_DESCRIPTION_LEN } from "../constants/index.js";
+import { bold } from "./discordMarkdown.js";
 
 export const indent = (
 	string: string,
@@ -89,10 +90,6 @@ export const appendPrefixAndSuffix = (
 	return `${prefix} ${input.slice(0, lenToGo)} ${suffix}`;
 };
 
-// Very simple and definitely not the best -- gets the job done
-export const escapeDiscordMarkdown = (text: string): string =>
-	text.replaceAll(/(\*)|(_)|(\|)|(\\)/g, (match) => `\\${match}`);
-
 export const listify = (
 	elements: Array<string>,
 	options: { desiredLen: number; give?: number }
@@ -112,6 +109,6 @@ export const createList = (obj: Record<string, string | null | undefined>) =>
 	Object.entries(obj)
 		.filter(([, val]) => Boolean(val))
 		.map(([key, val]) =>
-			val === "{single}" ? `• ${key}` : `• ${key}: ${val}`
+			val === "{single}" ? `• ${bold(key)}` : `• ${key}: ${val}`
 		)
 		.join("\n");

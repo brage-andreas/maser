@@ -12,6 +12,7 @@ import { e } from "../../emojis/index.js";
 import type Logger from "../../loggers/index.js";
 import { ConfirmationButtons } from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
+import { bold } from "../../utils/discordMarkdown.js";
 import { appendPrefixAndSuffix, createList } from "../../utils/index.js";
 import { reason, user } from "./noread.sharedCommandOptions.js";
 
@@ -117,12 +118,17 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 		: `By ${intr.user.tag} ${intr.user.id}`;
 
 	const info = createList({
-		"**Days pruned**": days ? `${days} days` : "None",
-		"**Reason**": reason ?? "No reason provided",
-		"**Target**": `${target.tag} (${target.id})`
+		"Days pruned": days ? `${days} days` : "None",
+		"Reason": reason ?? "No reason provided",
+		"Target": `${target.tag} (${target.id})`
 	});
 
-	const query = e`{warning} Are you sure you want to ban **${target.tag}** (${target.id})?\n\n${info}`;
+	const query = oneLine(
+		e`
+			{warning} Are you sure you want to
+			ban ${bold(target.tag)} (${target.id})?\n\n${info}
+		`
+	);
 
 	const collector = new ConfirmationButtons({
 		authorId: intr.user.id,
@@ -166,10 +172,10 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 					);
 
 					intr.editReply({
-						content: oneLine(e`
-							{check} Successfully **banned ${target.tag}**
-							(${target.id}) in case **#${case_.id}**\n\n${info}
-						`),
+						content: `${oneLine(e`
+							{check} Successfully ${bold`banned ${target.tag}`}
+							(${target.id}) in case ${bold`#${case_.id}
+						`}`)}\n\n${info}`,
 						components: []
 					});
 				})

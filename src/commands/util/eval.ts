@@ -21,6 +21,7 @@ import {
 	type CommandOptions,
 	type EvalOutput
 } from "../../typings/index.js";
+import { bold } from "../../utils/discordMarkdown.js";
 import { codeblock, indent } from "../../utils/index.js";
 
 const options: Partial<CommandOptions> = {
@@ -116,8 +117,8 @@ async function execute(
 				"[REDACTED]"
 			);
 
-			const parsedInput = parse(code, "**Input**");
-			const parsedOutput = parse(stringedOutput, "**Output**");
+			const parsedInput = parse(code, bold("Input"));
+			const parsedOutput = parse(stringedOutput, bold("Output"));
 
 			const successInputEmbed: APIEmbed = {
 				...defaultEmbed(intr),
@@ -141,8 +142,8 @@ async function execute(
 			const error = err as Error;
 			const msg = error.stack ?? error.toString();
 
-			const parsedInput = parse(code, " **Input**");
-			const parsedError = parse(msg, " **Error**", null);
+			const parsedInput = parse(code, " Input");
+			const parsedError = parse(msg, " Error", null);
 
 			const errorInputEmbed: APIEmbed = {
 				...defaultEmbed(intr),
