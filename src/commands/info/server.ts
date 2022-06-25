@@ -87,8 +87,10 @@ function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 	const created = fullDate(guild.createdAt);
 
 	const roles = listify(
-		guild.roles.cache.map((r) => r.toString()),
-		{ desiredLen: 5, give: 1 }
+		guild.roles.cache
+			.sort((a, b) => b.position - a.position)
+			.map((r) => r.toString()),
+		{ desiredLen: 4, give: 1 }
 	);
 
 	const icon = guild.iconURL({ size: 2048 }) ?? "";
