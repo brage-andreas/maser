@@ -33,18 +33,26 @@ async function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 	const caseManager = new CaseManager(intr.client, intr.guildId);
 	const cases = await caseManager.getHistory(user.id);
 
-	const embedFooter =
-		Object.entries(
-			cases.reduce((obj: Record<string, number>, case_) => {
-				obj[case_.type] = (obj[case_.type] ?? 0) + 1;
+	/*
+		creates an object like:
+		{
+			"Mute": 1,
+			"Kick": 2
+		}
+	*/
+	const embedFooterEntries = cases.reduce(
+		(obj: Record<string, number>, case_) => {
+			const type = case_.type.toLowerCase();
+			obj[type] = (obj[type] ?? 0) + 1;
 
-				return obj;
-			}, {})
-		)
-			.map(
-				([type, n]) => `${n} ${type.toLowerCase()}${n === 1 ? "" : "s"}`
-			)
-			.join(", ") || "No history";
+			return obj;
+		},
+		{}
+	);
+
+	const embedFooter = Object.entries(embedFooterEntries).map(
+		([type, n]) => `${n} ${type}${n === 1 ? "" : "s"}`
+	);
 
 	const historyEmbed: APIEmbed = {
 		author: {
@@ -61,7 +69,9 @@ async function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 				value: "..."
 			}
 		],
-		footer: { text: embedFooter }
+		footer: {
+			text: embedFooter.join(", ") || "No history"
+		}
 	};
 
 	intr.editReply({ embeds: [historyEmbed] });
