@@ -95,14 +95,27 @@ export const listify = (
 	options: { desiredLen: number; give?: number }
 ): string => {
 	const { desiredLen, give } = options ?? {};
+	const elements_ = structuredClone(elements);
 
-	if (elements.length > desiredLen + (give ?? 1)) {
-		elements
-			.splice(0, desiredLen)
-			.push(`and ${elements.length - desiredLen} more`);
+	if (elements_.length === 0 || elements_.length === 1) {
+		return elements_.join("");
 	}
 
-	return elements.join("\n");
+	if (desiredLen + (give ?? 1) < elements_.length) {
+		// something breaks when i combine these two
+		elements_.splice(desiredLen);
+		elements_.push(`and ${elements.length - desiredLen} more`);
+
+		return elements_.join(", ");
+	}
+
+	if (elements_.length === 2) {
+		return `${elements_[0]} and ${elements_[1]}`;
+	}
+
+	const lastElement = elements_.splice(-1);
+
+	return `${elements_.join(", ")}, and ${lastElement[0]}`;
 };
 
 export const createList = (obj: Record<string, string | null | undefined>) =>
