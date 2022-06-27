@@ -20,13 +20,13 @@ import { e } from "../emojis/index.js";
  * Manages buttons for the client.
  */
 export default class ButtonManager {
-	public message: Message<true> | null;
+	public message: Message<boolean> | null;
 	public rows: Array<APIActionRowComponent<APIButtonComponentWithCustomId>>;
 
 	/**
 	 * Creates a button manager.
 	 */
-	public constructor(message?: Message<true>) {
+	public constructor(message?: Message<boolean>) {
 		this.message = message ?? null;
 
 		this.rows = [];
@@ -61,7 +61,7 @@ export default class ButtonManager {
 	/**
 	 * Sets or removes the message. Used by the collector.
 	 */
-	public setMessage(message: Message<true> | null): this {
+	public setMessage(message: Message<boolean> | null): this {
 		this.message = message;
 
 		return this;
@@ -71,7 +71,7 @@ export default class ButtonManager {
 	 * Creates and returns a button collector.
 	 */
 	public createCollector(options?: {
-		filter?: CollectorFilter<[ButtonInteraction<"cached">]>;
+		filter?: CollectorFilter<[ButtonInteraction]>;
 		time?: string;
 	}) {
 		const { filter, time } = options ?? {};
