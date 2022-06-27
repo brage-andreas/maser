@@ -172,6 +172,16 @@ export default class Case {
 		return caseEmbed;
 	}
 
+	public toString(): string {
+		const { logMessageUrl, id } = this;
+
+		if (!logMessageUrl) {
+			return `#${id}`;
+		}
+
+		return `[#${id}](${logMessageUrl})`;
+	}
+
 	public async channelLog() {
 		const channel = await new ConfigManager(
 			this.client,
