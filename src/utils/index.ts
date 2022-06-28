@@ -122,6 +122,6 @@ export const createList = (obj: Record<string, string | null | undefined>) =>
 	Object.entries(obj)
 		.filter(([, val]) => Boolean(val))
 		.map(([key, val]) =>
-			val === "{single}" ? `• ${bold(key)}` : `• ${key}: ${val}`
+			val === "{single}" ? `• ${bold(key)}` : `• ${bold(key)}: ${val}`
 		)
 		.join("\n");
