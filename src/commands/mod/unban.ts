@@ -62,10 +62,10 @@ async function execute(
 		Target: `${target.tag} (${target.id})`
 	});
 
-	const query = oneLine(e`
-		{warning} Are you sure you want to unban
-		${bold(target.tag)} (${target.id})?\n\n${info}
-	`);
+	const query = `${oneLine(e`
+			{warning} Are you sure you want to unban
+			${bold(target.tag)} (${target.id})?
+		`)}\n\n${info}`;
 
 	const collector = new ConfirmationButtons({ authorId: intr.user.id }) //
 		.setInteraction(intr)
@@ -91,7 +91,7 @@ async function execute(
 							targetTag: target.tag,
 							type: CaseTypes.Unban
 						},
-						true
+						{ channelLog: true }
 					);
 
 					logger.logInteraction(

@@ -23,7 +23,7 @@ const options: Partial<CommandOptions> = { wip: true };
 
 const data: ChatInputApplicationCommandData = {
 	name: "untimeout",
-	description: "Removes the time-out of a user",
+	description: "Removes the timeout from a user",
 	options: [
 		user(true), //
 		reason("time-out")
@@ -73,10 +73,10 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 		Target: `${target.user.tag} (${target} ${target.id})`
 	});
 
-	const query = oneLine(e`
-		{warning} Are you sure you want to untimeout
-		${bold(target.user.tag)} (${target.id})?\n\n${info}
-	`);
+	const query = `${oneLine(e`
+			{warning} Are you sure you want to untimeout
+			${bold(target.user.tag)} (${target.id})?
+		`)}\n\n${info}`;
 
 	const collector = new ConfirmationButtons({ authorId: intr.user.id }) //
 		.setInteraction(intr)
@@ -111,7 +111,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 							targetTag: target.user.tag,
 							type: CaseTypes.Untimeout
 						},
-						true
+						{ channelLog: true }
 					);
 
 					intr.editReply({

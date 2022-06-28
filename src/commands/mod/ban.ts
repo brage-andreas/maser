@@ -20,7 +20,7 @@ const options: Partial<CommandOptions> = { private: true };
 
 const data: ChatInputApplicationCommandData = {
 	name: "ban",
-	description: "Bans a user off this server",
+	description: "Bans a user",
 	options: [
 		user(true),
 		reason("ban"),
@@ -123,12 +123,12 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 		"Target": `${target.tag} (${target.id})`
 	});
 
-	const query = oneLine(
+	const query = `${oneLine(
 		e`
 			{warning} Are you sure you want to
-			ban ${bold(target.tag)} (${target.id})?\n\n${info}
+			ban ${bold(target.tag)} (${target.id})?
 		`
-	);
+	)}\n\n${info}`;
 
 	const collector = new ConfirmationButtons({
 		authorId: intr.user.id,
@@ -160,7 +160,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 							targetTag: target.tag,
 							type: CaseTypes.Ban
 						},
-						true
+						{ channelLog: true }
 					);
 
 					logger.logInteraction(

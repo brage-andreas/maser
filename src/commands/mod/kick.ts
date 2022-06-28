@@ -85,10 +85,10 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 		Target: `${target.user.tag} (${target.id})`
 	});
 
-	const query = oneLine(e`
-		{warning} Are you sure you want to kick
-		${bold(target.user.tag)} (${target.id})?\n\n${info}
-	`);
+	const query = `${oneLine(e`
+			{warning} Are you sure you want to kick
+			${bold(target.user.tag)} (${target.id})?
+		`)}\n\n${info}`;
 
 	const collector = new ConfirmationButtons({
 		authorId: intr.user.id,
@@ -117,7 +117,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 							targetTag: target.user.tag,
 							type: CaseTypes.Kick
 						},
-						true
+						{ channelLog: true }
 					);
 
 					logger.logInteraction(
