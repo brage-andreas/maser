@@ -18,10 +18,10 @@ export default class CaseManager {
 			CaseData,
 			"caseId" | "createdTimestamp" | "edited" | "guildId"
 		>,
-		channelLog = true
+		options: { channelLog: boolean }
 	) {
 		// TODO: channel log
-		channelLog;
+		options;
 
 		const lastId = await this.getLastCaseId();
 

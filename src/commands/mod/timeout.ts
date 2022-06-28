@@ -25,7 +25,7 @@ const options: Partial<CommandOptions> = { wip: true };
 
 const data: ChatInputApplicationCommandData = {
 	name: "timeout",
-	description: "Timeout a user for a given time",
+	description: "Timeouts a user for a given time",
 	options: [
 		user(true),
 		reason("timeout"),
@@ -179,7 +179,7 @@ function execute(intr: ChatInputCommandInteraction<"cached">, logger: Logger) {
 							targetTag: target.user.tag,
 							type: CaseTypes.Timeout
 						},
-						true
+						{ channelLog: true }
 					);
 
 					intr.editReply({
