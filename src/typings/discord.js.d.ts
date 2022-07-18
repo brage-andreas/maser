@@ -18,4 +18,9 @@ declare module "discord.js" {
 		client: Client<true>;
 		commandOptions: CommandHelper;
 	}
+
+	interface ModalSubmitInteraction {
+		client: Client<true>;
+		commandOptions: CommandHelper;
+	}
 }

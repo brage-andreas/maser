@@ -2,7 +2,8 @@ import { type APIEmbed } from "discord-api-types/v9";
 import type {
 	AutocompleteInteraction,
 	ChatInputApplicationCommandData,
-	CommandInteraction
+	CommandInteraction,
+	ModalSubmitInteraction
 } from "discord.js";
 import type Logger from "../loggers/index.js";
 
@@ -27,7 +28,8 @@ export interface Command {
 	execute(
 		interaction:
 			| AutocompleteInteraction<"cached">
-			| CommandInteraction<"cached">,
+			| CommandInteraction<"cached">
+			| ModalSubmitInteraction<"cached">,
 		logger: Logger
 	): Promise<unknown> | unknown;
 }
