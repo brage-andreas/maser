@@ -1,7 +1,4 @@
-import {
-	type AutocompleteInteraction,
-	type ChatInputCommandInteraction
-} from "discord.js";
+import { type ChatInputCommandInteraction } from "discord.js";
 import type Logger from "../loggers/index.js";
 import { type Command } from "../typings/index.js";
 
@@ -10,20 +7,14 @@ import { type Command } from "../typings/index.js";
  */
 export default class CommandHelper {
 	public command!: Readonly<Command>;
-	public interaction!:
-		| AutocompleteInteraction<"cached">
-		| ChatInputCommandInteraction<"cached">;
+	public interaction!: ChatInputCommandInteraction<"cached">;
 
 	/**
 	 * Creates a command helper.
 	 * @param interaction The interaction to create helpers for.
 	 * @constructor
 	 */
-	public constructor(
-		interaction:
-			| AutocompleteInteraction<"cached">
-			| ChatInputCommandInteraction<"cached">
-	) {
+	public constructor(interaction: ChatInputCommandInteraction<"cached">) {
 		this.setCommand(interaction);
 	}
 
@@ -56,9 +47,7 @@ export default class CommandHelper {
 	 * @param interaction The interaction to use.
 	 */
 	public setCommand(
-		interaction:
-			| AutocompleteInteraction<"cached">
-			| ChatInputCommandInteraction<"cached">
+		interaction: ChatInputCommandInteraction<"cached">
 	): this {
 		this.interaction = interaction;
 

@@ -17,10 +17,7 @@ export async function execute(intr: Interaction) {
 		return;
 	}
 
-	if (
-		(!intr.isChatInputCommand() && !intr.isAutocomplete()) ||
-		!intr.inCachedGuild()
-	) {
+	if (!intr.isChatInputCommand() || !intr.inCachedGuild()) {
 		return;
 	}
 
@@ -28,18 +25,14 @@ export async function execute(intr: Interaction) {
 		await intr.member.fetch();
 	}
 
+	intr.commandOptions = new CommandHelper(intr);
+	const command = intr.commandOptions.setCommand(intr);
+
 	const isNotOwner = intr.user.id !== intr.client.application.owner?.id;
 	const logger = new Logger({
 		colour: "green",
 		type: intr.commandName
 	});
-
-	intr.commandOptions = new CommandHelper(intr);
-	const command = intr.commandOptions.setCommand(intr);
-
-	if (intr.isAutocomplete()) {
-		return command.execute(logger);
-	}
 
 	logger.setInteraction(intr);
 
