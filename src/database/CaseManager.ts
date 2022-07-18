@@ -18,14 +18,11 @@ export default class CaseManager {
 			CaseData,
 			"caseId" | "createdTimestamp" | "edited" | "guildId"
 		>,
-		options: { channelLog: boolean }
+		options?: { channelLog?: boolean }
 	) {
-		// TODO: channel log
-		options;
-
 		const lastId = await this.getLastCaseId();
 
-		const case_ = await this.prisma.cases.create({
+		const rawCase = await this.prisma.cases.create({
 			data: {
 				...data,
 				guildId: this.guildId,
@@ -33,7 +30,13 @@ export default class CaseManager {
 			}
 		});
 
-		return new Case(this.client, case_);
+		const case_ = new Case(this.client, rawCase);
+
+		if (options?.channelLog) {
+			await case_.channelLog();
+		}
+
+		return case_;
 	}
 
 	public async deleteCase(caseId: number) {
