@@ -6,13 +6,19 @@ export default class ConfigManager {
 	public readonly client: Client<true>;
 	public guildId: string;
 
-	public readonly get: Record<
-		"botLogChannel" | "memberLogChannel" | "modLogChannel",
-		() => Promise<TextBasedChannel | null>
-	> = {
-		botLogChannel: async () => this._get("botLogChId"),
-		memberLogChannel: async () => this._get("memberLogChId"),
-		modLogChannel: async () => this._get("modLogChId")
+	public readonly get = {
+		botLogChannel: async () => this._get({ key: "botLogChId" }),
+		memberLogChannel: async () => this._get({ key: "memberLogChId" }),
+		modLogChannel: async () => this._get({ key: "modLogChId" }),
+
+		raw: {
+			botLogChannel: async () =>
+				this._get({ key: "botLogChId", raw: true }),
+			memberLogChannel: async () =>
+				this._get({ key: "memberLogChId", raw: true }),
+			modLogChannel: async () =>
+				this._get({ key: "modLogChId", raw: true })
+		}
 	};
 
 	public readonly set = {
@@ -56,8 +62,20 @@ export default class ConfigManager {
 		});
 	}
 
-	private async _get(key: "botLogChId" | "memberLogChId" | "modLogChId") {
-		const chIdObj = await this.prisma.configs
+	private async _get(options: {
+		key: "botLogChId" | "memberLogChId" | "modLogChId";
+	}): Promise<TextBasedChannel | null>;
+	private async _get(options: {
+		key: "botLogChId" | "memberLogChId" | "modLogChId";
+		raw: true;
+	}): Promise<string | null>;
+	private async _get(options: {
+		key: "botLogChId" | "memberLogChId" | "modLogChId";
+		raw?: boolean;
+	}): Promise<TextBasedChannel | string | null> {
+		const { key, raw } = options;
+
+		const channelId = await this.prisma.configs
 			.findUnique({
 				where: {
 					guildId: this.guildId
@@ -68,11 +86,15 @@ export default class ConfigManager {
 			})
 			.then((res: Record<string, string | null> | null) => res?.[key]);
 
-		if (!chIdObj) {
+		if (!channelId) {
 			return null;
 		}
 
-		const channel = this.client.channels.cache.get(chIdObj);
+		if (raw) {
+			return channelId;
+		}
+
+		const channel = this.client.channels.cache.get(channelId);
 
 		return channel?.isTextBased() ? channel : null;
 	}
