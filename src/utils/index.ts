@@ -1,7 +1,6 @@
 import { stripIndent } from "common-tags";
 import { type TimestampStylesString } from "discord.js";
 import { MAX_EMBED_DESCRIPTION_LEN } from "../constants/index.js";
-import { bold } from "./discordMarkdown.js";
 
 export const indent = (
 	string: string,
@@ -122,6 +121,6 @@ export const createList = (obj: Record<string, string | null | undefined>) =>
 	Object.entries(obj)
 		.filter(([, val]) => Boolean(val))
 		.map(([key, val]) =>
-			val === "{single}" ? `• ${bold(key)}` : `• ${bold(key)}: ${val}`
+			val === "{single}" ? `• ${key}` : `• ${key}: ${val}`
 		)
 		.join("\n");
