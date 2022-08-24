@@ -9,6 +9,7 @@ import {
 	defaultEmbed,
 	USER_FLAGS_STRINGS
 } from "../../constants/index.js";
+import { e } from "../../emojis/index.js";
 import type Logger from "../../loggers/index.js";
 import { type Command } from "../../typings/index.js";
 import { escapeMd } from "../../utils/discordMarkdown.js";
@@ -49,7 +50,7 @@ async function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 	const flags = rawFlags.map((flag) => USER_FLAGS_STRINGS[flag] ?? flag);
 
 	if (premium) {
-		flags.push("Booster");
+		flags.push(e`{booster} Booster`);
 	}
 
 	const memberAvatar = member?.avatarURL({ size: 2048 }) ?? null;
@@ -92,10 +93,10 @@ async function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 	const name = escapeMd(member?.displayName ?? tag);
 
 	const infoFieldValue = createList({
+		"👑 Server Owner": owner ? "{single}" : null,
 		"Tag": `\`${tag}\``,
 		"ID": `\`${id}\``,
 		"Colour": `\`#${color.toString(16)}\``,
-		"👑 Server Owner": owner ? "{single}" : null,
 		"Bot": bot ? "{single}" : null,
 		"Created": created,
 		"Joined": joined,
