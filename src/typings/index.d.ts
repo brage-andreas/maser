@@ -16,7 +16,25 @@ export type Colour =
 	| "white"
 	| "yellow";
 export type LogLevels = "full" | "none" | "normal";
-export type MaserEmojis = "check" | "cross" | "lock" | "warning" | "wip";
+export type MaserEmojis =
+	| "balance"
+	| "booster"
+	| "bravery"
+	| "brilliance"
+	| "bughunter1"
+	| "bughunter2"
+	| "certified_mod"
+	| "check"
+	| "cross"
+	| "earlyDeveloper"
+	| "earlyNitro"
+	| "hypesquad"
+	| "lock"
+	| "partner"
+	| "sparkles"
+	| "staff"
+	| "warning"
+	| "wip";
 
 export interface CommandModule {
 	getCommand(): Partial<Command>;
