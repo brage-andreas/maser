@@ -5,7 +5,7 @@ import CommandHelper from "../modules/CommandHelper.js";
 
 export async function execute(intr: Interaction) {
 	if (!intr.inGuild()) {
-		if (!intr.isCommand()) {
+		if (!intr.isChatInputCommand()) {
 			return;
 		}
 
