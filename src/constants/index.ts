@@ -5,6 +5,7 @@ import {
 	type CommandInteraction,
 	type UserFlagsString
 } from "discord.js";
+import { e } from "../emojis/index.js";
 import { type Colour } from "../typings/index.js";
 
 export const DEFAULT_LOGGER_TYPE = "LOG";
@@ -60,26 +61,22 @@ export const COLORS = {
 } as const;
 
 export const USER_FLAGS_STRINGS: Record<UserFlagsString, string> = {
-	BotHTTPInteractions: "HTTP-only bot",
-	BugHunterLevel1: "<:discord_bughunter_1:938523381756751924> Bughunter",
-	BugHunterLevel2:
-		"<:discord_bughunter_2:938523382104879144> Bughunter but better",
-	CertifiedModerator:
-		"<:discord_certified_mod:938523382083895318> Certified mod",
-	Hypesquad: "<:discord_hypesquad:938523382004203550> Hypesquad",
-	HypeSquadOnlineHouse1: "<:discord_bravery:938523381995798558> Bravery",
-	HypeSquadOnlineHouse2:
-		"<:discord_brilliance:938523381626728510> Brilliance",
-	HypeSquadOnlineHouse3: "<:discord_balance:938523381710602241> Balance",
-	Partner: "<:discord_partner:938523382020964452> Partner",
-	PremiumEarlySupporter:
-		"<:discord_early_nitro:938523382029369394> Early Nitro",
-	Spammer: "⚠️ Spammer",
-	Staff: "<:discord_staff:938523381983236106> Discord staff",
-	TeamPseudoUser: "Team user",
-	VerifiedBot: "Verified bot",
-	VerifiedDeveloper:
-		"<:discord_early_developer:938523382083895316> Early verified dev"
+	BotHTTPInteractions: "🤖 HTTP-only bot",
+	BugHunterLevel1: e`{bughunter1} Bughunter`,
+	BugHunterLevel2: e`{bughunter} Bughunter Gold`,
+	CertifiedModerator: e`{certifiedMod} Certified mod`,
+	Hypesquad: e`{hypesquad} Hypesquad`,
+	HypeSquadOnlineHouse1: e`{bravery} Bravery`,
+	HypeSquadOnlineHouse2: e`{brilliance} Brilliance`,
+	HypeSquadOnlineHouse3: e`{balance} Balance`,
+	Partner: e`{partner} Partner`,
+	PremiumEarlySupporter: e`{earlyNitro} Early Nitro`,
+	Spammer: e`{warning} Spammer`,
+	Staff: e`{staff} Discord staff`,
+	TeamPseudoUser: "💼 Team user",
+	VerifiedBot: "🤖 Verified bot",
+	VerifiedDeveloper: e`{earlyDeveloper} Early verified dev`,
+	Quarantined: e`{warning} Quarantined`
 };
 
 export const BOOST_LEVELS = {
