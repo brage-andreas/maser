@@ -125,7 +125,7 @@ async function execute(intr: CommandInteraction<"cached">, logger: Logger) {
 			},
 			{
 				name: "Badges",
-				value: flags.length ? `• ${flags.join("\n• ")}` : "None"
+				value: flags.length ? `• ${flags.join("\n- ")}` : "None"
 			}
 		]
 	};
