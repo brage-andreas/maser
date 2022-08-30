@@ -101,7 +101,6 @@ export const listify = (
 	}
 
 	if (desiredLen + (give ?? 1) < elements_.length) {
-		// something breaks when i combine these two
 		elements_.splice(desiredLen);
 		elements_.push(`and ${elements.length - desiredLen} more`);
 
@@ -121,6 +120,6 @@ export const createList = (obj: Record<string, string | null | undefined>) =>
 	Object.entries(obj)
 		.filter(([, val]) => Boolean(val))
 		.map(([key, val]) =>
-			val === "{single}" ? `• ${key}` : `• ${key}: ${val}`
+			val === "{single}" ? `- ${key}` : `- ${key}: ${val}`
 		)
 		.join("\n");
