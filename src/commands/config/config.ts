@@ -1,4 +1,4 @@
-import { oneLine } from "common-tags";
+import { stripIndent } from "common-tags";
 import {
 	ButtonStyle,
 	ComponentType,
@@ -7,10 +7,11 @@ import {
 	type ChatInputCommandInteraction
 } from "discord.js";
 import ConfigManager from "../../database/ConfigManager.js";
+import { e } from "../../emojis/index.js";
 import type Logger from "../../loggers/index.js";
 import ButtonManager from "../../modules/ButtonManager.js";
 import { type Command, type CommandOptions } from "../../typings/index.js";
-import { createList } from "../../utils/index.js";
+import { bold } from "../../utils/discordMarkdown.js";
 
 const options: Partial<CommandOptions> = { wip: true };
 
@@ -68,7 +69,7 @@ async function execute(
 		channelId: string | null;
 		name: string;
 		description: string;
-		recommendedPrivacy: "Any" | "Private" | "Public";
+		recommendedPrivacy: "any" | "private" | "public";
 	}) => {
 		const ch = options.channelId
 			? intr.guild.channels.cache.get(options.channelId)
@@ -76,17 +77,17 @@ async function execute(
 
 		const chStr =
 			ch === undefined
-				? "Not found"
+				? e`was {warning} not found`
 				: !ch
-				? "Not set"
-				: `${ch}, ${ch.name} (${ch.id})`;
+				? "is not set"
+				: `is set to ${ch}, \`${ch.name}\` (${ch.id})`;
 
-		const setMsg = createList({
-			"Channel": chStr,
-			"Recommended privacy": options.recommendedPrivacy
-		});
+		const setMsg = stripIndent`
+			Channel ${chStr}
+			\nRecommended privacy is: options.recommendedPrivacy
+		`;
 
-		return `${options.description}\n\n${setMsg}`;
+		return `${bold(options.name)}\n${options.description}\n\n${setMsg}`;
 	};
 
 	const configManager = new ConfigManager(intr.client, intr.guildId);
@@ -112,19 +113,19 @@ async function execute(
 
 			const info = getInfo({
 				channelId,
-				description: oneLine`
-					The bot log will log every action
-					the bot does, and who triggered it
-				`,
-				name: "bot log",
-				recommendedPrivacy: "Private"
+				description: "Log every server action the bot does",
+				name: "Bot Log",
+				recommendedPrivacy: "private"
 			});
 
-			intr.editReply({ content: info, components: buttonManager.rows });
+			interaction.update({
+				content: info,
+				components: buttonManager.rows
+			});
 		}
 	});
 
-	logger;
+	logger.logInteraction("Sent config button menu");
 }
 
 export const getCommand = () =>
