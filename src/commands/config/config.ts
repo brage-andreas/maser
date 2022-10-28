@@ -27,30 +27,30 @@ const data: ChatInputApplicationCommandData = {
 */
 
 const botLogButton: APIButtonComponentWithCustomId = {
-	style: ButtonStyle.Secondary,
+	style: ButtonStyle.Primary,
 	custom_id: "botLog",
 	label: "Bot Log",
 	type: ComponentType.Button
 };
 
 const memberLogButton: APIButtonComponentWithCustomId = {
-	style: ButtonStyle.Secondary,
+	style: ButtonStyle.Primary,
 	custom_id: "memberLog",
 	label: "Member Log",
 	type: ComponentType.Button
 };
 
 const modLogButton: APIButtonComponentWithCustomId = {
-	style: ButtonStyle.Secondary,
+	style: ButtonStyle.Primary,
 	custom_id: "modLog",
 	label: "Mod Log",
 	type: ComponentType.Button
 };
 
-const editOptionButton: APIButtonComponentWithCustomId = {
+const assignChannelOptionButton: APIButtonComponentWithCustomId = {
 	style: ButtonStyle.Success,
 	custom_id: "editOption",
-	label: "Edit option",
+	label: "Assign channel",
 	type: ComponentType.Button
 };
 
@@ -58,6 +58,13 @@ const resetOptionButton: APIButtonComponentWithCustomId = {
 	style: ButtonStyle.Danger,
 	custom_id: "resetOption",
 	label: "Reset option",
+	type: ComponentType.Button
+};
+
+const backButton: APIButtonComponentWithCustomId = {
+	style: ButtonStyle.Secondary,
+	custom_id: "back",
+	label: "Back",
 	type: ComponentType.Button
 };
 
@@ -69,7 +76,7 @@ async function execute(
 		channelId: string | null;
 		name: string;
 		description: string;
-		recommendedPrivacy: "any" | "private" | "public";
+		recommendedPrivacy: "Any" | "Private" | "Public";
 	}) => {
 		const ch = options.channelId
 			? intr.guild.channels.cache.get(options.channelId)
@@ -77,17 +84,19 @@ async function execute(
 
 		const chStr =
 			ch === undefined
-				? e`was {warning} not found`
+				? e`{warning} Channel with assigned ID not found (${options.channelId})`
 				: !ch
-				? "is not set"
-				: `is set to ${ch}, \`${ch.name}\` (${ch.id})`;
+				? "None"
+				: `${ch}, \`${ch.name}\` (${ch.id})`;
 
-		const setMsg = stripIndent`
-			Channel ${chStr}
-			\nRecommended privacy is: options.recommendedPrivacy
+		return stripIndent`
+			${bold(options.name)}
+			• ${options.description}
+
+			**Currently assigned:** ${chStr}
+
+			Recommended privacy: ${options.recommendedPrivacy}
 		`;
-
-		return `${bold(options.name)}\n${options.description}\n\n${setMsg}`;
 	};
 
 	const configManager = new ConfigManager(intr.client, intr.guildId);
@@ -109,13 +118,65 @@ async function execute(
 		if (interaction.customId === "botLog") {
 			const channelId = await configManager.get.raw.botLogChannel();
 
-			buttonManager.setRows([editOptionButton, resetOptionButton]);
+			buttonManager.setRows([
+				assignChannelOptionButton,
+				resetOptionButton,
+				backButton
+			]);
 
 			const info = getInfo({
 				channelId,
-				description: "Log every server action the bot does",
+				description: "Logs every action the bot does",
 				name: "Bot Log",
-				recommendedPrivacy: "private"
+				recommendedPrivacy: "Private"
+			});
+
+			interaction.update({
+				content: info,
+				components: buttonManager.rows
+			});
+
+			return;
+		}
+
+		if (interaction.customId === "modLog") {
+			const channelId = await configManager.get.raw.botLogChannel();
+
+			buttonManager.setRows([
+				assignChannelOptionButton,
+				resetOptionButton,
+				backButton
+			]);
+
+			const info = getInfo({
+				channelId,
+				description: "Logs every mod action done with Maser",
+				name: "Mod Log",
+				recommendedPrivacy: "Public"
+			});
+
+			interaction.update({
+				content: info,
+				components: buttonManager.rows
+			});
+
+			return;
+		}
+
+		if (interaction.customId === "memberLog") {
+			const channelId = await configManager.get.raw.botLogChannel();
+
+			buttonManager.setRows([
+				assignChannelOptionButton,
+				resetOptionButton,
+				backButton
+			]);
+
+			const info = getInfo({
+				channelId,
+				description: "Logs every user joining or leaving the server",
+				name: "Member Log",
+				recommendedPrivacy: "Any"
 			});
 
 			interaction.update({
